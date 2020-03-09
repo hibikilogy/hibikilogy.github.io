@@ -6,7 +6,8 @@ original: https://bbs.hupu.com/31731768.html
 ---
 北宇治高中吹奏乐部的在黄前久美子入校的第二年，竟然只拿到了关西大赛废金，未能冲进全国大赛，这是北宇治吹奏乐部伟大复兴之路上的重大挫折，对赛前以全国金奖为目标的吹奏乐部也是一个沉重的打击，那么应该如何问责？
 
-
+* any list
+{:toc}
 
 ## 1、让我们看看接下来会发生什么
 
@@ -28,7 +29,7 @@ original: https://bbs.hupu.com/31731768.html
 
 幸运的是，“搞事”的新生们和前一年一样没有造成实际的严重后果，小绿靠高超的拉琴技术攻略了总是不高兴的月永求（这位是前面说的那位龙圣新指导月永源一郎的孙子），负责一年级事务的黄前久美子拆掉了没头脑的铃木美玲和脑门上刻着“我就是来搞事的”久石奏两颗大炸弹，当然还有因伤退役以经理身份专注为一年级新生做心理辅导的加部友惠，她们的共同努力让吹奏乐部起码能在表面上维持平稳。
 
-![img1](https://i5.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578662524_s_1105530_o_w_1380_h_657_17499.png?x-oss-process=image/resize,w_800/format,webp)
+![img1](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/01.webp)
 
 另一方面，久二年吹奏乐部的气氛问题优子在小说中也提过：“缺少执念”——久一年部内的种种大事件，无论Sunfes事件、丽奈与香织的小号solo之争还是明日香退部相关事件，都是所有人认可冲击全国大赛这个目标之下的分歧；而久二年，尽管吉田优子一开始就将“全国大赛金奖”六个大字作为最终目标写在黑板上，但这一年发生的各种事件更多都还是人际关系问题，一年级新人还在努力融入吹奏乐部的集体，因为选拔赛或各种乱七八糟的小事闹矛盾；三年级的伞霙在干什么参考山田尚子监督的动画电影《莉兹与青鸟》，焦点也在人与人之间的关系或者自我认知，缺少了久一年那种从三年级到一年级都众志成城冲击全国大赛的气氛。但显然这些都不属于泷升一个指导老师能掌控的范围。
 
@@ -40,11 +41,11 @@ original: https://bbs.hupu.com/31731768.html
 
 石原立也监督在《誓言的终章》最后关西大赛的演出上充分理解了这个点。在第三乐章《爱的决断》中，除了一开始给了霙和希美各自一个拿起乐器开始演奏的特写镜头，接下来就没有任何希美的正面吹奏镜头了，而是竭尽全力地用各种镜头语言去突出霙的双簧管。双簧管独奏时，各个角度的特写，甚至还有标志性的“石原立也转圈圈”；长笛独奏时，镜头就变成了全景，或者就远远从背后给希美打个镜头。镜头语言一个buff一个debuff的区别对待用意再明显不过。
 
-![img2](https://i2.hoopchina.com.cn/blogfile/20201/10/FirstBbsImg_30988138562244_1578663070_s_1200121_o_w_400_h_224_13317.gif?x-oss-process=image/resize,w_800/format,webp)
+![img2](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/02.webp)
 
-![img3](https://i4.hoopchina.com.cn/blogfile/20201/10/FirstBbsImg_30988138562244_1578663079_s_1500012_o_w_400_h_224_72544.gif?x-oss-process=image/resize,w_800/format,webp)
+![img3](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/03.webp)
 
-![img4](https://i4.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578663587_s_3486072_o_w_1555_h_1757_54420.png?x-oss-process=image/resize,w_800/format,webp)
+![img4](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/04.webp)
 
 对比前一年的自由选曲《新月之舞》：丽奈的小号、霙的双簧管、明日香的悠风号轮番solo，充分发挥了北宇治几个强点的优势；所以《莉兹与青鸟》是否是最适合这一年北宇治的选曲或者说有没有更好的编曲方式，是值得商榷的。
 
@@ -70,7 +71,7 @@ original: https://bbs.hupu.com/31731768.html
 
 下面具体分析一下北宇治在久二年参加吹奏大赛的正式阵容。
 
-![img5](https://i4.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578663756_s_55554_o_w_1250_h_266_75847.png?x-oss-process=image/resize,w_800/format,webp)
+![img5](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/05.webp)
 
 先说明一下表格内容：用久二年时北宇治校服领巾的蓝、红、绿三色分别代表三年级、二年级和一年级的成员，某些名字后面带括号“落选”的是久一年时未能入选正赛的选手。
 
@@ -85,28 +86,28 @@ original: https://bbs.hupu.com/31731768.html
 
 单簧管：大换血，离开了8个原高三的、补了6个高一的新生和1个新入选的二年级，总人数比上届少1人。
 
-![img6](https://i4.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578663878_s_152953_o_w_1593_h_202_65524.jpg?x-oss-process=image/resize,w_800/format,webp)
+![img6](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/06.webp)
 
 松崎洋子在前一年也是初学者，这届还要转低音单簧管，感觉不太行；高野久惠前一年是B组的；高智久惠理也是换了乐器，继承姬友的高音单簧管，就当是有加成没变弱。那么其他新生能顶毕业的三年级吗？新来的南中部长北山泰瑠实力不错，也是钦定未来的单簧管首席（顺便看看这男女比例），但前任首席鸟冢弘音种种细节（比如能在Sunfes事件的首席会议中第一个跳出来反对泷升）暗示实力也是四天王之下排得上号的，比新来的泰瑠肯定更强，所以整体来看，单簧管是变弱了。
 
 
 笛子：离开了4个原高三的，补了1个新生和1个新入选的二年级，虽然伞木希美回归，还是比上届少一人。
 
-![img7](https://i3.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578664070_s_150289_o_w_1269_h_295_4614.jpg?x-oss-process=image/resize,w_800/format,webp)
+![img7](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/07.webp)
 
 二年级的中野蕾实是久一年的B组，另外一个是一年级才开始学长笛的高桥沙里，又在久二年转职短笛，跟上届杂贺赖子比应该是差了不少。伞木希美就算是天王之下的顶尖实力，也无法弥补整个声部实力的下降。
 
 
 双簧/巴松：吹巴松的两个原三年级都换成了新生，人数持平。
 
-![img8](https://i5.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578664111_s_172814_o_w_1097_h_508_12910.jpg?x-oss-process=image/resize,w_800/format,webp)
+![img8](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/08.webp)
 
 即使铠冢霙在青鸟变身之后实力百尺竿头更进一步，但吹巴松的两个三年级都换成了新生，实力不知道下降了多少，但是颜值肯定下滑了不少，毕竟少的是喜多村来南…这个声部整体实力最多也就持平久一年。
 
 
 萨克斯：离开了4个原高三的，补了4个新生和1个新入选的三年级，人数比久一年多1人。
 
-![img9](https://i2.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578664137_s_125228_o_w_1269_h_221_46336.jpg?x-oss-process=image/resize,w_800/format,webp)
+![img9](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/09.webp)
 
 鲇川京子和远藤正两位新生取代了前任部长小笠原晴香的上低音萨克斯，别看晴香在明日香面前唯唯诺诺，部务管理上大多数时候也只是喊口号的工具人，但吹奏水平是很高的，车站演出时候的萨克斯solo震惊全场，连旁听的黄主席前女友、立华高中吹奏部的超级巨星佐佐木梓都赞叹不已。上低音萨克斯就当二换一持平。
 
@@ -115,35 +116,35 @@ original: https://bbs.hupu.com/31731768.html
 
 低音部：受益于田中王国的保护，低音部是唯一在两年之前的吹奏部内乱中完整保存了实力的声部，因此也是在久二年实力增强最明显的声部，总人数多了3人。
 
-![img10](https://i4.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578664237_s_127216_o_w_1269_h_221_49523.jpg?x-oss-process=image/resize,w_800/format,webp)
+![img10](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/10.webp)
 
 虽然四天王之一的明日香退役，但无论是大号夫妇和久美子夏纪的成长，还是新加入的几位生力军（月永求出身名门，铃木美玲刚来就能带着加藤叶月吹大号，久石奏对夏纪优势巨大，这三位搞事归搞事，实力都是很不错的），足以让低音部实力更进一步。
 
 
 小号：离开了两个原高三的，补了1个新生和1个新入选的二年级，人数持平。
 
-![img11](https://i1.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578664298_s_166640_o_w_1269_h_353_27388.jpg?x-oss-process=image/resize,w_800/format,webp)
+![img11](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/11.webp)
 
 新生小日向梦号称北宇治未来的希望，但毕竟才一年级，性格方面也有一定缺陷，和三年级的香织比还是有差距；吉泽秋子作为去年的B组也很难比肩原来的三年级；吉川优子部长被部务压得快要累死了应该没有多少精力提升吹奏水准（三香那一届的部务是三香一起负责分担，优子这一届部务工作主要都她一个人抗）；泷野纯一欠费人员请先补齐部费；即使考虑到丽奈的进步，小号组最多也就和前一年持平。这里说一下中世古香织的实力，她可不仅是人格魅力拉满的温柔女神，虽然久一年小号solo之争输给了丽奈，但输给四天王并不丢人，实际上《新月之舞》里的那一段小号solo并不是一个普通的业余高中生团队的首席小号手能够稳定solo出来的难度，而香织在solo的时候至少可以做到没有失误、所有音都吹对了，这就已经算是业余中的顶尖水平了。
 
 
 长号：离开两个原高三的，补了1个新入选的二年级，总人数少了1人。
 
-![img12](https://i4.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578664364_s_186108_o_w_1270_h_442_69391.jpg?x-oss-process=image/resize,w_800/format,webp)
+![img12](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/12.webp)
 
 毕业的野口和他女友一个首席一个次席，补充的福井仅是久一年的B组，即使考虑到秀一等人的这一年的进步，整体也有削弱。
 
 
 圆号：离开了两个原高三的，补了1个新生和1个新入选的二年级，人数持平。
 
-![img13](https://i5.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578664392_s_186332_o_w_1270_h_442_96579.jpg?x-oss-process=image/resize,w_800/format,webp)
+![img13](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/13.webp)
 
 新生早苗和久一年B组的瞳拉拉比不上原三年级，考虑岸部海松和森本美千代一年的进步，整体算持平。
 
 
 打击乐：离开了两个原高三的，补了3个新生，人数多了1人。
 
-![img14](https://i3.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578664417_s_155101_o_w_1269_h_295_7132.jpg?x-oss-process=image/resize,w_800/format,webp)
+![img14](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/14.webp)
 
 二年级的釜屋燕落选说明新来的三个一年级都实力不俗：前田兄弟是从小练习的鼓手，东浦心子在初中也是打击乐担当，节奏感十分出众，在久二年直接接手了声部长大野美代子的定音鼓，后者选择去弹奏自己一直非常憧憬的竖琴（话说竖琴为什么也算打击乐？）；再加上颜值担当堺万纱子和金钹法王井上顺菜的进步，总之，打击乐整体实力应该是增强不少的。
 
@@ -185,9 +186,9 @@ original: https://bbs.hupu.com/31731768.html
 首先部内气氛的问题。
 前面说到久二年的吹奏乐部缺乏“一定要拿下全国金奖”的执念，三年级的问题主要就体现在伞木希美身上。在北宇治经历一连串的打击后，高中三年级的希美同时面临个人进路的选择、和铠冢霙纠结的关系、对自我价值的认同和否定等一系列复杂的问题，已经无法将主要心思放在带领北宇治更进一步上了，甚至手握吹奏乐部财政大权的时候却连部费都懒得去收——已经不是国中失败时伤心欲绝还想着一定要高中夺金的那个阿伞了。
 
-![img15](https://i3.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578664889_s_987909_o_w_939_h_527_88108.png?x-oss-process=image/resize,w_800/format,webp)
+![img15](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/15.webp)
 
-![img16](https://i3.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578664894_s_1923159_o_w_1262_h_804_44377.png?x-oss-process=image/resize,w_800/format,webp)
+![img16](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/16.webp)
 
 
 希美是这样，只有一个希美的铠冢霙的世界里本来就没有其他人；夏纪算是合格的副部长，但更多精力可能是在提升自己的吹奏水平和看管优子；三年级最核心的南中四人组唯有吉川优子这个部长才会去将更多精力放在吹奏乐部的集体事务。而优子和夏纪恰好是吹奏水平不太高的那两位，小日向梦的小号已经可以压制优子，而久石奏对夏纪是更直接的鄙视。三年级本来人就少，现在这样就更无法将人心拧成一根绳了。
@@ -220,7 +221,7 @@ original: https://bbs.hupu.com/31731768.html
 
 如果北宇治吹奏乐部本身就只有介于关西废金到全国铜奖之间的实力，那么再怎么挣扎也是无力的——而久二年北宇治如此薄弱的阵容无疑也是要归咎于伞木希美的，正是因为她在两年前不愿忍受和屈服，带着一大批同级生退部，才有了久二年的窘迫局面。甚至当年本来对于这些事都冷眼旁观的明日香主动开口挽留，但心比天高的希美仍然选择了决绝地转身离去。当然那时候没人能想到下一年泷升的到来就改变了一切，不知道现在的希美会不会后悔当初的选择。
 
-![img17](https://i5.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578665017_s_804306_o_w_815_h_537_49241.png?x-oss-process=image/resize,w_800/format,webp)
+![img17](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/17.webp)
 
 
 最后再说一下运气的问题。
@@ -267,9 +268,9 @@ original: https://bbs.hupu.com/31731768.html
 
 剧场版动画《誓言的终章》限于篇幅，没有将优子的相关事件一一展示，但最后的这组个镜头足以点睛。
 
-![img18](https://i3.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578665228_s_1624953_o_w_1897_h_1023_11396.png?x-oss-process=image/resize,w_800/format,webp)
+![img18](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/18.webp)
 
-![img19](https://i2.hoopchina.com.cn/blogfile/20201/10/BbsImg_30988138562244_1578665235_s_1417777_o_w_687_h_942_71504.png?x-oss-process=image/resize,w_800/format,webp)
+![img19](https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/images/ruhewenze/19.webp)
 
 赛后优子是哭得最厉害的，不过部长能哭的地方只有厕所，或者副部长夏纪的怀里。
 
