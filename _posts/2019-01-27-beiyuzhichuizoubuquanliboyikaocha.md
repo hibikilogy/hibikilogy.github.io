@@ -3,6 +3,9 @@ layout: post
 title: 北宇治吹奏部权力博弈考察
 author: 老仓唯
 original: https://www.saraba1st.com/2b/forum.php?mod=viewthread&tid=1806922
+catalog: true
+tags:
+    - Stage1
 ---
 
 * any list
