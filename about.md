@@ -1,7 +1,6 @@
 ---
 layout: page
-title: 关于
-permalink: /about/
+title: 如何贡献
 ---
 
 ## 简介
