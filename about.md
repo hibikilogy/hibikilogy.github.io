@@ -15,7 +15,8 @@ permalink: /about/
 ---
 layout: page
 title: 标题
-date: yyyy-mm-dd
+author: 作者
+original: 原文地址
 ---
 # 小标题
 内容
@@ -27,7 +28,8 @@ date: yyyy-mm-dd
 ---
 layout: page
 title: 你好世界
-date: 1970-01-01
+author: 小明
+original: https://example.com
 ---
 # 1
 这是一个测试页面。

@@ -4,14 +4,14 @@ layout: default
 
 <article class="post">
   <h1>{{ page.title }}</h1>
+  <div class="author">{{ page.author }}</div>
 
   <div class="entry">
     {{ content }}
   </div>
 
   <div class="date">
-    Written on {{ page.date | date: "%B %e, %Y" }}
+    <a href="{{ page.original }}">原文</a>首次发表于 {{ page.date | date: "%B %e, %Y" }}
   </div>
 
-  {% include disqus.html %}
 </article>
