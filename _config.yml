@@ -1,10 +1,10 @@
 # Site settings
 title: 京吹学报
 SEOTitle: 京吹学报
-header-img: 
+header-img: https://i.loli.net/2020/03/10/CHsRWNgb8ar5VLz.png
 email: 
 description: 吹学著作集锦
-keyword: 
+keyword: 吹学
 url: "http://hibikilogy.github.io"          # your host, for absolute URL
 baseurl: ""      # for example, '/blog' if your blog hosted on 'host/blog'
 github_repo: "https://github.com/hibikilogy/hibikilogy.github.io.git" # you code repository
@@ -17,7 +17,7 @@ sidebar-avatar:       # use absolute URL, seeing it's used in both `/` and `/abo
 
 
 # SNS settings
-RSS: false
+RSS: true
 # weibo_username:     
 # zhihu_username:     
 github_username: hibikilogy
@@ -58,16 +58,16 @@ kramdown:
 
 # 评论系统
 # Disqus（https://disqus.com/）
-# disqus_username: qiubaiying
+# disqus_username: 
 
 # Gitalk
 gitalk:
-  enable: false    #是否开启Gitalk评论
-  clientID:                             #生成的clientID
-  clientSecret:     #生成的clientSecret
-  repo:     #仓库名称
-  owner:     #github用户名
-  admin: 
+  enable: true    #是否开启Gitalk评论
+  clientID: 6dc3ca1058cac3fde9ab                            #生成的clientID
+  clientSecret: 7b778acea4a91f5f97d82d46dc91f8d12fcad52e     #生成的clientSecret
+  repo: hibikilogy.github.io    #仓库名称
+  owner: hibikilogy     #github用户名
+  admin: hibikilogy
   distractionFreeMode: true #是否启用类似FB的阴影遮罩
 
 
