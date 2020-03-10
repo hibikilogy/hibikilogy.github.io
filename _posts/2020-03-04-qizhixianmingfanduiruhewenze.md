@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: post
 title: 旗帜鲜明反对《如何问责》中的部分观点--伞木希美之我见
 author: JF123258
 original: https://bbs.nga.cn/read.php?tid=20651882

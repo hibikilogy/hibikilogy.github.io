@@ -3,6 +3,7 @@ layout: post
 title: 北宇治高中吹奏乐部止步关西大赛，如何问责？
 author: 巫卫兵
 original: https://bbs.hupu.com/31731768.html
+header-img: https://raw.githubusercontent.com/hibikilogy/hibikilogy.github.io/master/images/ruhewenze/01.webp
 catalog: true
 tags:
     - 虎扑

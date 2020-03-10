@@ -10,7 +10,7 @@
 
 ```markdown
 ---
-layout: page
+layout: post
 title: 标题
 author: 作者
 original: 原文地址
@@ -46,7 +46,16 @@ tags:
 ### 进阶
 #### Jekyll
 如果你了解 Jekyll 相关的技术，可以选择修改其他目录内的文件并提交 PR。
+#### 脱离 Jekyll 单独修改 less
+首先安装相关工具： 
+```shell
+npm i -g less && npm i -g less-plugin-clean-css
+```
+修改 `less` 目录下的文件，之后在根目录下运行以下命令：
+```shell
+lessc ./less/hux-blog.less ./css/hux-blog.css & lessc --clean-css ./less/hux-blog.less ./css/hux-blog.min.css
+```
 #### 长期贡献
-如果需要进行长期的贡献<del>或者想要再 GitHub 用户界面添加一个组织</del>，请在[网站仓库的 isuues](https://github.com/hibikilogy/hibikilogy.github.io/issues) 里添加加入申请。
+如果需要进行长期的贡献<del>或者想要在 GitHub 用户界面添加一个组织</del>，请在[网站仓库的 isuues](https://github.com/hibikilogy/hibikilogy.github.io/issues) 里添加加入申请。
 
 <del>本组织目前持有者只是为了一只蝙蝠现在有空，之后很可能失踪，欢迎有意接替者。</del>
