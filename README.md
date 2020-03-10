@@ -4,7 +4,9 @@
 
 ## 如何贡献
 ### 基础
-如需贡献，请注册一个 GitHub 账号，并把[本网站的仓库 fork 下来](https://github.com/hibikilogy/hibikilogy.github.io/fork)，在仓库的  `_posts` 目录下新建名称格式为 `yyyy-mm-dd-title.md` 的文件，按照以下格式添加：
+**Markdown 很简单，就跟 bbcode 一样，任何人可以参与。**
+
+如需贡献，请注册一个 GitHub 账号，并把[本网站的仓库 fork 下来](https://github.com/hibikilogy/hibikilogy.github.io/fork)，在仓库的  `_posts` 目录下新建名称格式为 `yyyy-mm-dd-title.md` （例如 `2020-03-09-hello-world.md`）的文件，按照以下格式添加：
 
 ```markdown
 ---
@@ -12,38 +14,34 @@ layout: page
 title: 标题
 author: 作者
 original: 原文地址
+header-img: 顶部图片，可空缺
+catalog: true
+tags:
+    - 发布论坛（如 Stage1、NGA、虎扑、贴吧）
 ---
 ## 小标题
-内容
-```
+这是一个[示例文章](链接)。
 
-例如，新建`2020-03-09-hello-world.md`，内容为：
+### 小小标题
+每一段要空行。
 
-```markdown
----
-layout: page
-title: 你好世界
-author: 小明
-original: https://example.com
----
-## 1
-这是一个测试页面。
-## 2
-用于说明 markdown 基本语法。
-```
+* 无序列表
+* 无序列表
 
-添加完成后，再回到本网站仓库的界面，提交 Pull Request。
+输入**粗体**，输入*斜体*。[^1]
 
-如果有其他问题，请访问 [GitHub 官方文档](https://guides.github.com/)。
+输入<span style="color: red;">红色的字</span>。
 
-如想添加目录，请在插入目录处添加：
+[^1]: 可以添加注释
 
-```markdown
-* any list
-{:toc}
+![图片文字](图片链接)
 ```
 
 更多请查询 [markdown 语法](https://www.runoob.com/markdown/md-tutorial.html)。
+
+添加完成后，再回到本网站仓库的界面，[提交 Pull Request](https://github.com/hibikilogy/hibikilogy.github.io/compare)。
+
+如果有其他问题，请访问 [GitHub 官方文档](https://guides.github.com/)，或百度一下。
 
 ### 进阶
 #### Jekyll
