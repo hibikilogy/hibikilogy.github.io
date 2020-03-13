@@ -1,6 +1,7 @@
 ---
 layout: post
-title: 为什么剑崎梨梨花是北宇治吹奏部的下届部长？——驳《为什么历史选择了久石奏》
+title: 为什么剑崎梨梨花是北宇治吹奏部的下届部长？
+subtitle:  驳《为什么历史选择了久石奏》
 author: JF123258
 original: https://www.bilibili.com/read/cv4947159
 header-img: https://i.loli.net/2020/03/11/PtGjWaq3AvSoYlB.png

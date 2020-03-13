@@ -12,6 +12,7 @@
 ---
 layout: post
 title: 标题
+subtitle: 副标题，可空缺
 author: 作者
 original: 原文地址
 header-img: 顶部图片，可空缺
@@ -42,6 +43,11 @@ tags:
 添加完成后，再回到本网站仓库的界面，[提交 Pull Request](https://github.com/hibikilogy/hibikilogy.github.io/compare)。
 
 如果有其他问题，请访问 [GitHub 官方文档](https://guides.github.com/)，或百度一下。
+
+### 自动化工具
+本项目需要自动化工具的支持，但尚未完成。您可以选择到[项目仓库](https://github.com/hibikilogy/spiders)进行贡献。
+
+您也可以使用 [Copy as Markdown](https://chrome.google.com/webstore/detail/fkeaekngjflipcockcnpobkpbbfbhmdn)、[Copy Better](https://chrome.google.com/webstore/detail/hpihdokfdmmghaclaojfpmbckkhjgebc) 等插件来进行辅助。
 
 ### 进阶
 #### Jekyll

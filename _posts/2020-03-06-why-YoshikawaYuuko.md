@@ -1,6 +1,7 @@
 ---
 layout: post
-title: 吉川优子——北宇治吹奏乐部最伟大的部长
+title: 吉川优子
+subtitle: 北宇治吹奏乐部最伟大的部长
 author: SOS阿虚
 original: https://bbs.nga.cn/read.php?tid=20685196
 header-img: 

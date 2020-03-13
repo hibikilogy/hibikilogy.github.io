@@ -1,9 +1,10 @@
 ---
 layout: post
-title: 旗帜鲜明反对《如何问责》中的部分观点--伞木希美之我见
+title: 旗帜鲜明反对《如何问责》中的部分观点
+subtitle: 伞木希美之我见
 author: JF123258
 original: https://bbs.nga.cn/read.php?tid=20651882
-header-img: https://i.loli.net/2020/03/10/IgCdvuWnJl8TfwO.png
+header-img: https://i.loli.net/2020/03/10/5xj4XqbYnHuWwrR.png
 catalog: true
 tags:
     - NGA
