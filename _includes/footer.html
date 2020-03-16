@@ -119,11 +119,11 @@
 <!-- Zooming -->
 <script>
     // Listen to images after DOM content is fully loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      $('article .container img').each(() => {
+    document.addEventListener('DOMContentLoaded', function() {
+      $('.post-container img').each(function() {
         $(this).addClass('img-zoomable');
       });
-      $('.gt-avatar img').each(() => {
+      $('.gt-avatar img').each(function() {
         $(this).removeClass('img-zoomable');
       });
       new Zooming({
