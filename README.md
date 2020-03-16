@@ -47,6 +47,14 @@ tags:
 ### 自动化工具
 本项目需要自动化工具的支持，但尚未完成。您可以选择到[项目仓库](https://github.com/hibikilogy/spiders)进行贡献。
 
+目前已经适配的网站有：贴吧。
+
+仅有文字部分适配的网站有：bilibili、虎扑。
+
+#### 使用方法
+下载[项目仓库](https://github.com/hibikilogy/spiders)内对应的 .py 文件，使用 Python 运行，按照命令行提示进行即可。
+
+#### 其他
 您也可以使用 [Copy as Markdown](https://chrome.google.com/webstore/detail/fkeaekngjflipcockcnpobkpbbfbhmdn)、[Copy Better](https://chrome.google.com/webstore/detail/hpihdokfdmmghaclaojfpmbckkhjgebc) 等插件来进行辅助。
 
 ### 进阶
