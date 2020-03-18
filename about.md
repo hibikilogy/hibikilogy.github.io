@@ -3,11 +3,24 @@ layout: page
 title: 如何贡献
 header-img: https://i.loli.net/2020/03/18/DMS4XLyuNsYK8c3.png
 ---
+<div class="about-container">
 
 ## 简介
 本站为广大吹学爱好者记录吹学著作所用，使用 [Jekyll](http://jekyllcn.com) 在 ghpages 上部署。
 
 ## 如何贡献
+
+### 自动化工具
+本项目需要自动化工具的支持，但尚未完成。您可以选择到[项目仓库](https://github.com/hibikilogy/spiders)进行贡献。
+
+目前已经适配的网站有：贴吧、bilibili、虎扑、Stage1，其中除了贴吧外都有一些小 bug，可能需要手工校正。
+
+#### 使用方法
+下载[项目仓库](https://github.com/hibikilogy/spiders)内对应的 .py 文件，使用 Python 运行，按照命令行提示进行即可。
+
+#### 其他
+您也可以使用 [Copy as Markdown](https://chrome.google.com/webstore/detail/fkeaekngjflipcockcnpobkpbbfbhmdn)、[Copy Better](https://chrome.google.com/webstore/detail/hpihdokfdmmghaclaojfpmbckkhjgebc) 等插件来进行辅助。
+
 ### 基础
 **Markdown 很简单，就跟 bbcode 一样，任何人可以参与。**
 
@@ -31,8 +44,11 @@ tags:
 ### 小小标题
 每一段要空行。
 
-* 无序列表
-* 无序列表
+* 无序
+* 列表
+
+1. 有序
+2. 列表
 
 输入**粗体**，输入*斜体*。[^1]
 
@@ -48,19 +64,6 @@ tags:
 添加完成后，再回到本网站仓库的界面，[提交 Pull Request](https://github.com/hibikilogy/hibikilogy.github.io/compare)。
 
 如果有其他问题，请访问 [GitHub 官方文档](https://guides.github.com/)，或百度一下。
-
-### 自动化工具
-本项目需要自动化工具的支持，但尚未完成。您可以选择到[项目仓库](https://github.com/hibikilogy/spiders)进行贡献。
-
-目前已经适配的网站有：贴吧。
-
-仅有文字部分适配的网站有：bilibili、虎扑。
-
-#### 使用方法
-下载[项目仓库](https://github.com/hibikilogy/spiders)内对应的 .py 文件，使用 Python 运行，按照命令行提示进行即可。
-
-#### 其他
-您也可以使用 [Copy as Markdown](https://chrome.google.com/webstore/detail/fkeaekngjflipcockcnpobkpbbfbhmdn)、[Copy Better](https://chrome.google.com/webstore/detail/hpihdokfdmmghaclaojfpmbckkhjgebc) 等插件来进行辅助。
 
 ### 进阶
 #### Jekyll
@@ -78,3 +81,5 @@ lessc ./less/hux-blog.less ./css/hux-blog.css & lessc --clean-css ./less/hux-blo
 如果需要进行长期的贡献<del>或者想要在 GitHub 用户界面添加一个组织</del>，请在[网站仓库的 isuues](https://github.com/hibikilogy/hibikilogy.github.io/issues) 里添加加入申请。
 
 <del>本组织目前持有者只是为了一只蝙蝠现在有空，之后很可能失踪，欢迎有意接替者。</del>
+
+</div>
