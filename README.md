@@ -1,4 +1,7 @@
-# 京吹学报
+![wordcloud.png](https://i.loli.net/2020/03/18/DMS4XLyuNsYK8c3.png)
+
+<center style='font-size: 1.8em'>京吹学报</center>
+
 ## 简介
 本站为广大吹学爱好者记录吹学著作所用，使用 [Jekyll](http://jekyllcn.com) 在 ghpages 上部署。
 

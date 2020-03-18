@@ -1,6 +1,7 @@
 ---
 layout: page
 title: 如何贡献
+header-img: https://i.loli.net/2020/03/18/DMS4XLyuNsYK8c3.png
 ---
 
 ## 简介
