@@ -98,4 +98,9 @@ service-worker: true
 
 
 # Friends
-# friends: []
+friends: [
+    {
+        title: "中国珂学院",
+        href: "https://www.chtholly.ac.cn/"
+    }
+]
