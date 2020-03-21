@@ -102,5 +102,9 @@ friends: [
     {
         title: "中国珂学院",
         href: "https://www.chtholly.ac.cn/"
+    },
+    {
+        title: "《吹响！上低音号》在线播放",
+        href: "https://next.hyouka.ml/"
     }
 ]
