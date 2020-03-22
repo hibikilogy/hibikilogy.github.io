@@ -101,7 +101,7 @@ service-worker: true
 friends: [
     {
         title: "中国珂学院",
-        href: "https://www.chtholly.ac.cn/"
+        href: "https://wiki.chtholly.moe/"
     },
     {
         title: "《吹响！上低音号》在线播放",
