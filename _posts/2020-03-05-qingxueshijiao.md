@@ -3,7 +3,7 @@ layout: post
 title: 摒弃吹学史观，用青学的视角来解构《利兹与青鸟》
 author: CureEtoile
 original: https://bbs.nga.cn/read.php?tid=20664912
-header-img: 顶部图片，可空缺
+header-img: https://img.nga.178.com/attachments/mon_202003/05/-9lddQ5-imxiZ16T3cSlr-c4.png
 catalog: true
 tags:
     - NGA
