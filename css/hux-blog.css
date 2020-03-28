@@ -163,6 +163,13 @@ h4 {
 }
 a {
   color: #404040;
+  transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  /* Firefox 4 */
+  -webkit-transition: all 0.4s ease;
+  /* Safari 和 Chrome */
+  -o-transition: all 0.4s ease;
+  /* Opera */
 }
 a:hover,
 a:focus {

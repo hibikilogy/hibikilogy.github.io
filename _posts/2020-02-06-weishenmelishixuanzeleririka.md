@@ -11,7 +11,7 @@ tags:
 ---
 
 ## 摘要：
-本文系统性的驳斥了《为什么历史选择了久石奏》中种种错误观点，
+本文系统性的驳斥了《[为什么历史选择了久石奏](/2020/01/07/weishenmelishixuanzelekanade/)》中种种错误观点，
 
 并对于黄前四年北宇治吹奏部新一代领导核心，建立了自己的科学预测成果
 
@@ -23,13 +23,13 @@ tags:
 3. 《誓言经》 
 4. 《黄前九美子本纪》武田版全本 
 5. 《吹学经史子集汇编》<https://www.saraba1st.com/2b/thread-1336553- 680-1.html>--子部《京吹人物谱录》 
-6. 《吹学经史子集汇编》--集部《北宇治吹奏部权力博弈考察》<https://bbs.saraba1st.com/2b/thread-1806922-0-1.html>
-7. 《北宇治高中吹奏乐部止步关西大赛，如何问责》<https://tieba.baidu.com/p/6438643209>
-8. 《一个有良心的吹学研究者带你深入剖析伞木希美》<https://tieba.baidu.com/p/6468593437> 
+6. 《吹学经史子集汇编》--集部《[北宇治吹奏部权力博弈考察](/2019/01/27/beiyuzhichuizoubuquanliboyikaocha/)》<https://bbs.saraba1st.com/2b/thread-1806922-0-1.html>
+7. 《[北宇治高中吹奏乐部止步关西大赛，如何问责](/2020/01/10/ruhewenze/)》<https://tieba.baidu.com/p/6438643209>
+8. 《[一个有良心的吹学研究者带你深入剖析伞木希美](/2020/02/01/%E4%B8%80%E4%B8%AA%E6%9C%89%E8%89%AF%E5%BF%83%E7%9A%84%E5%90%B9%E5%AD%A6%E7%A0%94%E7%A9%B6%E8%80%85%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90%E4%BC%9E%E6%9C%A8%E5%B8%8C%E7%BE%8E/)》<https://tieba.baidu.com/p/6468593437> 
 9. 《梨梨花列传》--第五章 如何过一个优质假期
-10. 《后黄前时代北宇治吹奏部中枢政局初探》<https://tieba.baidu.com/p/6516126509>
-11. 《旗帜鲜明反对《如何问责》的部分观点--伞木希美之我见》<https://www.bilibili.com/read/cv4947320>
-12.  《为什么历史选择了久石奏》<https://tieba.baidu.com/p/6432219250?pn=1>
+10. 《[后黄前时代北宇治吹奏部中枢政局初探](/2020/02/27/%E5%90%8E%E9%BB%84%E5%89%8D%E6%97%B6%E4%BB%A3%E5%8C%97%E5%AE%87%E6%B2%BB%E5%90%B9%E5%A5%8F%E9%83%A8%E4%B8%AD%E6%9E%A2%E6%94%BF%E5%B1%80%E5%88%9D%E6%8E%A2/)》<https://tieba.baidu.com/p/6516126509>
+11. 《[旗帜鲜明反对《如何问责》的部分观点--伞木希美之我见](/2020/03/04/qizhixianmingfanduiruhewenze/)》<https://www.bilibili.com/read/cv4947320>
+12.  《[为什么历史选择了久石奏](/2020/01/07/weishenmelishixuanzelekanade/)》<https://tieba.baidu.com/p/6432219250?pn=1>
 
 ## 背景：
 近日，一学者于贴吧放出一篇雄文《为什么历史选择了久石奏》。众皆哗然，影响恶劣，特此作缴文一篇，以正视听！
