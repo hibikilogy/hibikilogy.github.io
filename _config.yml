@@ -67,7 +67,7 @@ gitalk:
   clientSecret: 7b778acea4a91f5f97d82d46dc91f8d12fcad52e     #生成的clientSecret
   repo: hibikilogy.github.io    #仓库名称
   owner: hibikilogy     #github用户名
-  admin: inchei
+  admin: "['inchei','97littleleaf11']"
   distractionFreeMode: true #是否启用类似FB的阴影遮罩
 
 
