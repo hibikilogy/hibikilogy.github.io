@@ -1,0 +1,54 @@
+1596270351008	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\49710\\AppData\\Local\\Temp\\rust_mozprofile584rum"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1596270359265	Marionette	INFO	Listening on port 53583
+1596270359814	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://img4.nga.178.com/common_res/js_dscommon.js?1204486, line 204: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/common_res/js_dscommon.js?1204486, line 268: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/common_res/js_commonui.js?5856769, line 2099: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/common_res/js_commonui.js?5856769, line 2107: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 1201: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 2014: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 2569: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 2569: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/common_res/js_dscommon.js?1204486, line 268: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 1201: unreachable code after return statement
+1596270380965	Marionette	INFO	Stopped listening on port 53583
+1596270527440	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\49710\\AppData\\Local\\Temp\\rust_mozprofileCcTL4b"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1596270540420	Marionette	INFO	Listening on port 54018
+1596270541026	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://img4.nga.178.com/common_res/js_dscommon.js?1204486, line 204: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/common_res/js_dscommon.js?1204486, line 268: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/common_res/js_commonui.js?5856769, line 2099: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/common_res/js_commonui.js?5856769, line 2107: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 1201: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 2014: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 2569: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 2569: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/common_res/js_dscommon.js?1204486, line 268: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 1201: unreachable code after return statement
+1596270564730	Marionette	INFO	Stopped listening on port 54018
+
+###!!! [Child][RunMessage] Error: Channel closing: too late to send/recv, messages will be lost
+
+1596270671917	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "-marionette" "-headless" "-foreground" "-no-remote" "-profile" "C:\\Users\\49710\\AppData\\Local\\Temp\\rust_mozprofile1RUFwo"
+*** You are running in headless mode.
+JavaScript error: resource://gre/modules/XULStore.jsm, line 66: Error: Can't find profile directory.
+console.error: SearchCache: "_readCacheFile: Error reading cache file:" (new Error("", "(unknown module)"))
+1596270691808	Marionette	INFO	Listening on port 54484
+1596270692202	Marionette	WARN	TLS certificate errors will be ignored for this session
+JavaScript warning: https://img4.nga.178.com/common_res/js_dscommon.js?1204486, line 204: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/common_res/js_dscommon.js?1204486, line 268: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/common_res/js_commonui.js?5856769, line 2099: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/common_res/js_commonui.js?5856769, line 2107: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 1201: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 2014: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 2569: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 2569: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/common_res/js_dscommon.js?1204486, line 268: unreachable code after return statement
+JavaScript warning: https://img4.nga.178.com/ngabbs/nga_classic/js_default.js?9958742, line 1201: unreachable code after return statement
+1596270715850	Marionette	INFO	Stopped listening on port 54484
