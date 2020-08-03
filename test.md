@@ -3,10 +3,9 @@ layout: page
 title: 高考试卷
 author: 奈绪丿奏
 ---
-<div style="text-align:center"><span style="font-weight:bold;font-size:20px">2020 年北宇治高等学校招生全国统一考试</span>
+<div style="text-align:center;font-weight:bold;font-size:20px;display:block;width:100%">2020 年北宇治高等学校招生全国统一考试</div>
+<div style="text-align:center;font-weight:bold;display:block;width:100%">语   文</div>
 
-**语   文**
-</div>
 本试卷共 22 题，共 150 分，共 10 页。考试结束后，将本试卷和答题卡一并交回。
 
 注意事项：1．答题前，考生先将自己的姓名、准考证号码填写清楚，将条形码准确粘贴在条形码区域内。
@@ -80,9 +79,9 @@ XX123258</div>
 最后，为什么说伞木希美是特殊而又普遍的，归根结底还是普遍的？相信同志们看了上面的回答，都已经有了自己的答案。
 
 <div style="text-align:right">作者：XX123258
-
-<https://www.bilibili.com/read/cv4947320>
-
+<br />
+<a href="https://www.bilibili.com/read/cv4947320">https://www.bilibili.com/read/cv4947320</a>
+<br />
 出处： bilibili
 </div>
 7．下列对本文相关内容和艺术特色的分析鉴赏，不正确的一项是（3 分）
@@ -114,9 +113,9 @@ D．文中有意使用 “百家争鸣”“鲁迅曾（真的）说” 等现�
 莫道相逢便别离，天涯回首吹学兴。
 
 <div style="text-align:right">作者：XX123258
-
-<https://www.bilibili.com/read/cv5217151>
-
+<br />
+<a href="https://www.bilibili.com/read/cv5217151">https://www.bilibili.com/read/cv5217151</a>
+<br />
 出处： bilibili [注] 许道宁：北宋画家
 </div>
 10．本诗表达了作者怎样的思想感情？请从 “故园何啻百合情”，“天涯回首吹学兴” 加以赏析（8 分）
