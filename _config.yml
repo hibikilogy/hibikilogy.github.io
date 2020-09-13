@@ -101,11 +101,11 @@ service-worker: true
 friends: [
     {
         title: "中国珂学院",
-        href: "https://wiki.chtholly.moe/"
+        href: "https://wiki.sukasuka.cn/"
     },
     {
         title: "《吹响！上低音号》在线播放",
-        href: "https://next.hyouka.ml/"
+        href: "https://next.hyouka.ml/posts/hibike/"
     },
     {
         title: "Kyoani.cn",
