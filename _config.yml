@@ -100,7 +100,7 @@ service-worker: true
 # Friends
 friends: [
     {
-        title: "中国珂学院",
+        title: "中国珂学院维基",
         href: "https://wiki.sukasuka.cn/"
     },
     {
