@@ -3,7 +3,6 @@ layout: page
 title: 如何贡献
 header-img: https://i.loli.net/2020/03/18/DMS4XLyuNsYK8c3.png
 ---
-<div class="about-container">
 ## 简介
 本站为广大吹学爱好者记录吹学著作所用，使用 [Jekyll](http://jekyllcn.com) 在 ghpages 上部署。
 
@@ -80,4 +79,3 @@ lessc ./less/hux-blog.less ./css/hux-blog.css & lessc --clean-css ./less/hux-blo
 如果需要进行长期的贡献<del>或者想要在 GitHub 用户界面添加一个组织</del>，请在[网站仓库的 isuues](https://github.com/hibikilogy/hibikilogy.github.io/issues) 里添加加入申请。
 
 <del>本组织目前持有者学业繁忙，很可能失踪，欢迎有意接替者。</del>
-</div>
