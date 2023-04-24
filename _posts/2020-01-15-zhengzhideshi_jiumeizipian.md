@@ -1,6 +1,6 @@
 ---
 layout: post
-title: <<北宇治高中吹奏部历代政治得失>>久美子篇
+title: 《北宇治高中吹奏部历代政治得失》久美子篇
 subtitle: 黄前久美子成为吹奏部长的历史必然性
 author: LL教皇
 original: https://www.bilibili.com/read/cv4360779
