@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 浅论“京吹政治学"的诞生与简单的介绍
+subtitle: 什么是京吹政治学？
 author: LL教皇
 original: https://www.bilibili.com/read/cv6751088
 header-img: 
@@ -42,7 +43,7 @@ tags:
 
 其次我会推荐UP主：22dmgxy-pyrrha汉化的（https://www.bilibili.com/video/BV1Gk4y167BU/） 这一视频，把某一特定历史时期与京吹寻找联系也属于京吹政治学的一种，而且是比较“硬”的那一种。
 
-除此之外还可以参考B站专栏中其他作者给出的链接如：[《为什么剑崎梨梨花是北宇治吹奏部的下届部长？——驳<为什么历史选择了久石奏>》](https://hibikilogy.github.io/2020/02/06/weishenmelishixuanzeleririka/)中就给出了比较详尽的书目。
+除此之外还可以参考B站专栏中其他作者给出的链接如：[《为什么剑崎梨梨花是北宇治吹奏部的下届部长？](https://hibikilogy.github.io/2020/02/06/weishenmelishixuanzeleririka/)——驳<为什么历史选择了久石奏>》中就给出了比较详尽的书目。
 
 （除此之外，大家也可以从京吹相关的同人作品中大量发现属于京吹政治学的作品，受于题材所限与规避水字数的嫌疑，很多京吹政治学相关的优秀作品没能介绍出来，希望各位“京吹政治学”的”政治学家“门多多海涵，本作的评论区欢迎各位创作者交流推广自己的作品并进行讨论，也可算是京吹政治学的繁荣景象。)
 
