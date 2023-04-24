@@ -1,6 +1,6 @@
 ---
 layout: post
-title: <<北宇治高中吹奏部历代政治得失>> 最终决战用兵器
+title: 《北宇治高中吹奏部历代政治得失》 最终决战用兵器
 author: LL教皇
 original: https://www.bilibili.com/read/cv4400132
 header-img: 
