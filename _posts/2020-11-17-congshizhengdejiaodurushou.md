@@ -3,7 +3,7 @@ layout: post
 title: 武田绫乃到底懂不懂京吹？——从实证的角度入手
 author: 当代闲人
 original: https://www.bilibili.com/read/cv8410301
-header-img: https://s2.loli.net/2023/04/25/h6x4OTbstZcIe2a.jpg
+header-img: https://s2.loli.net/2023/04/25/NQUpOofXsMRyIEB.jpg
 catalog: true
 tags:
     - bilibili
