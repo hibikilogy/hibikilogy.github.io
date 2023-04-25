@@ -6,7 +6,7 @@ original: https://tieba.baidu.com/p/7915328075
 header-img: 
 catalog: true
 tags:
-    - tieba
+    - 贴吧
     - 驳文
     - 黄前久美子
     - 冢本秀一
