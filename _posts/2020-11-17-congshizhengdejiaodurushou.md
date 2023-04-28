@@ -1,12 +1,13 @@
 ---
 layout: post
-title: 武田绫乃到底懂不懂京吹？——从实证的角度入手
+title: 武田绫乃到底懂不懂京吹？——开题报告：从实证的角度入手
 author: 当代闲人
 original: https://www.bilibili.com/read/cv8410301
 header-img: https://s2.loli.net/2023/04/25/NQUpOofXsMRyIEB.jpg
 catalog: true
 tags:
     - bilibili
+    - 武田懂京吹吗
 ---
 &ensp; &ensp; 2015年4月7日，一个特别的日子。石原立也说，要有《京吹》，所以便有了《京吹》。自此，宇宙有了个新样貌。
 
