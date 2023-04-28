@@ -7,6 +7,7 @@ header-img: https://s2.loli.net/2023/04/25/NQUpOofXsMRyIEB.jpg
 catalog: true
 tags:
     - bilibili
+    - 武田绫乃
     - 武田懂京吹吗
 ---
 &ensp; &ensp; 2015年4月7日，一个特别的日子。石原立也说，要有《京吹》，所以便有了《京吹》。自此，宇宙有了个新样貌。
