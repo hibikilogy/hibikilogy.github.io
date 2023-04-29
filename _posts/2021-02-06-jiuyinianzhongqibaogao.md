@@ -54,6 +54,6 @@ tags:
 
 * * *
 
-PS：我们已将第一季全部内容的Word文档上传至Github、百度云（链接详见评论区置顶），感兴趣的吹学家可自行下载研究，或在Github Fork该项目后修改、增添相关内容。我们欢迎广大吹学家参与本项目的研究，为把实证吹学研究推向新高度贡献自己的一份力量。
+PS：我们已将第一季全部内容的Word文档上传至[Github](https://github.com/Shelling0/EmpiricalHibikeology)、[百度云（提取码：hibi）](https://pan.baidu.com/s/1nxZSlQpxcNpVkc0LPIE5zw)，感兴趣的吹学家可自行下载研究，或在Github Fork该项目后修改、增添相关内容。我们欢迎广大吹学家参与本项目的研究，为把实证吹学研究推向新高度贡献自己的一份力量。
 
 本系列内容详见[专栏文集](https://www.bilibili.com/read/readlist/rl350840?spm_id_from=333.999.0.0)。
