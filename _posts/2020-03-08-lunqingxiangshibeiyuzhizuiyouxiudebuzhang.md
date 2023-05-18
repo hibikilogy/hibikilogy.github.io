@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 论晴香是北宇治最优秀的部长
-subtitile: 为亚撒西的工具人正名
+subtitle: 为亚撒西的工具人正名
 author: 航迹云丶
 original: https://www.bilibili.com/read/cv5016472
 header-img: 
