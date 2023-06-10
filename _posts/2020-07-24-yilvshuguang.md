@@ -14,25 +14,14 @@ tags:
 
 在研究正统吹学的过程中，以下六大课题应该是任何一名吹学家都无法绕开的素材：
 
-  
-
-<span class="color-pink-04"><strong>（1）黄前十四年南中派的退部事件；</strong></span>
-
-<span class="color-pink-04"><strong>（2）黄前十五年明日香的垂帘听政；</strong></span>
-
-<span class="color-pink-04"><strong>（3）黄前十六年优子的集权化改革；</strong></span>
-
-<span class="color-pink-04"><strong>（4）黄前十七年久美子的全国金之路；</strong></span>
-
- **<span class="color-pink-04">（5）黄前十七年丽奈的部长失格事件；以及</span>**
-
-<span class="color-pink-04"><strong>（6）围绕后久美子时代的候选人之争。</strong></span>
-
-  
+1. **黄前十四年南中派的退部事件；**
+2. **黄前十五年明日香的垂帘听政；**
+3. **黄前十六年优子的集权化改革；**
+4. **黄前十七年久美子的全国金之路；**
+5. **黄前十七年丽奈的部长失格事件；以及**
+6. **围绕后久美子时代的候选人之争。**
 
 纵观以上课题，我们可以发现其中绝大多数素材都来自黄前十五年和十七年发生的若干事件，并曾有众多吹学家围绕这些话题展开过一系列论战。而针对黄前十六年的研究，则主要集中在以优子为首的南中派对各声部权力的打压和声部会议改革上，以及《利兹与青鸟》中有关伞木希美和铠冢霙之间关系的文学向探讨。
-
-  
 
  **感慨于前人著述良多，本文将不再就以上课题展开赘述。**
 考虑到京阿尼大概率不会再为黄前十六年的故事单独制作TV动画，本文旨在对黄前十六年有关的其他若干事件进行分析，以最大程度还原北宇治这一年动荡格局下的历史背景。同时，本文亦是为了纪念TV动画上映五周年，以飨读者。
@@ -41,7 +30,7 @@ tags:
 
 ![](//i0.hdslb.com/bfs/article/4adb9255ada5b97061e610b682b8636764fe50ed.png)
 
-# <span class="color-blue-02"><strong>- 久美子的上低音号 -</strong></span>
+# 久美子的上低音号
 
   
 
@@ -68,7 +57,7 @@ tags:
 
   
 
-<span class="color-blue-02"><strong>“我想和久美子独奏。”</strong></span>
+<span style="color: blue-02;">**“我想和久美子独奏。”**</span>
 
   
 
@@ -116,7 +105,7 @@ tags:
 
 ![](//i0.hdslb.com/bfs/article/4adb9255ada5b97061e610b682b8636764fe50ed.png)
 
-<span class="color-blue-02"><strong><strong>- 伞木希美的刨冰和西瓜 -</strong></strong></span>
+# 伞木希美的刨冰和西瓜
 
   
 
@@ -170,7 +159,7 @@ tags:
 
 ![](//i0.hdslb.com/bfs/article/4adb9255ada5b97061e610b682b8636764fe50ed.png)
 
-<span class="color-blue-02"><strong>- 小号、木琴和大号 -</strong></span>
+# 小号、木琴和大号
 
   
 
@@ -181,9 +170,7 @@ tags:
  **然而，这一次合奏比赛的最终结果却沦为了大家嘲笑丽奈带队不利的素材。**
 丽奈组建的团队融合了部长久美子、副部长秀一、打击乐首席井上顺菜、圆号首席森本美千代、小号技术超群的小日向梦，以及釜屋燕和叶月。这套阵容理论上的实力确实应该是北宇治最强，但最终却仅仅取得了第四名的成绩，排在她们前面的，有高久智惠理领衔的单簧管四重奏，久石奏和铃木美玲领衔的铜管五重奏，以及小绿和月永求的低音提琴二重奏。  
 
-  
-
-![](//i0.hdslb.com/bfs/article/ce37ace3a32d5bb230dddba9b84a64706997195c.jpg)
+![久三年时局图.jpg](https://s2.loli.net/2023/06/11/xCALUydfJo4leED.jpg)
 
 造成这样的结果固然也是有很多的因素，比如参赛曲目《彩吹~Ibuki》是一首由小日向梦向丽奈提议，以木琴和上低音号作为主角的曲子，而丽奈作为团队核心也没有加以干涉，放弃了围绕小号这个绝对强点来选曲的方案；再比如这一众首席尽管个人实力出众，但配合默契度上显然不及前三名那些拥有一年甚至两年搭档经验的团队。
 **不过本章节无意对上述比赛结果进行详细分析或追究个人责任，让我们把目光更多聚焦在这次比赛给吹奏乐部带来了什么。**
@@ -225,7 +212,7 @@ tags:
 
 ![](//i0.hdslb.com/bfs/article/4adb9255ada5b97061e610b682b8636764fe50ed.png)
 
-<span class="color-blue-02"><strong>- 秀一的意大利白葵发夹 -</strong></span>
+# 秀一的意大利白葵发夹
 
   
 
@@ -267,7 +254,7 @@ tags:
 
 ![](//i0.hdslb.com/bfs/article/4adb9255ada5b97061e610b682b8636764fe50ed.png)
 
-<span class="color-blue-02"><strong>- 后记 -</strong></span>
+# 后记
 
   
 
@@ -275,16 +262,12 @@ tags:
 
   
 
- **<span class="color-pink-04">从某种意义上来说，这一年更像是对过往事件的一次彻底清算，也是北宇治这三年中的一次触底反弹。即便眼下是风雨飘摇，也不要忽略云层后的那一缕曙光。</span>** **<span class="color-pink-04"><br/></span>**
-
- **<span class="color-pink-04"></span>**
-
-![](//i0.hdslb.com/bfs/article/9f1782c7788e703e2eefe268621b63881a90aa15.jpg)
-
- **<span class="color-pink-04"></span>** 
-
+ **<span class="color-pink-04">从某种意义上来说，这一年更像是对过往事件的一次彻底清算，也是北宇治这三年中的一次触底反弹。即便眼下是风雨飘摇，也不要忽略云层后的那一缕曙光。</span>**
+ 
+![久一年剪影.jpg](https://s2.loli.net/2023/06/11/BNepoFcTRJIvZVL.jpg)
+ 
 # 评价
-@[YoshikawaYuuko](https://space.bilibili.com/272234202)：
+@[YoshikawaYuuko](https://space.bilibili.com/272234202)
 
 正如笔者所言，相对于充满变革的黄前15年与黄前17年，黄前16年无论从声势还是最后取得的成绩上就显得平淡多了。然而正是黄前16年以优子为首的北宇治吹奏部领导层的各种举措，为后面黄前17年久美子带领吹奏部走向全国金奖，这一辉煌成就奠定了坚实的基础。
 
