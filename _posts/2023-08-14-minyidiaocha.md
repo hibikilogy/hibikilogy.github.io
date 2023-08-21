@@ -33,7 +33,7 @@ tags:
         
 # 四、调查组织实施
 
-        [请点击该链接前往投票处](https://zh.moegirl.org.cn/%E5%90%B9%E5%AD%A6#.E7.A0.94.E7.A9.B6.E7.9B.B8.E5.85.B3)。
+        [请点击该链接前往投票处](https://zh.moegirl.org.cn/%E5%90%B9%E5%AD%A6#.E7.A0.94.E7.A9.B6.E7.9B.B8.E5.85.B3)。（需要注册“萌娘百科”账号方可投票）
 
 ![屏幕截图 2023-08-20 150439.png](https://s2.loli.net/2023/08/21/jcez8g9qLNYFb1G.png)
 
