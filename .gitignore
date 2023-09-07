@@ -37,3 +37,6 @@ _site
 # temp file
 _posts/wordcloud/
 *.log
+
+# JetBrains
+.idea

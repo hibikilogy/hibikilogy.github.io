@@ -19,7 +19,8 @@ description: "吹学著作集锦"
         </div>-->
     </a>
     <p class="post-meta">
-        原文由{% if post.author %}{{ post.author }}{% else %}{{ site.title }}{% endif %}发布于{{ post.date | date: "%Y年%-m月%-d日" }}
+        原文由{% if post.author %}{{ post.author }}{% else %}{{ site.title }}{% endif %}发布于{{ post.date | date:
+        "%Y年%-m月%-d日" }}
     </p>
 </div>
 <hr>
@@ -33,6 +34,25 @@ description: "吹学著作集锦"
         <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&larr; 之后的文章</a>
     </li>
     {% endif %}
+
+    {% assign max_page_nav_start = paginator.total_pages | minus: 4 | at_least: 1; %}
+    {% assign page_nav_start = paginator.page | minus: 2 | at_least: 1 | at_most: max_page_nav_start; %}
+    {% for page in (page_nav_start..paginator.total_pages) limit: 5 %}
+    {% if page == paginator.page %}
+    <li>
+        <a style="pointer-events:none;background-color: #33adff">{{ page }}</a>
+    </li>
+    {% elsif page == 1 %}
+    <li>
+        <a href="/">{{ page }}</a>
+    </li>
+    {% else %}
+    <li>
+        <a href="{{ site.paginate_path | prepend: site.baseurl | replace: ':num', page }}">{{ page }}</a>
+    </li>
+    {% endif %}
+    {% endfor %}
+
     {% if paginator.next_page %}
     <li class="next">
         <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">之前的文章 &rarr;</a>
