@@ -76,6 +76,6 @@ npm i -g less && npm i -g less-plugin-clean-css
 lessc ./less/hux-blog.less ./css/hux-blog.css & lessc --clean-css ./less/hux-blog.less ./css/hux-blog.min.css
 ```
 #### 长期贡献
-如果需要进行长期的贡献<del>或者想要在 GitHub 用户界面添加一个组织</del>，请在[网站仓库的 isuues](https://github.com/hibikilogy/hibikilogy.github.io/issues) 里添加加入申请。
+如果需要进行长期的贡献<del>或者想要在 GitHub 用户界面添加一个组织</del>，请在[网站仓库的 issues](https://github.com/hibikilogy/hibikilogy.github.io/issues) 里添加加入申请。
 
 <del>本组织目前持有者学业繁忙，很可能失踪，欢迎有意接替者。</del>
