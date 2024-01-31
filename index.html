@@ -35,8 +35,8 @@ description: "吹学著作集锦"
     </li>
     {% endif %}
 
-    {% assign max_page_nav_start = paginator.total_pages | minus: 4 | at_least: 1; %}
-    {% assign page_nav_start = paginator.page | minus: 2 | at_least: 1 | at_most: max_page_nav_start; %}
+    {% assign max_page_nav_start = paginator.total_pages | minus: 4 | at_least: 1 %}
+    {% assign page_nav_start = paginator.page | minus: 2 | at_least: 1 | at_most: max_page_nav_start %}
     {% for page in (page_nav_start..paginator.total_pages) limit: 5 %}
     {% if page == paginator.page %}
     <li>
