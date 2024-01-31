@@ -31,7 +31,17 @@ description: "吹学著作集锦"
 <ul class="pager">
     {% if paginator.previous_page %}
     <li class="previous">
-        <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}">&larr; 之后的文章</a>
+        <a href="/">&lsaquo;&lsaquo;</a>
+    </li>
+    <li class="previous">
+        <a href="{{ paginator.previous_page_path | prepend: site.baseurl }}">&lsaquo;</a>
+    </li>
+    {% else %}
+    <li class="previous">
+        <a style="pointer-events:none;background-color: #ccd0d3">&lsaquo;&lsaquo;</a>
+    </li>
+    <li class="previous">
+        <a style="pointer-events:none;background-color: #ccd0d3">&lsaquo;</a>
     </li>
     {% endif %}
 
@@ -55,7 +65,17 @@ description: "吹学著作集锦"
 
     {% if paginator.next_page %}
     <li class="next">
-        <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}">之前的文章 &rarr;</a>
+        <a href="{{ site.paginate_path | prepend: site.baseurl | replace: ':num', paginator.total_pages }}">&rsaquo;&rsaquo;</a>
+    </li>
+    <li class="next">
+        <a href="{{ paginator.next_page_path | prepend: site.baseurl }}">&rsaquo;</a>
+    </li>
+    {% else %}
+    <li class="next">
+        <a style="pointer-events:none;background-color: #ccd0d3">&rsaquo;&rsaquo;</a>
+    </li>
+    <li class="next">
+        <a style="pointer-events:none;background-color: #ccd0d3">&rsaquo;</a>
     </li>
     {% endif %}
 </ul>
