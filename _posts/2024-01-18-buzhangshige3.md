@@ -4,7 +4,7 @@ title: 北宇治问责？！——“部长失格”黑江真由篇
 subtitle: 黑江真由的内心
 author: WonderKindom
 original: https://www.bilibili.com/read/cv29773830
-header-img: https://s2.loli.net/2024/02/15/fI5EypisFBRDcL4.png
+header-img: https://s2.loli.net/2024/02/15/b1G8uasfpv7OZoC.png
 catalog: true
 tags:
     - bilibili
