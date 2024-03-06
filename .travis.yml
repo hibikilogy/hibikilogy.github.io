@@ -7,6 +7,7 @@ install:
   - gem install jekyll-paginate
 script: 
   - jekyll build
+  - ruby .generate-short-url/generateShortURL.rb
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   
