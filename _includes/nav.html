@@ -24,13 +24,22 @@
                         <a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
                     </li>
                     {% endif %}{% endfor %}
-                </ul>
-            </div>
+                </ul> 
+                <div class="navbar-nav navbar-right">
+                    <form class="navbar-form" role="search" onsubmit="return RedirectToSearvh()">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="searchInput" placeholder="Search">
+                        </div>
+                    </form>
+                </div>
+            </div> 
         </div>
         <!-- /.navbar-collapse -->
     </div>
+    <ul class="list-group navbar-defaut navbar-right" id="searchResults" ></ul>
     <!-- /.container -->
 </nav>
+<script src="/js/simple-jekyll-search.min.js"></script>
 <script>
     // Drop Bootstarp low-performance Navbar
     // Use customize navbar with high-quality material design animation
@@ -80,6 +89,64 @@
     document.addEventListener('click', function(e){
         if(e.target == $toggle) return;
         if(e.target.className == 'icon-bar') return;
+        if(e.target.className.indexOf("form") >= 0) return;
         __HuxNav__.close();
+        document.getElementById('searchResults').innerHTML=''
     })
 </script>
+
+<script type="module">
+    /** 
+    * search
+    */
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('searchInput'),
+        resultsContainer: document.getElementById('searchResults'),
+        json: '/search.json',
+        searchResultTemplate: '<li class="list-group-item"><a href="{url}"><h5>{title}</h5><p class="paragraph">{date}-{tags}</p></a></li>',
+        noResultsText: '<p class="paragraph">没有搜索到文章</p>',
+        limit: 7,
+        fuzzy: true
+      })
+
+    function RedirectToSearch(){
+        window.location.href = "{{site.url}}/search";
+        return false;
+        //return lunr_search(document.getElementById('searchInput').value);
+    }
+</script>
+
+<style>
+.paragraph {
+    margin: 0;
+    width: 400px;;
+    height: auto;
+    font-size: smaller;
+    white-space: nowrap; 
+    overflow: hidden;  /* 隐藏溢出的文本 */
+    text-overflow: ellipsis;  /* 使用省略号表示溢出的文本 */
+}
+    
+#searchInput {
+    width: auto;
+    height: 35px;
+    color: #333;
+    background-color: rgba(227,231,236,.2);
+    line-height: 35px;
+    padding:0px 16px;
+    border: 1px solid #c0c0c0;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 17px;
+    outline: none;
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+}
+#searchInput:focus {
+    outline: none;
+    border-color: rgb(102, 175, 233);
+    background-color: #fff;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px #007fff;
+}
+
+</style>
