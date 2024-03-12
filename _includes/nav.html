@@ -26,9 +26,10 @@
                     {% endif %}{% endfor %}
                 </ul> 
                 <div class="navbar-nav navbar-right">
-                    <form class="navbar-form" role="search" onsubmit="return RedirectToSearvh()">
+                    <form role="search" action="https://www.bing.com/search" method="get" target="_blank">
                         <div class="form-group">
-                            <input type="text" class="form-control" id="searchInput" placeholder="Search">
+                            <input type="text" name="q" class="form-control search-pc" id="search-bar" placeholder="搜索">
+                            <input type="hidden" name="q1" value="site:hibikilogy.github.io">
                         </div>
                     </form>
                 </div>
@@ -36,10 +37,8 @@
         </div>
         <!-- /.navbar-collapse -->
     </div>
-    <ul class="list-group navbar-defaut navbar-right" id="searchResults" ></ul>
     <!-- /.container -->
 </nav>
-<script src="{{site.baseurl}}/js/simple-jekyll-search.min.js"></script>
 <script>
     // Drop Bootstarp low-performance Navbar
     // Use customize navbar with high-quality material design animation
@@ -48,10 +47,12 @@
     var $toggle = document.querySelector('.navbar-toggle');
     var $navbar = document.querySelector('#huxblog_navbar');
     var $collapse = document.querySelector('.navbar-collapse');
+    var $search = document.querySelector('#search-bar');
 
     var __HuxNav__ = {
         close: function(){
             $navbar.className = " ";
+            $search.className = "form-control search-pc";
             // wait until animation end.
             setTimeout(function(){
                 // prevent frequently toggle
@@ -61,8 +62,9 @@
             },400)
         },
         open: function(){
-            $collapse.style.height = "auto"
+            $collapse.style.height = "auto";
             $navbar.className += " in";
+            $search.className = "form-control ";
         }
     }
 
@@ -95,57 +97,28 @@
     })
 </script>
 
-<script type="module">
-    /** 
-    * search
-    */
-    SimpleJekyllSearch({
-        searchInput: document.getElementById('searchInput'),
-        resultsContainer: document.getElementById('searchResults'),
-        json: '{{site.baseurl}}/search.json',
-        searchResultTemplate: '<li class="list-group-item"><a href="{url}"><h5>{title}</h5><p class="paragraph">{date}-{tags}</p></a></li>',
-        noResultsText: '<p class="paragraph">没有搜索到文章</p>',
-        limit: 7,
-        fuzzy: true
-      })
-
-    function RedirectToSearch(){
-        window.location.href = "{{site.url}}/search";
-        return false;
-        //return lunr_search(document.getElementById('searchInput').value);
-    }
-</script>
-
 <style>
-.paragraph {
-    margin: 0;
-    width: 400px;;
-    height: auto;
-    font-size: smaller;
-    white-space: nowrap; 
-    overflow: hidden;  /* 隐藏溢出的文本 */
-    text-overflow: ellipsis;  /* 使用省略号表示溢出的文本 */
-}
-    
-#searchInput {
-    width: auto;
-    height: 35px;
+#search-bar {
+    width: 90%;
     color: #333;
     background-color: rgba(227,231,236,.2);
-    line-height: 35px;
-    padding:0px 16px;
+    margin:7% 5%;
     border: 1px solid #c0c0c0;
-    font-size: 16px;
+    font-size: 70%;
     font-weight: bold;
-    border-radius: 17px;
+    border-radius: 16px;
     outline: none;
     box-sizing: border-box;
+}
+.search-pc {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
 }
-#searchInput:focus {
+#search-bar:focus {
     outline: none;
     border-color: rgb(102, 175, 233);
     background-color: #fff;
+}
+.search-pc:focus  {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px #007fff;
 }
 
