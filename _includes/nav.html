@@ -102,7 +102,7 @@
     SimpleJekyllSearch({
         searchInput: document.getElementById('searchInput'),
         resultsContainer: document.getElementById('searchResults'),
-        json: '/search.json',
+        json: '{{site.baseurl}}/search.json',
         searchResultTemplate: '<li class="list-group-item"><a href="{url}"><h5>{title}</h5><p class="paragraph">{date}-{tags}</p></a></li>',
         noResultsText: '<p class="paragraph">没有搜索到文章</p>',
         limit: 7,
