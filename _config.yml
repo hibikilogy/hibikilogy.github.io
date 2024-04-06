@@ -39,7 +39,8 @@ anchorjs: true                          # if you want to customize anchor. check
 
 # Gems
 # from PR#40, to support local preview for Jekyll 3.0
-gems: [jekyll-paginate]
+gems: [jekyll-paginate] # works before Jekyll 3.5
+plugins: [jekyll-paginate] # works since Jekyll 3.5
 
 
 
