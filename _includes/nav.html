@@ -19,11 +19,21 @@
                     <li>
                         <a href="{{ site.baseurl }}/">主页</a>
                     </li>
-                    {% for page in site.pages %}{% if page.title %}
                     <li>
-                        <a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a>
+                        <a href="/tags">标签</a>
                     </li>
-                    {% endif %}{% endfor %}
+                    <li>
+                        <a href="/test">高考试卷</a>
+                    </li>
+                    <li>
+                        <a href="/assessment">能力鉴定</a>
+                    </li>
+                    <li>
+                        <a href="/contribute">我要投稿</a>
+                    </li>
+                    <li>
+                        <a href="/about">加入我们</a>
+                    </li>
                 </ul> 
                 <div class="navbar-nav navbar-right">
                     <form role="search" action="https://www.bing.com/search" method="get" target="_blank">
