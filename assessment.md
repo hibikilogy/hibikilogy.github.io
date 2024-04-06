@@ -101,15 +101,15 @@ A. 《圣诞之女》  B. 《吹笛的男子》 C. 《Cat skip》  D. 《将�
 
 # 部分参考答案
 
-<span style="color: white;">## 一、单选题</span>
+## 一、单选题
 
 <span style="color: white;">1. D   2. C   3. B   4. D   5. A   6. D   7. C    8. B   9. C   10. C</span>
 
-<span style="color: white;">## 二、多选题</span>
+## 二、多选题
 
 <span style="color: white;">1. AB   2. BD   3. BCD   4. BD   5. AD</span>
 
-<span style="color: white;">## 三、判断题</span>
+## 三、判断题
 
 <span style="color: white;">1. 正确。</span>
 
