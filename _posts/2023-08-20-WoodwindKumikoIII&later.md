@@ -124,9 +124,8 @@ tags:
 
 &emsp;&emsp;我们接着看，下面是正式比赛阵容。这里由《利兹与青鸟》梨梨花对霙的告白可知，梨梨花没有通过选拔。那我们找找长笛组通过选拔的都有谁，一共6个人（记住，很重要）：
 
-&emsp;&emsp;第一排一声部，从右到左（中间到边上）分别是：三年级的伞哥（主力）、二年级的小田芽衣子、一年级的山根。
-
-&emsp;&emsp;第二排二声部&短笛，从右到左（以伞哥为参考）分别是：三年级的井上调（声部长）、二年级的高桥沙里（小田芽衣子的好友，第二代短笛大魔王）、二年级的蕾实（从MONACA升到正赛组了）。
+1. 第一排一声部，从右到左（中间到边上）分别是：三年级的伞哥（主力）、二年级的小田芽衣子、一年级的山根。
+2. 第二排二声部&短笛，从右到左（以伞哥为参考）分别是：三年级的井上调（声部长）、二年级的高桥沙里（小田芽衣子的好友，第二代短笛大魔王）、二年级的蕾实（从MONACA升到正赛组了）。
 
 ![山根都美贵4](https://github.com/hibikilogy/hibikilogy.github.io/blob/WoodwindKumikoIII&later/images/WoodwindKumikoIII&later/%E5%B1%B1%E6%A0%B9%E9%83%BD%E7%BE%8E%E8%B4%B54.jpg?raw=true)
 
@@ -144,7 +143,6 @@ tags:
 2. 山根实力非常强，一方面是明面上的仅有的进入正赛阵容的一年级长笛声部同学。另外，上文视频有提到，同为一年级的香奈可是自信说出“我在初中就是管乐社”，说明山根比香奈或许还强（不过我推测是心理素质上更胜一筹）。
 
 ![高久智绘理流泪](https://github.com/hibikilogy/hibikilogy.github.io/blob/WoodwindKumikoIII&later/images/WoodwindKumikoIII&later/%E9%AB%98%E4%B9%85%E6%99%BA%E7%BB%98%E7%90%86%E6%B5%81%E6%B3%AA.jpg?raw=true)
-
 <div style="text-align:center">
     <span><small>一般会认为是霙表现力太强把别人吹到落泪，但结合智绘里还可以有更多讨论空间。</small></span>
 </div>
@@ -152,7 +150,6 @@ tags:
 &emsp;&emsp;再结合合奏比赛的分组，长笛此时的二年生三人组（芽衣子-高桥沙里-蕾实）和瞳拉拉的圆号一样，自己组了个三重奏，剩下的一年生长笛三人，现在知道为啥梨梨花一下就拉了山根吧？侧面体现出梨梨花天然中带细腻的个性，这就是黄前时代后核心阵营的选人水准啊！
 
 ![长笛三重奏](https://github.com/hibikilogy/hibikilogy.github.io/blob/WoodwindKumikoIII&later/images/WoodwindKumikoIII&later/%E9%95%BF%E7%AC%9B%E4%B8%89%E9%87%8D%E5%A5%8F.jpg?raw=true)
-
 <div style="text-align:center">
     <span><small>笛声部二代/久三年主力的短笛、一声部、二声部</small></span>
 </div>
@@ -192,7 +189,6 @@ tags:
 &emsp;&emsp;排练中，伞哥破防部分，虚化的背景里，蕾实看着泷升指挥，井上是看着伞，也许心里很关切，听出了伞的动摇？
 
 ![井上的目光1](https://github.com/hibikilogy/hibikilogy.github.io/blob/WoodwindKumikoIII&later/images/WoodwindKumikoIII&later/%E4%BA%95%E4%B8%8A%E7%9A%84%E7%9B%AE%E5%85%891.jpg?raw=true)
-
 <div style="text-align:center">
     <span><small>井上的目光</small></span>
 </div>
@@ -200,7 +196,6 @@ tags:
 &emsp;&emsp;青鸟振翅，所有人都露出惊讶的表情，不过这个角度，井上好像不是看霙，依旧是在看伞哥。包括这一段结束后，可以脑补井上想上前安慰，伞哥却自己跑开了。这也就是后续霙找寻伞哥时，发现伞哥和井上座位都空着。井上去哪里了呢？
 
 ![井上的目光2](https://github.com/hibikilogy/hibikilogy.github.io/blob/WoodwindKumikoIII&later/images/WoodwindKumikoIII&later/%E4%BA%95%E4%B8%8A%E7%9A%84%E7%9B%AE%E5%85%892.jpg?raw=true)
-
 <div style="text-align:center">
     <span><small>井上的目光</small></span>
 </div>
@@ -208,7 +203,6 @@ tags:
 &emsp;&emsp;最后，就是下面这张我认为非常厉害的构图，一幅图就把人物间的关系体现得清清楚楚，同时暗藏玄机：
 
 ![经典构图](https://github.com/hibikilogy/hibikilogy.github.io/blob/WoodwindKumikoIII&later/images/WoodwindKumikoIII&later/%E7%BB%8F%E5%85%B8%E6%9E%84%E5%9B%BE.jpg?raw=true)
-
 <div style="text-align:center">
     <span><small>经典构图</small></span>
 </div>
@@ -216,7 +210,6 @@ tags:
 &emsp;&emsp;从图中看出，三年生的伞哥和井上在正中，表示久二年长笛声部的中流砥柱，其中所有人围绕的圆心是聚焦在井上身上，说明她声部长的地位。一群人里只有伞哥站着，一是体现她的实力（夏纪曾说过“我认为你和霙分别是长笛声部和双簧声部的ACE”），再是从构图上形成一个稳定的三角体现长笛声部目前的一心与团建，还意味着伞哥表面和大家开心谈笑其实内里是格格不入的（惦记着另一边的霙吗？）而井上很自然坐在旁边，也体现出她的亲切和包容。
 
 ![这个版本的字幕把夏纪说的“ACE（王牌）”翻译成“首席”，可能会有误解](https://github.com/hibikilogy/hibikilogy.github.io/blob/WoodwindKumikoIII&later/images/WoodwindKumikoIII&later/ACE.jpg?raw=true)
-
 <div style="text-align:center">
     <span><small>这个版本的字幕把夏纪说的“ACE（王牌）”翻译成“首席”，可能会有误解</small></span>
 </div>
@@ -244,7 +237,6 @@ tags:
 &emsp;&emsp;比如在《利兹与青鸟》里，当成美问伞哥：小希学姐有跟人约会过吗？一旁天然的山根突然莞尔，她想到了谁呢？
 
 ![山根吉卜力风](https://github.com/hibikilogy/hibikilogy.github.io/blob/WoodwindKumikoIII&later/images/WoodwindKumikoIII&later/%E5%B1%B1%E6%A0%B9%E5%90%89%E5%8D%9C%E5%8A%9B%E9%A3%8E.jpg?raw=true)
-
 <div style="text-align:center">
     <span><small>话说山根这个角度，好有吉卜力风啊</small></span>
 </div>
