@@ -30,7 +30,7 @@ tags:
 
 &emsp;&emsp;&emsp;&emsp;&emsp;当代闲人（ @当代闲人 ），email：xianren.dangdai@hibike.ac.cn 
 
-<div style="width: 750px; margin: auto;"><h1 style="text-align:center;line-height:1.75;font-family:-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif;font-size:1.2em;font-weight:bold;display:table;margin:2em auto 1em;padding:0 1em;border-bottom:2px solid rgba(15, 76, 129, 1);color:#3f3f3f;margin-top: 0">引言</h1></div>
+# 引言
 
 &emsp;&emsp;2024年4月7日，京吹宇宙诞生正值“久”周年，北宇治吹奏部奋三世余烈勇夺全国金之路亦将走向最后一程。
 
@@ -40,7 +40,7 @@ tags:
 
 &emsp;&emsp;秉承“做特别的人”的吹学精神，在以chatGPT为代表的生成式AI诞生之初，笔者就对其在吹学研究中的应用做了一些粗浅的探索。最初的方案主要是结合大语言模型和检索增强生成技术，在调用大模型前，从一个外部知识库（例如《武吹原典》）中检索出与问题最相关的文本作为上下文。不幸的是，此方案无法让模型对整部作品产生宏观的理解，因而效果并不理想。然而，随着模型上下文窗口容量的增加，将整部小说纳入对话分析已变得可行。趁着拥有高达100万tokens处理能力的Gemini 1.5 Pro正式开放的历史机遇，笔者开始了新一轮的尝试，并取得了一些初步的研究发现。兹将相关研究结果分享给吹学同仁。
 
-<div style="width: 750px; margin: auto;"><h1 style="text-align:center;line-height:1.75;font-family:-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif;font-size:1.2em;font-weight:bold;display:table;margin:2em auto 1em;padding:0 1em;border-bottom:2px solid rgba(15, 76, 129, 1);color:#3f3f3f;margin-top: 0">AI吹学初探</h1></div>
+# AI吹学初探
 
 &emsp;&emsp;吹学研究主要分为**实证吹学**、**诠释吹学**和**预测吹学**三大类，分别关注考据京吹和武吹之中关键事实的实证性问题，解读关键角色和事件的诠释性问题，以及预测黄前大统领毕业后北宇治吹奏部的未来以及其它原著中没有答案的问题的预测性问题。针对这三大研究领域，笔者做了一些初步探索，现报告如下：
 
@@ -48,7 +48,7 @@ tags:
 
 ![上传武吹原典](https://github.com/hibikilogy/hibikilogy.github.io/blob/master/_posts/2024-04-07-AI_Hibikilogy/1.jpg?raw=true)
 
-<div style="width: 750px; margin: auto;"><h2 style="text-align:center;line-height:1.75;font-family:-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif;font-size:1.2em;font-weight:bold;display:table;margin:4em auto 2em;padding:0 0.2em;background:rgba(15, 76, 129, 1);color:#fff;margin-top: 0">1. 实证吹学问题</h2>
+## 1. 实证吹学问题
 
 &emsp;&emsp;实证吹学问题，即原作中有明确答案的问题。
 
@@ -58,7 +58,7 @@ tags:
 
 &emsp;&emsp;我们发现，大模型在回答这类事实性问题时表现出色，展现出对语义多样性的强大适应性，至少已经达到了初级实证吹学家的水平。可见，AI现阶段就可在实证吹学研究领域大展拳脚。
 
-<div style="width: 750px; margin: auto;"><h2 style="text-align:center;line-height:1.75;font-family:-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif;font-size:1.2em;font-weight:bold;display:table;margin:4em auto 2em;padding:0 0.2em;background:rgba(15, 76, 129, 1);color:#fff;margin-top: 0">2. 诠释吹学问题</h2>
+## 2. 诠释吹学问题
 
 &emsp;&emsp;诠释吹学问题，即原作中没有直接答案，需要深入理解和诠释的问题。
 
@@ -70,7 +70,7 @@ tags:
 
 &emsp;&emsp;接下来让我们分析第二个回答。在这一部分，模型似乎强行将铠冢霙和斋藤葵与数学联系起来，这种关联显得过于牵强，而真正的数学奇才——上数学课时不听讲，却能用数学语言为久石奏写下情书，同时还在数学测验中获得年级第一的剑崎·高斯·梨梨花，似乎被完全忽略了。笔者有尝试问<span style="font-style: italic;">“谁在数学测试中拿了年级第一？”</span>，得到了剑崎梨梨花的正确答案，但提问 <span style="font-style: italic;">“梨梨花的数学天赋如何？”</span>时，大模型的回答就不知所云了。
 
-<div style="width: 750px; margin: auto;"><h2 style="text-align:center;line-height:1.75;font-family:-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif;font-size:1.2em;font-weight:bold;display:table;margin:4em auto 2em;padding:0 0.2em;background:rgba(15, 76, 129, 1);color:#fff;margin-top: 0">3. 预测吹学问题</h2>
+## 3. 预测吹学问题
 
 &emsp;&emsp;预测吹学问题，即原作中不存在答案，需要分析和推测的问题。
 
