@@ -3,7 +3,7 @@ layout: post
 title: 论明日香的传位顾虑与隔代指认事
 author: EuphoriaHysteria
 original: 
-header-img: https://github.com/hibikilogy/hibikilogy.github.io/images/gedaizhirenshi/header.png
+header-img: https://github.com/hibikilogy/hibikilogy.github.io/blob/master/images/gedaizhirenshi/header.png?raw=true
 catalog: true
 tags:
     - 黄前久美子
