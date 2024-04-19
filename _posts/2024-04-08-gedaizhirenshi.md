@@ -2,7 +2,7 @@
 layout: post
 title: 论明日香的传位顾虑与隔代指认事
 author: EuphoriaHysteria
-original: 
+original: https://www.bilibili.com/opus/917745841578442752
 header-img: https://github.com/hibikilogy/hibikilogy.github.io/blob/master/images/gedaizhirenshi/header.png?raw=true
 catalog: true
 tags:
@@ -13,6 +13,7 @@ tags:
     - 伞木希美
     - 铠冢霙
     - 文言
+    - bilibili
     - 黄前十五年
     - 黄前十六年
 ---
