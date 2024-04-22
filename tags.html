@@ -23,13 +23,15 @@ layout: default
         <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
             <!-- 标签云 -->
             <div id='tag_cloud' class="tags">
-                {% for tag in site.tags %}
+                {% assign sorted_tags = site.tags | sort %}
+                {% for tag in sorted_tags %}
                 <a href="#{{ tag[0] }}" title="{{ tag[0] }}" rel="{{ tag[1].size }}">{{ tag[0] }}</a>
                 {% endfor %}
             </div>
 
             <!-- 标签列表 -->
-            {% for tag in site.tags %}
+            {% assign sorted_tags = site.tags | sort %}
+            {% for tag in sorted_tags %}
             <div class="one-tag-list">
                   <span class="fa fa-tag listing-seperator" id="{{ tag[0] }}">
                     <span class="tag-text">{{ tag[0] }}</span>
