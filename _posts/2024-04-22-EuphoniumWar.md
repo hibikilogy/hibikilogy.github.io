@@ -13,13 +13,13 @@ tags:
     - bilibili
     - 黄前十七年
 ---
-<center>''We recognize the dictates of the baton on stage,'' one prominent member of the orchestra commented. ''But we refuse to allow Karajan to behave like a dictator offstage. That would be pure fascism.''</center>
+&emsp;&emsp;*''We recognize the dictates of the baton on stage,'' one prominent member of the orchestra commented. ''But we refuse to allow Karajan to behave like a dictator offstage. That would be pure fascism.''*
 
 <div style="text-align:right">
-    <span>-By R.w. Apple Jr., Special To the New York Times</span>
+    <span><i>-By R.w. Apple Jr., Special To the New York Times</i></span>
 </div>
 <div style="text-align:right">
-    <span>Feb. 9, 1983</span>
+    <span><i>Feb. 9, 1983</i></span>
 </div>
 
 # 引言
