@@ -73,7 +73,8 @@ tags:
 &emsp;&emsp;大家发现了什么吗？
 
 &emsp;&emsp;以上从单位视角分析总体的方法论被称为“**还原论**”（Reductionism），其与**整体论**（Holism）或**系统论**（Structuralism）相对，主张复杂的系统、事物及现象可通过化解、拆分的方式理解论述。[^6]
-> 新现实主义开创者[肯尼斯·华尔兹](https://baike.baidu.com/item/%E8%82%AF%E5%B0%BC%E6%80%9D%C2%B7%E5%8D%8E%E5%B0%94%E5%85%B9)（Kenneth Waltz）批判还原论忽视了环境对行为的约束，有很多系统层面的行为模式无法用单位层面的差异来解释，其忽视了系统本身的自主性（Autonomy of the Structure）。[^7]也即，在分析事物现象时，我们很容易总结归纳分析单位做了什么，但却忽视了单位为什么没有做什么和没有想什么，以及系统对行为的约束性作用。
+
+>&emsp;&emsp;新现实主义开创者[肯尼斯·华尔兹](https://baike.baidu.com/item/%E8%82%AF%E5%B0%BC%E6%80%9D%C2%B7%E5%8D%8E%E5%B0%94%E5%85%B9)（Kenneth Waltz）批判还原论忽视了环境对行为的约束，有很多系统层面的行为模式无法用单位层面的差异来解释，其忽视了系统本身的自主性（Autonomy of the Structure）。[^7]也即，在分析事物现象时，我们很容易总结归纳分析单位做了什么，但却忽视了单位为什么没有做什么和没有想什么，以及系统对行为的约束性作用。
 
 ![还原论与整体论](/images/kuanglanbuqing/还原论与整体论.png)
 <center><small>还原论与整体论</small></center>
