@@ -226,25 +226,25 @@ tags:
  
 # 参考文献
 
-[^1]: 梓川楓かえで (2020) ‘黄前十六年：北宇治风雨飘摇中的一缕曙光,’ 载《京吹学报》，见https://hibikilogy.github.io/2020/07/24/yilvshuguang/. （访问于2024年4月24日）
+[^1]: 梓川楓かえで (2020) ‘[黄前十六年：北宇治风雨飘摇中的一缕曙光](/2020/07/24/yilvshuguang/)’ 载《京吹学报》. （访问于2024年4月24日）
 
-[^2]: 老仓唯 (2019) ‘北宇治吹奏部权力考察,’ 载《京吹学报》，见https://hibikilogy.github.io/2019/01/27/beiyuzhichuizoubuquanliboyikaocha/.（访问于2024年4月24日）
+[^2]: 老仓唯 (2019) ‘[北宇治吹奏部权力考察,](/2019/01/27/beiyuzhichuizoubuquanliboyikaocha/)’ 载《京吹学报》.（访问于2024年4月24日）
 
-[^3]: 呓儒之殇 (2020) ‘为什么历史选择了久石奏,’ 载《京吹学报》，见https://hibikilogy.github.io/2020/01/07/weishenmelishixuanzelekanade/.（访问于2024年4月24日）
+[^3]: 呓儒之殇 (2020) ‘[为什么历史选择了久石奏,](/2020/01/07/weishenmelishixuanzelekanade/)’ 载《京吹学报》.（访问于2024年4月24日）
 
-[^4]: LL 教皇 (2020) ‘北宇治高中吹奏部历代政治得失·久美子篇,’ 载《京吹学报》，见https://hibikilogy.github.io/2020/01/15/zhengzhideshi_jiumeizipian/.（访问于2024年4月24日）
+[^4]: LL 教皇 (2020) ‘[北宇治高中吹奏部历代政治得失·久美子篇,](/2020/01/15/zhengzhideshi_jiumeizipian/)’ 载《京吹学报》.（访问于2024年4月24日）
 
-[^5]: 22dmgxy_ (2020) ‘【五学×吹学】为什么历史选择了久石奏：第五吹奏部 用《第五共和国》等共和国系列看 吹响吧！上低音号,’ Bilibili, 见https://www.bilibili.com/video/BV1qE41177J5/.（访问于2024年4月24日）
+[^5]: 22dmgxy_ (2020) ‘[【五学×吹学】为什么历史选择了久石奏：第五吹奏部 用《第五共和国》等共和国系列看 吹响吧！上低音号,](https://www.bilibili.com/video/BV1qE41177J5/)’ Bilibili.（访问于2024年4月24日）
 
 [^6]: Ruse, M. (2005) ‘Entry for ‘reductionism’’. In T. Honderich (ed.) The Oxford Companion to Philosophy (2nd ed.). Oxford University Press. p. 793.
 
 [^7]: Waltz, K. (1979) Theory of International Politics. Reading, MA: Addison-Wesley.
 
-[^8]: K622 (2024) ‘历史上的悠风号战争：“部长失格事件”在现实音乐史上的投影,’ Bilibili, 见https://www.bilibili.com/read/cv34019517/.（访问于2024年4月24日）
+[^8]: K622 (2024) ‘[历史上的悠风号战争：“部长失格事件”在现实音乐史上的投影,](https://www.bilibili.com/read/cv34019517/)’ Bilibili.（访问于2024年4月24日）
 
 [^9]: 京都动画 （2016） 《吹响吧！上低音号》第二季第一集。
 
-[^10]: Collins Dictionary, 见：https://www.collinsdictionary.com/dictionary/english/society, https://www.collinsdictionary.com/dictionary/english/club.（访问于2024年4月24日） 
+[^10]: Collins Dictionary, 见：[1](https://www.collinsdictionary.com/dictionary/english/society), [2](https://www.collinsdictionary.com/dictionary/english/club).（访问于2024年4月24日） 
 
 [^11]: Bachrach, B. S. (1995). State-building in Medieval France: Studies in Early Angevin History. Aldershot: Variorum.
 
@@ -254,7 +254,7 @@ tags:
 
 [^14]: 武田绫乃 （2021）《后日谈·抬头仰望你飞离的背影·第一话·伞木希美是个倒霉蛋（即使如此我也喜欢）》，东京：宝岛社；京都动画 （2016） 《吹响吧！上低音号》第二季第二集。
 
-[^15]: 武田绫乃 （2021）《后日谈·抬头仰望你飞离的背影·第一话·伞木希美是个倒霉蛋（即使如此我也喜欢）》，东京：宝岛社；亲爱的猥琐猪 (2023) ‘从长笛 & 双簧的新一代组合看久三年及后黄前时期北宇治木管阵容实力,’ 载《京吹学报》，见https://hibikilogy.github.io/2023/08/20/WoodwindKumikoIII&later/. 
+[^15]: 武田绫乃 （2021）《后日谈·抬头仰望你飞离的背影·第一话·伞木希美是个倒霉蛋（即使如此我也喜欢）》，东京：宝岛社；亲爱的猥琐猪 (2023) ‘[从长笛 & 双簧的新一代组合看久三年及后黄前时期北宇治木管阵容实力,](/2023/08/20/WoodwindKumikoIII&later/)’ 载《京吹学报》. 
 
 [^16]: Dal Bó, E. (2006) ‘Regulatory capture: A review,’ Oxford Review of Economic Policy, 22(2): 203–225.
 
@@ -262,16 +262,16 @@ tags:
 
 [^18]: 京都动画 （2015） 《吹响吧！上低音号》第一季第七集；武田绫乃 （2021）《后日谈·抬头仰望你飞离的背影·第一话·伞木希美是个倒霉蛋（即使如此我也喜欢）》，东京：宝岛社。
 
-[^19]: UIS:60504697 (2020) ‘由《乐毅论》再评南中之乱,’ 载《京吹学报》，见https://hibikilogy.github.io/2020/04/24/%E7%94%B1-%E4%B9%90%E6%AF%85%E8%AE%BA-%E5%86%8D%E8%AF%84%E5%8D%97%E4%B8%AD%E4%B9%8B%E4%B9%B1/. 
+[^19]: UIS:60504697 (2020) ‘[由《乐毅论》再评南中之乱,](/2020/04/24/由-乐毅论-再评南中之乱/)’ 载《京吹学报》. 
 
-[^20]: 老仓唯 (2019) ‘北宇治吹奏部权力博弈考察,’ 载《京吹学报》，见https://hibikilogy.github.io/2019/01/27/beiyuzhichuizoubuquanliboyikaocha/；高谭魅影 （2020） ‘浅谈吉川优子与北宇治吹奏部政体演变，’ 载《京吹学报》，见https://hibikilogy.github.io/2020/03/10/%E6%B5%85%E8%B0%88%E5%90%89%E5%B7%9D%E4%BC%98%E5%AD%90%E4%B8%8E%E5%8C%97%E5%AE%87%E6%B2%BB%E5%90%B9%E5%A5%8F%E9%83%A8%E6%94%BF%E4%BD%93%E6%BC%94%E5%8F%98/；航迹云丶 (2020) ‘论晴香是北宇治最优秀的部长,’ 载《京吹学报》，见https://hibikilogy.github.io/2020/03/08/lunqingxiangshibeiyuzhizuiyouxiudebuzhang/. 
+[^20]: 老仓唯 (2019) ‘[北宇治吹奏部权力博弈考察,](/2019/01/27/beiyuzhichuizoubuquanliboyikaocha/)’ 载《京吹学报》；高谭魅影 （2020） ‘[浅谈吉川优子与北宇治吹奏部政体演变，](/2020/03/10/浅谈吉川优子与北宇治吹奏部政体演变/)’ 载《京吹学报》；航迹云丶 (2020) ‘[论晴香是北宇治最优秀的部长,](/2020/03/08/lunqingxiangshibeiyuzhizuiyouxiudebuzhang/)’ 载《京吹学报》. 
 
 [^21]: 武田绫乃 （2013-2015）《吹响吧！上低音号·欢迎加入北宇治高中管乐社；最火热的夏天；最大的危机》，东京：宝岛社。
 
-[^22]: 老仓唯 (2019) ‘北宇治吹奏部权力博弈考察,’ 载《京吹学报》，见https://hibikilogy.github.io/2019/01/27/beiyuzhichuizoubuquanliboyikaocha/
+[^22]: 老仓唯 (2019) ‘[北宇治吹奏部权力博弈考察,](/2019/01/27/beiyuzhichuizoubuquanliboyikaocha/)’ 载《京吹学报》
 
 [^23]: Huntington, S. P. (1965). ‘Political Development and Political Decay,’ World Politics, 17(3): 386–430.
 
-[^24]: 月の眼 (2023) ‘【吹学】北宇治吹奏部三代领导成员分析 2,’ 载Bilibili，见https://www.bilibili.com/read/cv26468674/. 
+[^24]: 月の眼 (2023) ‘[【吹学】北宇治吹奏部三代领导成员分析 2,](https://www.bilibili.com/read/cv26468674/)’ 载Bilibili. 
 
 [^25]: 京都动画 （2015） 《吹响吧！上低音号》第一季第12集。
