@@ -81,11 +81,11 @@ tags:
 
 &emsp;&emsp;因此我们试用其他视角，将主要矛头放置于吹奏乐部的社团属性，由于吹奏乐部出于乐器演奏的**一定技能门槛**、较其他社团的**高排他性**（可参考《京吹！》S2EP1明日香拒绝希美回归情节[^9]）、**绝对确定的活动对象及目标**（吹奏乐及吹奏竞赛）及**极高人际交往频率**，我们选择以“**club**”（俱乐部）定义北宇治吹奏乐部的社团性质，而非“society”（协会）。
 
->&emsp;&emsp;A club is an organization of people interested in a particular activity or subject who usually meet on a regular basis. 
+>&emsp;&emsp;A club is an organization of people interested in a particular activity or subject who usually meet on a regular basis.[^10] 
 >
->&emsp;&emsp;A society is an organization for people who have the same interest or aim.
+>&emsp;&emsp;A society is an organization for people who have the same interest or aim.[^10]
 <div style="text-align:right">
-    <span><i>-----引用自Collins Dictionary对“club”和“society”的解释</i>[^10]</span>
+    <span><i>-----引用自Collins Dictionary对“club”和“society”的解释</i></span>
 </div>
 &emsp;&emsp;也因此本文将社团作为一个整体分析其对部员造成的影响以及社团本身对其输出结果（比赛成绩及表现）的作用。另外本文研究时间范围集中于久零年至久三年，后黄前时代因为小说及京都动画可望的展示细节有限而只能放弃（对后黄前时代的小段细节描写集中于黄前久美子任北宇治吹奏乐部副顾问时期，离久三年过于遥远）。
 
