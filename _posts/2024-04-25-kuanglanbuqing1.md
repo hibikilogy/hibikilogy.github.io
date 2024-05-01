@@ -85,7 +85,7 @@ tags:
 >
 >&emsp;&emsp;A society is an organization for people who have the same interest or aim.
 <div style="text-align:right">
-    <span><i>-----引用自Collins Dictionary对“club”和“society”的解释[^10]</i></span>
+    <span><i>-----引用自Collins Dictionary对“club”和“society”的解释</i>[^10]</span>
 </div>
 &emsp;&emsp;也因此本文将社团作为一个整体分析其对部员造成的影响以及社团本身对其输出结果（比赛成绩及表现）的作用。另外本文研究时间范围集中于久零年至久三年，后黄前时代因为小说及京都动画可望的展示细节有限而只能放弃（对后黄前时代的小段细节描写集中于黄前久美子任北宇治吹奏乐部副顾问时期，离久三年过于遥远）。
 
