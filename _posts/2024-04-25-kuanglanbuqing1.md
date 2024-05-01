@@ -1,6 +1,7 @@
 ---
 layout: post
 title: 狂澜如何不倾，大厦如何不倒？——北宇治问鼎全国的奥秘为何？（上）
+subtitle: 一种从整体论出发的分析尝试
 author: FoffeR
 original: https://www.bilibili.com/read/cv34122192
 header-img: 
