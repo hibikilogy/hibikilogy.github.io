@@ -240,7 +240,7 @@ tags:
 
 [^7]: Waltz, K. (1979) Theory of International Politics. Reading, MA: Addison-Wesley.
 
-[^8]: K622 (2024) ‘[历史上的悠风号战争：“部长失格事件”在现实音乐史上的投影,](https://www.bilibili.com/read/cv34019517/)’ Bilibili.（访问于2024年4月24日）
+[^8]: K622 (2024) ‘[历史上的悠风号战争：“部长失格事件”在现实音乐史上的投影,](/2024/04/22/EuphoniumWar/)’ 载《京吹学报》.（访问于2024年4月24日）
 
 [^9]: 京都动画 （2016） 《吹响吧！上低音号》第二季第一集。
 
