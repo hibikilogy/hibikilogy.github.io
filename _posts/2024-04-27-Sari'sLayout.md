@@ -16,6 +16,7 @@ tags:
 ---
 &emsp;&emsp;**声明：以下内容纯属整活！！！论据断章取义论证逻辑缺环造成了对沙里形象的严重扭曲所以不要信以为真————————**
 * * *
+![](/images/Sari'sLayout/我们太想进步啦.jpg)
 ![](/images/Sari'sLayout/图片1.jpg)
 <center><small>进步の沙里</small></center>
 
