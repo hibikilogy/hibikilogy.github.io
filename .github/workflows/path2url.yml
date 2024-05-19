@@ -6,6 +6,11 @@ on:
       - master  
     paths:
       - '_posts/**/*.md'  # 仅当 _posts/ 文件夹下的 .md 文件被更改或添加时触发 action
+  pull_request:
+    branches:
+      - master  
+    paths:
+      - '_posts/**/*.md'  
 
 jobs:
   update-md-files:
