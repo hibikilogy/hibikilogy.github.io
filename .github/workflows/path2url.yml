@@ -1,0 +1,91 @@
+name: Update Image Paths in Markdown Files
+
+on:
+  push:
+    branches:
+      - master  
+    paths:
+      - '_posts/**/*.md'  # 仅当 _posts/ 文件夹下的 .md 文件被更改或添加时触发 action
+
+jobs:
+  update-md-files:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Get list of changed files(ALL)
+      id: get-changed-files-all
+      run: |
+        BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+        echo "Current branch: $BRANCH_NAME"
+        CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }}| tr -d '"' | grep '_posts/.*\.md' || true)
+        echo "Changed .md files: $CHANGED_FILES"
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "changed_files<<$EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
+
+    # - name: Get list of changed files(ONLY_path2url)
+    #   id: get-changed-files-path2url
+    #   run: |
+    #     # 获取当前 push 中所有 commit 的列表
+    #     COMMITS=$(git log --pretty=format:"%H" --no-merges HEAD@{1}..HEAD)
+    #     echo "Commits: $COMMITS"
+
+    #     # 获取所有包含 _path2url 关键字的 commit
+    #     MATCHING_COMMITS=""
+    #     for COMMIT in $COMMITS; do
+    #       MESSAGE=$(git log -1 --pretty=format:"%B" $COMMIT)
+    #       if [[ "$MESSAGE" == *"_path2url"* ]]; then
+    #         MATCHING_COMMITS="$MATCHING_COMMITS $COMMIT"
+    #       fi
+    #     done
+    #     echo "Matching commits: $MATCHING_COMMITS"
+
+    #     # 获取所有更改或添加的 _post/ 文件夹下的 .md 文件
+    #     FILES=""
+    #     for COMMIT in $MATCHING_COMMITS; do
+    #       CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $COMMIT)
+    #       for FILE in $CHANGED_FILES; do
+    #         if [[ "$FILE" == _post/*.md ]]; then
+    #           FILES="$FILES $FILE"
+    #         fi
+    #       done
+    #     done
+
+    #     # 去重
+    #     UNIQUE_FILES=$(echo $FILES | tr ' ' '\n' | sort -u | tr '\n' ' ')
+    #     echo "Changed .md files: $UNIQUE_FILES"
+    #     echo "changed_files=$UNIQUE_FILES">> $GITHUB_OUTPUT
+
+    - name: Replace path in files
+      run: |
+        CHANGED_FILES="${{ steps.get-changed-files-all.outputs.changed_files }}"
+        for FILE in $CHANGED_FILES; do
+          if [ -f "$FILE" ]; then
+            sed -i 's|\.\./images/|https://hibikilogy.github.io/images/|g' "$FILE"  # or {{site.url}}
+          fi
+        done
+        # 检查是否有改动
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "has_changes=true" >> $GITHUB_ENV
+        else
+          echo "No file replaced"
+          echo "has_changes=false" >> $GITHUB_ENV
+        fi
+
+    - name: Commit and push changes
+      if: env.has_changes == 'true'
+      run: |
+        CHANGED_FILES="${{ steps.get-changed-files-all.outputs.changed_files }}"
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add $CHANGED_FILES
+        git commit -m "Automated update of image paths in .md files under _post/"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
