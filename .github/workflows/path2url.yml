@@ -27,6 +27,7 @@ jobs:
       run: |
         BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
         echo "Current branch: $BRANCH_NAME"
+        git config --global core.quotepath false    # 汉字编码
         CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }}| tr -d '"' | grep '_posts/.*\.md' || true)
         echo "Changed .md files: $CHANGED_FILES"
         EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
