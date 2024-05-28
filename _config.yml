@@ -111,5 +111,13 @@ friends: [
     {
         title: "Kyoani.cn",
         href: "https://kyoani.cn/"
+    },
+    {
+        title: "京吹群像志 - B 站专栏",
+        href: "https://www.bilibili.com/read/readlist/rl268164"
+    },
+    {
+        title: "京吹群像志 - 虎扑",
+        href: "https://bbs.hupu.com/search?q=%E4%BA%AC%E5%90%B9%E7%BE%A4%E5%83%8F%E5%BF%97&topicId=&sortby=general&page=1"
     }
 ]
