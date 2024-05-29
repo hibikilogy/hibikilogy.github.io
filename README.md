@@ -62,6 +62,30 @@ tags:
 ### 进阶
 #### Jekyll
 如果你了解 Jekyll 相关的技术，可以选择修改其他目录内的文件并提交 PR。
+
+#### 本地启动
+
+1. 克隆本仓库到本地
+
+    ```bash
+    git clone git@github.com:hibikilogy/hibikilogy.github.io.git
+    ```
+
+2. 安装 ruby
+3. 安装 Jekyll、jekyll-paginate。参考：[Jekyll 文档](https://jekyllrb.com/)
+
+    ```bash
+    gem install bundler jekyll jekyll-paginate
+    ```
+
+4. 启动。参考：[Command Line Usage](https://jekyllrb.com/docs/usage/)
+
+    ```bash
+    jekyll serve --config _config.yml
+    ```
+
+5. 访问 `http://127.0.0.1:4000/`
+
 #### 脱离 Jekyll 单独修改 less
 首先安装相关工具： 
 ```shell
