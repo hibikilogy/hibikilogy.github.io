@@ -1,3 +1,4 @@
+# 核心功能：将"../images/"替换为"https://hibikilogy.github.io/images/"
 name: Update Image Paths in Markdown Files
 
 on:
@@ -35,7 +36,7 @@ jobs:
         echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
         echo "$EOF" >> $GITHUB_OUTPUT
 
-    # - name: Get list of changed files(ONLY_path2url)
+    # - name: Get list of changed files(ONLY path2url tagged)
     #   id: get-changed-files-path2url
     #   run: |
     #     # 获取当前 push 中所有 commit 的列表
