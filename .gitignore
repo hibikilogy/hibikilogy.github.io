@@ -1,6 +1,9 @@
 
 # Created by https://www.gitignore.io/api/macos
 
+# custom
+temp/*
+
 ### macOS ###
 *.DS_Store
 .AppleDouble
