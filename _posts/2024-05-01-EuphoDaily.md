@@ -1,6 +1,6 @@
 ---
 layout: post
-header-img: ../images/2024-05-01/QlhFVl9yfm5zcU5zUmtNfQ==.w1256.h670.jpg
+header-img: https://hibikilogy.github.io/images/2024-05-01/QlhFVl9yfm5zcU5zUmtNfQ==.w1256.h670.jpg
 title: 《京吹日报》4月22日头版消息：黄前久美子在黄檗调研（译）
 author: 芙蓉城里尽朝晖
 original: https://www.bilibili.com/read/cv34263550
@@ -22,7 +22,7 @@ tags:
 
 &emsp;&emsp;加藤叶月、剑崎梨梨花等参加调研。
 
-![](../images/2024-05-01/QlhFVl9yfm5zcU5zUmtNfQ==.w1256.h670.jpg)
+![](https://hibikilogy.github.io/images/2024-05-01/QlhFVl9yfm5zcU5zUmtNfQ==.w1256.h670.jpg)
 <center><small>许波多神社（示意图）</small></center>
 
 # 『ユーフォ日報』 4月22日一面ニュース：黄前久美子さんが黄檗を訪問
