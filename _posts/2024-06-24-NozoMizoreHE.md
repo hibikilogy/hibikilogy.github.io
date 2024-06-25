@@ -22,4 +22,4 @@ tags:
 
 &emsp;&emsp;那么一瞬，就是笔者所认为的伞霙易碎的美好，但同时笔者也希望那么一瞬将至永恒。
 
-![](../images/2024-06-24/1.jpg)
+![](https://hibikilogy.github.io/images/2024-06-24/1.jpg)
