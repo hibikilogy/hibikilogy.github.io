@@ -3,7 +3,7 @@ layout: post
 title: 为什么说久三年矛盾的根源都是久一年伞木希美立规矩不彻底造成的？
 author: 圣音小仓唯
 original: https://tieba.baidu.com/p/9041070872?see_lz=1
-header-img: ../images//QkRCZzksP15vIzBmb314XQ==.w560.h311.jpg
+header-img: https://hibikilogy.github.io/images//QkRCZzksP15vIzBmb314XQ==.w560.h311.jpg
 catalog: true
 tags:
     - 伞木希美
@@ -25,7 +25,7 @@ tags:
 
 &emsp;&emsp;久一年下半年已经回归的伞木希美，却在观众席上坐到久二年才上场，不但白白浪费了宝贵的即战力，更重要的是，从此**北宇治的实力至上就变成了一个虚假牌坊，大家心里都认为选拔确定了就不该再改。**京吹3第9集丽奈跟各个声部长的矛盾焦点就是三次选拔制度是否带来压力过大的问题。
 
-![](../images//QkRCZzksP15vIzBmb314XQ==.w560.h311.jpg)
+![](https://hibikilogy.github.io/images//QkRCZzksP15vIzBmb314XQ==.w560.h311.jpg)
 
 # 为什么伞木没有上场？
 &emsp;&emsp;那么为什么全国大赛不换伞木希美上？久一年北宇治人才不足，长笛甚至2个新入学的一年级都进入A编，伞木回归的话，大概会刷掉1个甚至2个去B编，久一年下半年最大的事是明日香退部事件，当时本来就有夏纪替补训练的计划，同时宣布伞木回归，淘汰2个学妹甚至都不会有太多人注意。
