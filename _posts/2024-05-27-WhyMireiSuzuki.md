@@ -20,7 +20,7 @@ tags:
 
 &emsp;&emsp;另一方面，伟大的中川夏纪学姐早在久一年就对领队一职发表了重要见解，在谈论久一年领队为何是明日香而非晴香时，夏纪学姐答道：“晴香前辈心理素质不足”。
 
-![](../images/2024-05-27/Qk5GRl1SOF5NXi1uRVFSaw==.w560.h310.jpg)
+![](https://hibikilogy.github.io/images/2024-05-27/Qk5GRl1SOF5NXi1uRVFSaw==.w560.h310.jpg)
 <center><small>夏纪学姐对领队一职发表重要见解</small></center>
 
 &emsp;&emsp;那么，若历史最终没有选择小日向梦，谁能够有足够的能力迎接这一历史机遇呢？在《[北宇治吹奏乐部黄前十七年参赛阵容推测及黄前十八年管理层人选问题讨论](/2022/12/24/北宇治吹奏乐部黄前十七年参赛阵容推测及黄前十八年管理层人选问题讨论/)》中，作者在章节“容易被忽略的候选人”里提到了铃木美玲，本文将在此观点的基础上，从**吹奏实力**、**领队素养**、**政治觉悟**等方面，论证铃木美玲担任久四年领队的合理性。
@@ -29,7 +29,7 @@ tags:
 
 &emsp;&emsp;领队的吹奏水平不能太差，否则便不能服众，这是很容易理解的。**铃木美玲在久二年就展现了高吹奏水平，一进学校就是A编**，或许在音量上不及小奏现在应该十分怀念的后藤前辈，但技巧上从未被挑剔过，在动画/原作小说里，也没有表现过后藤夫妇会对美玲进行纠错的桥段。在久二年时，黄前部长评价铃木美玲，认为其“能在短时间内拿出成果”“优秀”。
 
-![](../images/2024-05-27/QmVOZEs4RTN-UjU5Y0RJQw==.w560.h308.jpg)
+![](https://hibikilogy.github.io/images/2024-05-27/QmVOZEs4RTN-UjU5Y0RJQw==.w560.h308.jpg)
 
 &emsp;&emsp;在原作小说中，也表现了后藤夫妇毕业后，美玲成为了大号组实质上的顶梁柱。
 
@@ -52,20 +52,20 @@ tags:
 
 &emsp;&emsp;笔者认为的音乐理解指的是对于“**什么样的是好音乐**”以及“**如何演奏出好音乐**”两个问题的认知程度。在京吹里，理解最高的自然是各位指导老师，学生中的代表则有音乐痴的小绿、一直以职业为目标的丽奈、强校耳濡目染的真由、后续剧情准确点破泷升对乐曲想法的小奏、开会时清楚什么声部会减人的秀一。顺带一提，在这一点上黄前部长反而没有什么体现。而在第八集，聊到龙圣采取五个大号编成的片段里，说自己见识过的人为小绿、小奏、小美，侧面表现了这些人都关注强校演奏，平时有欣赏音乐的习惯，至少在“什么样的是好音乐”这一问题上，比提出话题的雀还有旁边不说话的叶月要高一个层次。
 
-![](../images/2024-05-27/QlRLZDZOfjM5Y3h1a1d4WQ==.w560.h316.jpg)![](../images/2024-05-27/QkFFLkNEfkEke1ZDT3AkJQ==.w560.h316.jpg)
+![](https://hibikilogy.github.io/images/2024-05-27/QlRLZDZOfjM5Y3h1a1d4WQ==.w560.h316.jpg)![](https://hibikilogy.github.io/images/2024-05-27/QkFFLkNEfkEke1ZDT3AkJQ==.w560.h316.jpg)
 
 # 三、思想觉悟
 
 &emsp;&emsp;在久二年时，美玲一开始就是抱着“**想吹得更好的心情**”来到学校的，以社团为主选择学校并不是通常人会作出的选择（例如小绿就不是，即使她那么喜欢音乐；明日香也不是，只是因为离家近），**可见小美对音乐也有不一般的执念**。
 
-![](../images/2024-05-27/QjhCRGMuVVs1UnlYWno_SA==.w560.h304.jpg)![](../images/2024-05-27/QkpFVzhvOHdEJUF4bjMtNQ==.w560.h301.jpg)
+![](https://hibikilogy.github.io/images/2024-05-27/QjhCRGMuVVs1UnlYWno_SA==.w560.h304.jpg)![](https://hibikilogy.github.io/images/2024-05-27/QkpFVzhvOHdEJUF4bjMtNQ==.w560.h301.jpg)
 
 &emsp;&emsp;久二年关西大赛失利后，小美对彩月和叶月说出了“明年还要一起演奏”的发言，**虽未提及苦呀西，但字字都包含苦呀西**（不是）。
-![](../images/2024-05-27/QnJGamk_eUVLNnVQdGx4XQ==.w560.h298.jpg)
+![](https://hibikilogy.github.io/images/2024-05-27/QnJGamk_eUVLNnVQdGx4XQ==.w560.h298.jpg)
 
 &emsp;&emsp;在第三季第6话，美玲向黄前部长表达了对选拔的疑惑，并且以敏锐的政治素养，提醒黄前泷升在一二年级中群众基础不如三年级牢固。该片段中美玲勇于表达意见，同时采取了私下会谈的方式，照顾了雀和彩月的心情，不动摇吹奏部氛围，被黄前认为是坦率可爱的后辈，~~反观优子（划掉）~~。
 
-![](../images/2024-05-27/Qk9FVi4tMDFEKnheSUFvZg==.w560.h296.jpg)![](../images/2024-05-27/QkZCeXYqNTZPWTAxLXBSag==.w560.h304.jpg)
+![](https://hibikilogy.github.io/images/2024-05-27/Qk9FVi4tMDFEKnheSUFvZg==.w560.h296.jpg)![](https://hibikilogy.github.io/images/2024-05-27/QkZCeXYqNTZPWTAxLXBSag==.w560.h304.jpg)
 
 >&emsp;&emsp;「关于音乐方面的人际关系的话题啊，我很佩服你总是听的这么感同身受。」
 >
@@ -91,11 +91,11 @@ tags:
 
 &emsp;&emsp;而当我们把时间倒退到久二年，会发现当时应久美子的要求，**久石奏与美玲结下了友谊**，虽然京吹武吹都没有对她们的友谊做进一步的描写，当然，合理推断可能是美玲的小娇妻彩月把小奏全防出去了的缘故，但是我们可以看到，在久二年，那时候明明不爱跟别人亲近的美玲，已经是允许小奏对她进行摸脸、耳语等paly的形状了，说明小奏也深谙调教之道。那么，小心思多又喜欢黏人的久石奏若担任部长/副部，在心爱的久美子毕业后，又怎会放过一个既坚强有实力，可以依靠，但又会听自己话的近臣美玲呢？到时候就可以看到彩月苦呀西了。
 
-![](../images/2024-05-27/QkY3LHhwZjYwI05hYXpzOg==.w554.h299.jpg)![](../images/2024-05-27/QmNHW1tdMDBJcCVnb3pNeA==.w554.h301.jpg)
+![](https://hibikilogy.github.io/images/2024-05-27/QkY3LHhwZjYwI05hYXpzOg==.w554.h299.jpg)![](https://hibikilogy.github.io/images/2024-05-27/QmNHW1tdMDBJcCVnb3pNeA==.w554.h301.jpg)
 
 &emsp;&emsp;最后，公认的久五年部长**义井沙里，更是在刚开始就表现出对美玲的好感**，因美玲记得她而开心，说明在沙里的心里，美玲是一个值得尊敬的前辈形象。而能在北宇治单簧管拿到A编的沙里这样看美玲，也印证了美玲各方面的实力、在后辈里的威望。
 
-![](../images/2024-05-27/QkRFeHc6fldEJSxBSW8tbw==.w554.h292.jpg)
+![](https://hibikilogy.github.io/images/2024-05-27/QkRFeHc6fldEJSxBSW8tbw==.w554.h292.jpg)
 
 # 五、美玲同志当前存在的问题
 
