@@ -9,6 +9,7 @@ header-img: https://i.loli.net/2020/03/18/DMS4XLyuNsYK8c3.png
 
 1. 稿费问题：本刊不提供稿费。所有录用稿件均不支付稿费。
 2. 刊登方式：一旦稿件被录用，将在本刊网站进行刊登。另有**纸质版**《京吹学报》刊物，收录部分稿件，免费在漫展发放。
+3. 文章仅代表作者个人观点，不代表《京吹学报》的立场与观点。
 
 # 供稿要求
 * 请注明作者姓名。
@@ -22,7 +23,7 @@ header-img: https://i.loli.net/2020/03/18/DMS4XLyuNsYK8c3.png
 
 # 投稿途径
 &emsp;&emsp;作者可选择下列方式投稿：
-1. 在网络平台发表文章，联系《京吹学报》编辑投稿（可私信或在评论区at）。联系方式：[bilibili](https://space.bilibili.com/2478749)，[知乎](https://www.zhihu.com/people/xiao-qi-43-71)，[贴吧](https://tieba.baidu.com/home/main?id=tb.1.d42f494e.T9xQ5er2jhETl-kXaOozEg)。
+1. 在网络平台发表文章，联系《京吹学报》编辑投稿（可私信或在评论区at）。联系方式：[bilibili](https://space.bilibili.com/2478749)，[知乎](https://www.zhihu.com/people/xiao-qi-43-71)，[贴吧](https://tieba.baidu.com/home/main?id=tb.1.d42f494e.T9xQ5er2jhETl-kXaOozEg)，[NGA](https://nga.178.com/nuke.php?func=ucp&uid=61467023)。
 2. 将稿件发送至<a href="mailto:journal@kyoani.cn">投稿邮箱</a>：journal@kyoani.cn。
 
 &emsp;&emsp;感谢您的理解与支持！
