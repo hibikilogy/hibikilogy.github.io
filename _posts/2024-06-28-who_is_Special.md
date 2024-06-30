@@ -2,7 +2,7 @@
 layout: post
 title: 从京吹3第12集谈“什么才是特别的人？”
 author: Hao Lee
-header-img: ../images/2024-06-28/1.png
+header-img: https://hibikilogy.github.io/images/2024-06-28/1.png
 original: https://zhuanlan.zhihu.com/p/704987389
 catalog: true
 tags:
