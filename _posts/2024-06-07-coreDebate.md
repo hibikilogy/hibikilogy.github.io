@@ -3,7 +3,7 @@ layout: post
 title: 剖析京吹3第9集声部首席会议的核心争论
 author: 圣音小仓唯
 original: https://tieba.baidu.com/p/9042271361?see_lz=1
-header-img: ../images/2024-06-07/QjlFLlg_fnA_YjBoajt4XQ==.w580.h360.webp
+header-img: https://hibikilogy.github.io/images/2024-06-07/QjlFLlg_fnA_YjBoajt4XQ==.w580.h360.webp
 catalog: true
 tags:
     - 黄前久美子
@@ -68,7 +68,7 @@ tags:
 
 &emsp;&emsp;所以丽奈才生气了，认为保持紧张感是好事，事实也是曲子就是吹的更好了，这就是实行多次选拔制度的成效。所以森本也没法反驳了。
 
-![](../images/2024-06-07/QjlFLlg_fnA_YjBoajt4XQ==.w580.h360.webp)
+![](https://hibikilogy.github.io/images/2024-06-07/QjlFLlg_fnA_YjBoajt4XQ==.w580.h360.webp)
 
 # 结论
 
@@ -78,6 +78,6 @@ tags:
 
 # 补充
 
-![](../images/2024-06-07/Qk9SQ1s1TkdqWTAwV1hhZQ==.w580.h229.webp) 
+![](https://hibikilogy.github.io/images/2024-06-07/Qk9SQ1s1TkdqWTAwV1hhZQ==.w580.h229.webp) 
 
 &emsp;&emsp;第10集的官方预告，明确写了是“部员对每次比赛都更换演奏成员制度的不满”，说明本帖对于森本和牧誓的意图是反对多轮选拔制度的分析不是过度解读，官方本来就是表达这样的意思。(当然“反对我的政策就等于反对我，就是逼宫，想要我下台”的这种大人的世界的肮脏事属于京吹政治学图一乐的说法，剧情里她们单纯就是卷累了不想再卷了而已。)
