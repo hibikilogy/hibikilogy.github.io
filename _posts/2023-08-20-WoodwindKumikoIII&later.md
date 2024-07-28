@@ -6,15 +6,17 @@ original: https://movie.douban.com/review/15399287/
 header-img:
 catalog: true
 tags:
-    - 豆瓣
     - 剑崎梨梨花
     - 伞木希美
     - 鸟冢宏音
     - 山根都美贵
     - 井上调
+    - 长笛
+    - 双簧管
+    - 合奏比赛
     - 黄前十六年
     - 黄前十七年
-    - 合奏比赛
+    - 豆瓣
 ---
 <div style="text-align:center">
     <span><small>仅供参考，欢迎讨论，还请各位吹学界前辈、大佬指正！仅供参考，欢迎讨论，还请各位吹学界前辈、大佬指正！</small></span>
