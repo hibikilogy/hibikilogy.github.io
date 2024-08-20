@@ -75,4 +75,4 @@ tags:
 
 &emsp;&emsp;上篇到此先告一段落，之后的下篇我将讲述久三年一些重点人物所犯下的错误或者不足之处对久三年吹奏部的影响。
 
-<div style="text-align:right">2024年8月11日作</div>
+<div style="text-align:right">2024年8月11日 作</div>
