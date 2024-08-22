@@ -1,7 +1,7 @@
 ---
 layout: post
 date: 2024-08-18
-header-img: ../images/2024-08-18/TakuImura.webp
+header-img: https://hibikilogy.github.io/images/2024-08-18/TakuImura.webp
 title: 单簧管乐手井村卓全国大赛A编一音程的“奋斗”史
 author: 山中幽士
 original: https://www.bilibili.com/read/cv37266027
