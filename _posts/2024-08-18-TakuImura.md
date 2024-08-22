@@ -182,6 +182,12 @@ tags:
 
 # 参考文献
 
+* [80th_fan（即stonecastle）][link2]：[从久二年出场阵容试析得废金的原因](https://tieba.baidu.com/p/8064884298)
+
+* [吹响！上低音号/第二年吹奏乐部成员介绍 - 萌娘百科 万物皆可萌的百科全书](https://zh.moegirl.org.cn/%E5%90%B9%E5%93%8D%EF%BC%81%E4%B8%8A%E4%BD%8E%E9%9F%B3%E5%8F%B7/%E7%AC%AC%E4%BA%8C%E5%B9%B4%E5%90%B9%E5%A5%8F%
+
+# 注释
+
 [^1]: [stonecastle 【（伪）吹学】久一、久二两年北宇治高中吹奏部上场座位示意图 -哔哩哔哩](https://www.bilibili.com/read/cv18771743/)
 
 [^2]: [stonecastle久三年北宇治历次比赛阵容](https://www.bilibili.com/opus/952194563068395568)
@@ -192,13 +198,7 @@ tags:
 
 [^5]: 武田2024年6月27日出版的最新短篇集《北宇治高中吹奏乐部每个人的故事》
 
-[^6]: [MT德意松的专栏文集：吹学研究](https://www.bilibili.com/read/readlist/rl821310)：[浅析南中人在北宇治的过去、现在和未来](https://www.bilibili.com/read/cv25914524/)、[新南中派系的重振——黄前十八、十九年领导班子的确立](https://www.bilibili.com/read/cv34158765/)、[北宇治往事（2）——北山泰瑠的奋斗史](https://www.bilibili.com/read/cv35313982/)、[北宇治往事（番外）：那些B编的家伙们是怎么进B编的](https://www.bilibili.com/read/cv35890467/)
-
-* * *
-
-7. [80th_fan（即stonecastle）][link2]：[从久二年出场阵容试析得废金的原因](https://tieba.baidu.com/p/8064884298)
-
-8. [吹响！上低音号/第二年吹奏乐部成员介绍 - 萌娘百科 万物皆可萌的百科全书](https://zh.moegirl.org.cn/%E5%90%B9%E5%93%8D%EF%BC%81%E4%B8%8A%E4%BD%8E%E9%9F%B3%E5%8F%B7/%E7%AC%AC%E4%BA%8C%E5%B9%B4%E5%90%B9%E5%A5%8F%E4%B9%90%E9%83%A8%E6%88%90%E5%91%98%E4%BB%8B%E7%BB%8D#.E5.8D.95.E7.B0.A7.E7.AE.A1.EF.BC.88Clarinet.EF.BC.89)
+[^6]: [MT德意松的专栏文集：吹学研究](https://www.bilibili.com/read/readlist/rl821310)：[浅析南中人在北宇治的过去、现在和未来](https://www.bilibili.com/read/cv25914524/)、[新南中派系的重振——黄前十八、十九年领导班子的确立](https://www.bilibili.com/read/cv34158765/)、[北宇治往事（2）——北山泰瑠的奋斗史](https://www.bilibili.com/read/cv35313982/)、[北宇治往事（番外）：那些B编的家伙们是怎么进B编的](https://www.bilibili.com/read/cv35890467/)E4%B9%90%E9%83%A8%E6%88%90%E5%91%98%E4%BB%8B%E7%BB%8D#.E5.8D.95.E7.B0.A7.E7.AE.A1.EF.BC.88Clarinet.EF.BC.89)
 
 [link1]:https://space.bilibili.com/400878437
 [link2]:https://space.bilibili.com/11506362
