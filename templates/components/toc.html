@@ -1,0 +1,40 @@
+{% macro main(page) %}
+{% if page.toc and page.extra.toc | default(value=true) != false %}
+<nav aria-labelledby="doc-outline-aria-label" class="AsideOutline ">
+  <div class="content">
+    <div class="outline-marker"></div>
+    <div aria-level="2" class="outline-title" id="outline-aria-label" role="heading">
+      页面导航
+    </div>
+    <ul class="DocOutlineItem">
+      {% for h1 in page.toc %}
+      <li>
+        <a class="outline-link" href="{{ h1.permalink | safe }}" onclick="outlineItemOnClick(event)"
+          title="{{h1.title}}">{{
+          h1.title
+          }}</a>
+        {% if h1.children %}
+        <ul class="DocOutlineItem">
+          {% for h2 in h1.children %}
+          <li>
+            <a class="outline-link" href="{{ h2.permalink | safe }}" onclick="outlineItemOnClick(event)"
+              title="{{h2.title}}">{{ h2.title
+              }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</nav>
+<script>
+  function outlineItemOnClick({ target: el }) {
+    const id = el.href.split('#')[1]
+    const heading = document.getElementById(decodeURIComponent(id))
+    heading?.focus({ preventScroll: true })
+  }
+</script>
+{% endif %}
+{% endmacro %}

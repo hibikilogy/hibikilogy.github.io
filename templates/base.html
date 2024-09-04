@@ -1,0 +1,168 @@
+{% import 'macros.html' as macros %}
+{% import 'components/navbar.html' as navbar %}
+{% import 'components/footer.html' as footer %}
+{% import 'components/pagination.html' as pagination %}
+
+<!DOCTYPE html>
+<html lang="{{lang}}">
+
+<head>
+  <!-- {{ now() | date(format='%F %a %R') }} -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+  <meta name="apple-mobile-web-app-status-bar-style" content="lack-translucent">
+  <meta name="applicable-device" content="pc,mobile">
+  <meta name="google" content="notranslate">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme" content="Zola-Theme-Journal">
+  <link rel="alternate" hreflang="{{config.default_language}}" href="{{ config.base_url }}">
+  <link rel="alternate" hreflang="{{lang}}" href="{{ config.base_url ~ '/' ~ lang}}">
+  <link rel="canonical" href="{{ current_url | default(value='/') | safe }}" />
+
+  <title>
+    {% include 'title.html' %}
+  </title>
+
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta property="og:site" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:widgets:csp" content="on">
+  <meta property="og:site_name" content="{% include 'title.html' %}">
+  <meta property="og:locale" content="{{ lang }}">
+  <meta property="og:title" content="{% include 'title.html' %}">
+  <meta property="og:locale:alternate" content="{{ lang }}">
+  <meta property="og:url" content="{{ current_url | default(value='/') | safe }}" />
+  <meta property="og:description" content="{{ page.subtitle | default(value=config.description) }}" />
+
+  <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="京吹学报 Atom Feed">
+
+  {% if config.extra.favicon.webmanifest %}
+  <link href='{{ config.extra.favicon.webmanifest }}' rel="manifest" />
+  {% endif %}
+  {% if config.extra.favicon.safari_pinned_tab %}
+  <link color="#5bbad5" href='{{ config.extra.favicon.safari_pinned_tab }}' rel="mask-icon" />
+  {% endif %}
+  {% if config.extra.favicon.small_icon %}
+  <link rel="icon" href='{{ config.extra.favicon.small_icon }}' sizes="48x48">
+  {% endif %}
+  {% if config.extra.favicon.svg_icon %}
+  <link rel="icon" href='{{ config.extra.favicon.svg_icon }}'' sizes="any" type="image/svg+xml">
+  {% endif %}
+  {% if config.extra.favicon.apple_touch_icon %}
+  <link href=' {{ config.extra.favicon.apple_touch_icon }}' rel="apple-touch-icon" sizes="180x180" />
+  {% endif %}
+
+  <link href="{{ get_url(path='index.css') }}" rel="stylesheet" />
+
+  {% block style %}
+  {% endblock %}
+
+  {% block analytics %}
+  {% if config.extra.analytics.google %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ config.extra.analytics.google }}"></script>
+  <script type="text/javascript">
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "{{ config.extra.analytics.google }}");
+  </script>
+  {% endif %}
+  {% endblock analytics %}
+
+  {% if config.extra.katex.enabled %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"
+    integrity="sha384-R4558gYOUz8mP9YWpZJjofhk+zx0AS11p36HnD2ZKj/6JR5z27gSSULCNHIRReVs" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.js"
+    integrity="sha384-z1fJDqw8ZApjGO3/unPWUPsIymfsJmyrDVWC8Tv/a1HeOtGmkwNd/7xUS0Xcnvsx"
+    crossorigin="anonymous"></script>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/mathtex-script-type.min.js"
+    integrity="sha384-jiBVvJ8NGGj5n7kJaiWwWp9AjC+Yh8rhZY3GtAX8yU28azcLgoRo4oukO87g7zDT"
+    crossorigin="anonymous"></script>
+  {% if config.extra.katex.auto_render %}
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/contrib/auto-render.min.js"
+    integrity="sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR"
+    crossorigin="anonymous"></script>
+  {% endif %}
+  {% endif %}
+  <script src="{{ get_url(path='js/ui.js') }}" type="module"></script>
+  <script>(() => { const e = localStorage.getItem("theme-appearance") || "auto", a = window.matchMedia("(prefers-color-scheme: dark)").matches; (!e || e === "auto" ? a : e === "dark") && document.documentElement.classList.add("dark") })();</script>
+  <script>document.documentElement.classList.toggle("mac", /Mac|iPhone|iPod|iPad/i.test(navigator.platform));</script>
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"{% include 'title.html' %}", "potentialAction": {"@type": "SearchAction","target": "{{config.base_url}}/search?q={search_term_string}", "query-input": "required name=search_term_string"}}</script>
+  <link rel="prefetch" href="/pagefind/pagefind.js" as="script">
+  <link rel="prefetch" href="/pagefind/pagefind-ui.css" as="style">
+  <link rel="prefetch" href="/search">
+  {% block script %}
+  {% endblock %}
+
+  {% block meta %}
+  {% endblock %}
+</head>
+
+<body class="{% block class %}{% endblock class %}" {% block attribute %}{% endblock attribute %}>
+  <div id="app">
+    <div class="Layout">
+      <span class="joh-chevron-up visually-hidden"></span>
+
+      {{ navbar::main() }}
+
+      {% block header %}
+      {% endblock %}
+
+      <main class="Content {% if page.toc %}has-aside{% endif %}">
+        {% block content %}
+        {% endblock %}
+
+        {% block pagination %}
+        {{ pagination::main() }}
+        {% endblock %}
+      </main>
+
+      {% block footer %}
+      {% if slot is defined %}
+      {% block slot %}{% endblock %}
+      {% else %}
+      {{ footer::main() }}
+      {% endif %}
+      {% endblock %}
+    </div>
+  </div>
+
+  {% block comment %}
+  {% endblock %}
+
+  {% if config.extra.mermaid.enabled %}
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@8.13.5/dist/mermaid.min.js"
+    integrity="sha384-0yWn54pSGtfKCU+skfA69l25VsCw+MZt4LQov3xNRoS7YkAMrFokGgSBnAWSK4pv"
+    crossorigin="anonymous"></script>
+  {% endif %}
+  {% if config.extra.chart.enabled %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.xkcd@1.1.13/dist/chart.xkcd.min.js"
+    integrity="sha384-xC3h1+IHXK8seA+8KfT79Z4e0GPsznjXBoMa5nd8ooWKplPyXx92NOmljWxLC/cs"
+    crossorigin="anonymous"></script>
+  {% endif %}
+  {% if config.extra.mapbox.enabled %}
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"
+    integrity="sha384-Pulw7+h73841BQIK0LzJCydKRPChJUF9w8h8W0o3h+cLtoyNPJS847bQauLWOTwg"
+    crossorigin="anonymous"></script>
+  {% endif %}
+
+  {% if config.extra.medium_zoom.enabled %}
+  <script src="https://unpkg.com/medium-zoom@1.1.0/dist/medium-zoom.min.js"></script>
+  <script>
+    mediumZoom(document.querySelectorAll('.content-container :where(img)'))
+  </script>
+  {% endif %}
+
+  {% block custom_js %}
+  {% endblock %}
+
+  {% block user_custom_js %}
+  {% endblock %}
+</body>
+
+</html>

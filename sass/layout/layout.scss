@@ -1,0 +1,21 @@
+@use "../config.scss";
+
+.Layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.Content {
+  flex: 1;
+
+  @media (min-width: config.$tablet) {
+    & {
+      padding: 0 32px;
+    }
+  }
+
+  .content {
+    width: 100%;
+  }
+}

@@ -1,0 +1,66 @@
+{% macro main(show_tags=false, show_friendlinks=false) %}
+<footer class="Footer" role="contentinfo">
+  <div class="container">
+    {% if show_tags %}
+    <section class="footer-column footer-tags">
+      {% for item in config.extra.footer %}
+      {% if lang == item.code %}
+      <h3>{{ item.tags_text }}</h3>
+      {% endif %}
+      {% endfor %}
+      <div class="footer-list">
+        {{ macros::tags_list(show_count=true) }}
+      </div>
+    </section>
+    {% endif %}
+    {% if show_friendlinks %}
+    <section class="footer-column footer-frendlinks">
+      {% for item in config.extra.footer %}
+      {% if lang == item.code %}
+      <h3>{{ item.frendlinks_text }}</h3>
+      <div class="footer-list">
+        {% for nav in item.frendlinks %}
+        <a class="Link link FoooterFriendLink" aria-expanded="false" aria-label="menu" role="button"
+          href="{{ nav.link | replace(from='$BASE_URL', to=config.base_url) }}" tabindex="0">
+          <span>{{ nav.text }}</span>
+          <span class="johi-icon-tags"></span>
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </section>
+    {% endif %}
+    <section class="footer-column footer-siteinfo">
+      <div class="footer-siteinfo-nav">
+        {% for item in config.extra.footer %}
+        {% if lang == item.code %}
+        {% for nav in item.list %}
+        <a class="Link link FoooterNavLink" aria-expanded="false" aria-label="menu" role="button"
+          href="{{ nav.link | replace(from='$BASE_URL', to=config.base_url) }}" tabindex="0">
+          <span>{{ nav.text }}</span>
+          <span class="icon"></span>
+        </a>
+        {% endfor %}
+        <a class="Link footer-contact-link" rel="noreferrer"
+          href="mailto:{{ item.contact.link | replace(from='$BASE_URL', to=config.base_url) }}">
+          {{ item.contact.text }}
+        </a>
+        {% endif %}
+        {% endfor %}
+      </div>
+      <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+      <div class="footer-siteinfo-meta">
+        {% for item in config.extra.footer %}
+        {% if lang == item.code %}
+        <p class="footer-siteinfo-count">{{item.count}}:
+          <span id="busuanzi_value_page_pv"></span>
+        </p>
+        <p class="footer-siteinfo-copyright">{{item.copyright}}</p>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</footer>
+{% endmacro main %}

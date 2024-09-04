@@ -1,0 +1,36 @@
+{% import 'components/hero.html' as hero %}
+{% extends 'base.html' %}
+
+{% block title %}
+{{ config.title }} | {{ page.title }}
+{% endblock %}
+
+{% block class %}
+docs
+{% endblock %}
+
+{% block attribute %}
+data-pagefind-body
+{% endblock %}
+
+{% block header %}
+{{ hero::main(isPost=false, page=page, name=page.title) }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="content">
+    <section class="content-container">
+      <article>
+        {{ page.content | safe }}
+      </article>
+    </section>
+  </div>
+</div>
+{% endblock %}
+
+{% block custom_js %}
+{% if page.toc and page.extra.toc | default(value=true) != false %}
+<script type="module" src="{{ get_url(path='js/outline.js') }}"></script>
+{% endif %}
+{% endblock %}

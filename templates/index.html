@@ -1,0 +1,16 @@
+{% import 'components/journal.html' as journal %}
+{% import 'components/footer.html' as footer %}
+
+{% extends "base.html" %}
+
+{% block class %}
+Home
+{% endblock %}
+
+{% block content %}
+{{ journal::main(show_frontpage=true) }}
+{% endblock %}
+
+{% block footer %}
+{{ footer::main(show_tags=true, show_friendlinks=true) }}
+{% endblock %}

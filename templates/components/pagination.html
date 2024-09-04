@@ -1,0 +1,146 @@
+{% macro main() %}
+
+{% if paginator.previous or paginator.next %}
+<div class="Pagination">
+  <div class="container">
+    <div class="sorting" v-scope>
+      <select id="sorting" v-model.lazy="store.sortType" @change="sortingHandleSelect">
+        <option value="date">发布日期正序</option>
+        {# <option value="update">更新日期正序</option>
+        <option value="title">文章标题正序</option>
+        <option value="date-reversed">发布日期倒序</option>
+        <option value="update-reversed">更新日期倒序</option>
+        <option value="title-reversed">文章标题倒序</option> #}
+      </select>
+      <label for="sorting"><i class="johi-icon-arrow-down"></i></label>
+    </div>
+    <nav class="paging paging-mobile">
+      {{ macros::prev_page(paginator=paginator) }}
+      <span>第 {{paginator.current_index}} 页</span>
+      {{ macros::next_page(paginator=paginator) }}
+    </nav>
+
+    <nav class="paging paging-desktop">
+      {% if paginator.number_pagers <= 10 %} <ul class="pagination-list">
+        {% for pager in range(start=1,
+        end=paginator.number_pagers+1) %}
+        <li>
+          {% if paginator.current_index == pager %}
+          {{ macros::prev_page(paginator=paginator) }}
+          {% endif %}
+          <a class="pagination-link {% if paginator.current_index == pager %}is-current{% endif %}"
+            href='{{ paginator.base_url }}{{pager}}' aria-label="Goto page {{pager}}">
+            {{pager}}
+          </a>
+          {% if paginator.current_index == pager %}
+          {{ macros::next_page(paginator=paginator) }}
+          {% endif %}
+        </li>
+        {% endfor %}
+        </ul>
+        {% else %}
+        {% set last_pager = paginator.number_pagers %}
+        <ul class="pagination-list {% if paginator.current_index == last_pager %}is-lastpage{% endif %}">
+          {% if paginator.current_index == last_pager %}
+          <li class="no-hide" data-pager="1">
+            <a class="pagination-link {% if paginator.current_index == 1 %}is-current{% endif %}"
+              href='{{ paginator.base_url }}1' aria-label="Goto page 1">
+              1
+            </a>
+          </li>
+          {% if paginator.current_index - 9 > 1 %}
+          <li class="no-hide" data-pager="prev-pager">
+            <span>…</span>
+          </li>
+          {% endif %}
+          <li>
+            <ul class="pager-list-reversed" data-page="{{paginator.current_index}}">
+              {% set end_index = last_pager %}
+              {% if last_pager > 9 %}
+              {% set end_index = 9 %}
+              {% endif %}
+              {% for pager in range(start=1,
+              end=end_index) %}
+              <li class="pager-item" data-pager="{{last_pager - pager}}">
+                <a class="pagination-link" href='{{ paginator.base_url }}{{last_pager - pager}}'
+                  aria-label="Goto page {{last_pager - pager}}">
+                  {{last_pager - pager}}
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+          </li>
+          {% endif %}
+          {% if paginator.current_index > 1 %}
+          <li class="pager-first" data-pager="1">
+            <a class="pagination-link {% if paginator.current_index == 1 %}is-current{% endif %}"
+              href='{{ paginator.base_url }}1' aria-label="Goto page 1">
+              1
+            </a>
+          </li>
+          {% endif %}
+          {% if paginator.current_index > 2 and
+          paginator.current_index < last_pager %} {% if paginator.current_index> 6 %}
+            <li class="pager-more" data-pager="next-pager">
+              <span>…</span>
+            </li>
+            {% endif %}
+            <li>
+              <ul class="pager-list-past" data-page="{{paginator.current_index}}">
+                {% for pager in range(start=2,
+                end=paginator.current_index) %}
+                <li class="pager-item" data-pager="{{pager}}">
+                  <a class="pagination-link" href='{{ paginator.base_url }}{{pager}}' aria-label="Goto page {{pager}}">
+                    {{pager}}
+                  </a>
+                </li>
+                {% endfor %}
+              </ul>
+            </li>
+            {% endif %}
+            <li class="no-hide" data-pager="prev-page">
+              {% if paginator.current_index > 1%}
+              {{ macros::prev_page(paginator=paginator) }}
+              {% endif %}
+            </li>
+            <li class="no-hide" data-pager="{{paginator.current_index}}">
+              <a class="pagination-link is-current" href='#' aria-label="Goto page {{paginator.current_index}}">
+                第{{ paginator.current_index }}页
+              </a>
+            </li>
+            {% if paginator.current_index < last_pager %} <li class="no-hide" data-pager="next-pager">
+              {{ macros::next_page(paginator=paginator) }}
+              </li>
+              {% endif %}
+              {% if paginator.current_index + 1 < last_pager %} <li>
+                <ul class="pager-list" data-page="{{paginator.current_index}}">
+                  {% for pager in range(start=2,
+                  end=paginator.number_pagers) %}
+                  <li class="pager-item" data-pager="{{pager}}">
+                    <a class="pagination-link {% if paginator.current_index == pager %}is-current{% endif %}"
+                      href='{{ paginator.base_url }}{{pager}}' aria-label="Goto page {{pager}}">
+                      {{pager}}
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+                </li>
+                {% if paginator.current_index + 9 < last_pager %} <li class="pager-more" data-pager="next-pager">
+                  <span>…</span>
+                  </li>
+                  {% endif %}
+                  {% endif %}
+                  <li class="pager-total" data-pager="{{last_pager}}">
+                    <a class="pagination-link {% if paginator.current_index == last_pager %}is-current{% endif %}"
+                      href='{{ paginator.base_url }}{{last_pager}}' aria-label="Goto page {{last_pager}}"
+                      v-effect="store.pageTotal = {{last_pager}}">
+                      {{ last_pager }}
+                    </a>
+                  </li>
+        </ul>
+        {% endif %}
+    </nav>
+  </div>
+</div>
+{% endif %}
+{% endmacro main %}

@@ -1,0 +1,53 @@
+.AsideOutline {
+  .content {
+    position: relative;
+    border-left: 1px solid var(--joh-c-divider);
+    padding-left: 16px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .outline-marker {
+    position: absolute;
+    left: -1px;
+    z-index: 0;
+    opacity: 0;
+    width: 2px;
+    border-radius: 2px;
+    height: 18px;
+    background-color: var(--joh-c-text-1);
+    transition:
+      top 0.25s cubic-bezier(0, 1, 0.5, 1),
+      background-color 0.5s,
+      opacity 0.25s;
+  }
+
+  .outline-title {
+    line-height: 32px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .outline-link {
+    display: block;
+    line-height: 32px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--joh-c-text-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.5s;
+  }
+
+  .outline-link:hover,
+  .outline-link.active {
+    color: var(--joh-c-text-1);
+    transition: color 0.25s;
+  }
+
+  .DocOutlineItem > li > ul {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}

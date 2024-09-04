@@ -1,0 +1,48 @@
+{% import 'components/hero.html' as hero %}
+{% import 'components/aside.html' as aside %}
+
+{% extends 'base.html' %}
+
+{% block title %}
+{{ config.title }} | {{ page.title }}
+{% endblock %}
+
+{% block class %}
+post
+{% endblock %}
+
+{% block attribute %}
+data-pagefind-body
+{% endblock %}
+
+{% block meta %}
+{% if page.taxonomies.author[0] %}
+<meta property="article:author" content="{{ page.taxonomies.author[0] }}">
+{% endif %}
+<meta property="og:updated_time" content="{{ page.updated | default(value=page.date) }}">
+<meta property="article:modified_time" content="{{ page.updated | default(value=page.date)  }}">
+<meta name="description" content="{{ page.extra.abstract }}">
+{% endblock %}
+
+{% block header %}
+{{ hero::main(isPost=true, page=page) }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="content">
+    <section class="content-container">
+      <article>
+        {{ page.content | safe }}
+      </article>
+    </section>
+  </div>
+  {{ aside::main(page=page) }}
+</div>
+{% endblock %}
+
+{% block custom_js %}
+{% if page.toc and page.extra.toc | default(value=true) != false %}
+<script type="module" src="{{ get_url(path='js/outline.js') }}"></script>
+{% endif %}
+{% endblock %}

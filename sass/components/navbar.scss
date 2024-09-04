@@ -1,0 +1,519 @@
+@use "../config.scss";
+
+.NavBar {
+  --searchbox-width: 48px;
+  z-index: var(--joh-z-index-nav);
+  width: 100%;
+  position: relative;
+  height: var(--joh-nav-height);
+  white-space: nowrap;
+  transition: background-color 0.5s;
+
+  &.open {
+    position: fixed !important;
+    top: 0 !important;
+    background: var(--joh-nav-bg-color) !important;
+  }
+
+  &:not(.home) {
+    background-color: var(--joh-nav-bg-color);
+  }
+
+  @media (min-width: config.$pad) {
+    margin-top: 8px;
+    &:not(.home) {
+      background-color: transparent;
+    }
+
+    &:not(.has-sidebar):not(.home.top) {
+      background-color: var(--joh-nav-bg-color);
+    }
+  }
+
+  .wrapper {
+    padding: 0 8px;
+  }
+
+  @media (min-width: config.$tablet) {
+    .wrapper {
+      padding: 0 32px;
+    }
+  }
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    max-width: var(--joh-layout-max-width);
+    height: var(--joh-nav-height);
+  }
+
+  .title {
+    flex-shrink: 0;
+    height: calc(var(--joh-nav-height) - 1px);
+    transition: background-color 0.5s;
+  }
+
+  .content {
+    flex-grow: 1;
+  }
+
+  .content-body {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: var(--joh-nav-height);
+    transition: background-color 0.5s;
+  }
+
+  @media (min-width: config.$pad) {
+    &:not(.home.top) .content-body {
+      position: relative;
+      background-color: var(--joh-nav-bg-color);
+    }
+
+    &:not(.has-sidebar):not(.home.top) .content-body {
+      background-color: transparent;
+    }
+  }
+
+  .menu + .translations::before,
+  .menu + .appearance::before,
+  .menu + .social-links::before,
+  .translations + .appearance::before,
+  .appearance + .social-links::before {
+    margin-right: 8px;
+    margin-left: 8px;
+    width: 1px;
+    height: 24px;
+    background-color: var(--joh-c-divider);
+    content: "";
+  }
+
+  .menu + .appearance::before,
+  .translations + .appearance::before {
+    margin-right: 16px;
+  }
+
+  .appearance + .social-links::before {
+    margin-left: 16px;
+  }
+
+  .social-links {
+    margin-right: -8px;
+  }
+
+  // .divider {
+  //   width: 100%;
+  //   height: 1px;
+  // }
+
+  // .divider-line {
+  //   width: 100%;
+  //   height: 1px;
+  //   transition: background-color 0.5s;
+  // }
+
+  // &:not(.home) .divider-line {
+  //   background-color: var(--joh-c-gutter);
+  // }
+
+  @media (min-width: config.$pad) {
+    &:not(.home.top) .divider-line {
+      background-color: var(--joh-c-gutter);
+    }
+
+    &:not(.has-sidebar):not(.home.top) .divider {
+      background-color: var(--joh-c-gutter);
+    }
+  }
+
+  a.NavBarMenuLink.Link {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    line-height: var(--joh-nav-height);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--joh-c-text-1);
+    transition: color 0.25s;
+  }
+
+  // Navbar Title
+  .NavBarTitle > .title {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid transparent;
+    width: var(--joh-nav-width);
+    height: var(--joh-nav-height);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--joh-c-text-1);
+    transition: opacity 0.25s;
+
+    @media (max-width: config.$tablet) {
+      display: none;
+    }
+
+    @media (min-width: config.$pad) {
+      .title {
+        flex-shrink: 0;
+      }
+
+      .NavBarTitle.has-sidebar .title {
+        border-bottom-color: var(--joh-c-divider);
+      }
+    }
+
+    .logo {
+      margin-right: 8px;
+      margin-top: -8px;
+      height: var(--joh-nav-logo-height);
+    }
+  }
+
+  // Navbar Menu
+  .NavBarMenu {
+    display: none;
+
+    @media (min-width: config.$tablet) {
+      & {
+        display: flex;
+        flex-grow: 1;
+        padding-left: 24px;
+      }
+    }
+
+    @media (min-width: config.$pad) {
+      & {
+        padding-left: 32px;
+      }
+    }
+  }
+
+  // SearchBox
+  .NavBarSearch {
+    margin-left: 8px;
+
+    .DocSearch-Button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0;
+      padding: 0;
+      width: var(--searchbox-width);
+      height: 55px;
+      background: transparent;
+      transition: border-color 0.25s;
+    }
+
+    .DocSearch-Button:hover {
+      background: transparent;
+    }
+
+    .DocSearch-Button:focus {
+      outline: 1px dotted;
+      outline: 5px auto -webkit-focus-ring-color;
+    }
+
+    .DocSearch-Button-Key--pressed {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .DocSearch-Button:focus:not(:focus-visible) {
+      outline: none !important;
+    }
+
+    .DocSearch-Button-Tips {
+      display: flex;
+    }
+
+    @media (min-width: config.$tablet) {
+      .DocSearch-Button {
+        justify-content: space-between;
+        border: solid 2px var(--docsearch-border-color);
+        border-radius: 8px;
+        padding: 0 10px 0 12px;
+        width: 205px;
+        height: 35px;
+        background-color: var(--joh-c-bg-alt);
+      }
+
+      .DocSearch-Button:hover {
+        background: var(--joh-c-bg-alt);
+      }
+    }
+
+    .DocSearch-Button .DocSearch-Button-Container {
+      display: flex;
+      align-items: center;
+    }
+
+    .DocSearch-Button .DocSearch-Search-Icon {
+      position: relative;
+      width: 16px;
+      height: 16px;
+      color: var(--joh-c-text-1);
+      fill: currentColor;
+      transition: color 0.5s;
+    }
+
+    .DocSearch-Button:hover .DocSearch-Search-Icon {
+      color: var(--joh-c-text-1);
+    }
+
+    @media (min-width: config.$tablet) {
+      .DocSearch-Button .DocSearch-Search-Icon {
+        top: 1px;
+        margin-right: 8px;
+        width: 14px;
+        height: 14px;
+        color: var(--joh-c-text-2);
+      }
+    }
+
+    .DocSearch-Button .DocSearch-Button-Placeholder {
+      display: none;
+      margin-top: 2px;
+      padding: 0 16px 0 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--joh-c-text-2);
+      transition: color 0.5s;
+    }
+
+    .DocSearch-Button:hover .DocSearch-Button-Placeholder {
+      color: var(--joh-c-text-1);
+    }
+
+    @media (min-width: config.$tablet) {
+      .DocSearch-Button .DocSearch-Button-Placeholder {
+        display: inline-block;
+      }
+    }
+
+    .DocSearch-Button .DocSearch-Button-Keys {
+      /*rtl:ignore*/
+      direction: ltr;
+      display: none;
+      min-width: auto;
+    }
+
+    @media (min-width: config.$tablet) {
+      .DocSearch-Button .DocSearch-Button-Keys {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .DocSearch-Button .DocSearch-Button-Key {
+      display: block;
+      margin: 2px 0 0 0;
+      border: 1px solid var(--joh-c-divider);
+      /*rtl:begin:ignore*/
+      border-right: none;
+      border-radius: 4px 0 0 4px;
+      padding-left: 6px;
+      /*rtl:end:ignore*/
+      min-width: 0;
+      width: auto;
+      height: 22px;
+      line-height: 22px;
+      font-family: var(--joh-font-family-base);
+      font-size: 12px;
+      font-weight: 500;
+      transition:
+        color 0.5s,
+        border-color 0.5s;
+    }
+
+    .DocSearch-Button .DocSearch-Button-Key + .DocSearch-Button-Key {
+      /*rtl:begin:ignore*/
+      border-right: 1px solid var(--joh-c-divider);
+      border-left: none;
+      border-radius: 0 4px 4px 0;
+      padding-left: 2px;
+      padding-right: 6px;
+      /*rtl:end:ignore*/
+    }
+
+    .DocSearch-Button .DocSearch-Button-Key:first-child {
+      font-size: 0 !important;
+    }
+
+    .DocSearch-Button .DocSearch-Button-Key:first-child:after {
+      content: "Ctrl";
+      font-size: 12px;
+      letter-spacing: normal;
+      color: var(--docsearch-muted-color);
+    }
+
+    .mac .DocSearch-Button .DocSearch-Button-Key:first-child:after {
+      content: "\2318";
+    }
+
+    .DocSearch-Button .DocSearch-Button-Key:first-child > * {
+      display: none;
+    }
+  }
+
+  //NavBarHamburger
+
+  .NavBarHamburger {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: var(--searchbox-width);
+    height: var(--joh-nav-height);
+
+    @media (min-width: config.$tablet) {
+      & {
+        display: none;
+      }
+    }
+
+    .container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      cursor: inherit;
+      overflow: hidden;
+
+      & > span {
+        display: inline-block;
+        width: 100%;
+        height: 2px;
+        border-radius: 2px;
+        background-color: var(--joh-c-text-2);
+        transition:
+          top 0.25s,
+          background-color 0.25s,
+          transform 0.25s;
+      }
+
+      & > span:nth-child(2) {
+        margin: 6px 0;
+      }
+    }
+
+    // Btn Active Animation
+    &.open .container > span:nth-child(1) {
+      transform: rotate(45deg) translate3d(5.5px, 5.5px, 0);
+    }
+
+    &.open .container > span:nth-child(2) {
+      transform: scale3d(0, 1, 1);
+    }
+
+    &.open .container > span:nth-child(3) {
+      transform-origin: center;
+      transform: rotate(-45deg) translate3d(6px, -6px, 0);
+    }
+  }
+
+  // NavBarSocialLink
+  @media (max-width: config.$pad) {
+    .NavBarSocialLink {
+      display: inline-block !important;
+      width: 100%;
+      text-align: center;
+      font-weight: bold !important;
+    }
+  }
+
+  .NavScreen.open {
+    display: block;
+    opacity: 0.95;
+    z-index: var(--joh-z-index-sidebar);
+  }
+
+  .NavScreen {
+    z-index: -1;
+    display: none;
+    position: fixed;
+    top: calc(var(--joh-nav-height) + var(--joh-layout-top-height, 0px));
+    /*rtl:ignore*/
+    right: 0;
+    bottom: 0;
+    /*rtl:ignore*/
+    left: 0;
+    padding: 0 32px;
+    width: 100%;
+    background-color: var(--joh-nav-screen-bg-color);
+    overflow-y: auto;
+    transition: background-color 0.5s;
+    pointer-events: auto;
+    opacity: 0;
+    transition: all 0.25s ease;
+    transition-behavior: allow-discrete;
+    transition-property: display opacity transform;
+    transform: translateY(-8px);
+
+    @starting-style {
+      opacity: 0.95;
+      transform: translateY(0);
+    }
+
+    .container,
+    .NavScreenMenu {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-items: center;
+      margin: 0 auto;
+      padding: 24px 0 0;
+      max-width: 288px;
+
+      .NavScreenMenuLink {
+        display: block;
+        padding: 12px 0 11px;
+        line-height: 24px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--joh-c-text-1);
+        transition:
+          border-color 0.25s,
+          color 0.25s;
+      }
+
+      .NavScreenMenuGroupLink {
+        display: block;
+        margin-left: 12px;
+        line-height: 32px;
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--joh-c-text-1);
+        transition: color 0.25s;
+      }
+
+      .NavBarSocialLink {
+        margin-right: 0;
+      }
+    }
+  }
+
+  @media (min-width: config.$tablet) {
+    .NavScreen {
+      display: none;
+    }
+  }
+}
+
+.post > #app > .Layout > .NavBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(rgba(14, 14, 14, 0.3), rgba(0, 0, 0, 0));
+  margin-top: 0;
+
+  .divider {
+    display: none;
+  }
+}

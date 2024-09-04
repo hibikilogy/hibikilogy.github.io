@@ -1,0 +1,11 @@
+{% import 'components/toc.html' as toc %}
+
+{% macro main(page) %}
+<div class="Aside">
+  <div class="aside-container">
+    <div class="aside-container">
+      {{ toc::main(page=page) }}
+    </div>
+  </div>
+</div>
+{% endmacro %}

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ page.title }} | {{ config.title }}
+{% endblock %}
+
+{% block class %}
+search
+{% endblock %}
+
+{% block meta %}
+<link href="/pagefind/pagefind-ui.css" rel="stylesheet">
+<link href="{{ get_url(path='layout/search.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="content">
+    <div class="content-container">
+      <div id="search"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block custom_js %}
+<script src="/pagefind/pagefind-ui.js"></script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    new PagefindUI({
+      element: "#search",
+      showImages: true,
+      showSubResults: true,
+      resetStyles: false,
+      autofocus: false,
+      pageSize: 8,
+      excerptLength: 30
+    });
+
+    handlingRequests()
+
+    window.addEventListener('scroll', throttle(handleScroll, 200));
+  });
+
+  function handleScroll() {
+    const updateButton = document.querySelector('#search > div > form > div > div > button')
+    if (!updateButton) return;
+    const documentHeight = document.documentElement.scrollHeight;
+    const windowHeight = window.innerHeight;
+    const scrollTop = window.scrollY || window.pageYOffset;
+
+    const distanceToBottom = documentHeight - (scrollTop + windowHeight);
+
+    if (distanceToBottom < 150) {
+      updateButton.click()
+    }
+  }
+
+  function handlingRequests() {
+    const param = new URLSearchParams(window.location.search).get('q');
+
+    if (!param) return;
+
+    const inputElement = document.querySelector('#search > div > form > input');
+
+    const tempDiv = document.createElement('div');
+    tempDiv.textContent = param;
+    inputElement.value = tempDiv.textContent;
+    inputElement.dispatchEvent(new Event('input', {
+      bubbles: false,
+      cancelable: true,
+    }));
+  }
+
+  function throttle(fn, limit) {
+    let lastCall = 0;
+    let timeout;
+
+    return function (...args) {
+      const now = Date.now();
+
+      if (!lastCall || now - lastCall >= limit) {
+        lastCall = now;
+        fn.apply(this, args);
+      } else {
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          lastCall = now;
+          fn.apply(this, args);
+        }, limit - (now - lastCall));
+      }
+    };
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,34 @@
+@use "../config.scss";
+
+.Content {
+  padding: 24px 24px 96px;
+  width: 100%;
+
+  &:not(.has-aside) > .container > .Aside {
+    display: none;
+  }
+
+  .container {
+    margin: 0 auto;
+    max-width: var(--joh-layout-max-width);
+  }
+
+  @media (min-width: config.$tablet) {
+    padding: 48px 32px 128px;
+  }
+
+  @media (min-width: config.$pad) {
+    padding: 48px 32px 0;
+  }
+
+  @media (min-width: config.$laptop) {
+    & .container {
+      display: flex;
+      justify-content: center;
+    }
+
+    & .Aside {
+      display: block;
+    }
+  }
+}

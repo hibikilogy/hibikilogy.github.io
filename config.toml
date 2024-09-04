@@ -1,0 +1,71 @@
+base_url = "https://hibikilogy.github.io"
+title = "京吹学报"
+description = "吹学著作集锦"
+default_language = "zh"
+compile_sass = true
+minify_html = true
+generate_feeds = true
+hard_link_static = false
+build_search_index = false
+ignored_content = ["temp.*"]
+taxonomies = [
+  { name = "categories", feed = true, paginate_by = 12 },
+  { name = "tags", feed = true, paginate_by = 12 },
+  { name = "author", feed = true, paginate_by = 12 }
+]
+
+[markdown]
+highlight_code = true
+extra_syntaxes = []
+highlight_theme = "one-dark"
+render_emoji = true
+external_links_target_blank = true
+external_links_no_follow = true
+external_links_no_referrer = true
+smart_punctuation = false
+
+[link_checker]
+skip_prefixes = ["http://[2001:db8::]/"]
+
+[slugify]
+anchors = "on"
+paths = "on"
+taxonomies = "on"
+
+[extra]
+footer = [
+  { code = "zh", tags_text = "标签", copyright = "本站收录文章著作权归原作者所有", count = "总查询数", frendlinks_text = "友情链接", list = [
+    { text = "京吹学报", link = "$BASE_URL/" },
+    { text = "加入我们", link = "$BASE_URL/docs/join-us" },
+    { text = "RSS", link = "$BASE_URL/atom.xml" },
+    { text = "GitHub", link = "https://github.com/hibikilogy/hibikilogy.github.io" },
+  ], frendlinks = [
+    { text = "中国珂学院维基", link = "https://wiki.sukasuka.cn/" },
+    { text = "粳米团子", link = "https://kyoani.cn/" },
+  ], contact = { text = "投稿邮箱 journal@kyoani.cn", link = "journal@kyoani.cn" } },
+]
+section = [{ code = "zh", publish = "发表于", author = "作者" }]
+navbar = [
+  { code = "zh", list = [
+    { text = "我要投稿", link = "$BASE_URL/docs/contribute" },
+    { text = "能力鉴定", link = "$BASE_URL/docs/assessment" },
+    { text = "实体版特刊", link = "$BASE_URL/" },
+  ] },
+]
+social_link = [{ code = "zh", text = "吹学著作集锦", link = '/' }]
+medium_zoom.enabled = true
+chart.enabled = true
+galleria.enabled = true
+katex.auto_render = true
+katex.enabled = true
+mermaid.enabled = true
+
+[extra.favicon]
+apple_touch_icon = "/apple-touch-icon-precomposed.png"
+small_icon = "/favicon.ico"
+svg_icon = "/logo-blue.svg"
+safari_pinned_tab = "/apple-touch-icon-precomposed.png"
+webmanifest = "/site.manifest"
+
+[extra.analytics]
+google = "G-DWY77Z5HMS"

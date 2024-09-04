@@ -1,0 +1,90 @@
+{% macro page_publish_metadata(page) %}
+<time class="article-publish-date" datetime="{{ page.date }}"
+  data-pagefind-meta="发布于: {{page.date | date(format='%Y 年 %m 月 %d 日') }}">
+  发布于 {{page.date | date(format='%Y 年 %m 月 %d 日') }}
+</time>
+<a class="article-author"
+  data-pagefind-meta="作者: {% if page.taxonomies.author[0] %}{{ page.taxonomies.author[0] }}{% else %}Anonymity {% endif %}"
+  href="{% if page.taxonomies.author[0] %} {{ get_taxonomy_url(kind='author', name=page.taxonomies.author[0]) }} {% endif %}">
+  <span class="author-title">作者</span class="author-name">
+  {% if page.taxonomies.author[0] %}
+  {{ page.taxonomies.author[0] }}
+  {% else %}
+  Anonymity
+  {% endif %}
+</a>
+{% endmacro %}
+
+{% macro img(path, class="", alt="",caption="", scale=1, quality=100, width=1,
+height=1) %}
+{% if path is starting_with("./") %}
+{% set relative_path = page.relative_path | split(pat="/") | slice(end=-1) |
+join(sep="/") %}
+{% set img_path = path | trim_start_matches(pat="./") %}
+{% set img_path = relative_path ~ "/" ~ img_path %}
+{% else %}
+{% set img_path = path %}
+{% endif %}
+
+{% set file_ext = path | split(pat=".") | last %}
+{% set mdata = get_image_metadata(path=path) %}
+{% set image = resize_image(path=path, width=(mdata.width * scale)|int,
+op="fit_width") %}
+{% set mdata = get_image_metadata(path=path) %}
+
+{% set resized_image = resize_image(path=img_path, width=width,
+op="fit_width", quality=quality) %}
+{% set webp = resize_image(path=img_path, width=width, op="fit_width",
+quality=quality, format="webp") %}
+{% set high_res_url = resized_image.url %}
+
+<figure>
+  <picture>
+    <source srcset="{{ webp.url }}" type="image/webp" data-resolution-width="{{width}}"">
+      <source srcset=" {{ high_res_url }}" media="(min-width: 2x)" type="image/{{ file_ext }}"
+      data-resolution-width="{{width}}">
+    <img src="{{ resized_image.url }}" loading="eager" class="{{ class }}" alt="{{ alt }}"
+      style="width: 100%; height: auto;" data-resolution-width="{{width}}">
+  </picture>
+  {% if caption %}
+  <figcaption>{{ caption | safe }}</figcaption>
+  {% endif %}
+</figure>
+{% endmacro %}
+
+{% macro prev_page(paginator) %}
+<a class="pagination-previous" title="上一页" href='{{ paginator.previous }}' {% if not paginator.previous %}disabled{%
+  endif %}>
+  <i class="johi-icon-left"></i>
+</a>
+{% endmacro %}
+
+{% macro next_page(paginator) %}
+<a class="pagination-next" title="下一页" href='{{ paginator.next }}' {% if not paginator.next %}disabled{% endif %}>
+  <i class="johi-icon-right"></i>
+</a>
+{% endmacro %}
+
+{% macro tags_list(show_count=false) %}
+{% set tags = get_taxonomy(kind="tags") %}
+{% for tag in tags.items | sort(attribute='pages') | reverse %}
+<a href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" class="joh-tag" target="_blank" title="{{tag.name}}">
+  <span>{{tag.name}}</span>
+  {% if show_count %}
+  <span class="tag-count">
+    {{ tag.pages | length }}
+  </span>
+  {% endif %}
+</a>
+{% endfor %}
+{% endmacro %}
+
+{% macro post_tags_list(page) %}
+{% if page.taxonomies.tags %}
+{% for tag in page.taxonomies.tags %}
+<a href="{{ get_taxonomy_url(kind='tags', name=tag) }}" class="joh-tag" target="_blank" title="{{tag}}">
+  <span>{{tag}}</span>
+</a>
+{% endfor %}
+{% endif %}
+{% endmacro %}

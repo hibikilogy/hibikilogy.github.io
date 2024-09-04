@@ -1,0 +1,73 @@
+@use "../config.scss";
+@use "toc.scss";
+
+.Aside {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin-left: 32px;
+
+  .spacer {
+    flex-grow: 1;
+  }
+
+  .aside {
+    position: relative;
+    display: none;
+    order: 2;
+    flex-grow: 1;
+    padding-left: 32px;
+    width: 100%;
+    max-width: 256px;
+  }
+
+  .aside-container {
+    position: sticky;
+    top: 32px;
+    width: 224px;
+    height: 100vh;
+    padding-top: 2px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+
+  .aside-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .aside-content {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - (var(--joh-nav-height) + var(--joh-layout-top-height, 0px) + 48px));
+    padding-bottom: 32px;
+  }
+
+  .content {
+    position: relative;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  @media (min-width: 1280px) {
+    .content {
+      order: 1;
+      margin: 0;
+      min-width: 640px;
+    }
+  }
+
+  .content-container {
+    margin: 0 auto;
+  }
+
+  .Content.has-aside .content-container {
+    max-width: 688px;
+  }
+
+  @media (max-width: config.$laptop) {
+    & {
+      display: none;
+    }
+  }
+}

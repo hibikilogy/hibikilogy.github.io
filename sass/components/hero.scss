@@ -1,0 +1,182 @@
+@use "../config.scss";
+
+.Hero {
+  z-index: var(--joh-z-index-header-hero);
+  margin-bottom: var(--joh-nav-height);
+
+  @media (max-width: config.$mobile) {
+    margin-bottom: 0;
+  }
+
+  .container {
+    width: 100%;
+    height: 100%;
+
+    .post-heading {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      min-height: 52vh;
+      max-height: 600px;
+      overflow: hidden;
+      background-color: #bfbfbf;
+      color: #fff;
+
+      img {
+        z-index: 1;
+        width: 100%;
+        min-height: 52vh;
+        object-fit: cover;
+        pointer-events: none;
+
+        @media (min-width: config.$tablet) {
+          height: 100%;
+        }
+      }
+
+      .default-bg {
+        filter: opacity(0.05);
+      }
+
+      .post-heading-info {
+        position: absolute;
+        bottom: 0;
+        z-index: var(--joh-z-index-layout-top);
+        width: 100%;
+        height: min-content;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4795) 52%, rgba(0, 0, 0, 0.5) 100%);
+      }
+
+      .post-heading-info-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin: 0 auto;
+        width: var(--joh-layout-max-width);
+        height: min-content;
+        padding-bottom: 2rem;
+        padding-top: 6rem;
+
+        @media (max-width: config.$laptop) {
+          width: 100%;
+          padding: 4rem 2rem 2rem 2rem;
+        }
+
+        @media (max-width: config.$mobile) {
+          padding: 4rem 1rem 2rem 1rem;
+
+          h1 {
+            width: 100%;
+          }
+        }
+
+        .post-heading-tags {
+          line-height: 24px;
+          font-size: 16px;
+          margin-bottom: 22px;
+
+          @media (min-width: config.$tablet) {
+            font-size: 1.125rem;
+            line-height: 1.25rem;
+          }
+        }
+
+        h1 {
+          width: 85%;
+          font-weight: 900;
+          font-size: 30px;
+          line-height: 36px;
+
+          @media (max-width: config.$mobile) {
+            width: 100%;
+          }
+
+          @media (min-width: config.$tablet) {
+            font-size: 3.4375rem;
+            line-height: 3.75rem;
+          }
+        }
+
+        .post-heading-subtitle {
+          font-size: 20px;
+          margin-top: 8px;
+          font-weight: 700;
+
+          @media (min-width: config.$tablet) {
+            font-size: 1.125rem;
+            line-height: 1.875rem;
+          }
+        }
+
+        .post-heading-meta {
+          margin-top: 20px;
+          display: flex;
+          flex-direction: row;
+          font-weight: 400;
+          font-size: 18px;
+          white-space: nowrap;
+
+          @media (max-width: config.$laptop) {
+            font-size: 0.875rem;
+          }
+
+          .article-publish-date {
+            order: 2;
+          }
+
+          .article-author {
+            margin-right: 1rem;
+
+            .author-name {
+              font-weight: 700;
+            }
+          }
+        }
+      }
+    }
+
+    .taxonomies-banner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      min-height: 160px;
+      background-image: url("/imgs/tag-cloud.svg");
+      background-position: center 0;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-color: #222;
+
+      @media (max-width: config.$mobile) {
+        background-position: -10%;
+      }
+    }
+
+    .taxonomies-meta {
+      position: absolute;
+
+      h2 {
+        font-size: 2.25rem;
+        color: #fff;
+        font-weight: bold;
+        &::before {
+          margin-right: 6px;
+          font-weight: bold;
+        }
+      }
+
+      p {
+        font-size: 1rem;
+        line-height: 30px;
+        color: #999;
+        text-align: center;
+        margin-top: 1rem;
+      }
+
+      .banner-title {
+        color: #999;
+      }
+    }
+  }
+}

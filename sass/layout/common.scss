@@ -1,0 +1,42 @@
+@use "../config";
+
+:root {
+  scrollbar-width: thin;
+
+  @media (prefers-reduced-motion: no-preference) {
+    scroll-behavior: smooth;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track-piece {
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  background: rgb(0 0 0 / 10%);
+}
+
+::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  background: var(--theme-color);
+
+  &:active {
+    background: var(--theme-color-light);
+  }
+}
+
+.hide-in-mobile {
+  @media (max-width: config.$tablet) {
+    display: none !important;
+  }
+}
+
+.hide-in-pad {
+  @media (max-width: config.$pad) {
+    display: none !important;
+  }
+}

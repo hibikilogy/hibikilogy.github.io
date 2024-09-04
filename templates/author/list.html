@@ -1,0 +1,20 @@
+{% import 'components/hero.html' as hero %}
+{% extends "base.html" %}
+
+{% block header %}
+{{ hero::main(isPost=false, page="", title="作者") }}
+{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    {% for author in terms %}
+    <a class="joh-tag" href="{{ get_taxonomy_url(kind='author', name=author.name) }}" target="_blank"
+      title="{{author.name}}">
+      <span>{{author.name}}</span>
+      <span class="tag-count">{{ author.pages | length }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock lists %}

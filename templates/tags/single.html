@@ -1,0 +1,11 @@
+{% import 'components/journal.html' as journal %}
+{% import 'components/hero.html' as hero %}
+{% extends "base.html" %}
+
+{% block header %}
+{{ hero::main(isPost=false, page="", title="#", name=term.name, kind="tags") }}
+{% endblock %}
+
+{% block content %}
+{{ journal::main() }}
+{% endblock content %}

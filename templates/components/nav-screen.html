@@ -1,0 +1,64 @@
+{% import 'macros.html' as macros %}
+
+{% macro main() %}
+<div class="NavScreen" :class="NavScreenClasses"
+  @click="navScreenHandleClick">
+  <div class="container">
+    <nav aria-labelledby="main-nav-aria-label" role="navigation"
+      aria-label="section navigation"
+      class="NavScreenMenu menu">
+      {% for item in config.extra.navbar %}
+      {% if lang == item.code %}
+      {% for nav in item.list %}
+      {% if nav.link %}
+      <a class="Link link NavScreenMenuLink" aria-expanded="false"
+        aria-label="menu" role="button"
+        href="{{ nav.link | replace(from='$BASE_URL', to=config.base_url) }}"
+        tabindex="0">
+        <span>{{ nav.text }}</span>
+      </a>
+      {% else %}
+      <div class="NavScreenMenuGroupLink">
+        <button type="button" class="button" aria-haspopup="true"
+          aria-expanded="false">
+          <span class="text">
+            <span>{{ nav.text }}</span>
+            <span class="i-chevron-down text-icon"></span>
+          </span>
+        </button>
+        <div class="menu">
+          <div class="Menu">
+            <div class="items">
+              {% for _nav in nav.items %}
+              <div class="MenuLink">
+                <a class="Link NavScreenMenuLink"
+                  href="{{ _nav.link | replace(from='$BASE_URL', to=config.base_url) }}"
+                  target="_blank"
+                  rel="noreferrer">
+                  {{ _nav.text }}
+                </a>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endfor %}
+      </nav>
+      {% for item in config.extra.social_link %}
+      {% if lang == item.code %}
+      <a class="Link link NavScreenMenuLink NavBarSocialLink"
+        aria-expanded="false" aria-label="menu"
+        role="button"
+        href="{{ item.link | replace(from='$BASE_URL', to=config.base_url) }}"
+        tabindex="0">
+        <span>{{ item.text }}</span>
+        {% endif %}
+        {% endfor %}
+      </a>
+    </nav>
+  </div>
+</div>
+{% endmacro main %}

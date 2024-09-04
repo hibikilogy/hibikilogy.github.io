@@ -1,0 +1,107 @@
+@use "../config.scss";
+@use "sass:math";
+
+.Pagination {
+  position: relative;
+  padding: 0 12px;
+  background-color: var(--joh-c-bg);
+  margin-top: 12px;
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    max-width: var(--joh-layout-max-width);
+  }
+
+  .sorting {
+    display: flex;
+    align-items: baseline;
+
+    select {
+      line-height: 24px;
+      font-family: var(--joh-font-family-base);
+      font-size: 16px;
+      font-weight: 400;
+    }
+  }
+
+  .paging {
+    width: 100%;
+  }
+
+  .paging-mobile {
+    display: none;
+    text-align: right;
+  }
+
+  .paging-desktop {
+    .pagination-list,
+    .pager-list,
+    .pager-list-reversed,
+    .pager-list-past {
+      display: flex;
+      justify-content: center;
+
+      li {
+        min-width: 32px;
+        line-height: 32px;
+        text-align: center;
+        padding: 0 4px;
+      }
+
+      .no-hide {
+        display: block;
+      }
+    }
+
+    .pager-list-reversed {
+      flex-direction: row-reverse;
+    }
+
+    .pager-more {
+      padding: 5px 4px !important;
+      color: #999;
+    }
+
+    .is-current,
+    .pager-more {
+      cursor: default;
+    }
+
+    .is-lastpage {
+      .pager-first,
+      .pager-more,
+      .pager-total {
+        display: none;
+      }
+    }
+
+    ul[data-page="1"] > li:nth-child(12) ~ li {
+      display: none;
+    }
+
+    @for $i from 1 through 100 {
+      .pager-list[data-page="#{$i}"] > .pager-item:nth-child(#{$i + 7}) ~ li,
+      .pager-list[data-page="#{$i}"] > .pager-item:nth-child(-n + #{($i - 1)}) {
+        display: none;
+      }
+
+      @for $i from 8 through 100 {
+        .pager-list-past[data-page="#{$i}"] > .pager-item:nth-child(-n + #{($i - 6)}) {
+          display: none;
+        }
+      }
+    }
+  }
+
+  @media (max-width: config.$tablet) {
+    .paging-mobile {
+      display: block;
+    }
+
+    .paging-desktop {
+      display: none;
+    }
+  }
+}

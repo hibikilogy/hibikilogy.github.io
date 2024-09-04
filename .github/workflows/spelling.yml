@@ -1,0 +1,11 @@
+name: PRSPELLCHECK
+on: [pull_request]
+jobs:
+  run:
+    name: Spell Check with Typos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check spelling
+        uses: crate-ci/typos@master
+        with: { config: ./.github/_typos.toml }

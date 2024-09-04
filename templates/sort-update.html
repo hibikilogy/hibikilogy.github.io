@@ -1,0 +1,26 @@
+{% import 'components/article.html' as article %}
+{% import 'components/footer.html' as footer %}
+
+{% extends "base.html" %}
+
+{% block class %}
+Sort
+{% endblock %}
+
+{% block content %}
+<div class="Journal">
+  <div class="container">
+    {%- set posts = get_section(path="posts/_index.md") %}
+    {% set index = 0 %}
+    {% for page in posts | sort(attribute='updated') %}
+    {{ article::main(page=page, index=index == 0) }}
+    {% set_global index = index + 1 %}
+    {% endfor %}
+  </div>
+</div>
+<script src="{{get_url(path='js/water-fall.js')}}"></script>
+{% endblock %}
+
+{% block footer %}
+{{ footer::main(show_tags=true, show_friendlinks=true) }}
+{% endblock %}

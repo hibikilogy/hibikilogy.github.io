@@ -1,0 +1,22 @@
+{% macro main(page, index) %}
+<article class="Section Article">
+  <a href="{{ page.permalink }}">
+    <h2 class="article-title">
+      {{ page.title }}
+    </h2>
+    <p class="article-subtitle">{{ page.description }}</p>
+    <div class="article-main">
+      {% if index and page.extra.cover %}
+      <img class="article-cover" src="{{page.extra.cover }}"
+        alt="{% if page.extra.cover_alt %}{{ page.extra.cover_alt }}{% else %}{{ page.title }}{% endif %}" />
+      {% endif %}
+      <div class="article-content">
+        {{ page.extra.abstract }}
+      </div>
+    </div>
+  </a>
+  <div class="article-meta">
+    {{ macros::page_publish_metadata(page=page) }}
+  </div>
+</article>
+{% endmacro %}
