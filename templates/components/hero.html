@@ -38,4 +38,12 @@
     {% endif %}
   </div>
 </header>
+
+{% if page.extra.cover %}
+<style>
+  .post>#app>.Layout>.NavBar {
+    background: linear-gradient(180deg, #ffffff 0%, rgba(216, 216, 216, 0) 100%);
+  }
+</style>
+{% endif %}
 {% endmacro %}

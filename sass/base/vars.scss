@@ -229,16 +229,16 @@ html.dark {
  * -------------------------------------------------------------------------- */
 
 :root {
-  --joh-font-family-base: "SourceHanSerifCN-Heavy", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --joh-font-family-base: "SourceHanSans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
   --joh-font-family-mono: ui-monospace, "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
   font-optical-sizing: auto;
 }
 
 :root:where(:lang(zh)) {
-  --joh-font-family-base: "SourceHanSerifCN-Heavy", ui-sans-serif, system-ui, "PingFang SC", "Noto Sans CJK SC",
-    "Noto Sans SC", "Heiti SC", "Microsoft YaHei", "DengXian", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
+  --joh-font-family-base: "SourceHanSans", ui-sans-serif, system-ui, "PingFang SC", "Noto Sans CJK SC", "Noto Sans SC",
+    "Heiti SC", "Microsoft YaHei", "DengXian", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
 }
 
 /**

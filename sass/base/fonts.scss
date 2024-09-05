@@ -1,7 +1,15 @@
 @font-face {
-  font-family: SourceHanSerifCN-Heavy;
+  font-family: SourceHanSans;
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/SourceHanSerifCN-Heavy.woff2") format("woff2");
+  src: url("/fonts/SourceHanSans-VF.ttf");
+}
+
+@font-face {
+  font-family: SourceHanSerif;
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/fonts/SourceHanSerifSC-Heavy.otf");
 }

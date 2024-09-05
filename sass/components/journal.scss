@@ -60,6 +60,7 @@
     }
 
     .article-title {
+      font-family: SourceHanSerif;
       font-size: 1.5rem;
       line-height: 2.25rem;
       font-weight: 900;
@@ -80,6 +81,16 @@
 
       .author-name {
         color: var(--joh-c-text-1);
+      }
+
+      .article-author {
+        font-weight: 700;
+        color: #222222;
+
+        .author-title {
+          font-weight: normal;
+          color: #999;
+        }
       }
     }
   }

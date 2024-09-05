@@ -39,6 +39,10 @@
         filter: opacity(0.05);
       }
 
+      .default-bg + .post-heading-info {
+        background: none;
+      }
+
       .post-heading-info {
         position: absolute;
         bottom: 0;
@@ -53,18 +57,18 @@
         flex-direction: column;
         justify-content: center;
         margin: 0 auto;
-        width: var(--joh-layout-max-width);
         height: min-content;
-        padding-bottom: 2rem;
+        padding-bottom: 2.875rem;
         padding-top: 6rem;
+        max-width: var(--joh-layout-max-width);
 
         @media (max-width: config.$laptop) {
           width: 100%;
-          padding: 4rem 2rem 2rem 2rem;
+          padding: 4rem 2rem 2.875rem 2rem;
         }
 
         @media (max-width: config.$mobile) {
-          padding: 4rem 1rem 2rem 1rem;
+          padding: 4rem 1rem 2.875rem 1rem;
 
           h1 {
             width: 100%;
@@ -73,8 +77,13 @@
 
         .post-heading-tags {
           line-height: 24px;
-          font-size: 16px;
+          font-size: 18px;
           margin-bottom: 22px;
+
+          a::before {
+            color: rgba(255, 255, 255, 0.5);
+            margin-right: -4px;
+          }
 
           @media (min-width: config.$tablet) {
             font-size: 1.125rem;
@@ -83,30 +92,32 @@
         }
 
         h1 {
+          font-family: SourceHanSerif;
           width: 85%;
           font-weight: 900;
           font-size: 30px;
           line-height: 36px;
+          font-weight: 900;
+          line-height: 60px;
+          text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
 
           @media (max-width: config.$mobile) {
             width: 100%;
           }
 
           @media (min-width: config.$tablet) {
-            font-size: 3.4375rem;
-            line-height: 3.75rem;
+            font-size: 55px;
+            letter-spacing: 0em;
           }
         }
 
         .post-heading-subtitle {
-          font-size: 20px;
           margin-top: 8px;
           font-weight: 700;
+          font-size: 1.125rem;
+          line-height: 1.875rem;
 
-          @media (min-width: config.$tablet) {
-            font-size: 1.125rem;
-            line-height: 1.875rem;
-          }
+          text-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .post-heading-meta {
@@ -122,14 +133,17 @@
           }
 
           .article-publish-date {
+            font-weight: 400;
             order: 2;
           }
 
           .article-author {
             margin-right: 1rem;
+            font-weight: 700;
 
-            .author-name {
-              font-weight: 700;
+            .author-title {
+              font-weight: 400;
+              text-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.3);
             }
           }
         }
@@ -147,6 +161,7 @@
       background-size: cover;
       background-repeat: no-repeat;
       background-color: #222;
+      text-shadow: 0px 4px 10px #000000;
 
       @media (max-width: config.$mobile) {
         background-position: -10%;
