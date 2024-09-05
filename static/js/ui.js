@@ -41,5 +41,10 @@ createApp({
       'open': store.navScreenIsOpen,
       'top': store.scrollY === 0
     }
+  },
+  get systemClasses() {
+    return {
+      'mac': /Mac|iPhone|iPod|iPad/i.test(navigator.platform)
+    }
   }
 }).mount()
