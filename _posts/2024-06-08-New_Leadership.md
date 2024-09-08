@@ -1,7 +1,7 @@
 ---
 layout: post
 date: 2024-06-08
-header-img: https://hibikilogy.github.io/images/2024-06-08/QkFKUm0kOVdMMTFheF4_SA==.w658.h370.webp
+header-img: 
 title: 新一届吹部领导机构领导人名单及简历
 author: 芙蓉城里尽朝晖
 original: https://www.bilibili.com/read/cv28739170
@@ -25,7 +25,7 @@ tags:
 
 ![](https://hibikilogy.github.io/images/2024-06-08/QkFKUm0kOVdMMTFheF4_SA==.w658.h370.webp)
 
-**同志们，朋友们，乐手们，听众们，新时代在召唤我们！**
+&emsp;&emsp;**同志们，朋友们，乐手们，听众们，新时代在召唤我们！**
 
 * * *  
 
