@@ -1,7 +1,7 @@
 ---
 layout: post
 date: 2023-12-22
-header-img: ../images/2023-12-22/QllKUSttUlFSajBMeHVSag==.w659.h370.webp
+header-img: https://hibikilogy.github.io/images/2023-12-22/QllKUSttUlFSajBMeHVSag==.w659.h370.webp
 title: 电视动画《吹响！上低音号3》偷跑片段抢先看！
 author: 芙蓉城里尽朝晖
 original: https://www.bilibili.com/read/cv28725055
@@ -19,7 +19,7 @@ tags:
 
 &emsp;&emsp;**内含剧透慎点！！！**
 
-![](../images/2023-12-22/QllKUSttUlFSajBMeHVSag==.w659.h370.webp)
+![](https://hibikilogy.github.io/images/2023-12-22/QllKUSttUlFSajBMeHVSag==.w659.h370.webp)
 
 &emsp;&emsp;……
 
