@@ -2,7 +2,7 @@
 layout: post
 date: 2023-12-22
 header-img: https://hibikilogy.github.io/images/2023-12-22/Qk9GNX5oflY5P0RpRCpPcw==.w658.h370.webp
-title: 北宇治吹奏乐部副部长中川夏纪答校内外提问
+title: 副部长中川夏纪答校内外记者问
 subtitle: 黄前十六年北高祭记者会_北宇治高校网直播（节选）
 author: 芙蓉城里尽朝晖
 original: https://www.bilibili.com/read/cv28724674
