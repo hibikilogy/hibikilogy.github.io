@@ -1,7 +1,7 @@
 ---
 layout: post
 date: 2023-12-22
-header-img: https://hibikilogy.github.io/images/2023-12-22/Qk9GNX5oflY5P0RpRCpPcw==.w658.h370.webp)
+header-img: https://hibikilogy.github.io/images/2023-12-22/Qk9GNX5oflY5P0RpRCpPcw==.w658.h370.webp
 title: 北宇治吹奏乐部副部长中川夏纪答校内外提问
 subtitle: 黄前十六年北高祭记者会_北宇治高校网直播（节选）
 author: 芙蓉城里尽朝晖
@@ -13,7 +13,7 @@ tags:
     - 改编
     - bilibili
 ---
->**中川 夏紀：公平と正義は金管楽器よりも輝いている**
+&emsp;&emsp;**中川 夏紀：公平と正義は金管楽器よりも輝いている**
 
 * * *
 
@@ -45,4 +45,4 @@ tags:
 
 中川：北宇治成为吹奏乐强校绝不仅仅指音乐水平的高超，它还应该包括选拔的公平、正义和道德的力量。
 
-（节选片段完）
+&emsp;&emsp;（节选片段完）
