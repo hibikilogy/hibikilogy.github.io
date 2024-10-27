@@ -12,6 +12,8 @@ tags:
     - 黄前十七年
 ---
 
+# 原文
+
 <center>宇治·悲望川</center>
 <div style="text-align:right">
     <span>黄前 久美子</span>
@@ -21,7 +23,7 @@ tags:
 
 &emsp;&emsp;久居庙堂之高，一届部长²。以慕高坂之独特³而怀情苦练；虽同黑江之才干而无望独奏。携遗憾去北高，寻师意⁴于万里。虽无高坂之翘楚，然识宇治之众才。待他日退隐，望传接玉玺。久逢黑江，泣托秋章⁵；田中已别，抚乐谱⁶而自伤！既遇黑江，共奏乐何以惭？
                                              
-&emsp;&emsp;<div style="text-align:right">
+<div style="text-align:right">
     <span>于 黄前十七年 九月 作</span>
 </div>
 
