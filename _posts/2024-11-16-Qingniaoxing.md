@@ -11,8 +11,9 @@ tags:
     - 黄前十六年
     - 文言
 ---
-
+# 原文
 <center>青鸟行</center>
+<br>
 <center>纤手玉管起悲声，碧衣银笛复鸣和。</center>
 <center>京都筝柱怨青冥，宇治笙箫相菲错。</center>
 <center>流莺摇裔生伤思，情意惘然可奈何。</center>
@@ -25,7 +26,7 @@ tags:
 <center>利兹立兹望青鸟，木琴叮咛离别谣。</center>
 <center>青鸟遥望涕泪尽，此情兹甚何能消？</center>
 <center>河汉坱轧纤凝‌空，惟作碧落比翼鸟。</center>
-
+<br>
 <div style="text-align:right">
     <span>文不成句，不工格律，还望海涵。甲辰年十月，HC。</span>
 </div>
