@@ -1,6 +1,6 @@
 ---
 layout: post
-header-img: ../images/2024-07-01/QlREdzhNb2Y0VD9ialpEJQ==.w2340.h1080.webp
+header-img: https://hibikilogy.github.io/images/2024-07-01/QlREdzhNb2Y0VD9ialpEJQ==.w2340.h1080.webp
 title: 或缺的主题：再无“高扬感”，徒留“不甘心”
 subtitle: ——评京吹3音乐元素的缺位
 author: 帆前
@@ -69,7 +69,7 @@ tags:
 
 &emsp;&emsp;到了剧场版誓言的终章，“比赛的遗憾之处”才在故事中稍微抬头一点，隐隐透露出要用此点聚集吹这个故事里“遗憾和努力”这个正题的征兆。
 
-![](../images/2024-07-01/QlREdzhNb2Y0VD9ialpEJQ==.w2340.h1080.webp)![](../images/2024-07-01/QlREdzVGb2Y0VD9iZjZEJQ==.w2340.h1080.webp)![](../images/2024-07-01/Qjc5dCs3flgwMFNeeHRfMw==.w2340.h1080.webp)![](../images/2024-07-01/QlNELE4xUlA0VE17TXlXVg==.w2340.h1080.webp)![](../images/2024-07-01/Qk1DWmtja3EwS05ab2dhZg==.w2340.h1080.webp)![](../images/2024-07-01/Qk5FTjNCals0VF80dDdNXw==.w2340.h1080.webp)
+![](https://hibikilogy.github.io/images/2024-07-01/QlREdzhNb2Y0VD9ialpEJQ==.w2340.h1080.webp)![](https://hibikilogy.github.io/images/2024-07-01/QlREdzVGb2Y0VD9iZjZEJQ==.w2340.h1080.webp)![](https://hibikilogy.github.io/images/2024-07-01/Qjc5dCs3flgwMFNeeHRfMw==.w2340.h1080.webp)![](https://hibikilogy.github.io/images/2024-07-01/QlNELE4xUlA0VE17TXlXVg==.w2340.h1080.webp)![](https://hibikilogy.github.io/images/2024-07-01/Qk1DWmtja3EwS05ab2dhZg==.w2340.h1080.webp)![](https://hibikilogy.github.io/images/2024-07-01/Qk5FTjNCals0VF80dDdNXw==.w2340.h1080.webp)
 
 &emsp;&emsp;久三年是收束全篇的一年，也是用矛盾把这部作品中“青春、遗憾、人际关系、理想、信念”逼到极限的一年，发生了这么多的事，如果还拿不到全国金奖，“不甘心”的就不只是角色，而是观众也痛苦了。比赛故事原是画箭射靶，先有故事后有结果，容易给人都合主义的感觉，但吹响这种写法，则让人感到比赛的沉重和意义。（但这一切的一切，都因为第三季后半的巨大原创改编而改变。）
 
@@ -218,9 +218,9 @@ tags:
 
 &emsp;&emsp;我甚至幻想过把真由改成高二的，这样原作这段就能用上，丽奈也能更立体。
 
-![](../images/2024-07-01/QkxIb3Z7X0s0VE5DWDFvfQ==.w2340.h1080.webp)
-![](../images/2024-07-01/QlBKK0dLSUM0VF8yeGJieA==.w2340.h1080.webp)
-![](../images/2024-07-01/QlFJRkxbfm8wMSUyeGJSaw==.w2340.h1080.webp)
+![](https://hibikilogy.github.io/images/2024-07-01/QkxIb3Z7X0s0VE5DWDFvfQ==.w2340.h1080.webp)
+![](https://hibikilogy.github.io/images/2024-07-01/QlBKK0dLSUM0VF8yeGJieA==.w2340.h1080.webp)
+![](https://hibikilogy.github.io/images/2024-07-01/QlFJRkxbfm8wMSUyeGJSaw==.w2340.h1080.webp)
 
 &emsp;&emsp;这是《利兹与青鸟》里高黄的一幕。
 
@@ -286,7 +286,7 @@ tags:
 
 &emsp;&emsp;这是原作那棵树。
 
-![](../images/2024-07-01/Qk1HY01oYl9XOXVpWG1pew==.w960.h670.webp)
+![](https://hibikilogy.github.io/images/2024-07-01/Qk1HY01oYl9XOXVpWG1pew==.w960.h670.webp)
 
 >&emsp;&emsp;「不论听多少次，这首曲子都很棒」
 >
@@ -340,27 +340,27 @@ tags:
 
 &emsp;&emsp;《吹响吧！上低音号》那首曲子。
 
-![](../images/2024-07-01/QjU4en1tLTs0bjBkRCRSUA==.w2340.h1080.webp)
+![](https://hibikilogy.github.io/images/2024-07-01/QjU4en1tLTs0bjBkRCRSUA==.w2340.h1080.webp)
 
 &emsp;&emsp;《一年之诗》，岂止一年……
 
-![](../images/2024-07-01/QmFDWklWYXkwMnQzZlFSbQ==.w2340.h1080.webp)
+![](https://hibikilogy.github.io/images/2024-07-01/QmFDWklWYXkwMnQzZlFSbQ==.w2340.h1080.webp)
 
 &emsp;&emsp;久美子的遗憾，依然是无数人的遗憾……
 
-![](../images/2024-07-01/QlVKdC1NTkcwTEtSSVdzLA==.w2340.h1080.webp)
+![](https://hibikilogy.github.io/images/2024-07-01/QlVKdC1NTkcwTEtSSVdzLA==.w2340.h1080.webp)
 
 &emsp;&emsp;沉重的金奖，美好的青春景象，背后却是无数酸楚。
 
-![](../images/2024-07-01/QmJMfDt-JUwwMjlHUmpveg==.w2340.h1080.webp)
+![](https://hibikilogy.github.io/images/2024-07-01/QmJMfDt-JUwwMjlHUmpveg==.w2340.h1080.webp)
 
 &emsp;&emsp;“还会发生很多无法讲理又无法挽回的事”，这就是，吹奏部。
 
-![](../images/2024-07-01/QlZGJDI9U2kwTj9Ib2ZXcg==.w2340.h1080.webp)
+![](https://hibikilogy.github.io/images/2024-07-01/QlZGJDI9U2kwTj9Ib2ZXcg==.w2340.h1080.webp)
 
 &emsp;&emsp;青春一去不复返，人生若只如初见。
 
-![](../images/2024-07-01/QkdDUTl4V2wwMj9yUmpIXw==.w2340.h1080.webp)
+![](https://hibikilogy.github.io/images/2024-07-01/QkdDUTl4V2wwMj9yUmpIXw==.w2340.h1080.webp)
 
 >&emsp;&emsp;「就像刚才所说，我还不成熟。作为大人，作为老师，实现自己的理想是很难的。但在就职时，我就希望能成为小时候自己理想中的老师。虽然我不清楚那对大家而言我当你们老师是否幸运，但能和大家相识，至少我认为自己是个幸福的老师。」
 >
@@ -390,10 +390,10 @@ tags:
 
 &emsp;&emsp;有个黑长直的学生，呼应开头，长得幻视丽奈，大概是故意的安排。
 
-![](../images/2024-07-01/像丽奈的学生.jpg)
+![](https://hibikilogy.github.io/images/2024-07-01/像丽奈的学生.jpg)
 
 &emsp;&emsp;久美子真的去当吹奏部老师了，她真的适合这份工作，这是她最好的归宿了……
 
-![](../images/2024-07-01/QlJCV1BXUlEwTElWV0IlTQ==.w2340.h1080.webp)
+![](https://hibikilogy.github.io/images/2024-07-01/QlJCV1BXUlEwTElWV0IlTQ==.w2340.h1080.webp)
 
 （全文完）
