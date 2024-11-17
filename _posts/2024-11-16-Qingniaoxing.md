@@ -13,7 +13,7 @@ tags:
 ---
 # 原文
 <center>青鸟行</center>
-<br>
+
 <center>纤手玉管起悲声，碧衣银笛复鸣和。</center>
 <center>京都筝柱怨青冥，宇治笙箫相菲错。</center>
 <center>流莺摇裔生伤思，情意惘然可奈何。</center>
