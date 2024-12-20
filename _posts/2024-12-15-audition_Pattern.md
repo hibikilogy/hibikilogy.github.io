@@ -44,7 +44,7 @@ tags:
 
 &emsp;&emsp;下面我们来看一看久三年吹奏部在实际执行过程中遇到的各类情况。
 
-![](../images/2024-12-15/QjlUOU8sal4tQHhwYSNXYQ==.w594.h200.webp)
+![](https://hibikilogy.github.io/images/2024-12-15/QjlUOU8sal4tQHhwYSNXYQ==.w594.h200.webp)
 
 # 二、实际执行过程中出现的问题
 
