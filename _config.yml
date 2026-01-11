@@ -101,12 +101,12 @@ service-worker: true
 # Friends
 friends: [
     {
-        title: "中国珂学院维基",
-        href: "https://wiki.sukasuka.cn/"
+        title: "京吹学报（测试版）",
+        href: "https://hibikilogy.vercel.app/"
     },
     {
-        title: "《吹响！上低音号》在线播放",
-        href: "https://next.hyouka.ml/posts/hibike/"
+        title: "telegram频道“北宇治高校図書館”——「上低音号」系列动画中文资料备份馆",
+        href: "https://t.me/kitauji_toshokan"
     },
     {
         title: "Kyoani.cn",
@@ -119,5 +119,13 @@ friends: [
     {
         title: "京吹群像志 - 虎扑",
         href: "https://bbs.hupu.com/search?q=%E4%BA%AC%E5%90%B9%E7%BE%A4%E5%83%8F%E5%BF%97&topicId=&sortby=general&page=1"
+    },
+    {
+        title: "《吹响！上低音号》在线播放",
+        href: "https://next.hyouka.ml/posts/hibike/"
+    },
+    {
+        title: "中国珂学院维基",
+        href: "https://wiki.sukasuka.cn/"
     }
 ]
