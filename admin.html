@@ -1,0 +1,697 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>京吹学报 - 文章管理</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .auth-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 50px auto;
+        }
+        
+        .auth-section h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .editor-section {
+            display: none;
+        }
+        
+        .toolbar {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .toolbar .user-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .editor-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .metadata {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .EasyMDEContainer {
+            margin-top: 20px;
+        }
+        
+        .posts-list {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .posts-list h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .post-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .post-item:last-child {
+            border-bottom: none;
+        }
+        
+        .post-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .post-info h4 {
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .post-info p {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .post-actions {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>京吹学报 - 文章管理系统</h1>
+        <p>在线编辑和发布文章 | <a href="https://github.com/hibikilogy/hibikilogy.github.io/blob/master/ADMIN_GUIDE.md" target="_blank" style="color: #3498db;">📖 使用指南</a></p>
+    </div>
+
+    <div class="container">
+        <!-- 认证部分 -->
+        <div id="authSection" class="auth-section">
+            <h2>GitHub 认证</h2>
+            <p style="margin-bottom: 20px; color: #666;">
+                需要 GitHub Personal Access Token 来管理文章。
+                <a href="https://github.com/settings/tokens/new?scopes=repo" target="_blank">点击这里创建 Token</a>
+            </p>
+            <div class="form-group">
+                <label for="githubToken">GitHub Token:</label>
+                <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxx">
+            </div>
+            <div class="form-group">
+                <label for="githubUsername">GitHub 用户名:</label>
+                <input type="text" id="githubUsername" value="hibikilogy" readonly>
+            </div>
+            <div class="form-group">
+                <label for="githubRepo">仓库名:</label>
+                <input type="text" id="githubRepo" value="hibikilogy.github.io" readonly>
+            </div>
+            <button class="btn btn-primary" onclick="authenticate()">登录</button>
+            <div id="authMessage" class="hidden"></div>
+        </div>
+
+        <!-- 编辑器部分 -->
+        <div id="editorSection" class="editor-section">
+            <div class="toolbar">
+                <button class="btn btn-success" onclick="newPost()">新建文章</button>
+                <button class="btn btn-primary" onclick="savePost()">保存文章</button>
+                <button class="btn btn-primary" onclick="publishPost()">发布到 GitHub</button>
+                <div class="user-info">
+                    <span id="userInfo"></span>
+                    <button class="btn btn-danger" onclick="logout()">退出</button>
+                </div>
+            </div>
+
+            <div id="message" class="hidden"></div>
+
+            <div class="editor-container">
+                <h3>文章元数据</h3>
+                <div class="metadata">
+                    <div class="form-group">
+                        <label for="postTitle">标题 *:</label>
+                        <input type="text" id="postTitle" placeholder="文章标题" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postAuthor">作者 *:</label>
+                        <input type="text" id="postAuthor" placeholder="作者名称" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postDate">日期 *:</label>
+                        <input type="date" id="postDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postLayout">布局:</label>
+                        <select id="postLayout">
+                            <option value="post">post</option>
+                            <option value="page">page</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="postSubtitle">副标题:</label>
+                    <input type="text" id="postSubtitle" placeholder="文章副标题（可选）">
+                </div>
+                <div class="form-group">
+                    <label for="postTags">标签 (用逗号分隔):</label>
+                    <input type="text" id="postTags" placeholder="例如: 吹学, 分析, 评论">
+                </div>
+                <div class="form-group">
+                    <label for="postOriginal">原文链接:</label>
+                    <input type="text" id="postOriginal" placeholder="原文 URL（可选）">
+                </div>
+
+                <h3 style="margin-top: 30px;">文章内容</h3>
+                <textarea id="markdownEditor"></textarea>
+            </div>
+
+            <!-- 文章列表 -->
+            <div class="posts-list">
+                <h3>最近文章</h3>
+                <div id="postsList">加载中...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
+    <script>
+        let token = '';
+        let username = 'hibikilogy';
+        let repo = 'hibikilogy.github.io';
+        let easyMDE = null;
+        let currentFile = null;
+
+        // 初始化编辑器
+        function initEditor() {
+            if (!easyMDE) {
+                easyMDE = new EasyMDE({
+                    element: document.getElementById('markdownEditor'),
+                    spellChecker: false,
+                    placeholder: '在这里编写文章内容...',
+                    autosave: {
+                        enabled: true,
+                        uniqueId: 'hibikilogy-editor',
+                        delay: 1000,
+                    },
+                    toolbar: [
+                        'bold', 'italic', 'heading', '|',
+                        'quote', 'unordered-list', 'ordered-list', '|',
+                        'link', 'image', 'table', '|',
+                        'preview', 'side-by-side', 'fullscreen', '|',
+                        'guide'
+                    ],
+                    minHeight: '500px',
+                });
+            }
+        }
+
+        // 认证
+        async function authenticate() {
+            token = document.getElementById('githubToken').value.trim();
+            
+            if (!token) {
+                showMessage('authMessage', '请输入 GitHub Token', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://api.github.com/user`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    localStorage.setItem('github_token', token);
+                    localStorage.setItem('github_user', user.login);
+                    
+                    document.getElementById('authSection').style.display = 'none';
+                    document.getElementById('editorSection').style.display = 'block';
+                    document.getElementById('userInfo').textContent = `欢迎, ${user.login}`;
+                    
+                    initEditor();
+                    loadPosts();
+                    setDefaultDate();
+                } else {
+                    showMessage('authMessage', '认证失败，请检查 Token 是否正确', 'error');
+                }
+            } catch (error) {
+                showMessage('authMessage', '认证失败: ' + error.message, 'error');
+            }
+        }
+
+        // 检查是否已登录
+        function checkAuth() {
+            const savedToken = localStorage.getItem('github_token');
+            const savedUser = localStorage.getItem('github_user');
+            
+            if (savedToken && savedUser) {
+                token = savedToken;
+                document.getElementById('githubToken').value = token;
+                document.getElementById('authSection').style.display = 'none';
+                document.getElementById('editorSection').style.display = 'block';
+                document.getElementById('userInfo').textContent = `欢迎, ${savedUser}`;
+                initEditor();
+                loadPosts();
+                setDefaultDate();
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('github_token');
+            localStorage.removeItem('github_user');
+            location.reload();
+        }
+
+        // 设置默认日期
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('postDate').value = today;
+        }
+
+        // 新建文章
+        function newPost() {
+            currentFile = null;
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postAuthor').value = '';
+            document.getElementById('postSubtitle').value = '';
+            document.getElementById('postTags').value = '';
+            document.getElementById('postOriginal').value = '';
+            document.getElementById('postLayout').value = 'post';
+            setDefaultDate();
+            easyMDE.value('');
+            showMessage('message', '已创建新文章', 'info');
+        }
+
+        // 保存文章到本地
+        function savePost() {
+            const title = document.getElementById('postTitle').value;
+            const content = easyMDE.value();
+            
+            if (!title) {
+                showMessage('message', '请输入文章标题', 'error');
+                return;
+            }
+
+            const postData = {
+                title,
+                author: document.getElementById('postAuthor').value,
+                date: document.getElementById('postDate').value,
+                subtitle: document.getElementById('postSubtitle').value,
+                tags: document.getElementById('postTags').value,
+                original: document.getElementById('postOriginal').value,
+                layout: document.getElementById('postLayout').value,
+                content
+            };
+
+            localStorage.setItem('draft_' + Date.now(), JSON.stringify(postData));
+            showMessage('message', '文章已保存到本地', 'success');
+        }
+
+        // 发布文章到 GitHub
+        async function publishPost() {
+            const title = document.getElementById('postTitle').value;
+            const author = document.getElementById('postAuthor').value;
+            const date = document.getElementById('postDate').value;
+            const subtitle = document.getElementById('postSubtitle').value;
+            const tags = document.getElementById('postTags').value;
+            const original = document.getElementById('postOriginal').value;
+            const layout = document.getElementById('postLayout').value;
+            const content = easyMDE.value();
+
+            if (!title || !author || !date || !content) {
+                showMessage('message', '请填写必填字段（标题、作者、日期、内容）', 'error');
+                return;
+            }
+
+            // 生成文件名
+            const slug = title.toLowerCase()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .substring(0, 50);
+            const filename = `${date}-${slug}.md`;
+            const year = date.split('-')[0];
+            const path = `_posts/${year}/${filename}`;
+
+            // 生成 Front Matter
+            const frontMatter = `---
+layout: ${layout}
+title: "${title}"
+subtitle: "${subtitle}"
+author: "${author}"
+original: "${original}"
+header-img: "https://i.loli.net/2020/03/13/Kk83Nb1DUaYOi6j.png"
+catalog: true
+tags:
+${tags.split(',').map(tag => `    - ${tag.trim()}`).join('\n')}
+---
+
+`;
+
+            const fullContent = frontMatter + content;
+
+            try {
+                // 检查文件是否存在
+                let sha = null;
+                try {
+                    const checkResponse = await fetch(
+                        `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
+                        {
+                            headers: {
+                                'Authorization': `token ${token}`,
+                                'Accept': 'application/vnd.github.v3+json'
+                            }
+                        }
+                    );
+                    if (checkResponse.ok) {
+                        const fileData = await checkResponse.json();
+                        sha = fileData.sha;
+                    }
+                } catch (e) {
+                    // 文件不存在，继续创建
+                }
+
+                // 创建或更新文件
+                const response = await fetch(
+                    `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
+                    {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: sha ? `update: 更新文章 ${title}` : `create: 发布文章 ${title}`,
+                            content: btoa(unescape(encodeURIComponent(fullContent))),
+                            sha: sha
+                        })
+                    }
+                );
+
+                if (response.ok) {
+                    showMessage('message', '文章发布成功！', 'success');
+                    currentFile = path;
+                    loadPosts();
+                } else {
+                    const error = await response.json();
+                    showMessage('message', '发布失败: ' + error.message, 'error');
+                }
+            } catch (error) {
+                showMessage('message', '发布失败: ' + error.message, 'error');
+            }
+        }
+
+        // 加载文章列表
+        async function loadPosts() {
+            try {
+                const response = await fetch(
+                    `https://api.github.com/repos/${username}/${repo}/contents/_posts`,
+                    {
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    }
+                );
+
+                if (response.ok) {
+                    const folders = await response.json();
+                    let allPosts = [];
+
+                    // 获取每个年份文件夹的文章
+                    for (const folder of folders) {
+                        if (folder.type === 'dir') {
+                            const yearResponse = await fetch(folder.url, {
+                                headers: {
+                                    'Authorization': `token ${token}`,
+                                    'Accept': 'application/vnd.github.v3+json'
+                                }
+                            });
+                            if (yearResponse.ok) {
+                                const files = await yearResponse.json();
+                                allPosts = allPosts.concat(files.filter(f => f.name.endsWith('.md')));
+                            }
+                        }
+                    }
+
+                    // 按日期排序
+                    allPosts.sort((a, b) => b.name.localeCompare(a.name));
+
+                    // 显示最近10篇
+                    const postsList = document.getElementById('postsList');
+                    postsList.innerHTML = allPosts.slice(0, 10).map(post => `
+                        <div class="post-item">
+                            <div class="post-info">
+                                <h4>${post.name}</h4>
+                                <p>${post.path}</p>
+                            </div>
+                            <div class="post-actions">
+                                <button class="btn btn-primary" onclick="loadPost('${post.path}')">编辑</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('postsList').innerHTML = '加载失败';
+                }
+            } catch (error) {
+                document.getElementById('postsList').innerHTML = '加载失败: ' + error.message;
+            }
+        }
+
+        // 加载文章内容
+        async function loadPost(path) {
+            try {
+                const response = await fetch(
+                    `https://api.github.com/repos/${username}/${repo}/contents/${path}`,
+                    {
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    }
+                );
+
+                if (response.ok) {
+                    const fileData = await response.json();
+                    const content = decodeURIComponent(escape(atob(fileData.content)));
+                    
+                    // 解析 Front Matter
+                    const frontMatterMatch = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+                    if (frontMatterMatch) {
+                        const frontMatter = frontMatterMatch[1];
+                        const markdown = frontMatterMatch[2];
+                        
+                        // 提取字段
+                        const titleMatch = frontMatter.match(/title:\s*"(.*)"/);
+                        const authorMatch = frontMatter.match(/author:\s*"(.*)"/);
+                        const subtitleMatch = frontMatter.match(/subtitle:\s*"(.*)"/);
+                        const originalMatch = frontMatter.match(/original:\s*"(.*)"/);
+                        const layoutMatch = frontMatter.match(/layout:\s*(\w+)/);
+                        const tagsMatch = frontMatter.match(/tags:\n([\s\S]*?)(?=\n\w+:|$)/);
+                        
+                        document.getElementById('postTitle').value = titleMatch ? titleMatch[1] : '';
+                        document.getElementById('postAuthor').value = authorMatch ? authorMatch[1] : '';
+                        document.getElementById('postSubtitle').value = subtitleMatch ? subtitleMatch[1] : '';
+                        document.getElementById('postOriginal').value = originalMatch ? originalMatch[1] : '';
+                        document.getElementById('postLayout').value = layoutMatch ? layoutMatch[1] : 'post';
+                        
+                        // 从文件名提取日期
+                        const dateMatch = path.match(/(\d{4}-\d{2}-\d{2})/);
+                        if (dateMatch) {
+                            document.getElementById('postDate').value = dateMatch[1];
+                        }
+                        
+                        // 提取标签
+                        if (tagsMatch) {
+                            const tags = tagsMatch[1].match(/- (.+)/g);
+                            if (tags) {
+                                document.getElementById('postTags').value = tags.map(t => t.replace('- ', '').trim()).join(', ');
+                            }
+                        }
+                        
+                        easyMDE.value(markdown.trim());
+                        currentFile = path;
+                        showMessage('message', '文章加载成功', 'success');
+                        window.scrollTo(0, 0);
+                    }
+                }
+            } catch (error) {
+                showMessage('message', '加载失败: ' + error.message, 'error');
+            }
+        }
+
+        // 显示消息
+        function showMessage(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.className = `alert alert-${type}`;
+            element.textContent = message;
+            element.classList.remove('hidden');
+            
+            setTimeout(() => {
+                element.classList.add('hidden');
+            }, 5000);
+        }
+
+        // 页面加载时检查认证状态
+        window.onload = checkAuth;
+    </script>
+</body>
+</html>
