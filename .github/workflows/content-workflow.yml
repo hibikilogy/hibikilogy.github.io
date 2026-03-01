@@ -37,36 +37,35 @@ jobs:
         echo "🔍 Checking YAML front matter in markdown files..."
         ERRORS=0
         
-        for file in content/_posts/**/*.md; do
-          if [ -f "$file" ]; then
-            # 检查是否有 front matter
-            if ! grep -q "^---$" "$file"; then
-              echo "❌ Missing front matter: $file"
-              ERRORS=$((ERRORS + 1))
-              continue
-            fi
-            
-            # 提取 front matter 并验证必需字段
-            FRONT_MATTER=$(sed -n '/^---$/,/^---$/p' "$file" | head -n -1 | tail -n +2)
-            
-            # 检查必需字段
-            if ! echo "$FRONT_MATTER" | grep -q "^layout:"; then
-              echo "❌ Missing 'layout' field: $file"
-              ERRORS=$((ERRORS + 1))
-            fi
-            
-            if ! echo "$FRONT_MATTER" | grep -q "^title:"; then
-              echo "❌ Missing 'title' field: $file"
-              ERRORS=$((ERRORS + 1))
-            fi
-            
-            if ! echo "$FRONT_MATTER" | grep -q "^author:"; then
-              echo "⚠️  Missing 'author' field: $file"
-            fi
-            
-            if ! echo "$FRONT_MATTER" | grep -q "^tags:"; then
-              echo "⚠️  Missing 'tags' field: $file"
-            fi
+        # 使用 find 命令而不是 glob
+        find content/_posts -name "*.md" -type f | while read -r file; do
+          # 检查是否有 front matter
+          if ! grep -q "^---$" "$file"; then
+            echo "❌ Missing front matter: $file"
+            ERRORS=$((ERRORS + 1))
+            continue
+          fi
+          
+          # 提取 front matter 并验证必需字段
+          FRONT_MATTER=$(sed -n '/^---$/,/^---$/p' "$file" | head -n -1 | tail -n +2)
+          
+          # 检查必需字段
+          if ! echo "$FRONT_MATTER" | grep -q "^layout:"; then
+            echo "❌ Missing 'layout' field: $file"
+            ERRORS=$((ERRORS + 1))
+          fi
+          
+          if ! echo "$FRONT_MATTER" | grep -q "^title:"; then
+            echo "❌ Missing 'title' field: $file"
+            ERRORS=$((ERRORS + 1))
+          fi
+          
+          if ! echo "$FRONT_MATTER" | grep -q "^author:"; then
+            echo "⚠️  Missing 'author' field: $file"
+          fi
+          
+          if ! echo "$FRONT_MATTER" | grep -q "^tags:"; then
+            echo "⚠️  Missing 'tags' field: $file"
           fi
         done
         
@@ -82,7 +81,7 @@ jobs:
         echo "🔍 Checking file naming convention (YYYY-MM-DD-title.md)..."
         ERRORS=0
         
-        for file in content/_posts/**/*.md; do
+        find content/_posts -name "*.md" -type f | while read -r file; do
           filename=$(basename "$file")
           if ! echo "$filename" | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}-.+\.md$'; then
             echo "❌ Invalid filename format: $filename"
@@ -103,26 +102,24 @@ jobs:
         echo "🔍 Checking image references..."
         ERRORS=0
         
-        for file in content/_posts/**/*.md; do
-          if [ -f "$file" ]; then
-            # 查找所有图片引用
-            IMAGES=$(grep -oP '!\[.*?\]\(\K[^)]+' "$file" || true)
+        find content/_posts -name "*.md" -type f | while read -r file; do
+          # 查找所有图片引用
+          IMAGES=$(grep -oP '!\[.*?\]\(\K[^)]+' "$file" || true)
+          
+          for img in $IMAGES; do
+            # 跳过外部链接
+            if [[ "$img" =~ ^https?:// ]]; then
+              continue
+            fi
             
-            for img in $IMAGES; do
-              # 跳过外部链接
-              if [[ "$img" =~ ^https?:// ]]; then
-                continue
+            # 检查相对路径图片是否存在
+            if [[ "$img" =~ ^/content/images/ ]]; then
+              img_path="${img#/}"
+              if [ ! -f "$img_path" ]; then
+                echo "⚠️  Image not found: $img_path (referenced in $file)"
               fi
-              
-              # 检查相对路径图片是否存在
-              if [[ "$img" =~ ^/content/images/ ]]; then
-                img_path="${img#/}"
-                if [ ! -f "$img_path" ]; then
-                  echo "⚠️  Image not found: $img_path (referenced in $file)"
-                fi
-              fi
-            done
-          fi
+            fi
+          done
         done
         
         echo "✅ Image reference check completed"
