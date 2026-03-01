@@ -1,16 +1,17 @@
-name: Content Validation
+name: Content Workflow
 
 on:
   push:
     branches: [ master ]
     paths:
-      - '_posts/**/*.md'
+      - 'content/_posts/**/*.md'
   pull_request:
     branches: [ master ]
     paths:
-      - '_posts/**/*.md'
+      - 'content/_posts/**/*.md'
 
 jobs:
+  # 第一步：验证内容质量
   validate:
     runs-on: ubuntu-latest
     
@@ -28,7 +29,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        gem install jekyll jekyll-paginate
+        gem install jekyll jekyll-paginate-v2
         npm install -g markdown-link-check
 
     - name: Validate YAML Front Matter
@@ -36,7 +37,7 @@ jobs:
         echo "🔍 Checking YAML front matter in markdown files..."
         ERRORS=0
         
-        for file in _posts/*.md; do
+        for file in content/_posts/**/*.md; do
           if [ -f "$file" ]; then
             # 检查是否有 front matter
             if ! grep -q "^---$" "$file"; then
@@ -81,7 +82,7 @@ jobs:
         echo "🔍 Checking file naming convention (YYYY-MM-DD-title.md)..."
         ERRORS=0
         
-        for file in _posts/*.md; do
+        for file in content/_posts/**/*.md; do
           filename=$(basename "$file")
           if ! echo "$filename" | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}-.+\.md$'; then
             echo "❌ Invalid filename format: $filename"
@@ -102,7 +103,7 @@ jobs:
         echo "🔍 Checking image references..."
         ERRORS=0
         
-        for file in _posts/*.md; do
+        for file in content/_posts/**/*.md; do
           if [ -f "$file" ]; then
             # 查找所有图片引用
             IMAGES=$(grep -oP '!\[.*?\]\(\K[^)]+' "$file" || true)
@@ -114,8 +115,8 @@ jobs:
               fi
               
               # 检查相对路径图片是否存在
-              if [[ "$img" =~ ^\.\./images/ ]]; then
-                img_path="${img#../}"
+              if [[ "$img" =~ ^/content/images/ ]]; then
+                img_path="${img#/}"
                 if [ ! -f "$img_path" ]; then
                   echo "⚠️  Image not found: $img_path (referenced in $file)"
                 fi
@@ -149,7 +150,7 @@ jobs:
         EOF
         
         # 只检查最近修改的文件，避免超时
-        CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '_posts/.*\.md' || echo "")
+        CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'content/_posts/.*\.md' || echo "")
         
         if [ -z "$CHANGED_FILES" ]; then
           echo "ℹ️  No markdown files changed, skipping link check"
@@ -174,7 +175,7 @@ jobs:
           exit 1
         fi
 
-    - name: Summary
+    - name: Validation Summary
       if: always()
       run: |
         echo "📊 Validation Summary"
@@ -184,3 +185,63 @@ jobs:
         echo "✅ Image reference validation"
         echo "✅ Link checking"
         echo "✅ Jekyll build test"
+
+  # 第二步：自动转换图片路径（仅在 master 分支推送时）
+  update-paths:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: validate
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Get list of changed files
+      id: get-changed-files
+      run: |
+        git config --global core.quotepath false
+        CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | tr -d '"' | grep 'content/_posts/.*\.md' || true)
+        echo "Changed .md files: $CHANGED_FILES"
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "changed_files<<$EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
+
+    - name: Replace image paths
+      run: |
+        CHANGED_FILES="${{ steps.get-changed-files.outputs.changed_files }}"
+        if [ -z "$CHANGED_FILES" ]; then
+          echo "No files to process"
+          echo "has_changes=false" >> $GITHUB_ENV
+          exit 0
+        fi
+        
+        for FILE in $CHANGED_FILES; do
+          if [ -f "$FILE" ]; then
+            echo "Processing: $FILE"
+            sed -i 's|/content/images/|https://hibikilogy.github.io/content/images/|g' "$FILE"
+          fi
+        done
+        
+        # 检查是否有改动
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "has_changes=true" >> $GITHUB_ENV
+        else
+          echo "No changes made"
+          echo "has_changes=false" >> $GITHUB_ENV
+        fi
+
+    - name: Commit and push changes
+      if: env.has_changes == 'true'
+      run: |
+        CHANGED_FILES="${{ steps.get-changed-files.outputs.changed_files }}"
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add $CHANGED_FILES
+        git commit -m "chore: 自动更新图片路径为绝对 URL"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
