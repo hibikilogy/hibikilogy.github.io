@@ -102,3 +102,12 @@ lessc ./less/hux-blog.less ./css/hux-blog.css & lessc --clean-css ./less/hux-blo
 
 ## 其他
 吹学论文收集可能具有一定统计学意义，在 `_posts/wordcloud.zip` 中有关于词云生成的文件，有兴趣者可以尝试。
+
+## 项目重构文档
+
+本项目已完成结构重构，相关文档：
+- [重构提案](docs/refactoring/REFACTORING_PROPOSAL.md) - 完整的重构方案
+- [快速开始](docs/refactoring/REFACTORING_QUICKSTART.md) - 快速上手指南
+- [完成报告](docs/refactoring/REFACTORING_COMPLETE.md) - 重构完成报告
+- [前后对比](docs/refactoring/BEFORE_AFTER_COMPARISON.md) - 详细对比
+- [投稿指南](docs/CONTRIBUTING.md) - 如何投稿
