@@ -34,6 +34,11 @@
                     <li>
                         <a href="/about">加入我们</a>
                     </li>
+                    <li>
+                        <a href="javascript:void(0);" id="theme-toggle" title="切换深色/浅色模式">
+                            <i class="fa fa-moon-o" id="theme-icon"></i>
+                        </a>
+                    </li>
                 </ul> 
                 <div class="navbar-nav navbar-right">
                     <form role="search" action="https://www.bing.com/search" method="get" target="_blank">
@@ -105,6 +110,34 @@
         __HuxNav__.close();
         document.getElementById('searchResults').innerHTML=''
     })
+
+    // Dark Mode Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    
+    function updateThemeIcon(theme) {
+        if (theme === 'dark') {
+            themeIcon.className = 'fa fa-sun-o';
+        } else {
+            themeIcon.className = 'fa fa-moon-o';
+        }
+    }
+    
+    // 初始化图标
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    updateThemeIcon(currentTheme);
+    
+    themeToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme);
+    });
 </script>
 
 <style>
