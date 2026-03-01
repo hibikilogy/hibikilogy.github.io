@@ -49,7 +49,7 @@ tags:
 
 ### 图片示例
 
-![图片描述](../images/YYYY-MM-DD/filename.ext)
+![图片描述](/content/images/misc/YYYY-MM-DD/filename.ext)
 
 或使用外部链接：
 
