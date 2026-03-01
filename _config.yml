@@ -31,9 +31,19 @@ github_username: hibikilogy
 # Build settings
 # from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
 permalink: pretty
-paginate: 10
 exclude: ["less","node_modules","Gruntfile.js","package.json","README.md","tools","docs","config"]
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
+
+# Pagination (v2)
+pagination:
+  enabled: true
+  per_page: 10
+  permalink: '/page/:num/'
+  title: ':title - 第:num页'
+  limit: 0
+  sort_field: 'date'
+  sort_reverse: true
+  collection: '_posts'
 
 # Directory structure (new)
 source: .
@@ -41,12 +51,18 @@ layouts_dir: src/_layouts
 includes_dir: src/_includes
 collections_dir: content
 
+# Collections
+collections:
+  pages:
+    output: true
+    permalink: /:name/
+
 
 
 # Gems
 # from PR#40, to support local preview for Jekyll 3.0
-gems: [jekyll-paginate] # works before Jekyll 3.5
-plugins: [jekyll-paginate] # works since Jekyll 3.5
+plugins:
+  - jekyll-paginate-v2
 
 
 
