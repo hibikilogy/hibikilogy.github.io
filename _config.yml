@@ -31,7 +31,8 @@ github_username: hibikilogy
 # Build settings
 # from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
 permalink: pretty
-exclude: ["less","node_modules","Gruntfile.js","package.json","README.md","tools","docs","config"]
+exclude: ["less","node_modules","Gruntfile.js","package.json","README.md","tools","docs"]
+include: ["src/assets"]
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
 
 # Pagination (v2)
