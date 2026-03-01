@@ -50,3 +50,6 @@ _posts/wordcloud/
 
 # Node modules
 node_modules
+
+# Documentation (local only)
+docs/

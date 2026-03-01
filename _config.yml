@@ -43,7 +43,6 @@ pagination:
   limit: 0
   sort_field: 'date'
   sort_reverse: true
-  collection: '_posts'
 
 # Directory structure (new)
 source: .
