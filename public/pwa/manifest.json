@@ -1,7 +1,7 @@
 {
-  "name": "BY Blog",
-  "short_name": "BY Blog",
-  "description": "A personal blog by engineer",
+  "name": "京吹学报",
+  "short_name": "京吹学报",
+  "description": "吹学著作集锦 - 《吹响！上低音号》系列动画学术研究文章收录",
   "icons": [{
     "src": "icons/pwa_icon_128.png",
     "sizes": "128x128",

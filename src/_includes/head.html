@@ -10,7 +10,7 @@
     <title>{% if page.title %}{{ page.title }} - {{ site.SEOTitle }}{% else %}{{ site.SEOTitle }}{% endif %}</title>
 
     <!-- Web App Manifest -->
-    <link rel="manifest" href="{{ site.baseurl }}/pwa/manifest.json">
+    <link rel="manifest" href="{{ site.baseurl }}/public/pwa/manifest.json">
 
     <link rel="shortcut icon" type="image/vnd.microsoft.icon" sizes="16x16" href="/favicon.ico">
     <link rel="icon" type="image/png" href="/public/icons/favicon.png">
@@ -33,7 +33,7 @@
 
     <!-- Dark Mode Script (Load Early) -->
     <script>
-        // 立即执行，避免闪烁
+        // 立即执行，避免闪�?
         (function() {
             const theme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', theme);

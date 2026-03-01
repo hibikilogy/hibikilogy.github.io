@@ -36,6 +36,7 @@ Temporary Items
 
 # debug file
 _site
+.jekyll-cache
 
 # temp file
 _posts/wordcloud/
@@ -43,3 +44,9 @@ _posts/wordcloud/
 
 # JetBrains
 .idea
+
+# VSCode
+.vscode
+
+# Node modules
+node_modules
