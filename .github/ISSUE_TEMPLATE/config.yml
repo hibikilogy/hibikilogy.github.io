@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 讨论区
+    url: https://github.com/hibikilogy/hibikilogy.github.io/discussions
+    about: 参与社区讨论，分享想法和观点
+  - name: 📖 投稿指南
+    url: https://github.com/hibikilogy/hibikilogy.github.io/blob/master/contribute.md
+    about: 查看详细的投稿指南和 Markdown 语法说明
+  - name: 🏷️ 浏览标签
+    url: https://hibikilogy.github.io/tags/
+    about: 按标签浏览已发布的文章
