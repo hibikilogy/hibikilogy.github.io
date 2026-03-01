@@ -52,4 +52,5 @@ _posts/wordcloud/
 node_modules
 
 # Documentation (local only)
-docs/
+docs/migration
+docs/refactoring
