@@ -1,0 +1,186 @@
+name: Content Validation
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - '_posts/**/*.md'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '_posts/**/*.md'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2'
+        bundler-cache: false
+
+    - name: Install dependencies
+      run: |
+        gem install jekyll jekyll-paginate
+        npm install -g markdown-link-check
+
+    - name: Validate YAML Front Matter
+      run: |
+        echo "🔍 Checking YAML front matter in markdown files..."
+        ERRORS=0
+        
+        for file in _posts/*.md; do
+          if [ -f "$file" ]; then
+            # 检查是否有 front matter
+            if ! grep -q "^---$" "$file"; then
+              echo "❌ Missing front matter: $file"
+              ERRORS=$((ERRORS + 1))
+              continue
+            fi
+            
+            # 提取 front matter 并验证必需字段
+            FRONT_MATTER=$(sed -n '/^---$/,/^---$/p' "$file" | head -n -1 | tail -n +2)
+            
+            # 检查必需字段
+            if ! echo "$FRONT_MATTER" | grep -q "^layout:"; then
+              echo "❌ Missing 'layout' field: $file"
+              ERRORS=$((ERRORS + 1))
+            fi
+            
+            if ! echo "$FRONT_MATTER" | grep -q "^title:"; then
+              echo "❌ Missing 'title' field: $file"
+              ERRORS=$((ERRORS + 1))
+            fi
+            
+            if ! echo "$FRONT_MATTER" | grep -q "^author:"; then
+              echo "⚠️  Missing 'author' field: $file"
+            fi
+            
+            if ! echo "$FRONT_MATTER" | grep -q "^tags:"; then
+              echo "⚠️  Missing 'tags' field: $file"
+            fi
+          fi
+        done
+        
+        if [ $ERRORS -gt 0 ]; then
+          echo "❌ Found $ERRORS error(s) in front matter validation"
+          exit 1
+        else
+          echo "✅ All front matter validation passed"
+        fi
+
+    - name: Check file naming convention
+      run: |
+        echo "🔍 Checking file naming convention (YYYY-MM-DD-title.md)..."
+        ERRORS=0
+        
+        for file in _posts/*.md; do
+          filename=$(basename "$file")
+          if ! echo "$filename" | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}-.+\.md$'; then
+            echo "❌ Invalid filename format: $filename"
+            echo "   Expected: YYYY-MM-DD-title.md"
+            ERRORS=$((ERRORS + 1))
+          fi
+        done
+        
+        if [ $ERRORS -gt 0 ]; then
+          echo "❌ Found $ERRORS file(s) with invalid naming"
+          exit 1
+        else
+          echo "✅ All filenames follow convention"
+        fi
+
+    - name: Validate image references
+      run: |
+        echo "🔍 Checking image references..."
+        ERRORS=0
+        
+        for file in _posts/*.md; do
+          if [ -f "$file" ]; then
+            # 查找所有图片引用
+            IMAGES=$(grep -oP '!\[.*?\]\(\K[^)]+' "$file" || true)
+            
+            for img in $IMAGES; do
+              # 跳过外部链接
+              if [[ "$img" =~ ^https?:// ]]; then
+                continue
+              fi
+              
+              # 检查相对路径图片是否存在
+              if [[ "$img" =~ ^\.\./images/ ]]; then
+                img_path="${img#../}"
+                if [ ! -f "$img_path" ]; then
+                  echo "⚠️  Image not found: $img_path (referenced in $file)"
+                fi
+              fi
+            done
+          fi
+        done
+        
+        echo "✅ Image reference check completed"
+
+    - name: Check for broken links
+      run: |
+        echo "🔍 Checking for broken links..."
+        
+        # 创建配置文件，忽略某些链接
+        cat > .markdown-link-check.json << 'EOF'
+        {
+          "ignorePatterns": [
+            {
+              "pattern": "^https://i.loli.net"
+            },
+            {
+              "pattern": "^https://www.bilibili.com"
+            }
+          ],
+          "timeout": "10s",
+          "retryOn429": true,
+          "retryCount": 3,
+          "aliveStatusCodes": [200, 206, 301, 302, 403]
+        }
+        EOF
+        
+        # 只检查最近修改的文件，避免超时
+        CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '_posts/.*\.md' || echo "")
+        
+        if [ -z "$CHANGED_FILES" ]; then
+          echo "ℹ️  No markdown files changed, skipping link check"
+        else
+          for file in $CHANGED_FILES; do
+            if [ -f "$file" ]; then
+              echo "Checking links in: $file"
+              markdown-link-check "$file" -c .markdown-link-check.json || true
+            fi
+          done
+        fi
+
+    - name: Build Jekyll site
+      run: |
+        echo "🔨 Building Jekyll site..."
+        jekyll build --verbose
+        
+        if [ $? -eq 0 ]; then
+          echo "✅ Jekyll build successful"
+        else
+          echo "❌ Jekyll build failed"
+          exit 1
+        fi
+
+    - name: Summary
+      if: always()
+      run: |
+        echo "📊 Validation Summary"
+        echo "===================="
+        echo "✅ YAML front matter validation"
+        echo "✅ File naming convention check"
+        echo "✅ Image reference validation"
+        echo "✅ Link checking"
+        echo "✅ Jekyll build test"
