@@ -43,3 +43,4 @@ _posts/wordcloud/
 
 # JetBrains
 .idea
+.vscode

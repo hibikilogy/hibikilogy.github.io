@@ -32,7 +32,8 @@ github_username: hibikilogy
 # from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
 permalink: pretty
 paginate: 10
-exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
+exclude: ["less","node_modules","Gruntfile.js","package.json","README.md","docs"]
+include: ["admin.html", "test-images.html"]
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
 
 
@@ -70,6 +71,20 @@ gitalk:
   owner: hibikilogy     #github用户名
   admin: "['inchei','97littleleaf11']"
   distractionFreeMode: true #是否启用类似FB的阴影遮罩
+
+# Giscus (https://giscus.app/)
+giscus:
+  enable: true
+  repo: hibikilogy/hibikilogy.github.io
+  repo-id: # 需要在 https://giscus.app/ 获取
+  category: Announcements
+  category-id: # 需要在 https://giscus.app/ 获取
+  mapping: pathname
+  reactions-enabled: 1
+  emit-metadata: 0
+  input-position: bottom
+  theme: preferred_color_scheme
+  lang: zh-CN
 
 
 # 统计

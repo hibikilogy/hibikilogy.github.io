@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>外链图片测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section h2 {
+            color: #34495e;
+            margin-top: 0;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: block;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🖼️ 外链图片显示测试 - Issue #33</h1>
+    
+    <div class="status info">
+        <strong>测试说明：</strong> 本页面已添加 <code>&lt;meta name="referrer" content="no-referrer"&gt;</code>，
+        用于测试外链图片是否能正常显示。
+    </div>
+
+    <div class="test-section">
+        <h2>测试 1: i.loli.net (SM.MS)</h2>
+        <p><strong>图床：</strong> SM.MS / i.loli.net</p>
+        <p><strong>防盗链：</strong> 有</p>
+        <img src="https://i.loli.net/2020/03/13/Kk83Nb1DUaYOi6j.png" 
+             alt="京吹学报 Header"
+             onload="this.nextElementSibling.className='status success'; this.nextElementSibling.textContent='✅ 图片加载成功！'"
+             onerror="this.nextElementSibling.className='status error'; this.nextElementSibling.textContent='❌ 图片加载失败'">
+        <div class="status info">⏳ 加载中...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试 2: img.nga.178.com (NGA 图床)</h2>
+        <p><strong>图床：</strong> NGA 论坛图床</p>
+        <p><strong>防盗链：</strong> 有</p>
+        
+        <h3>图片 1:</h3>
+        <img src="https://img.nga.178.com/attachments/mon_202407/21/joQ19l-8yi1XaZ2vT3cSrq-fm.png" 
+             alt="NGA 图片测试 3"
+             onload="this.nextElementSibling.className='status success'; this.nextElementSibling.textContent='✅ 图片加载成功！'"
+             onerror="this.nextElementSibling.className='status error'; this.nextElementSibling.textContent='❌ 图片加载失败'">
+        <div class="status info">⏳ 加载中...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试 3: GitHub (无防盗链)</h2>
+        <p><strong>图床：</strong> GitHub Assets</p>
+        <p><strong>防盗链：</strong> 无</p>
+        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" 
+             alt="GitHub Logo"
+             onload="this.nextElementSibling.className='status success'; this.nextElementSibling.textContent='✅ 图片加载成功！'"
+             onerror="this.nextElementSibling.className='status error'; this.nextElementSibling.textContent='❌ 图片加载失败'">
+        <div class="status info">⏳ 加载中...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 验证方法</h2>
+        <ol>
+            <li>打开浏览器开发者工具（按 F12）</li>
+            <li>切换到 <strong>Network</strong> 标签</li>
+            <li>刷新页面（Ctrl+R 或 F5）</li>
+            <li>点击任意图片请求，查看 <strong>Request Headers</strong></li>
+            <li>确认没有 <code>Referer</code> 或 <code>Referrer</code> 字段</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 测试结果</h2>
+        <div id="summary" class="status info">
+            <strong>总结：</strong> 请等待所有图片加载完成...
+        </div>
+    </div>
+
+    <script>
+        // 等待所有图片加载完成后显示总结
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const successCount = document.querySelectorAll('.status.success').length;
+                const errorCount = document.querySelectorAll('.status.error').length;
+                const total = successCount + errorCount;
+                
+                const summary = document.getElementById('summary');
+                if (errorCount === 0) {
+                    summary.className = 'status success';
+                    summary.innerHTML = `<strong>✅ 测试通过！</strong> 所有 ${total} 张图片都加载成功，外链图片显示问题已修复。`;
+                } else {
+                    summary.className = 'status error';
+                    summary.innerHTML = `<strong>⚠️ 部分失败：</strong> ${successCount}/${total} 张图片加载成功，${errorCount} 张失败。`;
+                }
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

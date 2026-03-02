@@ -106,6 +106,28 @@ layout: default
                 {% endif %}
                 <!-- Gitalk end -->
 
+                <!-- Giscus评论start -->
+                {% if site.giscus.enable %}
+                <hr style="margin-top: 50px;">
+                <h5>评论</h5>
+                <script src="https://giscus.app/client.js"
+                        data-repo="{{ site.giscus.repo }}"
+                        data-repo-id="{{ site.giscus.repo-id }}"
+                        data-category="{{ site.giscus.category }}"
+                        data-category-id="{{ site.giscus.category-id }}"
+                        data-mapping="{{ site.giscus.mapping }}"
+                        data-strict="0"
+                        data-reactions-enabled="{{ site.giscus.reactions-enabled }}"
+                        data-emit-metadata="{{ site.giscus.emit-metadata }}"
+                        data-input-position="{{ site.giscus.input-position }}"
+                        data-theme="{{ site.giscus.theme }}"
+                        data-lang="{{ site.giscus.lang }}"
+                        crossorigin="anonymous"
+                        async>
+                </script>
+                {% endif %}
+                <!-- Giscus end -->
+
                 {% if site.disqus_username %}
                 <!-- disqus 评论框 start -->
                 <div class="comment">
