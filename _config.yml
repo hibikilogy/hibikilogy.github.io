@@ -76,9 +76,9 @@ gitalk:
 giscus:
   enable: true
   repo: hibikilogy/hibikilogy.github.io
-  repo-id: # 需要在 https://giscus.app/ 获取
+  repo-id: MDEwOlJlcG9zaXRvcnkyNDU5MDA4ODE=
   category: Announcements
-  category-id: # 需要在 https://giscus.app/ 获取
+  category-id: DIC_kwDODqgmUc4C4M9X
   mapping: pathname
   reactions-enabled: 1
   emit-metadata: 0
