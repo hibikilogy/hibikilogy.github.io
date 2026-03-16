@@ -71,6 +71,20 @@ gitalk:
   admin: "['inchei','97littleleaf11']"
   distractionFreeMode: true #是否启用类似FB的阴影遮罩
 
+# Giscus (https://giscus.app/)
+giscus:
+  enable: true
+  repo: hibikilogy/hibikilogy.github.io
+  repo-id: MDEwOlJlcG9zaXRvcnkyNDU5MDA4ODE=
+  category: Announcements
+  category-id: DIC_kwDODqgmUc4C4M9X
+  mapping: pathname
+  reactions-enabled: 1
+  emit-metadata: 0
+  input-position: bottom
+  theme: preferred_color_scheme
+  lang: zh-CN
+
 
 # 统计
 
