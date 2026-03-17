@@ -37,11 +37,11 @@ description: "吹学著作集锦"
         <a href="{{ paginator.previous_page_path | prepend: site.baseurl }}">&lsaquo;</a>
     </li>
     {% else %}
-    <li class="previous">
-        <a style="pointer-events:none;background-color: #ccd0d3">&lsaquo;&lsaquo;</a>
+    <li class="previous disabled">
+        <a>&lsaquo;&lsaquo;</a>
     </li>
-    <li class="previous">
-        <a style="pointer-events:none;background-color: #ccd0d3">&lsaquo;</a>
+    <li class="previous disabled">
+        <a>&lsaquo;</a>
     </li>
     {% endif %}
 
@@ -71,11 +71,11 @@ description: "吹学著作集锦"
         <a href="{{ paginator.next_page_path | prepend: site.baseurl }}">&rsaquo;</a>
     </li>
     {% else %}
-    <li class="next">
-        <a style="pointer-events:none;background-color: #ccd0d3">&rsaquo;&rsaquo;</a>
+    <li class="next disabled">
+        <a>&rsaquo;&rsaquo;</a>
     </li>
-    <li class="next">
-        <a style="pointer-events:none;background-color: #ccd0d3">&rsaquo;</a>
+    <li class="next disabled">
+        <a>&rsaquo;</a>
     </li>
     {% endif %}
 </ul>

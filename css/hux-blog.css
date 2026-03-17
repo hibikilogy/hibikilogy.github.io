@@ -373,9 +373,10 @@
 [data-theme="dark"] .pager .disabled > a:hover,
 [data-theme="dark"] .pager .disabled > a:focus,
 [data-theme="dark"] .pager .disabled > span {
-  color: #b0b0b0 !important;
-  background-color: #2d2d2d !important;
-  cursor: not-allowed;
+  color: #808080 !important;
+  background-color: #1f1f1f !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
 }
 [data-theme="dark"] footer {
   background-color: #2d2d2d;
@@ -1139,7 +1140,7 @@ form .row:first-child .floating-label-form-group {
 .pager .disabled > a:focus,
 .pager .disabled > span {
   color: #808080;
-  background-color: #404040;
+  background-color: #ccd0d3;
   cursor: not-allowed;
   pointer-events: none;
 }

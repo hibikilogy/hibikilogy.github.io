@@ -175,15 +175,12 @@
 }
 [data-theme="dark"] .side-catalog .catalog-body li a {
   color: #b0b0b0;
-  border-left: 2px solid #404040;
 }
 [data-theme="dark"] .side-catalog .catalog-body li a:hover {
   color: #6eb5ff;
-  border-left-color: #6eb5ff;
 }
 [data-theme="dark"] .side-catalog .catalog-body li a.active {
   color: #6eb5ff;
-  border-left-color: #6eb5ff;
 }
 [data-theme="dark"] .tags a,
 [data-theme="dark"] .tags .tag {
@@ -197,7 +194,7 @@
 [data-theme="dark"] .tags .tag:active {
   background-color: #6eb5ff;
   border-color: #6eb5ff;
-  color: white;
+  color: white !important;
 }
 [data-theme="dark"] hr,
 [data-theme="dark"] hr.small {
@@ -212,14 +209,14 @@
 [data-theme="dark"] #tag_cloud a,
 [data-theme="dark"] #tag_cloud .tag {
   color: #e0e0e0 !important;
-  border: 1px solid #404040 !important;
+  border: none !important;
 }
 [data-theme="dark"] #tag_cloud a:hover,
 [data-theme="dark"] #tag_cloud .tag:hover,
 [data-theme="dark"] #tag_cloud a:active,
 [data-theme="dark"] #tag_cloud .tag:active {
   color: white !important;
-  border-color: #6eb5ff !important;
+  border: none !important;
 }
 [data-theme="dark"] .pager li > a,
 [data-theme="dark"] .pager li > span {
@@ -245,9 +242,10 @@
 [data-theme="dark"] .pager .disabled > a:hover,
 [data-theme="dark"] .pager .disabled > a:focus,
 [data-theme="dark"] .pager .disabled > span {
-  color: #404040;
-  background-color: #1a1a1a;
-  cursor: not-allowed;
+  color: #808080 !important;
+  background-color: #1f1f1f !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
 }
 [data-theme="dark"] footer {
   background-color: #2d2d2d;
@@ -301,6 +299,9 @@
   border-color: #6eb5ff !important;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(107, 181, 255, 0.6) !important;
 }
+[data-theme="dark"] #search-bar:not(:focus) {
+  color: #e0e0e0 !important;
+}
 [data-theme="dark"] .form-control {
   background-color: #2d2d2d;
   color: #e0e0e0;
@@ -333,18 +334,4 @@
 [data-theme="dark"] ::-moz-selection {
   background: #6eb5ff;
   color: white;
-}
-[data-theme="dark"] ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-[data-theme="dark"] ::-webkit-scrollbar-track {
-  background: #1a1a1a;
-}
-[data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #2d2d2d;
-  border-radius: 5px;
-}
-[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: #4a4a4a;
 }

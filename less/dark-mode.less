@@ -11,6 +11,10 @@
 @dark-code-bg: #2d2d2d;
 @dark-blockquote-bg: #252525;
 
+// Disabled state colors
+@dark-disabled-bg: #1f1f1f;
+@dark-disabled-text: #808080;
+
 // Dark mode styles
 [data-theme="dark"] {
 
@@ -322,9 +326,10 @@
       >a:hover,
       >a:focus,
       >span {
-        color: @dark-border;
-        background-color: @dark-bg;
-        cursor: not-allowed;
+        color: @dark-disabled-text !important;
+        background-color: @dark-disabled-bg !important;
+        cursor: not-allowed !important;
+        pointer-events: none !important;
       }
     }
   }
@@ -396,7 +401,7 @@
       border-color: @dark-link !important;
       box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(107, 181, 255, 0.6) !important;
     }
-    
+
     &:not(:focus) {
       color: @dark-text !important;
     }

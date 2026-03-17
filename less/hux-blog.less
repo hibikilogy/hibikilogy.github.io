@@ -858,8 +858,9 @@ form .row:first-child .floating-label-form-group {
 		>a:focus,
 		>span {
 			color: @gray;
-			background-color: @gray-dark;
+			background-color: @disabled-bg;
 			cursor: not-allowed;
+			pointer-events: none;
 		}
 	}
 }
@@ -939,11 +940,10 @@ img::-moz-selection {
 		line-height: 28px;
 		margin: 0 2px;
 		margin-bottom: 8px;
-		background: #D6D6D6;
 
 		&:hover,
 		&:active {
-			background-color: #0085a1 !important;
+			// background-color will be set by tagcloud.js
 		}
 	}
 
