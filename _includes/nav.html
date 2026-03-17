@@ -137,6 +137,16 @@
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
         updateThemeIcon(newTheme);
+        
+        // Reinitialize tagcloud with new theme colors
+        if($('#tag_cloud').length !== 0 && typeof $.fn.tagcloud !== 'undefined') {
+            const isDarkMode = newTheme === 'dark';
+            $.fn.tagcloud.defaults = {
+                color: isDarkMode ? {start: '#4a9eff', end: '#b8d4ff'} : {start: '#bbbbee', end: '#0085a1'},
+            };
+            // Remove inline styles and reinitialize
+            $('#tag_cloud a').removeAttr('style').tagcloud();
+        }
     });
 </script>
 
