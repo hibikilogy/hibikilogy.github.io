@@ -278,12 +278,16 @@
       }
     }
 
-    .disabled > a,
-    .disabled > a:hover,
-    .disabled > a:focus,
-    .disabled > span {
-      background-color: #3a3a3a;
-      color: #666;
+    .disabled {
+
+      >a,
+      >a:hover,
+      >a:focus,
+      >span {
+        color: @dark-border;
+        background-color: @dark-bg;
+        cursor: not-allowed;
+      }
     }
   }
 
