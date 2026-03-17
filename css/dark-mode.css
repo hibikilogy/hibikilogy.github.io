@@ -127,6 +127,11 @@
 [data-theme="dark"] .post-preview > a:hover,
 [data-theme="dark"] .post-preview > a:focus {
   color: #6eb5ff;
+  text-decoration: none;
+}
+[data-theme="dark"] .post-preview > a:hover > .post-title,
+[data-theme="dark"] .post-preview > a:focus > .post-title {
+  color: #6eb5ff;
 }
 [data-theme="dark"] .post-preview > .post-meta {
   color: #b0b0b0;
@@ -243,8 +248,9 @@
 [data-theme="dark"] .pager .disabled > a:hover,
 [data-theme="dark"] .pager .disabled > a:focus,
 [data-theme="dark"] .pager .disabled > span {
-  background-color: #3a3a3a;
-  color: #666;
+  color: #404040;
+  background-color: #1a1a1a;
+  cursor: not-allowed;
 }
 [data-theme="dark"] footer {
   background-color: #2d2d2d;
