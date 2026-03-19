@@ -13,6 +13,13 @@ body {
 	color: @gray-dark;
 	//-webkit-user-select:text; //对于 Blog 还是先不开启这句。
 	overflow-x: hidden;
+
+	// Tag cloud gradient colors (CSS variables for light mode)
+	--tagcloud-light-color: @light-tagcloud-light-color;
+	--tagcloud-dark-color: @light-tagcloud-dark-color;
+	
+	// Accent color for light mode
+	--accent-color: @light-accent-color;
 }
 
 // -- Typography
@@ -973,7 +980,7 @@ img::-moz-selection {
 }
 
 .listing-seperator {
-	color: #0085a1;
+	color: @accent-color;
 	font-size: 21px !important;
 
 	&::before {

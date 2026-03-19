@@ -1,5 +1,7 @@
 // Variables
 
+@import "colors.less";
+
 @brand-primary: #33ADFF;
 @gray-dark: lighten(black, 25%);
 @gray: lighten(black, 50%);
@@ -7,5 +9,18 @@
 @white-faded: fade(white, 80%);
 @gray-light: #eee;
 
-// Disabled state colors
-@disabled-bg: #ccd0d3;
+// Default to light mode colors
+@bg: @light-bg;
+@bg-secondary: @light-bg-secondary;
+@text: @light-text;
+@text-secondary: @light-text-secondary;
+@border: @light-border;
+@link: @light-link;
+@link-hover: @light-link-hover;
+@code-bg: @light-code-bg;
+@blockquote-bg: @light-blockquote-bg;
+@disabled-bg: @light-disabled-bg;
+@disabled-text: @light-disabled-text;
+@tagcloud-light-color: @light-tagcloud-light-color;
+@tagcloud-dark-color: @light-tagcloud-dark-color;
+@accent-color: @light-accent-color;

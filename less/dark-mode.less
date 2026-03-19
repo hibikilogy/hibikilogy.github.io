@@ -1,27 +1,38 @@
 // Dark Mode Styles for Hibikilogy
 
-// Dark mode color variables
-@dark-bg: #1a1a1a;
-@dark-bg-secondary: #2d2d2d;
-@dark-text: #e0e0e0;
-@dark-text-secondary: #b0b0b0;
-@dark-border: #404040;
-@dark-link: #6eb5ff;
-@dark-link-hover: #9fd3ff;
-@dark-code-bg: #2d2d2d;
-@dark-blockquote-bg: #252525;
+// Import color variables
+@import "colors.less";
 
-// Disabled state colors
-@dark-disabled-bg: #1f1f1f;
-@dark-disabled-text: #808080;
+// Override with dark mode colors
+@bg: @dark-bg;
+@bg-secondary: @dark-bg-secondary;
+@text: @dark-text;
+@text-secondary: @dark-text-secondary;
+@border: @dark-border;
+@link: @dark-link;
+@link-hover: @dark-link-hover;
+@code-bg: @dark-code-bg;
+@blockquote-bg: @dark-blockquote-bg;
+@disabled-bg: @dark-disabled-bg;
+@disabled-text: @dark-disabled-text;
+@tagcloud-light-color: @dark-tagcloud-light-color;
+@tagcloud-dark-color: @dark-tagcloud-dark-color;
+@accent-color: @dark-accent-color;
 
 // Dark mode styles
 [data-theme="dark"] {
 
   // Base styles
   body {
-    background-color: @dark-bg;
-    color: @dark-text;
+    background-color: @bg;
+    color: @text;
+
+    // Tag cloud gradient colors (CSS variables for dark mode)
+    --tagcloud-light-color: @dark-tagcloud-light-color;
+    --tagcloud-dark-color: @dark-tagcloud-dark-color;
+    
+    // Accent color for dark mode
+    --accent-color: @dark-accent-color;
   }
 
   // Typography
@@ -31,42 +42,42 @@
   h4,
   h5,
   h6 {
-    color: @dark-text;
+    color: @text;
   }
 
   a {
-    color: @dark-link;
+    color: @link;
 
     &:hover,
     &:focus {
-      color: @dark-link-hover;
+      color: @link-hover;
     }
   }
 
   // Navigation
   .navbar-custom {
-    background-color: fade(@dark-bg-secondary, 95%);
-    border-bottom: 1px solid @dark-border;
+    background-color: fade(@bg-secondary, 95%);
+    border-bottom: 1px solid @border;
 
     &.is-fixed {
-      background-color: fade(@dark-bg-secondary, 95%);
-      border-bottom: 1px solid @dark-border;
+      background-color: fade(@bg-secondary, 95%);
+      border-bottom: 1px solid @border;
 
       .navbar-brand {
-        color: @dark-text;
+        color: @text;
 
         &:hover,
         &:focus {
-          color: @dark-link;
+          color: @link;
         }
       }
 
       .nav li a {
-        color: @dark-text;
+        color: @text;
 
         &:hover,
         &:focus {
-          color: @dark-link;
+          color: @link;
         }
       }
     }
@@ -74,7 +85,7 @@
 
   @media only screen and (max-width: 767px) {
     .navbar-default .navbar-collapse {
-      background: @dark-bg-secondary;
+      background: @bg-secondary;
       box-shadow: 0px 5px 10px 2px rgba(0, 0, 0, 0.5);
     }
   }
@@ -98,37 +109,37 @@
   // Post content
   .post-container,
   .postlist-container {
-    color: @dark-text;
+    color: @text;
 
     a {
-      color: @dark-link;
+      color: @link;
 
       &:hover,
       &:focus {
-        color: @dark-link-hover;
+        color: @link-hover;
       }
     }
 
     h5,
     h6 {
-      color: @dark-text-secondary;
+      color: @text-secondary;
     }
 
     blockquote {
-      background-color: @dark-blockquote-bg;
-      border-left: 4px solid @dark-border;
-      color: @dark-text-secondary;
+      background-color: @blockquote-bg;
+      border-left: 4px solid @border;
+      color: @text-secondary;
     }
 
     code {
-      background-color: @dark-code-bg;
+      background-color: @code-bg;
       color: #ff6b6b;
-      border: 1px solid @dark-border;
+      border: 1px solid @border;
     }
 
     pre {
-      background-color: @dark-code-bg;
-      border: 1px solid @dark-border;
+      background-color: @code-bg;
+      border: 1px solid @border;
 
       code {
         background-color: transparent;
@@ -140,8 +151,8 @@
 
       th,
       td {
-        border: 1px solid @dark-border !important;
-        background-color: @dark-bg-secondary;
+        border: 1px solid @border !important;
+        background-color: @bg-secondary;
       }
 
       thead th {
@@ -162,84 +173,89 @@
   // Post preview
   .post-preview {
     >a {
-      color: @dark-text;
+      color: @text;
+      transition: all 0.4s ease;
 
       &:hover,
       &:focus {
-        color: @dark-link;
+        color: @link;
         text-decoration: none;
 
-        >.post-title,
-        >.post-subtitle {
-          color: @dark-link;
+        >.post-title {
+          color: @link;
         }
       }
     }
 
     >.post-meta {
-      color: @dark-text-secondary;
+      color: @text-secondary;
 
       >a {
-        color: @dark-text-secondary;
+        color: @text-secondary;
 
         &:hover,
         &:focus {
-          color: @dark-link;
+          color: @link;
         }
       }
     }
   }
 
   .post-content-preview {
-    color: @dark-text-secondary;
+    color: @text-secondary;
 
     &:hover {
-      color: @dark-link;
+      color: @link;
     }
   }
 
   // Sidebar
   .sidebar-container {
-    color: @dark-text;
+    color: @text;
 
     h5 {
-      color: @dark-text;
+      color: @text;
 
       a {
-        color: @dark-text;
+        color: @text;
 
         &:hover {
-          color: @dark-link;
+          color: @link;
         }
       }
     }
 
     .short-about {
-      color: @dark-text-secondary;
+      color: @text-secondary;
     }
   }
 
   // Side catalog
   .side-catalog {
-    background-color: @dark-bg;
+    background-color: @bg;
     box-shadow: none;
 
     h5 a {
-      color: @dark-text;
+      color: @text;
     }
 
     .catalog-body {
       li {
         a {
-          color: @dark-text-secondary;
+          color: @text-secondary;
 
           &:hover {
-            color: @dark-link;
+            color: @link;
           }
 
           &.active {
-            color: @dark-link;
+            color: @accent-color;
           }
+        }
+        
+        &.active {
+          background-color: @bg-secondary;
+          border-radius: 4px;
         }
       }
     }
@@ -250,14 +266,14 @@
 
     a,
     .tag {
-      background-color: @dark-bg-secondary;
-      border-color: @dark-border;
-      color: @dark-text;
+      background-color: @bg-secondary;
+      border-color: @border;
+      color: @text;
 
       &:hover,
       &:active {
-        background-color: @dark-link;
-        border-color: @dark-link;
+        background-color: @link;
+        border-color: @link;
         color: white !important;
       }
     }
@@ -266,15 +282,15 @@
   // Horizontal rules
   hr,
   hr.small {
-    border-color: @dark-border;
+    border-color: @border;
   }
 
   // Tag listing separator
   .listing-seperator {
-    color: @dark-link;
+    color: @accent-color;
 
     &:hover {
-      color: @dark-link-hover;
+      color: @link-hover;
     }
   }
 
@@ -282,7 +298,7 @@
 
     a,
     .tag {
-      color: @dark-text !important;
+      color: @text !important;
       border: none !important;
 
       &:hover,
@@ -299,19 +315,19 @@
 
       >a,
       >span {
-        background-color: @dark-bg-secondary;
-        border: 1px solid @dark-border;
-        color: @dark-text;
+        background-color: @bg-secondary;
+        border: 1px solid @border;
+        color: @text;
 
         span {
-          color: @dark-text-secondary;
+          color: @text-secondary;
         }
       }
 
       >a:hover,
       >a:focus {
-        background-color: @dark-link;
-        border-color: @dark-link;
+        background-color: @link;
+        border-color: @link;
         color: white;
 
         span {
@@ -326,8 +342,9 @@
       >a:hover,
       >a:focus,
       >span {
-        color: @dark-disabled-text !important;
-        background-color: @dark-disabled-bg !important;
+        color: @disabled-text !important;
+        background-color: @disabled-bg !important;
+        border-color: @border !important;
         cursor: not-allowed !important;
         pointer-events: none !important;
       }
@@ -336,19 +353,19 @@
 
   // Footer
   footer {
-    background-color: @dark-bg-secondary;
-    border-top: 1px solid @dark-border;
-    color: @dark-text-secondary;
+    background-color: @bg-secondary;
+    border-top: 1px solid @border;
+    color: @text-secondary;
 
     .copyright {
-      color: @dark-text-secondary;
+      color: @text-secondary;
 
       a {
-        color: @dark-link;
+        color: @link;
 
         &:hover,
         &:focus {
-          color: @dark-link-hover;
+          color: @link-hover;
         }
       }
     }
@@ -358,13 +375,13 @@
   input,
   textarea,
   select {
-    background-color: @dark-bg-secondary;
-    color: @dark-text;
-    border-color: @dark-border;
+    background-color: @bg-secondary;
+    color: @text;
+    border-color: @border;
 
     &:focus {
-      background-color: @dark-bg-secondary;
-      border-color: @dark-link;
+      background-color: @bg-secondary;
+      border-color: @link;
     }
   }
 
@@ -372,18 +389,18 @@
   #gitalk-container {
     .gt-container {
       .gt-header-textarea {
-        background-color: @dark-bg-secondary;
-        color: @dark-text;
-        border-color: @dark-border;
+        background-color: @bg-secondary;
+        color: @text;
+        border-color: @border;
       }
 
       .gt-comment {
-        background-color: @dark-bg-secondary;
-        border-color: @dark-border;
+        background-color: @bg-secondary;
+        border-color: @border;
 
         .gt-comment-content {
-          background-color: @dark-bg-secondary;
-          color: @dark-text;
+          background-color: @bg-secondary;
+          color: @text;
         }
       }
     }
@@ -391,62 +408,62 @@
 
   // Search bar
   #search-bar {
-    background-color: @dark-bg-secondary !important;
-    color: @dark-text !important;
-    border-color: @dark-border !important;
+    background-color: @bg-secondary !important;
+    color: @text !important;
+    border-color: @border !important;
 
     &:focus {
-      background-color: @dark-bg-secondary !important;
-      color: @dark-text !important;
-      border-color: @dark-link !important;
+      background-color: @bg-secondary !important;
+      color: @text !important;
+      border-color: @link !important;
       box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(107, 181, 255, 0.6) !important;
     }
-
+    
     &:not(:focus) {
-      color: @dark-text !important;
+      color: @text !important;
     }
   }
 
   // Form control
   .form-control {
-    background-color: @dark-bg-secondary;
-    color: @dark-text;
-    border-color: @dark-border;
+    background-color: @bg-secondary;
+    color: @text;
+    border-color: @border;
 
     &:focus {
-      background-color: @dark-bg-secondary;
-      color: @dark-text;
-      border-color: @dark-link;
+      background-color: @bg-secondary;
+      color: @text;
+      border-color: @link;
       box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(107, 181, 255, 0.6);
     }
 
     &::placeholder {
-      color: @dark-text-secondary;
+      color: @text-secondary;
     }
   }
 
   // Buttons
   .btn-default {
-    background-color: @dark-bg-secondary;
-    border-color: @dark-border;
-    color: @dark-text;
+    background-color: @bg-secondary;
+    border-color: @border;
+    color: @text;
 
     &:hover,
     &:focus {
-      background-color: @dark-link;
-      border-color: @dark-link;
+      background-color: @link;
+      border-color: @link;
       color: white;
     }
   }
 
   // Selection
   ::selection {
-    background: @dark-link;
+    background: @link;
     color: white;
   }
 
   ::-moz-selection {
-    background: @dark-link;
+    background: @link;
     color: white;
   }
 }
