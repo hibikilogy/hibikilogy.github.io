@@ -119,7 +119,7 @@
 }
 .side-catalog .catalog-body .active {
   border-radius: 4px;
-  background-color: #F5F5F5;
+  background-color: #3d2d5d;
 }
 .side-catalog .catalog-body .active a {
   color: #c4b5fd !important;
@@ -316,7 +316,7 @@
   color: #c4b5fd;
 }
 [data-theme="dark"] .side-catalog .catalog-body li.active {
-  background-color: #2d1b4e;
+  background-color: #3d2d5d;
   border-radius: 4px;
 }
 [data-theme="dark"] .tags a,
