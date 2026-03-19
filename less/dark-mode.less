@@ -48,6 +48,12 @@
 
   a {
     color: @link;
+    transition: all 0.4s ease;
+    -moz-transition: all 0.4s ease;
+    /* Firefox 4 */
+    -webkit-transition: all 0.4s ease;
+    /* Safari 和 Chrome */
+    -o-transition: all 0.4s ease;
 
     &:hover,
     &:focus {
@@ -175,7 +181,6 @@
   .post-preview {
     >a {
       color: @text;
-      transition: all 0.4s ease;
 
       &:hover,
       &:focus {

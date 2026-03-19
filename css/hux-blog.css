@@ -146,6 +146,12 @@
 }
 [data-theme="dark"] a {
   color: #a78bfa;
+  transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  /* Firefox 4 */
+  -webkit-transition: all 0.4s ease;
+  /* Safari 和 Chrome */
+  -o-transition: all 0.4s ease;
 }
 [data-theme="dark"] a:hover,
 [data-theme="dark"] a:focus {
@@ -257,7 +263,6 @@
 }
 [data-theme="dark"] .post-preview > a {
   color: #e8dff5;
-  transition: all 0.4s ease;
 }
 [data-theme="dark"] .post-preview > a:hover,
 [data-theme="dark"] .post-preview > a:focus {
