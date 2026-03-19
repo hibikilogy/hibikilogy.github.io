@@ -209,6 +209,32 @@
   border-color: #a78bfa;
   color: white !important;
 }
+[data-theme="dark"] .post-heading .tags a,
+[data-theme="dark"] .page-heading .tags a,
+[data-theme="dark"] .site-heading .tags a,
+[data-theme="dark"] .post-heading .tags .tag,
+[data-theme="dark"] .page-heading .tags .tag,
+[data-theme="dark"] .site-heading .tags .tag {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.9);
+}
+[data-theme="dark"] .post-heading .tags a:hover,
+[data-theme="dark"] .page-heading .tags a:hover,
+[data-theme="dark"] .site-heading .tags a:hover,
+[data-theme="dark"] .post-heading .tags .tag:hover,
+[data-theme="dark"] .page-heading .tags .tag:hover,
+[data-theme="dark"] .site-heading .tags .tag:hover,
+[data-theme="dark"] .post-heading .tags a:active,
+[data-theme="dark"] .page-heading .tags a:active,
+[data-theme="dark"] .site-heading .tags a:active,
+[data-theme="dark"] .post-heading .tags .tag:active,
+[data-theme="dark"] .page-heading .tags .tag:active,
+[data-theme="dark"] .site-heading .tags .tag:active {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: white !important;
+}
 [data-theme="dark"] hr,
 [data-theme="dark"] hr.small {
   border-color: #3d2d5d;

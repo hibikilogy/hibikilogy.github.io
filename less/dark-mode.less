@@ -286,6 +286,25 @@
     }
   }
 
+  // Tags in post heading (page top/footer) - use transparent background
+  .post-heading .tags,
+  .page-heading .tags,
+  .site-heading .tags {
+    a,
+    .tag {
+      background-color: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.9);
+
+      &:hover,
+      &:active {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.6);
+        color: white !important;
+      }
+    }
+  }
+
   // Horizontal rules
   hr,
   hr.small {
