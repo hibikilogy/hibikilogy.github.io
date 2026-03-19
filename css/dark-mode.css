@@ -134,7 +134,9 @@
   text-decoration: none;
 }
 [data-theme="dark"] .post-preview > a:hover > .post-title,
-[data-theme="dark"] .post-preview > a:focus > .post-title {
+[data-theme="dark"] .post-preview > a:focus > .post-title,
+[data-theme="dark"] .post-preview > a:hover > .post-subtitle,
+[data-theme="dark"] .post-preview > a:focus > .post-subtitle {
   color: #a78bfa;
 }
 [data-theme="dark"] .post-preview > .post-meta {

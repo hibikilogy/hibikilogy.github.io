@@ -31,7 +31,7 @@
     // Tag cloud gradient colors (CSS variables for dark mode)
     --tagcloud-light-color: @dark-tagcloud-light-color;
     --tagcloud-dark-color: @dark-tagcloud-dark-color;
-    
+
     // Accent color for dark mode
     --accent-color: @dark-accent-color;
   }
@@ -182,7 +182,8 @@
         color: @link;
         text-decoration: none;
 
-        >.post-title {
+        >.post-title,
+        >.post-subtitle {
           color: @link;
         }
       }
@@ -253,7 +254,7 @@
             color: @accent-color;
           }
         }
-        
+
         &.active {
           background-color: @catalog-active-bg;
           border-radius: 4px;
@@ -419,7 +420,7 @@
       border-color: @link !important;
       box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(107, 181, 255, 0.6) !important;
     }
-    
+
     &:not(:focus) {
       color: @text !important;
     }
