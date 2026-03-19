@@ -138,11 +138,18 @@
         localStorage.setItem('theme', newTheme);
         updateThemeIcon(newTheme);
         
-        // Reinitialize tagcloud with new theme colors
+        // Reinitialize tagcloud with new theme colors from CSS variables
         if($('#tag_cloud').length !== 0 && typeof $.fn.tagcloud !== 'undefined') {
-            const isDarkMode = newTheme === 'dark';
+            // Get CSS variables from body
+            const lightColor = getComputedStyle(document.body).getPropertyValue('--tagcloud-light-color').trim();
+            const darkColor = getComputedStyle(document.body).getPropertyValue('--tagcloud-dark-color').trim();
+            
+            // Fallback to default colors if CSS variables are not available
+            const finalLightColor = lightColor || '#bbbbee';
+            const finalDarkColor = darkColor || '#0085a1';
+            
             $.fn.tagcloud.defaults = {
-                color: isDarkMode ? {start: '#4a9eff', end: '#b8d4ff'} : {start: '#bbbbee', end: '#0085a1'},
+                color: {start: finalLightColor, end: finalDarkColor},
             };
             // Remove inline styles and reinitialize
             $('#tag_cloud a').removeAttr('style').tagcloud();
