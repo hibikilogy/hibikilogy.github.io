@@ -82,7 +82,7 @@ giscus:
   reactions-enabled: 1
   emit-metadata: 0
   input-position: bottom
-  theme: preferred_color_scheme
+  theme: auto  # light, dark, auto (跟随网站深色模式)
   lang: zh-CN
 
 

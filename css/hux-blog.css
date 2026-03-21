@@ -119,26 +119,402 @@
 }
 .side-catalog .catalog-body .active {
   border-radius: 4px;
-  background-color: #F5F5F5;
+  background-color: #3d2d5d;
 }
 .side-catalog .catalog-body .active a {
-  color: #0085a1 !important;
+  color: #c4b5fd !important;
 }
 @media (max-width: 1200px) {
   .side-catalog {
     display: none;
   }
 }
+[data-theme="dark"] body {
+  background-color: #1a0f2e;
+  color: #e8dff5;
+  --tagcloud-light-color: #b8a8d8;
+  --tagcloud-dark-color: #7a5fa8;
+  --accent-color: #c4b5fd;
+}
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: #e8dff5;
+}
+[data-theme="dark"] a {
+  color: #a78bfa;
+  transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+  /* Firefox 4 */
+  -webkit-transition: all 0.4s ease;
+  /* Safari 和 Chrome */
+  -o-transition: all 0.4s ease;
+}
+[data-theme="dark"] a:hover,
+[data-theme="dark"] a:focus {
+  color: #c4b5fd;
+}
+[data-theme="dark"] .navbar-custom {
+  background-color: rgba(45, 27, 78, 0.95);
+  border-bottom: 1px solid #3d2d5d;
+}
+[data-theme="dark"] .navbar-custom.is-fixed {
+  background-color: rgba(45, 27, 78, 0.95);
+  border-bottom: 1px solid #3d2d5d;
+}
+[data-theme="dark"] .navbar-custom.is-fixed .navbar-brand {
+  color: #e8dff5;
+}
+[data-theme="dark"] .navbar-custom.is-fixed .navbar-brand:hover,
+[data-theme="dark"] .navbar-custom.is-fixed .navbar-brand:focus {
+  color: #a78bfa;
+}
+[data-theme="dark"] .navbar-custom.is-fixed .nav li a {
+  color: #e8dff5;
+}
+[data-theme="dark"] .navbar-custom.is-fixed .nav li a:hover,
+[data-theme="dark"] .navbar-custom.is-fixed .nav li a:focus {
+  color: #a78bfa;
+}
+@media only screen and (max-width: 767px) {
+  [data-theme="dark"] .navbar-default .navbar-collapse {
+    background: #2d1b4e;
+    box-shadow: 0px 5px 10px 2px rgba(0, 0, 0, 0.5);
+  }
+}
+[data-theme="dark"] .intro-header .post-heading h1,
+[data-theme="dark"] .intro-header .page-heading h1,
+[data-theme="dark"] .intro-header .site-heading h1,
+[data-theme="dark"] .intro-header .post-heading h2,
+[data-theme="dark"] .intro-header .page-heading h2,
+[data-theme="dark"] .intro-header .site-heading h2,
+[data-theme="dark"] .intro-header .post-heading .subheading,
+[data-theme="dark"] .intro-header .page-heading .subheading,
+[data-theme="dark"] .intro-header .site-heading .subheading,
+[data-theme="dark"] .intro-header .post-heading .meta,
+[data-theme="dark"] .intro-header .page-heading .meta,
+[data-theme="dark"] .intro-header .site-heading .meta {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+[data-theme="dark"] .post-container,
+[data-theme="dark"] .postlist-container {
+  color: #e8dff5;
+}
+[data-theme="dark"] .post-container a,
+[data-theme="dark"] .postlist-container a {
+  color: #a78bfa;
+}
+[data-theme="dark"] .post-container a:hover,
+[data-theme="dark"] .postlist-container a:hover,
+[data-theme="dark"] .post-container a:focus,
+[data-theme="dark"] .postlist-container a:focus {
+  color: #c4b5fd;
+}
+[data-theme="dark"] .post-container h5,
+[data-theme="dark"] .postlist-container h5,
+[data-theme="dark"] .post-container h6,
+[data-theme="dark"] .postlist-container h6 {
+  color: #b8a8d8;
+}
+[data-theme="dark"] .post-container blockquote,
+[data-theme="dark"] .postlist-container blockquote {
+  background-color: #251a42;
+  border-left: 4px solid #3d2d5d;
+  color: #b8a8d8;
+}
+[data-theme="dark"] .post-container code,
+[data-theme="dark"] .postlist-container code {
+  background-color: #2d1b4e;
+  color: #ff6b6b;
+  border: 1px solid #3d2d5d;
+}
+[data-theme="dark"] .post-container pre,
+[data-theme="dark"] .postlist-container pre {
+  background-color: #2d1b4e;
+  border: 1px solid #3d2d5d;
+}
+[data-theme="dark"] .post-container pre code,
+[data-theme="dark"] .postlist-container pre code {
+  background-color: transparent;
+  border: none;
+}
+[data-theme="dark"] .post-container table th,
+[data-theme="dark"] .postlist-container table th,
+[data-theme="dark"] .post-container table td,
+[data-theme="dark"] .postlist-container table td {
+  border: 1px solid #3d2d5d !important;
+  background-color: #2d1b4e;
+}
+[data-theme="dark"] .post-container table thead th,
+[data-theme="dark"] .postlist-container table thead th {
+  background-color: #3a3a3a;
+}
+[data-theme="dark"] .post-container img,
+[data-theme="dark"] .postlist-container img {
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+[data-theme="dark"] .post-container img:hover,
+[data-theme="dark"] .postlist-container img:hover {
+  opacity: 1;
+}
+[data-theme="dark"] .post-preview > a {
+  color: #e8dff5;
+}
+[data-theme="dark"] .post-preview > a:hover,
+[data-theme="dark"] .post-preview > a:focus {
+  color: #a78bfa;
+  text-decoration: none;
+}
+[data-theme="dark"] .post-preview > a:hover > .post-title,
+[data-theme="dark"] .post-preview > a:focus > .post-title,
+[data-theme="dark"] .post-preview > a:hover > .post-subtitle,
+[data-theme="dark"] .post-preview > a:focus > .post-subtitle {
+  color: #a78bfa;
+}
+[data-theme="dark"] .post-preview > .post-meta {
+  color: #b8a8d8;
+}
+[data-theme="dark"] .post-preview > .post-meta > a {
+  color: #b8a8d8;
+}
+[data-theme="dark"] .post-preview > .post-meta > a:hover,
+[data-theme="dark"] .post-preview > .post-meta > a:focus {
+  color: #a78bfa;
+}
+[data-theme="dark"] .post-content-preview {
+  color: #b8a8d8;
+}
+[data-theme="dark"] .post-content-preview:hover {
+  color: #a78bfa;
+}
+[data-theme="dark"] .sidebar-container {
+  color: #e8dff5;
+}
+[data-theme="dark"] .sidebar-container h5 {
+  color: #e8dff5;
+}
+[data-theme="dark"] .sidebar-container h5 a {
+  color: #e8dff5;
+}
+[data-theme="dark"] .sidebar-container h5 a:hover {
+  color: #a78bfa;
+}
+[data-theme="dark"] .sidebar-container .short-about {
+  color: #b8a8d8;
+}
+[data-theme="dark"] .side-catalog {
+  background-color: #1a0f2e;
+  box-shadow: none;
+}
+[data-theme="dark"] .side-catalog h5 a {
+  color: #e8dff5;
+}
+[data-theme="dark"] .side-catalog .catalog-body li a {
+  color: #b8a8d8;
+}
+[data-theme="dark"] .side-catalog .catalog-body li a:hover {
+  color: #a78bfa;
+}
+[data-theme="dark"] .side-catalog .catalog-body li a.active {
+  color: #c4b5fd;
+}
+[data-theme="dark"] .side-catalog .catalog-body li.active {
+  background-color: #3d2d5d;
+  border-radius: 4px;
+}
+[data-theme="dark"] .tags a,
+[data-theme="dark"] .tags .tag {
+  background-color: #2d1b4e;
+  border-color: #3d2d5d;
+  color: #e8dff5;
+}
+[data-theme="dark"] .tags a:hover,
+[data-theme="dark"] .tags .tag:hover,
+[data-theme="dark"] .tags a:active,
+[data-theme="dark"] .tags .tag:active {
+  background-color: #a78bfa;
+  border-color: #a78bfa;
+  color: white !important;
+}
+[data-theme="dark"] .post-heading .tags a,
+[data-theme="dark"] .page-heading .tags a,
+[data-theme="dark"] .site-heading .tags a,
+[data-theme="dark"] .post-heading .tags .tag,
+[data-theme="dark"] .page-heading .tags .tag,
+[data-theme="dark"] .site-heading .tags .tag {
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.9);
+}
+[data-theme="dark"] .post-heading .tags a:hover,
+[data-theme="dark"] .page-heading .tags a:hover,
+[data-theme="dark"] .site-heading .tags a:hover,
+[data-theme="dark"] .post-heading .tags .tag:hover,
+[data-theme="dark"] .page-heading .tags .tag:hover,
+[data-theme="dark"] .site-heading .tags .tag:hover,
+[data-theme="dark"] .post-heading .tags a:active,
+[data-theme="dark"] .page-heading .tags a:active,
+[data-theme="dark"] .site-heading .tags a:active,
+[data-theme="dark"] .post-heading .tags .tag:active,
+[data-theme="dark"] .page-heading .tags .tag:active,
+[data-theme="dark"] .site-heading .tags .tag:active {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: white !important;
+}
+[data-theme="dark"] hr,
+[data-theme="dark"] hr.small {
+  border-color: #3d2d5d;
+}
+[data-theme="dark"] .listing-seperator {
+  color: #c4b5fd;
+}
+[data-theme="dark"] .listing-seperator:hover {
+  color: #c4b5fd;
+}
+[data-theme="dark"] #tag_cloud a,
+[data-theme="dark"] #tag_cloud .tag {
+  color: #e8dff5 !important;
+  border: none !important;
+}
+[data-theme="dark"] #tag_cloud a:hover,
+[data-theme="dark"] #tag_cloud .tag:hover,
+[data-theme="dark"] #tag_cloud a:active,
+[data-theme="dark"] #tag_cloud .tag:active {
+  color: white !important;
+  border: none !important;
+}
+[data-theme="dark"] .pager li > a,
+[data-theme="dark"] .pager li > span {
+  background-color: #2d1b4e;
+  border: 1px solid #3d2d5d;
+  color: #e8dff5;
+}
+[data-theme="dark"] .pager li > a span,
+[data-theme="dark"] .pager li > span span {
+  color: #b8a8d8;
+}
+[data-theme="dark"] .pager li > a:hover,
+[data-theme="dark"] .pager li > a:focus {
+  background-color: #a78bfa;
+  border-color: #a78bfa;
+  color: white;
+}
+[data-theme="dark"] .pager li > a:hover span,
+[data-theme="dark"] .pager li > a:focus span {
+  color: white;
+}
+[data-theme="dark"] .pager .disabled > a,
+[data-theme="dark"] .pager .disabled > a:hover,
+[data-theme="dark"] .pager .disabled > a:focus,
+[data-theme="dark"] .pager .disabled > span {
+  color: #8b7ba8 !important;
+  background-color: #1f1535 !important;
+  border-color: #3d2d5d !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+[data-theme="dark"] footer {
+  background-color: #2d1b4e;
+  border-top: 1px solid #3d2d5d;
+  color: #b8a8d8;
+}
+[data-theme="dark"] footer .copyright {
+  color: #b8a8d8;
+}
+[data-theme="dark"] footer .copyright a {
+  color: #a78bfa;
+}
+[data-theme="dark"] footer .copyright a:hover,
+[data-theme="dark"] footer .copyright a:focus {
+  color: #c4b5fd;
+}
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: #2d1b4e;
+  color: #e8dff5;
+  border-color: #3d2d5d;
+}
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus {
+  background-color: #2d1b4e;
+  border-color: #a78bfa;
+}
+[data-theme="dark"] #gitalk-container .gt-container .gt-header-textarea {
+  background-color: #2d1b4e;
+  color: #e8dff5;
+  border-color: #3d2d5d;
+}
+[data-theme="dark"] #gitalk-container .gt-container .gt-comment {
+  background-color: #2d1b4e;
+  border-color: #3d2d5d;
+}
+[data-theme="dark"] #gitalk-container .gt-container .gt-comment .gt-comment-content {
+  background-color: #2d1b4e;
+  color: #e8dff5;
+}
+[data-theme="dark"] #search-bar {
+  background-color: #2d1b4e !important;
+  color: #e8dff5 !important;
+  border-color: #3d2d5d !important;
+}
+[data-theme="dark"] #search-bar:focus {
+  background-color: #2d1b4e !important;
+  color: #e8dff5 !important;
+  border-color: #a78bfa !important;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(107, 181, 255, 0.6) !important;
+}
+[data-theme="dark"] #search-bar:not(:focus) {
+  color: #e8dff5 !important;
+}
+[data-theme="dark"] .form-control {
+  background-color: #2d1b4e;
+  color: #e8dff5;
+  border-color: #3d2d5d;
+}
+[data-theme="dark"] .form-control:focus {
+  background-color: #2d1b4e;
+  color: #e8dff5;
+  border-color: #a78bfa;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(107, 181, 255, 0.6);
+}
+[data-theme="dark"] .form-control::placeholder {
+  color: #b8a8d8;
+}
+[data-theme="dark"] .btn-default {
+  background-color: #2d1b4e;
+  border-color: #3d2d5d;
+  color: #e8dff5;
+}
+[data-theme="dark"] .btn-default:hover,
+[data-theme="dark"] .btn-default:focus {
+  background-color: #a78bfa;
+  border-color: #a78bfa;
+  color: white;
+}
+[data-theme="dark"] ::selection {
+  background: #a78bfa;
+  color: white;
+}
+[data-theme="dark"] ::-moz-selection {
+  background: #a78bfa;
+  color: white;
+}
 body {
-  /* Hux learn from
-     *     TypeIsBeautiful,
-     *     [This Post](http://zhuanlan.zhihu.com/ibuick/20186806) etc.
-     */
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", "PingFang SC", "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "Microsoft JhengHei", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC", "WenQuanYi Micro Hei", SimSun, sans-serif;
   line-height: 1.7;
   font-size: 16px;
   color: #404040;
   overflow-x: hidden;
+  --tagcloud-light-color: #bbbbee;
+  --tagcloud-dark-color: #0085a1;
+  --accent-color: #0085a1;
 }
 p {
   margin: 30px 0;
@@ -149,10 +525,6 @@ h3,
 h4,
 h5,
 h6 {
-  /* Hux learn from
-     *     TypeIsBeautiful,
-     *     [This Post](http://zhuanlan.zhihu.com/ibuick/20186806) etc.
-     */
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", "PingFang SC", "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "Microsoft JhengHei", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC", "WenQuanYi Micro Hei", SimSun, sans-serif;
   line-height: 1.7;
   line-height: 1.1;
@@ -404,10 +776,6 @@ pre code {
   left: 0;
   width: 100%;
   z-index: 3;
-  /* Hux learn from
-     *     TypeIsBeautiful,
-     *     [This Post](http://zhuanlan.zhihu.com/ibuick/20186806) etc.
-     */
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", "PingFang SC", "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "Microsoft JhengHei", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC", "WenQuanYi Micro Hei", SimSun, sans-serif;
   line-height: 1.7;
 }
@@ -555,10 +923,6 @@ pre code {
 }
 .intro-header .site-heading .subheading,
 .intro-header .page-heading .subheading {
-  /* Hux learn from
-     *     TypeIsBeautiful,
-     *     [This Post](http://zhuanlan.zhihu.com/ibuick/20186806) etc.
-     */
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", "PingFang SC", "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "Microsoft JhengHei", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC", "WenQuanYi Micro Hei", SimSun, sans-serif;
   line-height: 1.7;
   font-size: 18px;
@@ -583,10 +947,6 @@ pre code {
   display: block;
 }
 .intro-header .post-heading .subheading {
-  /* Hux learn from
-     *     TypeIsBeautiful,
-     *     [This Post](http://zhuanlan.zhihu.com/ibuick/20186806) etc.
-     */
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", "PingFang SC", "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "Microsoft JhengHei", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC", "WenQuanYi Micro Hei", SimSun, sans-serif;
   line-height: 1.7;
   font-size: 17px;
@@ -763,10 +1123,6 @@ form .row:first-child .floating-label-form-group {
   border-top: 1px solid #eee;
 }
 .btn {
-  /* Hux learn from
-     *     TypeIsBeautiful,
-     *     [This Post](http://zhuanlan.zhihu.com/ibuick/20186806) etc.
-     */
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", "PingFang SC", "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "Microsoft JhengHei", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC", "WenQuanYi Micro Hei", SimSun, sans-serif;
   line-height: 1.7;
   text-transform: uppercase;
@@ -792,10 +1148,6 @@ form .row:first-child .floating-label-form-group {
 }
 .pager li > a,
 .pager li > span {
-  /* Hux learn from
-     *     TypeIsBeautiful,
-     *     [This Post](http://zhuanlan.zhihu.com/ibuick/20186806) etc.
-     */
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", "PingFang SC", "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "Microsoft JhengHei", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC", "WenQuanYi Micro Hei", SimSun, sans-serif;
   line-height: 1.7;
   text-transform: uppercase;
@@ -831,8 +1183,9 @@ form .row:first-child .floating-label-form-group {
 .pager .disabled > a:focus,
 .pager .disabled > span {
   color: #808080;
-  background-color: #404040;
+  background-color: #1f1535;
   cursor: not-allowed;
+  pointer-events: none;
 }
 ::-moz-selection {
   text-shadow: none;
@@ -900,13 +1253,6 @@ img::-moz-selection {
   line-height: 28px;
   margin: 0 2px;
   margin-bottom: 8px;
-  background: #D6D6D6;
-}
-#tag_cloud a:hover,
-#tag_cloud .tag:hover,
-#tag_cloud a:active,
-#tag_cloud .tag:active {
-  background-color: #0085a1 !important;
 }
 @media only screen and (min-width: 768px) {
   #tag_cloud {
@@ -925,7 +1271,7 @@ img::-moz-selection {
   margin-top: 0px;
 }
 .listing-seperator {
-  color: #0085a1;
+  color: #c4b5fd;
   font-size: 21px !important;
 }
 .listing-seperator::before {
@@ -939,10 +1285,6 @@ img::-moz-selection {
 }
 .one-tag-list .tag-text {
   font-weight: 200;
-  /* Hux learn from
-     *     TypeIsBeautiful,
-     *     [This Post](http://zhuanlan.zhihu.com/ibuick/20186806) etc.
-     */
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", "PingFang SC", "Hiragino Sans GB", "STHeiti", "Microsoft YaHei", "Microsoft JhengHei", "Source Han Sans SC", "Noto Sans CJK SC", "Source Han Sans CN", "Noto Sans SC", "Source Han Sans TC", "Noto Sans CJK TC", "WenQuanYi Micro Hei", SimSun, sans-serif;
   line-height: 1.7;
 }

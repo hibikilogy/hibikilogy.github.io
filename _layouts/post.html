@@ -120,11 +120,40 @@ layout: default
                         data-reactions-enabled="{{ site.giscus.reactions-enabled }}"
                         data-emit-metadata="{{ site.giscus.emit-metadata }}"
                         data-input-position="{{ site.giscus.input-position }}"
-                        data-theme="{{ site.giscus.theme }}"
+                        data-theme="{% if site.giscus.theme == 'auto' %}light{% else %}{{ site.giscus.theme }}{% endif %}"
                         data-lang="{{ site.giscus.lang }}"
                         crossorigin="anonymous"
-                        async>
+                        async
+                        id="giscus-script">
                 </script>
+                {% if site.giscus.theme == 'auto' %}
+                <script>
+                    // 监听深色模式变化，动态更新 Giscus 主题
+                    function updateGiscusTheme() {
+                        const theme = document.documentElement.getAttribute('data-theme') || 'light';
+                        const giscusTheme = theme === 'dark' ? 'dark' : 'light';
+                        
+                        // 发送消息给 Giscus iframe 更新主题
+                        const giscusIframe = document.querySelector('iframe.giscus-frame');
+                        if (giscusIframe) {
+                            giscusIframe.contentWindow.postMessage(
+                                { giscus: { setConfig: { theme: giscusTheme } } },
+                                'https://giscus.app'
+                            );
+                        }
+                    }
+                    
+                    // 初始化时更新主题
+                    window.addEventListener('load', updateGiscusTheme);
+                    
+                    // 监听主题切换事件
+                    const observer = new MutationObserver(updateGiscusTheme);
+                    observer.observe(document.documentElement, {
+                        attributes: true,
+                        attributeFilter: ['data-theme']
+                    });
+                </script>
+                {% endif %}
                 {% endif %}
                 <!-- Giscus end -->
 

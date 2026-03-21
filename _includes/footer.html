@@ -191,11 +191,22 @@
     // only load tagcloud.js in tag.html
     if($('#tag_cloud').length !== 0){
         async('{{ "/js/jquery.tagcloud.js" | prepend: site.baseurl }}',function(){
-            $.fn.tagcloud.defaults = {
-                //size: {start: 1, end: 1, unit: 'em'},
-                color: {start: '#bbbbee', end: '#0085a1'},
-            };
-            $('#tag_cloud a').tagcloud();
+            // Wait for CSS to be fully applied
+            setTimeout(function() {
+                // Get CSS variables from body
+                const lightColor = getComputedStyle(document.body).getPropertyValue('--tagcloud-light-color').trim();
+                const darkColor = getComputedStyle(document.body).getPropertyValue('--tagcloud-dark-color').trim();
+                
+                // Fallback to default colors if CSS variables are not available
+                const finalLightColor = lightColor || '#bbbbee';
+                const finalDarkColor = darkColor || '#0085a1';
+                
+                $.fn.tagcloud.defaults = {
+                    //size: {start: 1, end: 1, unit: 'em'},
+                    color: {start: finalLightColor, end: finalDarkColor},
+                };
+                $('#tag_cloud a').tagcloud();
+            }, 100);
         })
     }
 </script>
