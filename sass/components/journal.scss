@@ -52,11 +52,11 @@
 }
 
 .Journal {
-  margin: 0 auto;
-  max-width: calc(var(--joh-layout-max-width) + 3px);
-
   $width: 491px;
-  $border-width: 1px;
+  $border-width: 2px;
+
+  margin: 0 auto;
+  max-width: calc(var(--joh-layout-max-width) + #{2 * $border-width});
 
   .Content & > .container,
   .container {
@@ -91,12 +91,28 @@
   }
 
   .Section {
-    border: 0;
+    border: $border-width solid var(--article-border-color);
     background-color: var(--joh-c-bg);
-    box-shadow: 0 0 0 $border-width var(--article-border-color);
     box-sizing: border-box;
-    margin: 0;
+    margin: calc(-1 * $border-width) 0 0;
     width: $width;
+  }
+
+  :has(> :first-child.FrontPage) > .Section:nth-child(2 of article) {
+    border-top: none;
+  }
+
+  .container.is-waterfall-right-border-owner > .Section.is-waterfall-left-column {
+    border-right-width: 0;
+  }
+
+  .container.is-waterfall-left-border-owner > .Section.is-waterfall-right-column {
+    border-left-width: 0;
+  }
+
+  .container.is-waterfall-left-border-owner > .Section.is-waterfall-left-column,
+  .container.is-waterfall-right-border-owner > .Section.is-waterfall-right-column {
+    border-right-width: $border-width;
   }
 
   .FrontPage.Section {
@@ -171,9 +187,20 @@
     }
 
     .Section {
-      margin-bottom: $border-width;
+      border-left-width: $border-width;
+      border-right-width: $border-width;
+      margin: calc(-1 * $border-width) 0 0;
       width: 100%;
     }
+
+    :has(> :first-child.FrontPage) > .Section:nth-child(1 of article) {
+      border-top: none;
+    }
+
+    :has(> :first-child.FrontPage) > .Section:nth-child(2 of article) {
+      border-top: $border-width solid var(--article-border-color);
+    }
+
     .FrontPage {
       height: 115px;
 

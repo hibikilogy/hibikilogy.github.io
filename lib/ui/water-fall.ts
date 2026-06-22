@@ -117,6 +117,46 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
     })
   }
 
+  function updateColumnClasses(items: HTMLElement[]): void {
+    if (!items.length) {
+      journal.classList.remove('is-waterfall-left-border-owner', 'is-waterfall-right-border-owner')
+      return
+    }
+
+    const offsets = items.map((item) => Math.round(item.offsetLeft))
+    const minOffsetLeft = Math.min(...offsets)
+    const maxOffsetLeft = Math.max(...offsets)
+
+    if (minOffsetLeft === maxOffsetLeft) {
+      items.forEach((item) => {
+        item.classList.remove('is-waterfall-left-column', 'is-waterfall-right-column')
+      })
+      journal.classList.remove('is-waterfall-left-border-owner', 'is-waterfall-right-border-owner')
+      return
+    }
+
+    items.forEach((item) => {
+      const offsetLeft = Math.round(item.offsetLeft)
+      item.classList.toggle('is-waterfall-left-column', offsetLeft <= minOffsetLeft)
+      item.classList.toggle('is-waterfall-right-column', offsetLeft >= maxOffsetLeft)
+    })
+
+    let leftColumnBottom = Number.NEGATIVE_INFINITY
+    let rightColumnBottom = Number.NEGATIVE_INFINITY
+
+    items.forEach((item) => {
+      const bottom = Math.round(item.offsetTop + item.offsetHeight)
+      if (item.classList.contains('is-waterfall-left-column'))
+        leftColumnBottom = Math.max(leftColumnBottom, bottom)
+      if (item.classList.contains('is-waterfall-right-column'))
+        rightColumnBottom = Math.max(rightColumnBottom, bottom)
+    })
+
+    const leftOwnsMiddleBorder = leftColumnBottom > rightColumnBottom
+    journal.classList.toggle('is-waterfall-left-border-owner', leftOwnsMiddleBorder)
+    journal.classList.toggle('is-waterfall-right-border-owner', !leftOwnsMiddleBorder)
+  }
+
   function programming(): void {
     animationFrame = 0
     const allArticles = queryChildren(journal, currentChildSelector)
@@ -138,6 +178,7 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
       article.style.gridRow = `span ${Math.ceil((article.offsetHeight + rowGap) / (rowHeight + rowGap))}`
     })
     journal.style.display = 'grid'
+    updateColumnClasses(allArticles)
     journal.style.opacity = '1'
   }
 
