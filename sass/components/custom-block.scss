@@ -1,0 +1,72 @@
+@layer components {
+	.content-container {
+  blockquote[class^="markdown-alert"] {
+    margin: 24px 0;
+    border-radius: var(--joh-custom-block-border-radius);
+    padding: 0.875rem 1rem 1rem;
+    background: var(--joh-custom-block-bg);
+    color: var(--joh-custom-block-text-color);
+    font-size: var(--joh-custom-block-font-size);
+    line-height: var(--joh-custom-block-line-height);
+    transition:
+      background-color 0.25s,
+      color 0.25s;
+  }
+
+  blockquote[class^="markdown-alert"]::before {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    color: var(--joh-custom-block-title-color);
+    content: var(--joh-custom-block-title, "");
+  }
+
+  blockquote[class^="markdown-alert"] > p {
+    margin: 0;
+    color: inherit;
+  }
+
+  blockquote[class^="markdown-alert"] > p + p,
+  blockquote[class^="markdown-alert"] > ul,
+  blockquote[class^="markdown-alert"] > ol,
+  blockquote[class^="markdown-alert"] > pre {
+    margin-top: 0.75rem;
+  }
+
+  blockquote.markdown-alert-note {
+    --joh-custom-block-title: "Note";
+    --joh-custom-block-bg: var(--joh-custom-block-note-bg);
+  }
+
+  blockquote.markdown-alert-tip {
+    --joh-custom-block-title: "Tip";
+    --joh-custom-block-bg: var(--joh-custom-block-tip-bg);
+    --joh-custom-block-title-color: var(--joh-custom-block-tip-title);
+  }
+
+  blockquote.markdown-alert-important {
+    --joh-custom-block-title: "Important";
+    --joh-custom-block-bg: var(--joh-custom-block-important-bg);
+    --joh-custom-block-title-color: var(--joh-custom-block-important-title);
+  }
+
+  blockquote.markdown-alert-warning {
+    --joh-custom-block-title: "Warning";
+    --joh-custom-block-bg: var(--joh-custom-block-warning-bg);
+    --joh-custom-block-title-color: var(--joh-custom-block-warning-title);
+  }
+
+  blockquote.markdown-alert-caution {
+    --joh-custom-block-title: "Caution";
+    --joh-custom-block-bg: var(--joh-custom-block-caution-bg);
+    --joh-custom-block-title-color: var(--joh-custom-block-caution-title);
+  }
+
+  blockquote[class^="markdown-alert"] :not(pre) > code {
+    background: var(--joh-custom-block-code-bg);
+  }
+}
+}

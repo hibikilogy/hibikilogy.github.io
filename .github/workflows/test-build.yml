@@ -1,0 +1,93 @@
+name: TEST_BUILD
+
+# 由 PR 触发，构建站点并上传产物；PREVIEW 工作流会在本工作流完成后
+# 通过 workflow_run 事件拉取产物并部署到 surge.sh 生成预览链接。
+on:
+  pull_request:
+    branches: [next, main, dev]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # “最近更新时间” 等 git 日志相关信息，需要拉取全部提交记录
+          fetch-depth: 0
+
+      # pnpm 必须先于 setup-node，以便启用 node 的 pnpm 缓存
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        # pnpm 版本读取自 package.json 的 `packageManager` 字段
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          # node 版本由仓库 .nvmrc 锁定
+          node-version-file: '.nvmrc'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      # static/js 被 gitignore，前端/字体资产每次都要重新构建
+      - name: Build TypeScript (vite)
+        run: pnpm build:vite
+
+      - name: Build UnoCSS
+        run: pnpm build:unocss
+
+      - name: Subset title font
+        run: pnpm build:subset-titlefont
+
+      # --base-url 覆盖 config.toml 的生产域名，让预览站的 canonical / atom
+      # feed / 导航 / __HIBIKILOGY_BASE_URL 等内部链接都指向 surge.sh 预览域名
+      # 而非生产站点（get_url 生成的 static 资源路径是根相对 /xxx，surge 部署
+      # 在域名根下，可正常加载）。域名必须与 preview.yml 的部署域名一致。
+      - name: Build site
+        uses: shalzz/zola-deploy-action@v0.22.1
+        env:
+          BUILD_ONLY: true
+          BUILD_FLAGS: "--drafts --base-url https://hibikilogy-pr${{ github.event.number }}.surge.sh"
+
+      # zola 在容器内以 root 构建，恢复 public/ 归属以便后续步骤写入
+      - name: chown
+        run: echo "$(whoami):$(id -gn)" | xargs -I {} sudo chown -R {} public
+
+      - name: Rewrite image hosts
+        run: pnpm build:rewrite-imgs
+
+      # 上传整个 public/ 目录作为产物，PREVIEW 工作流会下载并部署
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: public
+          retention-days: 5
+
+      # 即使构建失败也要保存 PR 编号，以便 PREVIEW 工作流发布失败评论
+      - name: Save PR number
+        if: ${{ always() }}
+        run: echo ${{ github.event.number }} > ./pr-id.txt
+
+      - name: Upload PR number
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: pr
+          path: ./pr-id.txt

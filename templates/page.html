@@ -1,0 +1,59 @@
+{% import 'components/hero.html' as hero %}
+{% import 'components/aside.html' as aside %}
+
+{% extends 'base.html' %}
+
+{% block title %}
+{{ config.title }} | {{ page.title }}
+{% endblock %}
+
+{% block critical_css %}
+{{ macros::css(path="layouts/page.css") }}
+{% endblock critical_css %}
+
+{% block class %}
+post
+{% endblock %}
+
+{% block meta %}
+<meta property="og:type" content="article">
+{% if page.taxonomies.author and page.taxonomies.author | length > 0 %}
+<meta property="article:author" content="{{ page.taxonomies.author | join(sep='、') }}">
+{% endif %}
+{% if page.extra.cover %}
+{% set cover_image = page.extra.cover | trim %}
+{% if cover_image is starting_with("http://") or cover_image is starting_with("https://") %}
+<meta property="og:image" content="{{ cover_image }}">
+<meta name="twitter:image" content="{{ cover_image }}">
+{% else %}
+{% set cover_image_url = get_url(path=cover_image) %}
+<meta property="og:image" content="{{ cover_image_url }}">
+<meta name="twitter:image" content="{{ cover_image_url }}">
+{% endif %}
+<meta property="og:image:alt" content="{{ page.extra.cover_alt | default(value=page.title) }}">
+<meta name="twitter:image:alt" content="{{ page.extra.cover_alt | default(value=page.title) }}">
+{% endif %}
+<meta property="og:updated_time" content="{{ page.updated | default(value=page.date) }}">
+<meta property="article:modified_time" content="{{ page.updated | default(value=page.date)  }}">
+{% endblock %}
+
+{% block header %}
+{{ hero::main(isPost=true, page=page) }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="content">
+    <section class="content-container">
+      <article>
+        {{ page.content | safe }}
+      </article>
+    </section>
+  </div>
+  {{ aside::main(page=page) }}
+</div>
+{% endblock %}
+
+{% block custom_js %}
+{% include "components/article_scripts.html" %}
+{% endblock %}

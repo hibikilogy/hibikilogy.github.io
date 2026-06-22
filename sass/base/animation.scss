@@ -1,0 +1,176 @@
+@layer base {
+  :root {
+    --duration-stagger:   40ms;  /* per-item stagger offset */
+    --duration-micro:     80ms;  /* tooltip delay, shake segment */
+    --duration-quick:     150ms; /* modal/dropdown close, text swap, tooltip in */
+    --duration-fast:      250ms; /* icon swap, dropdown/modal open, tabs, page slide */
+    --duration-medium:    350ms; /* panel close */
+    --duration-slow:      400ms; /* panel open, skeleton reveal */
+    --duration-very-slow: 500ms; /* emphasis, badge appear, text reveal */
+
+    --distance-micro:   4px; /* text swap */
+    --distance-small:   6px; /* error shake (small segment) */
+    --distance-base:    8px; /* badge diagonal reveal, page slide, error shake (large) */
+    --distance-medium: 12px; /* text reveal */
+    --distance-large:  30px; /* check badge appear */
+
+    --ease-smooth-out:    cubic-bezier(0.22, 1, 0.36, 1);    /* modal/dropdown/panel, page slide, resize */
+    --ease-in-out:        ease-in-out;                        /* icon swap, text swap, text reveal */
+    --ease-out:           ease-out;                           /* tooltip open / close */
+    --ease-linear:        linear;                             /* shimmer, skeleton pulse, spinner */
+    --ease-bounce:        cubic-bezier(0.34, 1.36, 0.64, 1);  /* badge pop open */
+    --ease-bounce-strong: cubic-bezier(0.34, 3.85, 0.64, 1);  /* bouncy hover-out */
+
+    --blur-small:  2px; /* panel reveal, icon swap, text swap, skeleton, number pop-in */
+    --blur-medium: 3px; /* page slide, text reveal */
+    --blur-large:  8px; /* success check open */
+
+    --scale-large:  0.96; /* modal open / close */
+    --scale-medium: 0.97; /* dropdown open */
+    --scale-small:  0.98; /* tooltip open */
+    --scale-tiny:   0.99; /* dropdown close */
+  }
+
+  .slide-enter-content > * {
+    --stagger: 0;
+    --delay: 150ms;
+    --start: 0ms;
+    animation: slide-enter 1s both 1;
+    animation-delay: calc(var(--start) + var(--stagger) * var(--delay));
+  }
+
+  .slide-enter-content > *:nth-child(1) {
+    --stagger: 1;
+  }
+  .slide-enter-content > *:nth-child(2) {
+    --stagger: 2;
+  }
+  .slide-enter-content > *:nth-child(3) {
+    --stagger: 3;
+  }
+  .slide-enter-content > *:nth-child(4) {
+    --stagger: 4;
+  }
+  .slide-enter-content > *:nth-child(5) {
+    --stagger: 5;
+  }
+  .slide-enter-content > *:nth-child(6) {
+    --stagger: 6;
+  }
+  .slide-enter-content > *:nth-child(7) {
+    --stagger: 7;
+  }
+  .slide-enter-content > *:nth-child(8) {
+    --stagger: 8;
+  }
+  .slide-enter-content > *:nth-child(9) {
+    --stagger: 9;
+  }
+  .slide-enter-content > *:nth-child(10) {
+    --stagger: 10;
+  }
+  .slide-enter-content > *:nth-child(11) {
+    --stagger: 11;
+  }
+  .slide-enter-content > *:nth-child(12) {
+    --stagger: 12;
+  }
+  .slide-enter-content > *:nth-child(13) {
+    --stagger: 13;
+  }
+  .slide-enter-content > *:nth-child(14) {
+    --stagger: 14;
+  }
+  .slide-enter-content > *:nth-child(15) {
+    --stagger: 15;
+  }
+  .slide-enter-content > *:nth-child(16) {
+    --stagger: 16;
+  }
+  .slide-enter-content > *:nth-child(17) {
+    --stagger: 17;
+  }
+  .slide-enter-content > *:nth-child(18) {
+    --stagger: 18;
+  }
+  .slide-enter-content > *:nth-child(19) {
+    --stagger: 19;
+  }
+  .slide-enter-content > *:nth-child(20) {
+    --stagger: 20;
+  }
+
+  :root {
+    --text-swap-dur: var(--duration-quick);
+    --text-swap-translate-y: var(--distance-base);
+    --text-swap-blur: var(--blur-small);
+    --text-swap-ease: var(--ease-out);
+  }
+
+  .t-text-swap {
+    display: inline-block;
+    transform: translateY(0);
+    filter: blur(0);
+    opacity: 1;
+    transition:
+      transform var(--text-swap-dur) var(--text-swap-ease),
+      filter var(--text-swap-dur) var(--text-swap-ease),
+      opacity var(--text-swap-dur) var(--text-swap-ease);
+    will-change: transform, filter, opacity;
+  }
+  .t-text-swap.is-exit {
+    transform: translateY(calc(var(--text-swap-translate-y) * -1));
+    filter: blur(var(--text-swap-blur));
+    opacity: 0;
+  }
+  .t-text-swap.is-enter-start {
+    transform: translateY(var(--text-swap-translate-y));
+    filter: blur(var(--text-swap-blur));
+    opacity: 0;
+    transition: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .t-text-swap {
+      transition: none !important;
+    }
+  }
+
+  .loading-dots::after {
+    content: "...";
+    display: inline-block;
+    width: 3ch;
+    overflow: hidden;
+    line-height: 1;
+    vertical-align: baseline;
+    text-align: left;
+    animation: dots 2s infinite;
+  }
+
+  @keyframes dots {
+    0% {
+      clip-path: inset(0 3ch 0 0);
+      opacity: 1;
+    }
+
+    25% {
+      clip-path: inset(0 2ch 0 0);
+      opacity: 1;
+    }
+
+    50% {
+      clip-path: inset(0 1ch 0 0);
+      opacity: 1;
+    }
+
+    70% {
+      clip-path: inset(0 0 0 0);
+      opacity: 1;
+    }
+
+    100% {
+      clip-path: inset(0 0 0 0);
+      opacity: 0;
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{% import 'components/journal.html' as journal %}
+{% import 'components/footer.html' as footer %}
+
+{% extends "base.html" %}
+
+{% block class %}
+Home
+{% endblock %}
+
+{% block critical_css %}
+{{ macros::css(path="layouts/home.css") }}
+{% endblock critical_css %}
+
+{% block content %}
+{{ journal::main(show_frontpage=true) }}
+{% endblock %}
+
+{% block footer %}
+{% if paginator %}
+{{ footer::main(show_tags=true, show_friendlinks=true, tag_pages=paginator.pages) }}
+{% else %}
+{{ footer::main(show_tags=true, show_friendlinks=true, tag_pages=section.pages) }}
+{% endif %}
+{% endblock %}

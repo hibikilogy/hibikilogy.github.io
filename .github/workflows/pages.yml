@@ -1,0 +1,92 @@
+name: GITHUB_PAGE
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - './README.md'
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # fetch all commits to get last updated time or other git log info
+          fetch-depth: 0
+
+      # install pnpm before setup-node so the node cache (pnpm) can be enabled
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        # pnpm version is read from package.json `packageManager` (pnpm@10.32.1)
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          # node.js version is pinned by the repo (.nvmrc)
+          node-version-file: '.nvmrc'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      # build the frontend assets that zola copies from static/ into public/.
+      # static/js is gitignored, so the vite/unoCss/font output must be
+      # regenerated on every build.
+      - name: Build TypeScript (vite)
+        run: pnpm build:vite
+
+      - name: Build UnoCSS
+        run: pnpm build:unocss
+
+      - name: Subset title font
+        run: pnpm build:subset-titlefont
+
+      # the action tag pins the zola version used to build
+      - name: Build site
+        uses: shalzz/zola-deploy-action@v0.22.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_ONLY: true
+          BUILD_FLAGS: --drafts
+
+      # the zola build runs inside a container as root; restore ownership so
+      # later runner steps (and the deploy action) can write to public/
+      - name: chown
+        run: echo "$(whoami):$(id -gn)" | xargs -I {} sudo chown -R {} public
+
+      - name: Rewrite image hosts
+        run: pnpm build:rewrite-imgs
+
+      - name: Deploy to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v5
+        with:
+          # deploy to gh-pages branch
+          target_branch: gh-pages
+          # deploy the zola output dir
+          build_dir: public
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

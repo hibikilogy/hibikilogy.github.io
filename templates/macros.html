@@ -1,0 +1,153 @@
+{% macro page_publish_metadata(page) %}
+{% set author_names = page.taxonomies.author | default(value=[]) %}
+{% set author_names_text = author_names | join(sep="、") %}
+{% set publish_label = trans(key="publish_prefix") %}
+{% set date_fmt = trans(key="date_format") %}
+{% set formatted_date = page.date | date(format=date_fmt) %}
+{% set author_label = trans(key="author_label") %}
+<time class="article-publish-date" datetime="{{ page.date }}">
+  {{ publish_label }} {{ formatted_date }}
+</time>
+<span class="article-authors">
+  <span class="author-title">{{ author_label }}</span>
+  {% if author_names | length > 0 %}
+  {% for author_name in author_names %}
+  <a class="article-author" href="{{ get_taxonomy_url(kind='author', name=author_name) }}">
+    <span class="author-name font-bold">{{ author_name }}</span>
+  </a>
+  {% if not loop.last %}
+  <span class="author-separator">、</span>
+  {% endif %}
+  {% endfor %}
+  {% else %}
+  <span class="author-name font-bold">
+    {{ config.extra.search_default_author }}
+  </span>
+  {% endif %}
+</span>
+{% endmacro %}
+
+{% macro image(path, alt="", class="", loading="lazy", decoding="auto",  fetchpriority="auto") %}
+<img src="{{ path }}" alt="{{ alt }}" {% if class %}class="{{ class }}" {% endif %}loading="{{ loading }}"
+  decoding="{{ decoding }}"  fetchpriority="{{ fetchpriority }}" />
+{% endmacro %}
+
+{% macro post_title_transition_name(page) %}
+{% set transition_id = page.slug | default(value=page.relative_path | default(value=page.path | default(value=page.permalink))) %}
+{% set transition_name = "post-title-" ~ transition_id %}
+{{ transition_name | replace(from="/", to="-") | replace(from=".", to="-") }}
+{% endmacro %}
+
+{% macro img(path, class="", alt="",caption="", scale=1, quality=100, width=1,
+height=1) %}
+{% if path is starting_with("./") %}
+{% set relative_path = page.relative_path | split(pat="/") | slice(end=-1) |
+join(sep="/") %}
+{% set img_path = path | trim_start_matches(pat="./") %}
+{% set img_path = relative_path ~ "/" ~ img_path %}
+{% else %}
+{% set img_path = path %}
+{% endif %}
+
+{% set file_ext = path | split(pat=".") | last %}
+{% set mdata = get_image_metadata(path=path) %}
+
+{% set resized_image = resize_image(path=img_path, width=width,
+op="fit_width", quality=quality) %}
+{% set webp = resize_image(path=img_path, width=width, op="fit_width",
+quality=quality, format="webp") %}
+{% set high_res_url = resized_image.url %}
+
+<figure>
+  <picture>
+    <source srcset="{{ webp.url }}" type="image/webp" data-resolution-width="{{width}}"">
+      <source srcset=" {{ high_res_url }}" media="(min-width: 2x)" type="image/{{ file_ext }}"
+      data-resolution-width="{{width}}">
+    <img src="{{ resized_image.url }}" loading="eager" class="{{ class }}" alt="{{ alt }}"
+      style="width: 100%; height: auto;" data-resolution-width="{{width}}">
+  </picture>
+  {% if caption %}
+  <figcaption>{{ caption | safe }}</figcaption>
+  {% endif %}
+</figure>
+{% endmacro %}
+
+
+{% macro prev_page(paginator) %}
+<a class="pagination-previous" title="{{ trans(key="pagination_prev") }}" href='{{ paginator.previous }}' {% if not paginator.previous %}disabled{%
+  endif %}>
+  <i class="johi-icon-left"></i>
+</a>
+{% endmacro %}
+
+{% macro next_page(paginator) %}
+<a class="pagination-next" title="{{ trans(key="pagination_next") }}" href='{{ paginator.next }}' {% if not paginator.next %}disabled{% endif %}>
+  <i class="johi-icon-right"></i>
+</a>
+{% endmacro %}
+
+{% macro tags_list(show_count=false) %}
+{% set tags = get_taxonomy(kind="tags") %}
+{% for tag in tags.items | sort(attribute='pages') | reverse %}
+<a href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" class="joh-tag" target="_blank" title="{{tag.name}}">
+  <span>{{tag.name}}</span>
+  {% if show_count %}
+  <span class="tag-count">
+    {{ tag.pages | length }}
+  </span>
+  {% endif %}
+</a>
+{% endfor %}
+{% endmacro %}
+
+{% macro tags_list_for_pages(pages, show_count=false) %}
+{# Build a flat array of permalinks for the current page set so each tag-page
+   lookup is a single `in` test instead of an inner loop over `pages`.
+   This turns the previous O(tags * tag_pages * pages) scan into O(tags * tag_pages). #}
+{% set page_permalinks = pages | map(attribute="permalink") %}
+{% set tags = get_taxonomy(kind="tags") %}
+{% for tag in tags.items | sort(attribute='pages') | reverse %}
+{% set_global tag_count = 0 %}
+{% for tag_page in tag.pages %}
+{% if tag_page.permalink in page_permalinks %}
+{% set_global tag_count = tag_count + 1 %}
+{% endif %}
+{% endfor %}
+{% if tag_count > 0 %}
+<a href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" class="joh-tag" target="_blank" title="{{tag.name}}">
+  <span>{{tag.name}}</span>
+  {% if show_count %}
+  <span class="tag-count">
+    {{ tag_count }}
+  </span>
+  {% endif %}
+</a>
+{% endif %}
+{% endfor %}
+{% endmacro %}
+
+{% macro post_tags_list(page) %}
+{% if page.taxonomies.tags %}
+{% for tag in page.taxonomies.tags %}
+<a href="{{ get_taxonomy_url(kind='tags', name=tag) }}" class="joh-tag" target="_blank" title="{{tag}}">
+  <span>{{tag}}</span>
+</a>
+{% endfor %}
+{% endif %}
+{% endmacro %}
+
+{% macro css(path) %}
+    {% if config.mode == "serve" %}
+        <link rel="stylesheet" href="{{ get_url(path=path) }}">
+    {% else %}
+        <style>{{ load_data(path=path) | trim | safe }}</style>
+    {% endif %}
+{% endmacro %}
+
+{% macro script(path, cachebust=true, module=false, async=false, defer=false) %}
+{% if config.mode == "serve" %}
+<script{% if module %} type="module"{% endif %}{% if async %} async{% endif %}{% if defer %} defer{% endif %} src="{{ get_url(path=path) }}"></script>
+{% else %}
+<script{% if module %} type="module"{% endif %}{% if async %} async{% endif %}{% if defer %} defer{% endif %} src="{{ get_url(path=path, cachebust=cachebust) | safe }}" integrity="sha384-{{ get_hash(path=path, sha_type=384, base64=true) | safe }}"></script>
+{% endif %}
+{% endmacro %}

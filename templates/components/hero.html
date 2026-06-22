@@ -1,0 +1,59 @@
+{% macro main(isPost=true, page="", title="", name="", kind="none", description="", count=0) %}
+<header class="Hero {% if page.extra.cover is defined and page.extra.cover %} has-cover{% else %} no-cover {% endif %}">
+  <div class="container">
+    {% if isPost %}
+    {% set cover_src = page.extra.cover | default(value=config.extra.default_cover) | trim %}
+    {% if cover_src is starting_with("http://") or cover_src is starting_with("https://") %}
+    {% set cover_url = cover_src %}
+    {% else %}
+    {% set cover_url = get_url(path=cover_src) %}
+    {% endif %}
+    <div class="post-heading">
+      <img class="article-cover"
+        src="{{ cover_url }}"
+        alt="{% if page.extra.cover_alt is defined %}{{ page.extra.cover_alt }}{% else %}{{ page.title }}{% endif %}" />
+      <div class="post-heading-gradient-overlay"></div>
+      <div class="post-heading-dark-overlay"></div>
+      <div class="post-heading-info">
+        <div class="post-heading-info-container">
+          <div class="post-heading-tags TagsList">
+            {% if page.taxonomies.tags %}
+            {{ macros::post_tags_list(page=page) }}
+            {% endif %}
+          </div>
+          {% set title_transition_name =
+          macros::post_title_transition_name(page=page) | trim %}
+          <h1 class="post-heading-title">
+            <span class="PostTitleTransition"
+              style="view-transition-name: {{ title_transition_name }}">
+              {{ page.title }}
+            </span>
+          </h1>
+          <p class="post-heading-subtitle">{{ page.description }}</p>
+          <div class="post-heading-meta">
+            {{ macros::page_publish_metadata(page=page) }}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="taxonomies-banner">
+      <div class="taxonomies-meta">
+        <h2 class="title">
+          <span class="banner-title">{{ title }}</span>
+          {{ name }}
+        </h2>
+        {% if description %}
+        <p class="description">{{ description }}</p>
+        {% elif count > 0 %}
+        <p class="description">{{ count }} {{ trans(key="tags_count_suffix") }}</p>
+        {% elif kind != "none" %}
+        {% set term = get_taxonomy_term(kind=kind, term=name) %}
+        <p class="description">{{ term.page_count }}{{ trans(key="related_articles_suffix") }}</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</header>
+{% endmacro %}

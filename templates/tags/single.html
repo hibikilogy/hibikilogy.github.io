@@ -1,0 +1,16 @@
+{% import 'components/journal.html' as journal %}
+{% import 'components/hero.html' as hero %}
+{% extends "base.html" %}
+
+{% block critical_css %}
+{{ macros::css(path="components/journal.css") }}
+{{ macros::css(path="components/hero.css") }}
+{% endblock critical_css %}
+
+{% block header %}
+{{ hero::main(isPost=false, page="", title="#", name=term.name, kind="tags") }}
+{% endblock %}
+
+{% block content %}
+{{ journal::main() }}
+{% endblock content %}

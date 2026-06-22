@@ -1,0 +1,42 @@
+{%- set section = get_section(path="_index.md") -%}
+{%- set author_taxonomy = get_taxonomy(kind="author", required=false) -%}
+{%- set publish_prefix = trans(key="publish_prefix") -%}
+{%- set date_fmt = trans(key="date_format") -%}
+{%- set default_author_name = config.extra.search_default_author | default(value=config.extra.meta_author | default(value="Anonymity")) -%}
+{
+{%- for page in section.pages %}
+  {%- set_global author_name = default_author_name -%}
+  {%- set_global author_href = "" -%}
+  {%- set_global author_count = 0 -%}
+  {%- for author in author_taxonomy.items | default(value=[]) -%}
+    {%- for author_page in author.pages -%}
+      {%- if author_page.permalink == page.permalink -%}
+        {%- if author_count == 0 -%}
+          {%- set_global author_name = author.name -%}
+          {%- set_global author_href = get_taxonomy_url(kind="author", name=author.name) -%}
+        {%- else -%}
+          {%- set_global author_name = author_name ~ "、" ~ author.name -%}
+          {%- set_global author_href = "" -%}
+        {%- endif -%}
+        {%- set_global author_count = author_count + 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endfor -%}
+  {%- set cover_src = page.extra.cover | default(value="") -%}
+  {%- set cover_alt = "" -%}
+  {%- if cover_src -%}
+    {%- set_global cover_alt = page.extra.cover_alt | default(value=page.title) -%}
+  {%- endif -%}
+  {%- set publish_date = page.date | date(format=date_fmt) -%}
+  {%- set publish_date_text = publish_prefix ~ " " ~ publish_date -%}
+  {{ page.permalink | replace(from=config.base_url, to="") | json_encode | safe }}: {
+    "subtitle": {{ page.description | default(value="") | json_encode | safe }},
+    "coverSrc": {{ cover_src | json_encode | safe }},
+    "coverAlt": {{ cover_alt | json_encode | safe }},
+    "publishDateText": {{ publish_date_text | json_encode | safe }},
+    "publishDateValue": {{ page.date | json_encode | safe }},
+    "authorName": {{ author_name | json_encode | safe }},
+    "authorHref": {{ author_href | json_encode | safe }}
+  }{% if not loop.last %},{% endif %}
+{%- endfor %}
+}

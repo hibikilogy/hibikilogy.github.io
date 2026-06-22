@@ -1,0 +1,49 @@
+{% macro main() %}
+
+{% if paginator.previous or paginator.next %}
+<div class="Pagination">
+  <div class="container">
+    {% set sorting_id = "sorting" %}
+    {% set sorting_search = false %}
+    {% include "components/pagination_sorting.html" %}
+
+    <site-pagination
+      current-page="{{ paginator.current_index }}"
+      total-pages="{{ paginator.number_pagers }}"
+      base-url="{{ paginator.base_url }}"
+      mode="link"
+      {% if paginator.previous %}previous-url="{{ paginator.previous }}"{% endif %}
+      {% if paginator.next %}next-url="{{ paginator.next }}"{% endif %}
+    >
+      <nav class="paging pagination-fallback" aria-label="{{ trans(key='pagination_aria') }}">
+        {% if paginator.previous %}
+        {{ macros::prev_page(paginator=paginator) }}
+        {% endif %}
+        <span>{{ trans(key='pagination_page_prefix') }} {{ paginator.current_index }} {{ trans(key='pagination_page_middle') }} {{ paginator.number_pagers }} {{ trans(key='pagination_page_suffix') }}</span>
+        {% if paginator.next %}
+        {{ macros::next_page(paginator=paginator) }}
+        {% endif %}
+      </nav>
+    </site-pagination>
+  </div>
+</div>
+{% endif %}
+{% endmacro main %}
+
+{% macro search() %}
+<div id="search-pagination" class="Pagination SearchPagination" hidden>
+  <div class="container">
+    {% set sorting_id = "search-sorting" %}
+    {% set sorting_search = true %}
+    {% include "components/pagination_sorting.html" %}
+
+    <site-pagination
+      id="search-page-control"
+      current-page="1"
+      total-pages="1"
+      base-url="{page}"
+      mode="event"
+    ></site-pagination>
+  </div>
+</div>
+{% endmacro search %}

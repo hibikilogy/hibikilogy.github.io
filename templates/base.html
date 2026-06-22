@@ -1,0 +1,184 @@
+{% import 'macros.html' as macros %}
+{% import 'components/navbar.html' as navbar %}
+{% import 'components/footer.html' as footer %}
+{% import 'components/pagination.html' as pagination %}
+
+<!DOCTYPE html>
+<html lang="{{lang}}">
+
+<head>
+  <!-- {{ now() | date(format='%F %a %R') }} -->
+  <meta charset="utf-8" >
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+  <meta name="apple-mobile-web-app-status-bar-style" content="lack-translucent">
+  <meta name="applicable-device" content="pc,mobile">
+  <meta
+    http-equiv="Permissions-Policy"
+    content="camera=(), microphone=(), geolocation=()">
+  <meta name="google" content="notranslate">
+  <meta name="theme-color" content="{{ config.extra.theme_color }}">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme" content="Zola-Theme-Hibikilogy">
+  <link rel="alternate" hreflang="{{config.default_language}}" href="{{ config.base_url }}">
+  <link rel="alternate" hreflang="{{lang}}" href="{{ config.base_url ~ '/' ~ lang}}">
+
+  {% if current_url %}
+    <link href="{{ current_url }}" rel="canonical">
+  {% else %}
+    <link href="/404.html" rel="canonical">
+  {% endif %}
+
+  <title>
+    {% include 'title.html' %}
+  </title>
+
+  {% set meta_description = config.description %}
+  {% set meta_keywords = config.extra.meta_keywords %}
+  {% if page is defined %}
+    {% set meta_description = page.extra.abstract | default(value=config.description) %}
+    {% if page.taxonomies.tags %}
+      {% set page_keywords = page.taxonomies.tags | join(sep=", ") %}
+      {% set meta_keywords = config.extra.meta_keywords ~ ", " ~ page_keywords %}
+    {% endif %}
+  {% endif %}
+
+  <meta name="referrer" content="no-referrer-when-downgrade">
+  <meta name="description" content="{{ meta_description }}">
+  <meta name="keywords" content="{{ meta_keywords }}">
+  {% if page is defined and page.taxonomies.author and page.taxonomies.author | length > 0 %}
+  <meta name="author" content="{{ page.taxonomies.author | join(sep='、') }}">
+  {% elif term is defined and kind is defined and kind == "author" %}
+  <meta name="author" content="{{ term.name }}">
+  {% endif %}
+  <meta property="og:site" content="website">
+  <meta name="twitter:card" content="{{ config.extra.twitter_card }}">
+  <meta name="twitter:description" content="{{ meta_description }}">
+  <meta name="twitter:widgets:csp" content="on">
+  <meta property="og:site_name" content="{% include 'title.html' %}">
+  <meta property="og:locale" content="{{ lang }}">
+  <meta property="og:title" content="{% include 'title.html' %}">
+  <meta property="og:locale:alternate" content="{{ lang }}">
+  <meta property="og:url" content="{{ current_url | default(value='/') | safe }}">
+  <meta property="og:description" content="{{ meta_description }}">
+
+  <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="{{ config.title }} Atom Feed">
+  <link
+    rel="search"
+    type="application/opensearchdescription+xml"
+    title="{{ config.title }}"
+    href="{{ get_url(path='opensearch.xml') | safe }}"
+  >
+
+  {% if config.extra.favicon.webmanifest %}
+  <link href='{{ config.extra.favicon.webmanifest }}' rel="manifest">
+  {% endif %}
+  {% if config.extra.favicon.safari_pinned_tab %}
+  <link color="#5bbad5" href='{{ config.extra.favicon.safari_pinned_tab }}' rel="mask-icon">
+  {% endif %}
+  {% if config.extra.favicon.small_icon %}
+  <link rel="icon" href='{{ config.extra.favicon.small_icon }}' sizes="48x48">
+  {% endif %}
+  {% if config.extra.favicon.svg_icon %}
+  <link rel="icon" href='{{ config.extra.favicon.svg_icon }}' sizes="any" type="image/svg+xml">
+  {% endif %}
+  {% if config.extra.favicon.apple_touch_icon %}
+  <link href='{{ config.extra.favicon.apple_touch_icon }}' rel="apple-touch-icon" sizes="180x180">
+  {% endif %}
+
+  {{ macros::css(path="critical.css") }}
+  {{ macros::css(path="js/ui.css") }}
+
+  {% block critical_css %}
+  {% endblock critical_css %}
+
+  <link href="{{ get_url(path='styles/uno.css', cachebust=true) }}"  rel="stylesheet">
+  <link href="{{ get_url(path='styles/source-han-serif-title.css', cachebust=true) }}" rel="stylesheet">
+  <link rel="stylesheet" href="{{ get_url(path='styles/source-han-sans-sc-vf.full.css', cachebust=true) }}" >
+  {% block style %}
+  {% endblock %}
+
+  {{ macros::script(path="js/components/index.js", module=true) }}
+
+  <script>
+    window.__HIBIKILOGY_BASE_URL = {{ config.base_url | json_encode | safe }};
+    window.__HIBIKILOGY_SEARCH_INDEX_URL = {{ get_url(path='search_index.zh.json', cachebust=true) | json_encode | safe  }};
+    window.__HIBIKILOGY_SEARCH_WORKER_URL = {{ get_url(path='js/search/worker.js', cachebust=true) | json_encode | safe }};
+  </script>
+  {{ macros::script(path="js/ui.js", module=true) }}
+  {% block analytics %}
+  {% if config.extra.analytics.google or not config.mode == "serve" %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ config.extra.analytics.google }}"></script>
+  <script type="text/javascript">
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "{{ config.extra.analytics.google }}");
+  </script>
+  {% endif %}
+  {% endblock analytics %}
+
+  {# <script>(() => { const e = localStorage.getItem("theme-appearance") || "auto", a = window.matchMedia("(prefers-color-scheme: dark)").matches; (!e || e === "auto" ? a : e === "dark") && document.documentElement.classList.add("dark") })();</script> #}
+  <script>document.documentElement.classList.toggle("mac", /Mac|iPhone|iPod|iPad/i.test(navigator.platform));</script>
+  <script
+    type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"{% include 'title.html' %}", "potentialAction": {"@type": "SearchAction","target": "{{config.base_url}}/search?q={search_term_string}", "query-input": "required name=search_term_string"}}</script>
+  <link rel="prefetch" href="{{ config.extra.default_cover }}" as="image">
+  {% for url in config.extra.prefetch_urls %}
+  <link rel="prefetch" href="{{ url }}">
+  {% endfor %}
+  {% block script %}
+  {% endblock %}
+
+  {% block meta %}
+  {% endblock %}
+</head>
+
+<body class="{% block class %}{% endblock class %}" {% block attribute %}{% endblock attribute %}>
+  <div id="app">
+    <div class="Layout">
+      <span class="joh-chevron-up visually-hidden"></span>
+
+      {{ navbar::main() }}
+
+      {% block header %}
+      {% endblock %}
+
+      <main class="Content {% if page.toc and page.extra.toc | default(value=true) != false %}has-aside{% endif %}">
+        {% block content %}
+        {% endblock %}
+
+        {% block pagination %}
+        {{ pagination::main() }}
+        {% endblock %}
+      </main>
+
+      {% block footer %}
+      {% if slot is defined %}
+      {% block slot %}{% endblock %}
+      {% else %}
+      {{ footer::main() }}
+      {% endif %}
+      {% endblock %}
+    </div>
+  </div>
+
+  {% block comment %}
+  {% endblock %}
+
+  {% block custom_js %}
+  {% endblock %}
+
+  {% block user_custom_js %}
+  {% endblock %}
+
+   {% if config.extra.quicklink.enabled %}
+  <script type="module">
+    import { listen } from "https://unpkg.com/quicklink@3.0.1/dist/quicklink.mjs";
+
+    window.addEventListener("load", () => listen());
+  </script>
+  {% endif %}
+</body>
+
+</html>

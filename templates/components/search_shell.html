@@ -1,0 +1,48 @@
+{% macro main(input_id="", compact=false, transition_name="", readonly=false,
+autofocus=false, show_keys=false, show_clear=false, show_submit=false,
+placeholder="Search", title="Search", value="", click_action="", extra_class="") %}
+{% set shell_classes = "SearchShell" %}
+{% if compact %}
+{% set shell_classes = shell_classes ~ " SearchShell--compact" %}
+{% else %}
+{% set shell_classes = shell_classes ~ " SearchShell--page" %}
+{% endif %}
+{% if extra_class %}
+{% set shell_classes = shell_classes ~ " " ~ extra_class %}
+{% endif %}
+<form class="{{ shell_classes }}" role="search" action="javascript:void(0);" {%
+  if transition_name %} data-search-transition-target="{{ transition_name }}" {%
+  endif %}{% if click_action %} @click="{{ click_action }}"
+  @submit.prevent="{{ click_action }}" {% endif %}>
+  <div class="SearchShellBody">
+    {% if compact and readonly %}
+    <span class="SearchShellLabel" aria-hidden="true">{{ placeholder }}</span>
+    {% else %}
+    <input{% if input_id %} id="{{ input_id }}" {% endif %}
+      class="SearchShellInput" type="search" placeholder="{{ placeholder }}"
+      title="{{ title }}" autocapitalize="none" enterkeyhint="search"
+      autocomplete="off" {% if value %} value="{{ value }}" {% endif %}{% if
+      readonly %} readonly tabindex="-1" {% endif %}{% if autofocus %}
+      autofocus{% endif %}>
+    {% endif %}
+    {% if show_keys %}
+    <span class="SearchShellKeys" aria-hidden="true">
+      <kbd class="SearchShellKey SearchShellKeyModifier"></kbd>
+      <kbd class="SearchShellKey">K</kbd>
+    </span>
+    {% endif %}
+    {% if show_submit %}
+    <button class="SearchShellSubmit" type="submit" aria-label="{{ title }}">
+      <span class="SearchShellIcon johi-icon-search" aria-hidden="true"></span>
+      <span class="SearchShellSubmitText">{{ trans(key="search_submit_text") }}</span>
+    </button>
+    {% else %}
+    <span class="SearchShellIcon johi-icon-search" aria-hidden="true"></span>
+    {% endif %}
+    {% if show_clear %}
+    <button id="search-clear" class="SearchShellClear" type="button"
+      hidden>{{ trans(key="search_clear") }}</button>
+    {% endif %}
+  </div>
+</form>
+{% endmacro main %}

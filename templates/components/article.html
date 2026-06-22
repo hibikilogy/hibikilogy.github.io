@@ -1,0 +1,27 @@
+{% macro main(page, show_cover) %}
+<article class="Section Article">
+  <a href="{{ page.permalink }}">
+    {% set title_transition_name = macros::post_title_transition_name(page=page) | trim %}
+    <h2 class="article-title">
+      <span class="PostTitleTransition" style="view-transition-name: {{ title_transition_name }}">
+        {{ page.title }}
+      </span>
+    </h2>
+    <p class="article-subtitle">{{ page.description }}</p>
+    <div class="article-main">
+      {% if show_cover and page.extra.cover %}
+      {% set img_meta = get_image_metadata(path=page.extra.cover) %}
+      <lazy-image class="article-cover" src="{{ page.extra.cover }}"
+        alt="{{ page.extra.cover_alt | default(value=page.title) }}"
+        width=" {{ img_meta.width }}" height="{{ img_meta.height }}" loading="lazy" decoding="async"></lazy-image>
+      {% endif %}
+      <div class="article-content">
+        {{ page.extra.abstract | markdown | safe }}
+      </div>
+    </div>
+  </a>
+  <div class="article-meta">
+    {{ macros::page_publish_metadata(page=page) }}
+  </div>
+</article>
+{% endmacro %}

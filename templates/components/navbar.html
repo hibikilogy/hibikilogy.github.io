@@ -1,0 +1,90 @@
+{% import 'components/nav-screen.html' as navScreen %}
+{% import 'components/search_shell.html' as search_shell %}
+{% macro main() %}
+<header class="NavBar" v-scope :class="NavBarClasses">
+  <div class="wrapper">
+    <div class="container">
+      <button type="button" class="NavBarHamburger hamburger" aria-label="mobile navigation" aria-expanded="false"
+        aria-controls="NavScreen" :class="NavHamburgerClasses" @click="handleHamburgerClick">
+        <span class="container">
+          <span class="top"></span>
+          <span class="middle"></span>
+          <span class="bottom"></span>
+        </span>
+      </button>
+      {{ navScreen::main() }}
+      <div class="title">
+        <div class="NavBarTitle">
+          <a class="title" href="/">
+            <img class="Image logo" src="{{ config.extra.navbar_logo }}" alt>
+            <span>{{ config.title }}</span>
+          </a>
+        </div>
+      </div>
+      <div class="content">
+        <div class="content-body">
+          <nav aria-labelledby="main-nav-aria-label" role="navigation" aria-label="section navigation"
+            class="NavBarMenu menu">
+            <span id="main-nav-aria-label" class="visually-hidden">
+              Main Navigation
+            </span>
+            {% for item in config.extra.navbar %}
+            {% if lang == item.code %}
+            {% for nav in item.list %}
+            {% if nav.link %}
+            <a class="Link link NavBarMenuLink" aria-expanded="false" aria-label="menu" role="button"
+              href="{{ nav.link | replace(from='$BASE_URL', to=config.base_url) }}" tabindex="0">
+              <span>{{ nav.text }}</span>
+            </a>
+            {% else %}
+            <div class="NavBarMenuGroup">
+              <button type="button" class="button" aria-haspopup="true" aria-expanded="false">
+                <span class="text">
+                  <span>{{ nav.text }}</span>
+                  <span class="i-chevron-down text-icon"></span>
+                </span>
+              </button>
+              <div class="menu">
+                <div class="Menu">
+                  <div class="items">
+                    {% for _nav in nav.items %}
+                    <div class="MenuLink">
+                      <a class="Link" href="{{ _nav.link | replace(from='$BASE_URL', to=config.base_url) }}"
+                        target="_blank" rel="noreferrer">
+                        {{ _nav.text }}
+                      </a>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
+            {% for item in config.extra.slogan %}
+            {% if lang == item.code %}
+          </nav>
+          <a href="/" class="Link link NavBarMenuLink NavBarSocialLink no-hide" aria-expanded="false" aria-label="menu"
+            role="button" tabindex="0">
+            <span>{{ item.text }}</span>
+            {% endif %}
+            {% endfor %}
+          </a>
+          <div class="NavBarSearch search no-hide">
+            <div id="docsearch">
+              {{ search_shell::main(compact=true, transition_name="site-search-trigger", readonly=true, show_keys=true,
+              placeholder=trans(key="search_placeholder"), title="Search", click_action="window.navigateToSearch?.()",
+              extra_class="DocSearch-Button", value="") }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="divider">
+      <div class="divider-line"></div>
+    </div>
+  </div>
+</header>
+{% endmacro main %}

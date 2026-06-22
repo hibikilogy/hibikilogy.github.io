@@ -1,0 +1,32 @@
+@use "../config.scss";
+
+@layer components {
+
+.content-container {
+  .bilibili-desc a {
+    @media print {
+      display: block;
+      position: static;
+      width: auto;
+      height: auto;
+      margin: 8px 0;
+      clip: auto;
+      clip-path: none;
+      overflow: visible;
+      white-space: normal;
+    }
+  }
+
+  .bilibili-iframe {
+    display: block;
+    max-width: 100%;
+    margin: 8px 0;
+    border: none;
+    border-radius: 8px;
+
+    @media print {
+      display: none;
+    }
+  }
+}
+}

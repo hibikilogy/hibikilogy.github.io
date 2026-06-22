@@ -1,0 +1,768 @@
+@use "../config.scss";
+
+@layer components {
+
+@keyframes search-trigger-expand-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.12;
+  }
+}
+
+@keyframes search-trigger-settle-in {
+  from {
+    opacity: 0.2;
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes search-trigger-collapse-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.1;
+  }
+}
+
+@keyframes search-trigger-return-in {
+  from {
+    opacity: 0.16;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@supports (view-transition-name: none) {
+  @media (min-width: config.$tablet) {
+    html[data-search-transition="active"] .NavBarSocialLink {
+      view-transition-name: navbar-social-slot;
+    }
+  }
+
+  @media (max-width: calc(config.$tablet - 1px)) {
+    html[data-search-transition="active"] .NavBarHamburger {
+      view-transition-name: navbar-hamburger;
+    }
+  }
+
+  html[data-search-transition="active"] body:not(.search) .NavBarSearch .SearchShell--compact[data-search-transition-target="site-search-trigger"] {
+    view-transition-name: site-search-trigger;
+  }
+
+  html[data-search-transition="active"] body.search #search .SearchShell--page[data-search-transition-target="site-search-trigger"] {
+    view-transition-name: site-search-trigger;
+  }
+
+  @media (max-width: calc(config.$tablet - 1px)) {
+    html[data-search-transition="active"] .NavBarSearch .SearchShell--compact,
+    html[data-search-transition="active"] #search .SearchShell--page {
+      view-transition-name: none !important;
+    }
+  }
+
+  html[data-search-transition="active"]::view-transition-group(root),
+  html[data-search-transition="active"]::view-transition-old(root),
+  html[data-search-transition="active"]::view-transition-new(root) {
+    animation: none;
+  }
+
+  html[data-search-transition="active"]::view-transition-group(site-search-trigger) {
+    animation-duration: 420ms;
+    animation-timing-function: cubic-bezier(0.33, 0, 0.13, 1);
+    z-index: 20;
+  }
+
+  html[data-search-transition="active"]::view-transition-group(navbar-social-slot) {
+    animation-duration: 320ms;
+    animation-timing-function: cubic-bezier(0.33, 0, 0.13, 1);
+    z-index: 19;
+  }
+
+  html[data-search-transition="active"]::view-transition-group(navbar-hamburger) {
+    animation-duration: 240ms;
+    animation-timing-function: cubic-bezier(0.33, 0, 0.13, 1);
+    z-index: 21;
+  }
+
+  html[data-search-transition="active"][data-search-transition-scope="enter-search"]::view-transition-old(site-search-trigger) {
+    animation: search-trigger-expand-out 420ms cubic-bezier(0.33, 0, 0.13, 1) both;
+  }
+
+  html[data-search-transition="active"][data-search-transition-scope="enter-search"]::view-transition-new(site-search-trigger) {
+    animation: search-trigger-settle-in 420ms cubic-bezier(0.33, 0, 0.13, 1) both;
+  }
+
+  html[data-search-transition="active"][data-search-transition-scope="leave-search"]::view-transition-old(site-search-trigger) {
+    animation: search-trigger-collapse-out 420ms cubic-bezier(0.33, 0, 0.13, 1) both;
+  }
+
+  html[data-search-transition="active"][data-search-transition-scope="leave-search"]::view-transition-new(site-search-trigger) {
+    animation: search-trigger-return-in 420ms cubic-bezier(0.33, 0, 0.13, 1) both;
+  }
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: calc(var(--joh-nav-height) + var(--joh-layout-top-height, 0px));
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, calc(-100% * var(--search-overlay-direction, 1)), 0);
+  background: var(--joh-c-bg);
+  box-shadow: inset 0 24px 64px rgba(0, 0, 0, 0.06);
+  will-change: transform;
+}
+
+html[data-search-overlay="active"][data-search-overlay-scope="leave-search"] {
+  --search-overlay-direction: -1;
+}
+
+html[data-search-overlay="active"] body::before {
+  opacity: 1;
+}
+
+html[data-search-overlay="active"].is-changing body::before {
+  transition: transform 420ms cubic-bezier(0.33, 0, 0.13, 1);
+}
+
+html[data-search-overlay="active"].is-animating body::before {
+  transform: translate3d(0, 0, 0);
+}
+
+html[data-search-overlay="active"].is-rendering body::before {
+  transform: translate3d(0, calc(100% * var(--search-overlay-direction, 1)), 0);
+}
+
+html[data-search-overlay="active"].is-changing main.Content {
+  transition: transform 420ms cubic-bezier(0.33, 0, 0.13, 1);
+  will-change: transform;
+}
+
+html[data-search-overlay="active"].is-animating.is-leaving main.Content {
+  transform: translateY(calc(4vh * var(--search-overlay-direction, 1)));
+}
+
+html[data-search-overlay="active"].is-animating.is-rendering main.Content {
+  transform: translateY(calc(-4vh * var(--search-overlay-direction, 1)));
+}
+
+html[data-search-overlay="active"].is-rendering main.Content,
+html[data-search-overlay="active"]:not(.is-changing) main.Content {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-search-overlay="active"] body::before,
+  html[data-search-overlay="active"] main.Content {
+    transition: none;
+    animation: none;
+    transform: none;
+  }
+}
+
+.NavBar {
+  --searchbox-width: 48px;
+  z-index: var(--joh-z-index-nav);
+  width: 100%;
+  position: relative;
+  height: var(--joh-nav-height);
+  white-space: nowrap;
+  transition: background-color 0.5s;
+
+  &.open {
+    position: fixed !important;
+    top: 0 !important;
+    background: var(--joh-nav-screen-overlay-bg-color) !important;
+  }
+
+  &:not(.home) {
+    background-color: var(--joh-nav-bg-color);
+  }
+
+  @media (min-width: config.$pad) {
+    margin-top: 8px;
+    &:not(.home) {
+      background-color: transparent;
+    }
+
+    &:not(.has-sidebar):not(.home.top) {
+      background-color: var(--joh-nav-bg-color);
+    }
+  }
+
+  .wrapper {
+    padding: 0 8px;
+  }
+
+  @media (min-width: config.$tablet) {
+    .wrapper {
+      padding: 0 32px;
+    }
+  }
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    max-width: var(--joh-layout-max-width);
+    height: var(--joh-nav-height);
+  }
+
+  .title {
+    flex-shrink: 0;
+    height: calc(var(--joh-nav-height) - 1px);
+    transition: background-color 0.5s;
+  }
+
+  .content {
+    flex-grow: 1;
+  }
+
+  .content-body {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: var(--joh-nav-height);
+    transition: background-color 0.5s;
+  }
+
+  @media (min-width: config.$pad) {
+    &:not(.home.top) .content-body {
+      position: relative;
+      background-color: var(--joh-nav-bg-color);
+    }
+
+    &:not(.has-sidebar):not(.home.top) .content-body {
+      background-color: transparent;
+    }
+  }
+
+  .menu + .translations::before,
+  .menu + .appearance::before,
+  .menu + .social-links::before,
+  .translations + .appearance::before,
+  .appearance + .social-links::before {
+    margin-right: 8px;
+    margin-left: 8px;
+    width: 1px;
+    height: 24px;
+    background-color: var(--joh-c-divider);
+    content: "";
+  }
+
+  .menu + .appearance::before,
+  .translations + .appearance::before {
+    margin-right: 16px;
+  }
+
+  .appearance + .social-links::before {
+    margin-left: 16px;
+  }
+
+  .social-links {
+    margin-right: -8px;
+  }
+
+  // .divider {
+  //   width: 100%;
+  //   height: 1px;
+  // }
+
+  // .divider-line {
+  //   width: 100%;
+  //   height: 1px;
+  //   transition: background-color 0.5s;
+  // }
+
+  // &:not(.home) .divider-line {
+  //   background-color: var(--joh-c-gutter);
+  // }
+
+  @media (min-width: config.$pad) {
+    &:not(.home.top) .divider-line {
+      background-color: var(--joh-c-gutter);
+    }
+
+    &:not(.has-sidebar):not(.home.top) .divider {
+      background-color: var(--joh-c-gutter);
+    }
+  }
+
+  a.NavBarMenuLink.Link {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    line-height: var(--joh-nav-height);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--joh-c-text-1);
+    transition: color 0.25s;
+  }
+
+  // Navbar Title
+  .NavBarTitle > .title {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid transparent;
+    width: var(--joh-nav-width);
+    height: var(--joh-nav-height);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--joh-c-text-1);
+    transition: opacity 0.25s;
+
+    @media (max-width: config.$tablet) {
+      display: none;
+    }
+
+    @media (min-width: config.$pad) {
+      .title {
+        flex-shrink: 0;
+      }
+
+      .NavBarTitle.has-sidebar .title {
+        border-bottom-color: var(--joh-c-divider);
+      }
+    }
+
+    .logo {
+      margin-right: 8px;
+      margin-top: -8px;
+      height: var(--joh-nav-logo-height);
+    }
+  }
+
+  // Navbar Menu
+  .NavBarMenu {
+    display: none;
+
+    @media (min-width: config.$tablet) {
+      & {
+        display: flex;
+        flex-grow: 1;
+        padding-left: 24px;
+      }
+    }
+
+    @media (min-width: config.$pad) {
+      & {
+        padding-left: 32px;
+      }
+    }
+  }
+
+  // SearchBox
+  .NavBarSearch {
+    margin-left: 8px;
+    cursor: text;
+
+    .SearchShell--compact {
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      width: var(--searchbox-width);
+      height: 55px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--joh-c-text-1);
+      transition:
+        border-color 0.25s,
+        background-color 0.25s,
+        color 0.25s;
+    }
+
+    .SearchShell--compact:hover {
+      background: transparent;
+    }
+
+    .SearchShell--compact:focus {
+      outline: 1px dotted;
+      outline: 5px auto -webkit-focus-ring-color;
+    }
+
+    .SearchShell--compact:focus:not(:focus-visible) {
+      outline: none !important;
+    }
+
+    .SearchShellIcon {
+      position: absolute;
+      right: 14px;
+      order: 2;
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+      background-color: currentColor;
+      opacity: 0.72;
+      -webkit-mask: var(--icon) no-repeat;
+      mask: var(--icon) no-repeat;
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+    }
+
+    @media (min-width: config.$tablet) {
+      .SearchShell--compact {
+        justify-content: space-between;
+        border: solid 2px var(--docsearch-border-color);
+        padding: 0 10px 0 12px;
+        width: 205px;
+        height: 35px;
+        background-color: var(--joh-c-bg-alt);
+      }
+
+      .SearchShell--compact:hover {
+        background: var(--joh-c-bg-alt);
+      }
+    }
+
+    @media (min-width: config.$tablet) {
+      .SearchShellBody {
+          order: 1;
+          display: flex;
+          align-items: center;
+          flex: 1 1 0;
+          justify-content: flex-start;
+          min-width: 0;
+          gap: 8px;
+      }
+
+      .SearchShellIcon {
+        position: relative;
+        margin-left: 80px;
+        right: 0;
+      }
+
+    }
+
+    @media (max-width: config.$tablet) {
+        .SearchShellBody {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+        }
+
+        .SearchShellBody > *:not(.SearchShellIcon) {
+          display: none;
+        }
+
+        .SearchShellIcon {
+          right: 24px;
+        }
+    }
+
+    .SearchShellLabel,
+    .SearchShellInput {
+      display: none;
+      flex: 0 1 auto;
+      min-width: 0;
+      width: auto;
+      overflow: hidden;
+      text-align: left;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--joh-c-text-2);
+      opacity: 0.9;
+      transition: all 0.25s;
+    }
+
+    .SearchShellLabel {
+      pointer-events: none;
+    }
+
+    .SearchShellInput {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .SearchShell--compact:hover .SearchShellIcon,
+    .SearchShell--compact:hover .SearchShellLabel,
+    .SearchShell--compact:hover .SearchShellInput {
+      color: var(--joh-c-text-1);
+    }
+
+    @media (min-width: config.$tablet) {
+      .SearchShellLabel,
+      .SearchShellInput {
+        display: inline-block;
+        max-width: calc(100% - 56px);
+      }
+
+      .SearchShellLabel,
+      .SearchShellInput {
+        color: var(--joh-c-text-2);
+      }
+    }
+
+    .SearchShellKeys {
+      display: none;
+      align-items: center;
+      flex: 0 0 auto;
+    }
+
+    @media (min-width: config.$tablet) {
+      .SearchShellKeys {
+        display: flex;
+      }
+    }
+
+    .SearchShellKey {
+      display: block;
+      border: 1px solid var(--joh-c-divider);
+      border-right: none;
+      border-radius: 4px 0 0 4px;
+      padding-left: 6px;
+      min-width: 0;
+      width: auto;
+      height: 22px;
+      line-height: 22px;
+      color: var(--docsearch-muted-color);
+      background-color: var(--joh-c-bg-alt);
+      font-family: var(--joh-font-family-base);
+      font-size: 12px;
+      font-weight: 500;
+      transition:
+        color 0.5s,
+        border-color 0.5s;
+    }
+
+    .SearchShellKey + .SearchShellKey {
+      border-right: 1px solid var(--joh-c-divider);
+      border-left: none;
+      border-radius: 0 4px 4px 0;
+      padding-left: 2px;
+      padding-right: 6px;
+    }
+
+    .SearchShellKeyModifier {
+      font-size: 0 !important;
+    }
+
+    .SearchShellKeyModifier:after {
+      content: var(--joh-search-shell-key-modifier);
+      font-size: 12px;
+      letter-spacing: normal;
+      color: var(--docsearch-muted-color);
+    }
+
+    .SearchShellKeyModifier > * {
+      display: none;
+    }
+  }
+
+  @media (max-width: config.$mobile) {
+    .NavBarSearch {
+      margin-left: 0;
+    }
+  }
+  //NavBarHamburger
+
+  .NavBarHamburger {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: var(--searchbox-width);
+    height: var(--joh-nav-height);
+
+    @media (min-width: config.$tablet) {
+      & {
+        display: none;
+      }
+    }
+
+    .container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      cursor: inherit;
+      overflow: hidden;
+
+      & > span {
+        display: inline-block;
+        width: 100%;
+        height: 2px;
+        border-radius: 2px;
+        background-color: var(--joh-c-text-2);
+        transition:
+          top 0.25s,
+          background-color 0.25s,
+          transform 0.25s;
+      }
+
+      & > span:nth-child(2) {
+        margin: 6px 0;
+      }
+    }
+
+    // Btn Active Animation
+    &.open .container > span:nth-child(1) {
+      transform: rotate(45deg) translate3d(5.5px, 5.5px, 0);
+    }
+
+    &.open .container > span:nth-child(2) {
+      transform: scale3d(0, 1, 1);
+    }
+
+    &.open .container > span:nth-child(3) {
+      transform-origin: center;
+      transform: rotate(-45deg) translate3d(6px, -6px, 0);
+    }
+  }
+
+  // NavBarSocialLink
+  .NavBarSocialLink {
+    cursor: default;
+  }
+
+  @media (max-width: config.$pad) {
+    .NavBarSocialLink {
+      display: inline-block !important;
+      width: 100%;
+      text-align: center;
+      font-weight: bold !important;
+    }
+  }
+
+  .NavScreen.open {
+    display: block;
+    opacity: 1;
+    z-index: var(--joh-z-index-sidebar);
+  }
+
+  .NavScreen {
+    z-index: -1;
+    display: none;
+    position: fixed;
+    top: calc(var(--joh-nav-height) + var(--joh-layout-top-height, 0px));
+    /*rtl:ignore*/
+    right: 0;
+    bottom: 0;
+    /*rtl:ignore*/
+    left: 0;
+    padding: 0 32px;
+    width: 100%;
+    background-color: var(--joh-nav-screen-overlay-bg-color);
+    overflow-y: auto;
+    transition: background-color 0.5s;
+    pointer-events: auto;
+    opacity: 0;
+    transition: all 0.25s ease;
+    transition-behavior: allow-discrete;
+    transition-property: display opacity transform;
+    transform: translateY(-8px);
+
+    @starting-style {
+      opacity: 0;
+      transform: translateY(0);
+    }
+
+    .container,
+    .NavScreenMenu {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      align-items: center;
+      margin: 0 auto;
+      padding: 24px 0 0;
+      max-width: 288px;
+
+      .NavScreenMenuLink {
+        display: block;
+        padding: 12px 0 11px;
+        line-height: 24px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--joh-c-text-1);
+        transition:
+          border-color 0.25s,
+          color 0.25s;
+      }
+
+      .NavScreenMenuGroupLink {
+        display: block;
+        margin-left: 12px;
+        line-height: 32px;
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--joh-c-text-1);
+        transition: color 0.25s;
+      }
+
+      .NavBarSocialLink {
+        opacity: 1;
+        margin-right: 0;
+      }
+    }
+  }
+
+  @media (min-width: config.$tablet) {
+    .NavScreen {
+      display: none;
+    }
+  }
+}
+
+.post > #app > .Layout > .NavBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+
+  .divider {
+    display: none;
+  }
+}
+
+.post > #app > .Layout > .NavBar:has(+ .has-cover):not(.open) {
+  .NavBarTitle > .title,
+  a.NavBarMenuLink.Link,
+  {
+    color: #fff;
+  }
+
+  .NavBarTitle .logo {
+    filter: brightness(0) invert(1);
+    transition: filter .5s ease;
+  }
+
+  .NavBarHamburger .container > span {
+    background-color: #fff;
+  }
+
+  .SearchShellIcon {
+    background-color: #fff;
+  }
+}
+}

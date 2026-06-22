@@ -1,0 +1,210 @@
+name: PREVIEW
+
+# 在 TEST_BUILD 完成后由 workflow_run 事件触发，下载其上传的产物并部署到
+# surge.sh 生成预览链接，随后在 PR 上更新预览状态评论。
+# workflow_run 运行在默认分支上下文，可访问仓库 secret（SURGE_LOGIN / SURGE_TOKEN）。
+on:
+  workflow_run:
+    workflows: ['TEST_BUILD']
+    types:
+      - completed
+
+permissions:
+  contents: read
+  pull-requests: write
+  deployments: write
+
+jobs:
+  preview-success:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - name: Download PR number artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: pr
+          path: .
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save PR id
+        id: pr
+        run: echo "id=$(cat pr-id.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Download site artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: ./site
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # surge 只认 SURGE_LOGIN + SURGE_TOKEN 环境变量（--token 非有效参数）
+      - name: Deploy to Surge
+        id: deploy
+        env:
+          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+        run: |
+          export DEPLOY_DOMAIN=https://hibikilogy-pr${{ steps.pr.outputs.id }}.surge.sh
+          npx --yes surge --project ./site --domain "$DEPLOY_DOMAIN"
+          echo "url=$DEPLOY_DOMAIN" >> "$GITHUB_OUTPUT"
+
+      - name: Update preview comment
+        if: ${{ success() }}
+        uses: actions/github-script@v9
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.id }}
+          PREVIEW_URL: ${{ steps.deploy.outputs.url }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- AUTO_PREVIEW_HOOK -->';
+            const body = [
+              '## 预览已就绪',
+              '',
+              `PR #${process.env.PR_NUMBER} 的预览链接已构建完成：[${process.env.PREVIEW_URL}](${process.env.PREVIEW_URL})`,
+              '',
+              marker,
+            ].join('\n');
+            const issue_number = Number(process.env.PR_NUMBER);
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+                body,
+              });
+            }
+
+      - name: Report deploy failure
+        if: ${{ failure() }}
+        uses: actions/github-script@v9
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.id }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- AUTO_PREVIEW_HOOK -->';
+            const body = [
+              '## 预览部署失败',
+              '',
+              `PR #${process.env.PR_NUMBER} 的预览部署失败，日志：[${process.env.RUN_URL}](${process.env.RUN_URL})`,
+              '',
+              marker,
+            ].join('\n');
+            const issue_number = Number(process.env.PR_NUMBER);
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+                body,
+              });
+            }
+
+      # 在 GitHub Deployments 中记录一次 Preview 部署；best-effort，失败不影响整体结果
+      - name: Create deployment
+        if: ${{ success() }}
+        continue-on-error: true
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const sha = '${{ github.event.workflow_run.head_sha }}';
+            const response = await github.rest.repos.createDeployment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: sha,
+              auto_merge: false,
+              required_contexts: [],
+              environment: 'Preview',
+              payload: { web_url: '${{ steps.deploy.outputs.url }}', commit_hash: sha },
+            });
+            core.info(`Preview deployment created: ${response.data.id}`);
+
+  preview-failed:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'failure'
+    steps:
+      - name: Download PR number artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: pr
+          path: .
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save PR id
+        id: pr
+        run: echo "id=$(cat pr-id.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Report build failure
+        uses: actions/github-script@v9
+        env:
+          PR_NUMBER: ${{ steps.pr.outputs.id }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- AUTO_PREVIEW_HOOK -->';
+            const body = [
+              '## ❌预览构建失败',
+              '',
+              `PR #${process.env.PR_NUMBER} 的预览构建失败，查看日志：[${process.env.RUN_URL}](${process.env.RUN_URL})`,
+              '',
+              marker,
+            ].join('\n');
+            const issue_number = Number(process.env.PR_NUMBER);
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+                body,
+              });
+            }

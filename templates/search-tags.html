@@ -1,0 +1,14 @@
+{%- set tags = get_taxonomy(kind="tags") -%}
+[
+{%- for tag in tags.items %}
+  {
+    "name": {{ tag.name | json_encode | safe }},
+    "href": {{ get_taxonomy_url(kind="tags", name=tag.name) | json_encode | safe }},
+    "pages": [
+      {%- for page in tag.pages %}
+      {{ page.permalink | json_encode | safe }}{% if not loop.last %},{% endif %}
+      {%- endfor %}
+    ]
+  }{% if not loop.last %},{% endif %}
+{%- endfor %}
+]

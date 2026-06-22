@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ config.title }} | {{ section.title }}
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <div class="content">
+    <section class="content-container">
+      {% if paginator %}
+      {% set pages = paginator.pages %}
+      {% else %}
+      {% set pages = section.pages %}
+      {% endif %}
+      {% for page in pages %}
+      {{ macros::article(page=page) }}
+      {% endfor %}
+    </section>
+  </div>
+</div>
+{% endblock %}

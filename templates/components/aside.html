@@ -1,0 +1,11 @@
+{% import 'components/toc.html' as toc %}
+
+{% macro main(page) %}
+{% if page.toc and page.extra.toc | default(value=true) != false %}
+<div class="Aside">
+  <div class="aside-container">
+    {{ toc::main(page=page) }}
+  </div>
+</div>
+{% endif %}
+{% endmacro %}
