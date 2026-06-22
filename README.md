@@ -8,7 +8,7 @@
 
 ## 如何贡献
 
-请参阅[【贡献指南】](./CONTRIBUTING.md)】
+请参阅[【贡献指南】](./CONTRIBUTING.md)
 
 ## 免责声明
 

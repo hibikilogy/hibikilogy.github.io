@@ -13,4 +13,4 @@ toc=false
 
 ## 申请
 
-请在GitHub仓库的 [Issues](https://github.com/hibikilogy/hibikilogy.github.io/issuess) 里添加加入申请。
+请在GitHub仓库的 [Issues](https://github.com/hibikilogy/hibikilogy.github.io/issues) 里添加加入申请。
