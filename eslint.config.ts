@@ -46,7 +46,7 @@ export default antfu({
       ],
     },
     toml: {
-      'padding-line-between-pairs': 'warn',
+      'toml/padding-line-between-pairs': 'warn',
     },
   },
 })
