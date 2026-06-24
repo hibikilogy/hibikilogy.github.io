@@ -1,4 +1,4 @@
-base_url = "https://hibikilogy.vercel.app"
+base_url = "https://hibikilogy.vercel.app/"
 title = "京吹学报 (Dev Preview)"
 description = "吹学著作集锦"
 
@@ -93,9 +93,9 @@ prefetch_urls = [
 
 footer = [
   { code = "zh", tags_text = "相关标签", copyright = "本站收录文章著作权归原作者所有", count = "总查询数", frendlinks_text = "友情链接", list = [
-    { text = "京吹学报", link = "$BASE_URL/" },
-    { text = "加入我们", link = "$BASE_URL/docs/join-us" },
-    { text = "RSS", link = "$BASE_URL/atom.xml" },
+    { text = "京吹学报", link = "$BASE_URL" },
+    { text = "加入我们", link = "$BASE_URLdocs/join-us" },
+    { text = "RSS", link = "$BASE_URLatom.xml" },
     { text = "GitHub", link = "https://github.com/hibikilogy/hibikilogy.github.io" },
   ], frendlinks = [
     { text = "中国珂学院维基", link = "https://wiki.sukasuka.cn/" },
@@ -109,14 +109,14 @@ section = [
 
 navbar = [
   { code = "zh", list = [
-    { text = "我要投稿", link = "$BASE_URL/docs/contribute" },
-    { text = "能力鉴定", link = "$BASE_URL/docs/assessment" },
-    { text = "实体版特刊", link = "$BASE_URL/" },
+    { text = "我要投稿", link = "$BASE_URLdocs/contribute" },
+    { text = "能力鉴定", link = "$BASE_URLdocs/assessment" },
+    { text = "实体版特刊", link = "$BASE_URL" },
   ] },
 ]
 
 slogan = [
-  { code = "zh", text = "吹学著作集锦", link = "/" },
+  { code = "zh", text = "吹学著作集锦", link = "$BASE_URL" },
 ]
 
 medium_zoom.enabled = true

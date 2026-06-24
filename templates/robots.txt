@@ -1,2 +1,2 @@
 User-agent: *
-Sitemap: {{config.base_url}}/sitemap.xml
+Sitemap: {{ get_url(path='/sitemap.xml') }}

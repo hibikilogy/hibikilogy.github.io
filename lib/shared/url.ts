@@ -2,7 +2,11 @@ import { getRuntimeConfig } from '../search/runtime-config.ts'
 
 export function getDefaultOrigin(): string {
   const { baseUrl } = getRuntimeConfig()
-  return baseUrl
+  // Only treat baseUrl as an origin when it is an absolute http(s) URL;
+  // fall back to the runtime location origin for relative or empty values.
+  if (baseUrl && /^https?:\/\//i.test(baseUrl))
+    return baseUrl
+  return (typeof location !== 'undefined' && location.origin) || 'http://localhost'
 }
 
 /**
