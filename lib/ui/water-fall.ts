@@ -123,7 +123,7 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
       return
     }
 
-    const offsets = items.map((item) => Math.round(item.offsetLeft))
+    const offsets = items.map(item => Math.round(item.offsetLeft))
     const minOffsetLeft = Math.min(...offsets)
     const maxOffsetLeft = Math.max(...offsets)
 

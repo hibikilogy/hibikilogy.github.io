@@ -75,7 +75,7 @@
   <link href='{{ get_url(path=config.extra.favicon.webmanifest) | safe }}' rel="manifest">
   {% endif %}
   {% if config.extra.favicon.safari_pinned_tab %}
-  <link color="#5bbad5" href='{{ config.extra.favicon.safari_pinned_tab }}' rel="mask-icon">
+  <link color="{{ config.extra.theme_color }}" href='{{ get_url(path=config.extra.favicon.safari_pinned_tab) | safe }}' rel="mask-icon">
   {% endif %}
   {% if config.extra.favicon.small_icon %}
   <link rel="icon" href='{{ get_url(path=config.extra.favicon.small_icon) | safe }}' sizes="48x48">
@@ -107,6 +107,7 @@
 
   {{ macros::script(path="js/components/index.js", module=true) }}
   {{ macros::script(path="js/ui.js", module=true) }}
+
   {% block analytics %}
   {% if config.extra.analytics.google or not config.mode == "serve" %}
   <script async src="https://www.googletagmanager.com/gtag/js?id={{ config.extra.analytics.google }}"></script>
