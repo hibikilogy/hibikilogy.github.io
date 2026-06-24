@@ -33,7 +33,23 @@ export default defineConfig({
       output: {
         entryFileNames: '[name].js',
         chunkFileNames: 'chunks/[name].js',
-        assetFileNames: '[name][extname]',
+        assetFileNames: (assetInfo) => {
+          const name = assetInfo.names[0] ?? ''
+
+          if (/\.css$/.test(name)) {
+            return '../styles/[name][extname]'
+          }
+
+          if (/\.(?:woff2?|ttf|otf|eot)$/.test(name)) {
+            return '../fonts/[name][extname]'
+          }
+
+          if (/\.(?:png|jpe?g|webp|avif|svg|gif)$/.test(name)) {
+            return '../imgs/[name][extname]'
+          }
+
+          return 'assets/[name][extname]'
+        },
       },
     },
   },

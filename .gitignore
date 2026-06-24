@@ -34,3 +34,6 @@ static/js
 .eslintcache
 .claude
 .codex
+virtual-hibikilogy-config.generated.d.ts
+temp
+nul
