@@ -1,6 +1,5 @@
 import renderMathInElement from 'katex/dist/contrib/auto-render.mjs'
 import mediumZoom from 'medium-zoom'
-import 'katex/dist/katex.min.css'
 
 interface MediumZoomController {
   close: () => Promise<unknown>
