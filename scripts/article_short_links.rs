@@ -295,7 +295,7 @@ fn extract_slug_from_markdown(markdown: &str) -> Result<Option<String>> {
     match parsed.slug {
         Some(slug) => {
             validate_slug(&slug).context("invalid slug in TOML front matter")?;
-            Ok(Some(slug))
+            Ok(Some(slug.to_lowercase()))
         }
         None => Ok(None),
     }
@@ -349,7 +349,7 @@ fn fallback_slug_from_file_name(file_name: &str) -> Result<String> {
         bail!("{file_name} does not contain a slug tail");
     }
 
-    Ok(slug.to_owned())
+    Ok(slug.to_lowercase())
 }
 
 fn parse_date_part(value: &str, expected_length: usize, label: &str, file_name: &str) -> Result<u32> {
@@ -997,6 +997,64 @@ mod tests {
         let manifest: ShortLinkManifest =
             serde_json::from_str(&fixture.read("static/_cache/short-links.json")).unwrap();
         assert!(manifest.retired_codes.contains("fffff"));
+    }
+
+    #[test]
+    fn lowercases_explicit_slug_from_front_matter() {
+        let markdown = "+++\nslug = \"Kitauji-Power-Play\"\ntitle = \"Title\"\n+++\nbody\n";
+
+        assert_eq!(
+            extract_slug_from_markdown(markdown).unwrap().as_deref(),
+            Some("kitauji-power-play")
+        );
+    }
+
+    #[test]
+    fn lowercases_fallback_slug_from_article_file_name() {
+        assert_eq!(
+            fallback_slug_from_file_name("2026-05-25-Kaori.md").unwrap(),
+            "kaori"
+        );
+        assert_eq!(
+            fallback_slug_from_file_name("2024-04-05-NozoMizore.md").unwrap(),
+            "nozomizore"
+        );
+        assert_eq!(
+            fallback_slug_from_file_name("2019-03-27-Nozomi.md").unwrap(),
+            "nozomi"
+        );
+    }
+
+    #[test]
+    fn ensures_redirect_url_is_lowercase_with_mixed_case_source() {
+        let fixture = TestFixture::new("lowercase-redirect");
+        fixture.write(
+            "content/articles/2024-06-15-Kaori.md",
+            "+++\ntitle = \"Title\"\n+++\nbody\n",
+        );
+        fixture.write(
+            "public/search_index.zh.json",
+            r#"[{"url":"/articles/kaori/","title":"kaori"}]"#,
+        );
+        fixture.write("public/articles/kaori/index.html", "<html>kaori</html>");
+
+        generate_short_links(
+            &fixture.root.join("content/articles"),
+            &fixture.root.join("public"),
+            &fixture.root.join("static/_cache/short-links.json"),
+        )
+        .unwrap();
+
+        let manifest: ShortLinkManifest =
+            serde_json::from_str(&fixture.read("static/_cache/short-links.json")).unwrap();
+        assert_eq!(manifest.records[0].target_slug, "kaori");
+
+        let redirect = fixture.read(&format!(
+            "public/s/{}/index.html",
+            manifest.records[0].code
+        ));
+        assert!(redirect.contains("/articles/kaori/"));
+        assert!(!redirect.contains("/articles/Kaori/"));
     }
 
     #[test]

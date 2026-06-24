@@ -8,7 +8,7 @@
     },
     {
       "source_file": "2019-03-27-Nozomi.md",
-      "target_slug": "Nozomi",
+      "target_slug": "nozomi",
       "code": "4ed43",
       "digest": "4ed436723ad46cbfd5e458abd2cedb05c090fcc400b7765d0bd3a8f8c3d1e21a"
     },
@@ -62,7 +62,7 @@
     },
     {
       "source_file": "2020-02-27-postKumikochutan.md",
-      "target_slug": "postKumikochutan",
+      "target_slug": "postkumikochutan",
       "code": "0148d",
       "digest": "0148d6c026fb3ef58caf279666b4325ad2c92a0e875efe037856ff2a526c3bb8"
     },
@@ -116,7 +116,7 @@
     },
     {
       "source_file": "2020-03-06-why-YoshikawaYuuko.md",
-      "target_slug": "why-YoshikawaYuuko",
+      "target_slug": "why-yoshikawayuuko",
       "code": "1904c",
       "digest": "1904c699870b2705eef2cc70b4c9e8b1fb759fe089798378564374eb82c3bdf6"
     },
@@ -320,7 +320,7 @@
     },
     {
       "source_file": "2021-09-06-NozoMizore.md",
-      "target_slug": "NozoMizore",
+      "target_slug": "nozomizore",
       "code": "34d56",
       "digest": "34d56786fa222c59367cf8a4a341ae8c11ab85146aea3e8ae0d2177b6d7d5b06"
     },
@@ -416,7 +416,7 @@
     },
     {
       "source_file": "2024-04-05-HuangquanVSXiangquan.md",
-      "target_slug": "HuangquanVSXiangquan",
+      "target_slug": "huangquanvsxiangquan",
       "code": "7fb25",
       "digest": "7fb25f78e54309ba10fb7e4c6ebd3522b562ff5468906fc94ff6e565f8fd8250"
     },
@@ -440,19 +440,19 @@
     },
     {
       "source_file": "2024-04-21-S3E03thinking1.md",
-      "target_slug": "S3E03thinking1",
+      "target_slug": "s3e03thinking1",
       "code": "98ee1",
       "digest": "98ee1d3bcc04f1ff615283443fdb90b937759cbf710cdd6163e5be4fc9b60519"
     },
     {
       "source_file": "2024-04-22-EuphoniumWar.md",
-      "target_slug": "EuphoniumWar",
+      "target_slug": "euphoniumwar",
       "code": "6d719",
       "digest": "6d719c5972fa0afc12fb1be5b46c091dc5947d0f397699ab39400fce034471d7"
     },
     {
       "source_file": "2024-04-23-Shouji.md",
-      "target_slug": "Shouji",
+      "target_slug": "shouji",
       "code": "1aae3",
       "digest": "1aae3ed88fb2d3461a2c4dfa5c2ed44bca26f290858fab4593df9fcc0c19d85e"
     },
@@ -482,7 +482,7 @@
     },
     {
       "source_file": "2024-05-01-EuphoDaily.md",
-      "target_slug": "EuphoDaily",
+      "target_slug": "euphodaily",
       "code": "8c319",
       "digest": "8c319c5a8fa61fd5e9b9bb645723de7cbf159bf67baf73a2379f8ceb7d7d0973"
     },
@@ -506,7 +506,7 @@
     },
     {
       "source_file": "2024-05-27-WhyMireiSuzuki.md",
-      "target_slug": "WhyMireiSuzuki",
+      "target_slug": "whymireisuzuki",
       "code": "474a3",
       "digest": "474a33f7d21619158e2488a7edcd68f1e80134dc5dd66cab6a777195d2ba0221"
     },
@@ -524,7 +524,7 @@
     },
     {
       "source_file": "2024-06-03-ALL-Disqualified.md",
-      "target_slug": "ALL-Disqualified",
+      "target_slug": "all-disqualified",
       "code": "c00ea",
       "digest": "c00ea22cfea666add8c45911caaebb8a29b72d523e9f8e8dd23d22bbc653f76a"
     },
@@ -590,7 +590,7 @@
     },
     {
       "source_file": "2024-06-12-Kumikolunchui.md",
-      "target_slug": "Kumikolunchui",
+      "target_slug": "kumikolunchui",
       "code": "2aad9",
       "digest": "2aad914322ded1a134c1dd14aef727f8528c8a7e6e0bd6895c3338664dd602ca"
     },
@@ -602,7 +602,7 @@
     },
     {
       "source_file": "2024-06-15-Kaori.md",
-      "target_slug": "Kaori",
+      "target_slug": "kaori",
       "code": "c3e60",
       "digest": "c3e604174364ab406b8fbbd6f3398bc469ca6ccd897f74b2b392fdfb3effb3f9"
     },
@@ -620,25 +620,25 @@
     },
     {
       "source_file": "2024-06-23-AuditionAnalysis.md",
-      "target_slug": "AuditionAnalysis",
+      "target_slug": "auditionanalysis",
       "code": "c757b",
       "digest": "c757ba0aa34718c36ef2b7c0c417d2e0d4a02c99c1be3d839aae99c5348817f8"
     },
     {
       "source_file": "2024-06-23-Eye.md",
-      "target_slug": "Eye",
+      "target_slug": "eye",
       "code": "f69fe",
       "digest": "f69fe69c7ffa21fac709feb45de6bce437df5416a8df548a6f5aea1f76cf6247"
     },
     {
       "source_file": "2024-06-23-personalOpinion.md",
-      "target_slug": "personalOpinion",
+      "target_slug": "personalopinion",
       "code": "72cb3",
       "digest": "72cb3ca99a2a30b365a01c9a5f3e703cc1979ee13746005b81151cedec17e667"
     },
     {
       "source_file": "2024-06-24-NozoMizoreHE.md",
-      "target_slug": "NozoMizoreHE",
+      "target_slug": "nozomizorehe",
       "code": "9ecaf",
       "digest": "9ecaf3ca3ee7972070ec08903af9677af1bc305698a3d104e2bc0156be54f52f"
     },
@@ -656,7 +656,7 @@
     },
     {
       "source_file": "2024-06-28-whichYouth.md",
-      "target_slug": "whichYouth",
+      "target_slug": "whichyouth",
       "code": "1772a",
       "digest": "1772ac617fa3e942a639fac2ae4c560b4692410cb4bc0e79edea3e1a417c5dea"
     },
@@ -692,7 +692,7 @@
     },
     {
       "source_file": "2024-07-01-Huangbobuke.md",
-      "target_slug": "Huangbobuke",
+      "target_slug": "huangbobuke",
       "code": "b930e",
       "digest": "b930e958087369b0a1599118cb1a8114242b44e179badc111510ef9fc49f1cd2"
     },
@@ -710,25 +710,25 @@
     },
     {
       "source_file": "2024-07-02-Monaka.md",
-      "target_slug": "Monaka",
+      "target_slug": "monaka",
       "code": "6f210",
       "digest": "6f210b7175005177b421d2bda95348f040e15ede49ac268d3a4a2775e0950a04"
     },
     {
       "source_file": "2024-07-02-SpectrumAnalysis.md",
-      "target_slug": "SpectrumAnalysis",
+      "target_slug": "spectrumanalysis",
       "code": "cc4c0",
       "digest": "cc4c01f4a41fe7d7bcfe673e9ace667516e6d041e0119ee066b521b054c475c1"
     },
     {
       "source_file": "2024-07-02-collapsedScript.md",
-      "target_slug": "collapsedScript",
+      "target_slug": "collapsedscript",
       "code": "c9b31",
       "digest": "c9b3103c63670634dc78382e53ec618a71f9dc504a0e0b91c9e1ebf01870a5c5"
     },
     {
       "source_file": "2024-07-12-OpposeSeniorityism.md",
-      "target_slug": "OpposeSeniorityism",
+      "target_slug": "opposeseniorityism",
       "code": "43b63",
       "digest": "43b630b63233396ce89084b48f60ca2df9594689b29b01f202cbbc740ce3945f"
     },
@@ -740,31 +740,31 @@
     },
     {
       "source_file": "2024-07-25-NozomiKasaki.md",
-      "target_slug": "NozomiKasaki",
+      "target_slug": "nozomikasaki",
       "code": "d7413",
       "digest": "d741305962a6b10dda76b9bb22b2ad63795af82f9cd5d9610f669316a98b7064"
     },
     {
       "source_file": "2024-07-26-KumikoOmae.md",
-      "target_slug": "KumikoOmae",
+      "target_slug": "kumikoomae",
       "code": "2542d",
       "digest": "2542dc3edd6d90998d73591864fa822f253fc4f297ea8e40ccc4a7d932f5cf74"
     },
     {
       "source_file": "2024-07-28-vicePresident.md",
-      "target_slug": "vicePresident",
+      "target_slug": "vicepresident",
       "code": "f6893",
       "digest": "f6893c8e726df7b84ff2c73d0350aacb57c0ceb92af1bd60d5ac9ccf4b037c70"
     },
     {
       "source_file": "2024-08-03-Daedalus.md",
-      "target_slug": "Daedalus",
+      "target_slug": "daedalus",
       "code": "e1266",
       "digest": "e1266c0d47013e688eab7245cef7506dd7ae31ce79d16233645b1da7cfa489d1"
     },
     {
       "source_file": "2024-08-06-Yumeiren.md",
-      "target_slug": "Yumeiren",
+      "target_slug": "yumeiren",
       "code": "f96f7",
       "digest": "f96f709b03626204e7e3c1c3301157eff13672df4568acdf15d23d8de93fda4a"
     },
@@ -782,7 +782,7 @@
     },
     {
       "source_file": "2024-08-18-TakuImura.md",
-      "target_slug": "TakuImura",
+      "target_slug": "takuimura",
       "code": "78e15",
       "digest": "78e15fbe31bdad103353751a17c368c92faded7c43cf97580825d494fc730d73"
     },
@@ -800,19 +800,19 @@
     },
     {
       "source_file": "2024-09-14-Wangjiangnan.md",
-      "target_slug": "Wangjiangnan",
+      "target_slug": "wangjiangnan",
       "code": "b34a8",
       "digest": "b34a89a7ec20e3c6cdc911dd162a87f2615ad05374a77802397abf8422a059cc"
     },
     {
       "source_file": "2024-09-14-Yuzhijiangsanzhangzhangwuju.md",
-      "target_slug": "Yuzhijiangsanzhangzhangwuju",
+      "target_slug": "yuzhijiangsanzhangzhangwuju",
       "code": "65873",
       "digest": "658731662e80820572275f27385d47c194762ea184a1455017bd2dc39d62be1c"
     },
     {
       "source_file": "2024-09-17-KumikoIIIproblem.md",
-      "target_slug": "KumikoIIIproblem",
+      "target_slug": "kumikoiiiproblem",
       "code": "5cf38",
       "digest": "5cf3841d03ef060cdebece349e5dd358b48ccc70ff754695666548e710328b10"
     },
@@ -824,25 +824,25 @@
     },
     {
       "source_file": "2024-09-21-Beiwangchuan.md",
-      "target_slug": "Beiwangchuan",
+      "target_slug": "beiwangchuan",
       "code": "845c0",
       "digest": "845c0bf877f019a4b6a45325339996273f96f721ff4d70677cebcc77160e7016"
     },
     {
       "source_file": "2024-09-30-Nozomifu.md",
-      "target_slug": "Nozomifu",
+      "target_slug": "nozomifu",
       "code": "ce009",
       "digest": "ce0094e92b01faf9f88d4d6da7c7c7495d01b0e643af8d8b18dc65edd5224889"
     },
     {
       "source_file": "2024-09-30-Reinafu.md",
-      "target_slug": "Reinafu",
+      "target_slug": "reinafu",
       "code": "1ba38",
       "digest": "1ba380145496655213685ab6ab4a884dba415ba448e19206f3a81aa2cf5f1eff"
     },
     {
       "source_file": "2024-10-07-Jixiedai.md",
-      "target_slug": "Jixiedai",
+      "target_slug": "jixiedai",
       "code": "41e8c",
       "digest": "41e8c16e9618a32e6ac65159f51087244e9f6e944446840437f2c3641215b22e"
     },
@@ -866,13 +866,13 @@
     },
     {
       "source_file": "2024-11-16-Qingniaoxing.md",
-      "target_slug": "Qingniaoxing",
+      "target_slug": "qingniaoxing",
       "code": "6134a",
       "digest": "6134a5624ded42786412b8cc0b5e931d9205401a85e137fe98b741de230b9096"
     },
     {
       "source_file": "2024-11-18-wrongCalendar.md",
-      "target_slug": "wrongCalendar",
+      "target_slug": "wrongcalendar",
       "code": "d85b4",
       "digest": "d85b45b75e627afa1876638ae074477bf738854fd891ec4b8ee2e4575f27566a"
     },
@@ -902,7 +902,7 @@
     },
     {
       "source_file": "2025-02-28-toKumiko.md",
-      "target_slug": "toKumiko",
+      "target_slug": "tokumiko",
       "code": "794f7",
       "digest": "794f77baa82a32114dd8a92416c6f50bfc10054096a1b9d17e41fdc1a07dbd5f"
     },
