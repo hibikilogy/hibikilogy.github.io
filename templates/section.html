@@ -1,3 +1,5 @@
+{% import 'components/article.html' as article %}
+
 {% extends 'base.html' %}
 
 {% block title %}
@@ -14,7 +16,7 @@
       {% set pages = section.pages %}
       {% endif %}
       {% for page in pages %}
-      {{ macros::article(page=page) }}
+      {{ article::main(page=page, show_cover=false) }}
       {% endfor %}
     </section>
   </div>

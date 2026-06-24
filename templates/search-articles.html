@@ -1,4 +1,4 @@
-{%- set section = get_section(path="_index.md") -%}
+{%- set section = get_section(path="articles/_index.md") -%}
 {%- set author_taxonomy = get_taxonomy(kind="author", required=false) -%}
 {%- set default_author_name = config.extra.search_default_author | default(value=config.extra.meta_author | default(value="Anonymity")) -%}
 {
