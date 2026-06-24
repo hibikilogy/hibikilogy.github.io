@@ -7,7 +7,7 @@
 </div>
 {% endmacro search %}
 
-{% macro main(show_frontpage=false) %}
+{% macro main(show_frontpage=false, pages=false) %}
 <div class="Journal">
   <div class="container">
     {% if show_frontpage %}
@@ -31,10 +31,12 @@
     </a>
     {% endif %}
 
-    {% if paginator %}
-    {% set pages = paginator.pages %}
-    {% else %}
-    {% set pages = section.pages %}
+    {% if not pages %}
+      {% if paginator %}
+        {% set pages = paginator.pages %}
+      {% else %}
+        {% set pages = section.pages %}
+      {% endif %}
     {% endif %}
 
     {# Find the first article among the first 3 that has a cover #}

@@ -10,10 +10,17 @@
     <p class="article-subtitle">{{ page.description }}</p>
     <div class="article-main">
       {% if show_cover and page.extra.cover %}
+      {% set cover_alt = page.extra.cover_alt | default(value=page.title) %}
+      {% if page.extra.cover is starting_with("http") %}
+      <lazy-image class="article-cover" src="{{ page.extra.cover }}"
+        alt="{{ cover_alt }}"
+        loading="lazy" decoding="async"></lazy-image>
+      {% else %}
       {% set img_meta = get_image_metadata(path=page.extra.cover) %}
       <lazy-image class="article-cover" src="{{ page.extra.cover }}"
-        alt="{{ page.extra.cover_alt | default(value=page.title) }}"
-        width=" {{ img_meta.width }}" height="{{ img_meta.height }}" loading="lazy" decoding="async"></lazy-image>
+        alt="{{ cover_alt }}"
+        width="{{ img_meta.width }}" height="{{ img_meta.height }}" loading="lazy" decoding="async"></lazy-image>
+      {% endif %}
       {% endif %}
       <div class="article-content">
         {{ page.extra.abstract | markdown | safe }}
