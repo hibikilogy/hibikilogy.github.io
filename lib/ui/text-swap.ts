@@ -7,8 +7,11 @@ export async function setTextWithSwapAnimation(element: Element, text: string, o
     return
 
   const nextText = text ?? ''
-  if (element.textContent === nextText)
+  if (element.textContent === nextText) {
+    activeTextSwapTokens.set(element, Symbol('text-swap'))
+    element.classList.remove('is-exit', 'is-enter-start')
     return
+  }
   if (!element.textContent) {
     element.textContent = nextText
     return
@@ -22,15 +25,19 @@ export async function setTextWithSwapAnimation(element: Element, text: string, o
   }
   element.classList.add('is-exit')
   await wait(getTextSwapDurationMs(element, options))
-  if (activeTextSwapTokens.get(element) !== token)
+  if (activeTextSwapTokens.get(element) !== token) {
+    element.classList.remove('is-exit')
     return
+  }
 
   element.textContent = nextText
   element.classList.remove('is-exit')
   element.classList.add('is-enter-start')
   void (element as HTMLElement).offsetWidth
-  if (activeTextSwapTokens.get(element) !== token)
+  if (activeTextSwapTokens.get(element) !== token) {
+    element.classList.remove('is-enter-start')
     return
+  }
   element.classList.remove('is-enter-start')
 }
 
