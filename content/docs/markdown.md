@@ -42,12 +42,12 @@ catalog = true
 
 ### Demo
 
-[Join Us](./join-us)
+[Join Us](@/docs/join-us.md)
 
 ### 输入
 
 ```md
-[Join Us](./join-us)
+[Join Us](@/docs/join-us.md)
 ```
 
 ---
@@ -329,7 +329,7 @@ catalog = true
 cover = "/imgs/2020-02-06-weishenmelishixuanzeleririka/001-ptgjwaq3avsoylb.png"
 
 # 文章摘要 
-abstract = "本文系统性的驳斥了《[为什么历史选择了久石奏](/weishenmelishixuanzelekanade/)》中种种错误观点，并对于黄前四年北宇治吹奏部新一代领导核心，建立了自己的科学预测成果  关键词：吹响吧上低音号 政治光谱 性格分析"
+abstract = "本文系统性的驳斥了《[为什么历史选择了久石奏](@/articles/2020-01-07-weishenmelishixuanzelekanade.md)》中种种错误观点，并对于黄前四年北宇治吹奏部新一代领导核心，建立了自己的科学预测成果  关键词：吹响吧上低音号 政治光谱 性格分析"
 ```
 
 ## GitHub 风格的表格 {#github-style-tables}
