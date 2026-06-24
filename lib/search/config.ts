@@ -1,5 +1,5 @@
 import type { SearchFieldDefinition, SearchRecord } from './types.ts'
-import { HIBIKILOGY_CONFIG, HIBIKILOGY_TRANSLATIONS } from '../config-env.generated.ts'
+import { HIBIKILOGY_CONFIG, HIBIKILOGY_TRANSLATIONS } from 'virtual:hibikilogy-config'
 import { getRuntimeConfig } from './runtime-config.ts'
 import { fmt } from './utils.ts'
 
@@ -8,7 +8,7 @@ const runtime = typeof window !== 'undefined' ? getRuntimeConfig() : undefined
 export const searchIndexUrl = runtime?.searchIndexUrl || 'search_index.zh.json'
 export const searchWorkerUrl = runtime?.searchWorkerUrl || '/js/search/worker.js'
 
-// Build-time constants from config.toml are generated into config-env.generated.ts.
+// Build-time constants from config.toml are provided by the virtual:hibikilogy-config module.
 export const searchPageSize = HIBIKILOGY_CONFIG.searchPageSize
 
 export const searchArticleIndexInlineId = 'hibikilogy-search-articles-data'

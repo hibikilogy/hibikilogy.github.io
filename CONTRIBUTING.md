@@ -54,8 +54,7 @@ hibikilogy/
 ├── static/                # 静态资源（字体、图片、编译产物）
 ├── scripts/               # Rust 构建脚本
 ├── tests/                 # 测试文件
-├── config.toml            # Zola 生产环境配置
-├── config.dev.toml        # Zola 开发环境配置
+├── config.toml            # Zola 配置文件
 ├── vite.config.ts         # Vite 打包配置
 └── unocss.config.ts       # UnoCSS 配置
 ```

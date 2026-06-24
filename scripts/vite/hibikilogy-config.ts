@@ -1,181 +1,127 @@
 import type { Plugin } from 'vite'
-import { readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { camelCase, isPlainObject } from 'lodash-es'
+import { parse } from 'smol-toml'
+import { normalizePath } from 'vite'
 
-interface ParsedTomlEntry {
-  path: string[]
-  jsExpr: string
+type Scalar = string | number | boolean
+type TomlObject = Record<string, unknown>
+
+const VIRTUAL_ID = 'virtual:hibikilogy-config'
+const RESOLVED_ID = `\0${VIRTUAL_ID}`
+
+function isTomlObject(value: unknown): value is TomlObject {
+  return isPlainObject(value)
 }
 
-function toSingleQuotedJsString(value: string): string {
-  return `'${value
-    .replaceAll('\\', '\\\\')
-    .replaceAll('\'', '\\\'')
-    .replaceAll('\r', '\\r')
-    .replaceAll('\n', '\\n')}'`
-}
+function flattenScalars(
+  object: TomlObject,
+  path: string[] = [],
+  result: Record<string, Scalar> = {},
+): Record<string, Scalar> {
+  for (const [key, value] of Object.entries(object)) {
+    const currentPath = [...path, key]
 
-function stripTomlComment(raw: string): string {
-  let quote: '"' | '\'' | null = null
+    if (
+      typeof value === 'string'
+      || typeof value === 'number'
+      || typeof value === 'boolean'
+    ) {
+      const property = camelCase(currentPath.join(' '))
 
-  for (let index = 0; index < raw.length; index += 1) {
-    const char = raw[index]
-    if ((char === '"' || char === '\'') && raw[index - 1] !== '\\') {
-      if (!quote) {
-        quote = char
+      if (property in result) {
+        throw new Error(
+          `[hibikilogy-config] Duplicate property: ${property}`,
+        )
       }
-      else if (quote === char) {
-        quote = null
-      }
+
+      result[property] = value
     }
-
-    if (char === '#' && !quote)
-      return raw.slice(0, index).trim()
-  }
-
-  return raw.trim()
-}
-
-function toCamelCase(value: string): string {
-  return value.replaceAll(/[-_]+([a-z0-9])/gi, (_, char: string) => char.toUpperCase())
-}
-
-function toConfigProperty(path: string[]): string {
-  return path
-    .filter(Boolean)
-    .map((segment, index) => {
-      const normalized = toCamelCase(segment)
-      if (index === 0)
-        return normalized
-      return normalized.slice(0, 1).toUpperCase() + normalized.slice(1)
-    })
-    .join('')
-}
-
-function tomlLiteralToJs(raw: string): string | null {
-  if (raw.startsWith('"""') && raw.endsWith('"""'))
-    return toSingleQuotedJsString(raw.slice(3, -3))
-  if (raw.startsWith('\'\'\'') && raw.endsWith('\'\'\''))
-    return toSingleQuotedJsString(raw.slice(3, -3))
-  if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith('\'') && raw.endsWith('\'')))
-    return toSingleQuotedJsString(raw.slice(1, -1))
-  if (raw === 'true' || raw === 'false')
-    return raw
-  if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:e[+-]?\d+)?$/i.test(raw))
-    return raw
-  if (raw.startsWith('[') || raw.startsWith('{'))
-    return null
-  return toSingleQuotedJsString(raw)
-}
-
-function loadTomlScalarEntries(path: string): ParsedTomlEntry[] {
-  const toml = readFileSync(path, 'utf-8')
-  const entries: ParsedTomlEntry[] = []
-  let sectionPath: string[] = []
-
-  for (const raw of toml.split('\n')) {
-    const line = raw.trim()
-    if (!line || line.startsWith('#'))
-      continue
-
-    const sectionMatch = line.match(/^\[([^\]]+)\]$/)
-    if (sectionMatch) {
-      sectionPath = sectionMatch[1].split('.').map(segment => segment.trim())
-      continue
+    else if (isTomlObject(value)) {
+      flattenScalars(value, currentPath, result)
     }
-
-    const equalsIndex = line.indexOf('=')
-    if (equalsIndex <= 0)
-      continue
-
-    const key = line.slice(0, equalsIndex).trim()
-    if (!/^[a-z0-9][\w-]*$/i.test(key))
-      continue
-
-    const rawValue = stripTomlComment(line.slice(equalsIndex + 1).trim())
-
-    const jsExpr = tomlLiteralToJs(rawValue)
-    if (!jsExpr)
-      continue
-
-    const normalizedPath = [...sectionPath, key]
-    if (normalizedPath[0] === 'extra')
-      normalizedPath.shift()
-
-    entries.push({
-      path: normalizedPath,
-      jsExpr,
-    })
   }
 
-  return entries
+  return result
 }
 
-function generateObjectLiteral(entries: ParsedTomlEntry[], trimRoot?: string): string {
-  const lines: string[] = ['{']
+function generateModule(tomlPath: string): string {
+  const parsed = parse(
+    readFileSync(tomlPath, 'utf8'),
+  ) as TomlObject
 
-  for (const entry of entries) {
-    const path = trimRoot && entry.path[0] === trimRoot
-      ? entry.path.slice(1)
-      : entry.path
-    const property = toConfigProperty(path)
-    if (!property)
-      continue
-    lines.push(`  ${property}: ${entry.jsExpr},`)
-  }
+  const root = { ...parsed }
 
-  lines.push('} as const')
-  return lines.join('\n')
-}
+  const extra = isTomlObject(root.extra)
+    ? { ...root.extra }
+    : {}
 
-function generateEnvModule(entries: ParsedTomlEntry[]): string {
-  const translations = entries.filter(entry => entry.path[0] === 'translations')
-  const config = entries.filter(entry => entry.path[0] !== 'translations')
+  const rootTranslations = isTomlObject(root.translations)
+    ? root.translations
+    : {}
+
+  const extraTranslations = isTomlObject(extra.translations)
+    ? extra.translations
+    : {}
+
+  delete root.extra
+  delete root.translations
+  delete extra.translations
+
+  /*
+   * 分别展开根配置和 [extra]，使同名属性能够触发重复检测，
+   * 而不是在对象展开阶段被静默覆盖。
+   */
+  const config = flattenScalars(root)
+  flattenScalars(extra, [], config)
+
+  const translations = flattenScalars(rootTranslations)
+  flattenScalars(extraTranslations, [], translations)
 
   return [
-    '// Auto-generated from config.toml by hibikilogy-config Vite plugin.',
+    '// Generated from config.toml.',
     '// DO NOT EDIT.',
     '',
-    `export const HIBIKILOGY_CONFIG = ${generateObjectLiteral(config)}`,
+    `export const HIBIKILOGY_CONFIG = ${JSON.stringify(config, null, 2)}`,
     '',
-    `export const HIBIKILOGY_TRANSLATIONS = ${generateObjectLiteral(translations, 'translations')}`,
+    `export const HIBIKILOGY_TRANSLATIONS = ${JSON.stringify(translations, null, 2)}`,
     '',
   ].join('\n')
 }
 
-export function syncGeneratedConfig(rootDir: string): void {
-  const tomlPath = resolve(rootDir, 'config.toml')
-  const entries = loadTomlScalarEntries(tomlPath)
-
-  try {
-    rmSync(resolve(rootDir, 'lib/config-env.d.ts'), { force: true })
-  }
-  catch {}
-  writeFileSync(
-    resolve(rootDir, 'lib/config-env.generated.ts'),
-    generateEnvModule(entries),
-    'utf-8',
-  )
-}
-
 export function hibikilogyConfigPlugin(rootDir: string): Plugin {
   const tomlPath = resolve(rootDir, 'config.toml')
+  const normalizedTomlPath = normalizePath(tomlPath)
 
   return {
     name: 'hibikilogy-config',
-    config() {
-      syncGeneratedConfig(rootDir)
+
+    resolveId(id) {
+      return id === VIRTUAL_ID
+        ? RESOLVED_ID
+        : null
     },
-    buildStart() {
+
+    load(id) {
+      if (id !== RESOLVED_ID)
+        return null
+
       this.addWatchFile(tomlPath)
-      syncGeneratedConfig(rootDir)
+
+      return generateModule(tomlPath)
     },
-    handleHotUpdate(context) {
-      if (context.file !== tomlPath)
+
+    async handleHotUpdate({ file, server }) {
+      if (normalizePath(file) !== normalizedTomlPath)
         return
 
-      syncGeneratedConfig(rootDir)
-      context.server.ws.send({ type: 'full-reload' })
+      const module = server.moduleGraph.getModuleById(RESOLVED_ID)
+
+      if (!module)
+        return []
+
+      await server.reloadModule(module)
       return []
     },
   }

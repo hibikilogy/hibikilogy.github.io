@@ -3,8 +3,7 @@
  *
  * Dynamic values come from server-injected `window.__HIBIKILOGY_*` variables
  * (set by `templates/base.html`). Static values from `config.toml` are
- * injected at build time by Vite and accessed through
- * `config-env.generated.ts` in each consuming module.
+ * injected at build time by Vite via the `virtual:hibikilogy-config` module.
  */
 
 export interface RuntimeConfig {

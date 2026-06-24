@@ -3,7 +3,7 @@ import SwupGaPlugin from '@swup/ga-plugin'
 import SwupHeadPlugin from '@swup/head-plugin'
 import SwupScrollPlugin from '@swup/scroll-plugin'
 import Swup from 'swup'
-import { HIBIKILOGY_CONFIG } from '../config-env.generated.ts'
+import { HIBIKILOGY_CONFIG } from 'virtual:hibikilogy-config'
 
 export function createSwup(): Swup {
   const gaId = HIBIKILOGY_CONFIG.analyticsGoogle

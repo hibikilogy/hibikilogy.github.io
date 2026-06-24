@@ -1,4 +1,4 @@
-import { HIBIKILOGY_TRANSLATIONS } from '../config-env.generated.ts'
+import { HIBIKILOGY_TRANSLATIONS } from 'virtual:hibikilogy-config'
 
 export function throttleAndDebounce(fn: () => void, delay: number): () => void {
   let timeoutId: number | undefined

@@ -6,7 +6,7 @@ This repository is a Zola static site. Source content lives in `content/` as Mar
 
 ## Build, Test, and Development Commands
 
-- `zola serve -c config.dev.toml`: run the local development server at `http://127.0.0.1:1111/`. Uses `config.dev.toml` which disables `minify_html` and `build_search_index` for faster rebuilds. **Do NOT use plain `zola serve`** — it rebuilds the full-text search index on every change (~15s overhead).
+- `zola serve`: run the local development server at `http://127.0.0.1:1111/`. With the `-f` (fast) flag incremental rebuilds are quick enough; the search index is only built in CI via Pagefind.
 - `zola build`: build the site into `public/` (uses default `config.toml`).
 - `zola build --drafts`: match the GitHub Pages workflow build behavior.
 - `npx pagefind --source public`: rebuild the search index after `zola build`.
@@ -32,13 +32,4 @@ PRs should describe the change, note affected content/templates/assets, link rel
 
 Do not commit local secrets or analytics changes without review. Confirm `base_url`, feeds, taxonomies, and deployment branch expectations before changing `config.toml` or `.github/workflows/pages.yml`.
 
-### Dual Config Maintenance
 
-The project uses two configuration files:
-
-| File | Purpose | `minify_html` | `build_search_index` |
-|------|---------|---------------|---------------------|
-| `config.toml` | Production build (also CI) | `true` | `true` |
-| `config.dev.toml` | Local `zola serve` | `false` | `false` |
-
-`config.dev.toml` is a **full copy** of `config.toml` — Zola does not support config inheritance. When changing `config.toml`, copy the same changes to `config.dev.toml` except for the two performance toggles above. Production search is provided by Pagefind (run separately in CI), so disabling Zola's built-in search index in dev does NOT affect the live site.
