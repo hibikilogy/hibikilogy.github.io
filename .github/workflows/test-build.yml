@@ -72,6 +72,9 @@ jobs:
       - name: Rewrite image hosts
         run: pnpm build:rewrite-imgs
 
+      - name: Generate short links
+        run: pnpm build:short-links
+
       # 上传整个 public/ 目录作为产物，PREVIEW 工作流会下载并部署
       - name: Upload site artifact
         uses: actions/upload-artifact@v7

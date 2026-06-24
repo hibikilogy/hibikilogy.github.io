@@ -81,6 +81,9 @@ jobs:
       - name: Rewrite image hosts
         run: pnpm build:rewrite-imgs
 
+      - name: Generate short links
+        run: pnpm build:short-links
+
       - name: Deploy to GitHub Pages
         uses: crazy-max/ghaction-github-pages@v5
         with:

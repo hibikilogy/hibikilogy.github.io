@@ -11,6 +11,10 @@ path = "scripts/title_font_subset.rs"
 name = "html-img-host-rewrite"
 path = "scripts/convert.rs"
 
+[[bin]]
+name = "article-short-links"
+path = "scripts/article_short_links.rs"
+
 [dependencies]
 anyhow = "1"
 base64 = "0.22"
