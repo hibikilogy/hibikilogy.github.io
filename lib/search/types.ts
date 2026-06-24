@@ -11,13 +11,15 @@ export interface RawSearchIndexEntry {
 }
 
 export interface SearchArticleMetadata {
-  subtitle?: string
-  coverSrc?: string
-  coverAlt?: string
-  publishDateText?: string
-  publishDateValue?: string
-  authorName?: string
-  authorHref?: string
+  s?: string
+  cs?: string
+  ca?: string
+  cw?: number
+  ch?: number
+  ct?: string
+  dv?: string
+  an?: string
+  ah?: string
 }
 
 export type SearchArticleMetadataIndex = Record<string, SearchArticleMetadata>

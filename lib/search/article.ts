@@ -1,4 +1,5 @@
-import type { SearchArticleMetadata, SearchResultRecord } from './types.ts'
+import type { SearchArticleSnapshot } from './articles.ts'
+import type { SearchResultRecord } from './types.ts'
 import { formatZhPublishDate } from '../ui/utils.ts'
 import { getArticleSnapshot } from './articles.ts'
 import {
@@ -14,7 +15,9 @@ interface SearchArticleProps {
   excerpt: string
   coverSrc: string
   coverAlt: string
-  publishDateText: string
+  coverWidth?: number
+  coverHeight?: number
+  coverThumbhash?: string
   publishDateValue: string
   authorName: string
   authorHref: string
@@ -52,12 +55,18 @@ export async function buildSearchArticle(result: SearchResultRecord): Promise<HT
   main.className = 'article-main'
 
   if (articleContent.coverSrc) {
-    const cover = document.createElement('img')
+    const cover = document.createElement('lazy-image')
     cover.className = 'article-cover'
-    cover.src = articleContent.coverSrc
-    cover.alt = articleContent.coverAlt
-    cover.loading = 'lazy'
-    cover.decoding = 'async'
+    cover.setAttribute('src', articleContent.coverSrc)
+    cover.setAttribute('alt', articleContent.coverAlt)
+    cover.setAttribute('loading', 'lazy')
+    cover.setAttribute('decoding', 'async')
+    if (typeof articleContent.coverWidth === 'number' && articleContent.coverWidth > 0)
+      cover.setAttribute('width', String(articleContent.coverWidth))
+    if (typeof articleContent.coverHeight === 'number' && articleContent.coverHeight > 0)
+      cover.setAttribute('height', String(articleContent.coverHeight))
+    if (articleContent.coverThumbhash)
+      cover.setAttribute('thumbhash', articleContent.coverThumbhash)
     main.appendChild(cover)
   }
 
@@ -80,12 +89,11 @@ export function getSearchTitle(result: Partial<SearchResultRecord>): string {
 
 export function getSearchArticleProps(
   result: Partial<SearchResultRecord>,
-  articleSnapshot: Required<SearchArticleMetadata>,
+  articleSnapshot: SearchArticleSnapshot,
 ): SearchArticleProps {
   const title = getSearchTitle(result)
   const href = normalizeSiteUrl(result.url || result.path)
   const publishDateValue = articleSnapshot.publishDateValue || result.date || ''
-  const publishDateText = articleSnapshot.publishDateText || (result.date ? formatZhPublishDate(result.date) : '')
   const subtitle = articleSnapshot.subtitle || result.description || getPathSlug(href)
 
   return {
@@ -95,7 +103,9 @@ export function getSearchArticleProps(
     excerpt: buildSearchExcerpt(result, subtitle),
     coverSrc: articleSnapshot.coverSrc || '',
     coverAlt: articleSnapshot.coverAlt || title,
-    publishDateText,
+    coverWidth: articleSnapshot.coverWidth,
+    coverHeight: articleSnapshot.coverHeight,
+    coverThumbhash: articleSnapshot.coverThumbhash,
     publishDateValue,
     authorName: articleSnapshot.authorName || result.authorName || '',
     authorHref: articleSnapshot.authorHref || '',
@@ -124,11 +134,11 @@ function buildSearchMeta(props: SearchArticleProps): HTMLElement {
   const meta = document.createElement('div')
   meta.className = 'article-meta'
 
-  if (props.publishDateText) {
+  if (props.publishDateValue) {
     const publishDate = document.createElement('time')
     publishDate.className = 'article-publish-date'
-    publishDate.dateTime = props.publishDateValue || ''
-    publishDate.textContent = props.publishDateText
+    publishDate.dateTime = props.publishDateValue
+    publishDate.textContent = formatZhPublishDate(props.publishDateValue)
     meta.appendChild(publishDate)
   }
 

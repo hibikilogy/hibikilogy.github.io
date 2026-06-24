@@ -58,11 +58,11 @@ export function normalizeSearchRecords(
       const url = normalizeSiteUrl(entry.path || entry.url)
       const metadata = articleMetadata[url] || articleMetadata[normalizeSearchUrl(url)] || {}
       const title = entry.title || ''
-      const description = entry.description || metadata.subtitle || ''
+      const description = entry.description || metadata.s || ''
       const slug = getPathSlug(url)
       const body = sanitizeSearchBody(entry.body || '')
       const tags = tagsByUrl.get(url) || []
-      const authorName = String(metadata.authorName || '')
+      const authorName = String(metadata.an || '')
 
       return {
         url,
@@ -70,10 +70,10 @@ export function normalizeSearchRecords(
         title,
         description,
         body,
-        date: entry.date || metadata.publishDateValue || '',
+        date: entry.date || metadata.dv || '',
         slug,
         authorName,
-        authorHref: String(metadata.authorHref || ''),
+        authorHref: String(metadata.ah || ''),
         tags,
         titleSearch: segmentSearchText(title),
         descriptionSearch: segmentSearchText(description),

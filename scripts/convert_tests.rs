@@ -387,6 +387,113 @@ fn percent_encoded_local_image_path_can_inject_metadata() {
 }
 
 #[test]
+fn rewrites_search_article_json_and_injects_compact_cover_metadata() {
+    let fixture = TestFixture::new("search-article-json");
+    fixture.write_png("public/imgs/example.png", 17, 16);
+  fixture.write_html(
+        "public/search/index.html",
+        r#"<script id="hibikilogy-search-articles-data" type="application/json">{
+  "/articles/example/": {
+    "dv": "2024-06-28",
+    "an": "Example",
+    "s": "Example",
+    "cs": "/imgs/example.png",
+    "ca": "Cover"
+  },
+  "/articles/no-cover/": {
+    "dv": "2024-06-29",
+    "an": "Example",
+    "s": "No cover"
+  }
+}</script>"#,
+    );
+
+    let stats = rewrite_image_tags_in_directory(
+        fixture.public_dir.as_path(),
+        "https://old.example.com/",
+        "https://cdn.example.com/",
+        fixture.cache_file.as_path(),
+    )
+    .unwrap();
+
+    let html = fixture.read_html("public/search/index.html");
+    assert!(html.contains(r#""cs":"https://cdn.example.com/imgs/example.png""#));
+    assert!(html.contains(r#""cw":17"#));
+    assert!(html.contains(r#""ch":16"#));
+    assert!(html.contains(r#""ct":""#));
+    assert!(!html.contains(r#""cw":0"#));
+    assert_eq!(stats.urls_rewritten, 1);
+    assert_eq!(stats.metadata_injected, 3);
+    assert_eq!(stats.cache_misses, 1);
+}
+
+#[test]
+fn rewrites_search_article_json_with_unquoted_script_attributes() {
+    let fixture = TestFixture::new("search-article-json-unquoted-script-attrs");
+    fixture.write_png("public/imgs/example.png", 19, 18);
+    fixture.write_html(
+        "public/search/index.html",
+        r#"<script id=hibikilogy-search-articles-data type=application/json>{
+  "/articles/example/": {
+    "dv": "2024-06-28",
+    "an": "Example",
+    "cs": "/imgs/example.png"
+  }
+}</script>"#,
+    );
+
+    let stats = rewrite_image_tags_in_directory(
+        fixture.public_dir.as_path(),
+        "https://old.example.com/",
+        "https://cdn.example.com/",
+        fixture.cache_file.as_path(),
+    )
+    .unwrap();
+
+    let html = fixture.read_html("public/search/index.html");
+    assert!(html.contains(r#""cs":"https://cdn.example.com/imgs/example.png""#));
+    assert!(html.contains(r#""cw":19"#));
+    assert!(html.contains(r#""ch":18"#));
+    assert!(html.contains(r#""ct":""#));
+    assert_eq!(stats.urls_rewritten, 1);
+    assert_eq!(stats.metadata_injected, 3);
+    assert_eq!(stats.cache_misses, 1);
+}
+
+#[test]
+fn rewrites_standalone_search_article_json_page() {
+    let fixture = TestFixture::new("standalone-search-article-json-page");
+    fixture.write_png("public/imgs/example.png", 21, 20);
+    fixture.write_html(
+        "public/search-articles/index.html",
+        r#"{
+  "/articles/example/": {
+    "dv": "2024-06-28",
+    "an": "Example",
+    "cs": "/imgs/example.png"
+  }
+}"#,
+    );
+
+    let stats = rewrite_image_tags_in_directory(
+        fixture.public_dir.as_path(),
+        "https://old.example.com/",
+        "https://cdn.example.com/",
+        fixture.cache_file.as_path(),
+    )
+    .unwrap();
+
+    let html = fixture.read_html("public/search-articles/index.html");
+    assert!(html.contains(r#""cs":"https://cdn.example.com/imgs/example.png""#));
+    assert!(html.contains(r#""cw":21"#));
+    assert!(html.contains(r#""ch":20"#));
+    assert!(html.contains(r#""ct":""#));
+    assert_eq!(stats.urls_rewritten, 1);
+    assert_eq!(stats.metadata_injected, 3);
+    assert_eq!(stats.cache_misses, 1);
+}
+
+#[test]
 fn replace_url_matches_python_behavior() {
     assert_eq!(
         replace_url_with_count(

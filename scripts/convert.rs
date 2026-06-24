@@ -6,6 +6,7 @@ use base64::Engine;
 use clap::Parser;
 use image::GenericImageView;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
 use std::fs;
@@ -15,6 +16,7 @@ use walkdir::WalkDir;
 
 const CACHE_VERSION: u32 = 3;
 const CACHE_FILE_NAME: &str = "lazy-image-metadata.json";
+const SEARCH_ARTICLE_DATA_SCRIPT_ID: &str = "hibikilogy-search-articles-data";
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 struct RewriteStats {
@@ -243,6 +245,17 @@ fn rewrite_html(
     new_host: &str,
     cache: &mut MetadataCache,
 ) -> Result<(String, RewriteStats)> {
+    if is_search_article_json_page(html_path, html) {
+        return rewrite_search_article_json(
+            html,
+            html_path,
+            site_root,
+            old_host,
+            new_host,
+            cache,
+        );
+    }
+
     let mut output = String::with_capacity(html.len());
     let mut cursor = 0;
     let mut stats = RewriteStats::default();
@@ -297,7 +310,24 @@ fn rewrite_html(
         if is_raw_text_tag(&parsed.name) {
             let raw_content_start = tag_end + 1;
             if let Some(raw_end) = find_closing_tag(html, raw_content_start, &parsed.name) {
-                output.push_str(&html[raw_content_start..raw_end]);
+                if is_search_article_data_script(&parsed) {
+                    let (rewritten_json, json_stats) = rewrite_search_article_json(
+                        &html[raw_content_start..raw_end],
+                        html_path,
+                        site_root,
+                        old_host,
+                        new_host,
+                        cache,
+                    )?;
+                    output.push_str(&rewritten_json);
+                    stats.urls_rewritten += json_stats.urls_rewritten;
+                    stats.metadata_injected += json_stats.metadata_injected;
+                    stats.metadata_skipped += json_stats.metadata_skipped;
+                    stats.cache_hits += json_stats.cache_hits;
+                    stats.cache_misses += json_stats.cache_misses;
+                } else {
+                    output.push_str(&html[raw_content_start..raw_end]);
+                }
                 let Some(raw_tag_end) = find_tag_end(html, raw_end + 1) else {
                     output.push_str(&html[raw_end..]);
                     return Ok((output, stats));
@@ -317,6 +347,85 @@ fn rewrite_html(
 
     output.push_str(&html[cursor..]);
     Ok((output, stats))
+}
+
+fn is_search_article_json_page(html_path: &Path, html: &str) -> bool {
+    let normalized = normalize_cache_path(html_path);
+    normalized.ends_with("/search-articles/index.html") && html.trim_start().starts_with('{')
+}
+
+fn rewrite_search_article_json(
+    json: &str,
+    html_path: &Path,
+    site_root: &Path,
+    old_host: &str,
+    new_host: &str,
+    cache: &mut MetadataCache,
+) -> Result<(String, RewriteStats)> {
+    let mut stats = RewriteStats::default();
+    let mut value: Value = serde_json::from_str(json.trim())
+        .context("failed to parse hibikilogy-search-articles-data JSON")?;
+    let entries = value
+        .as_object_mut()
+        .context("hibikilogy-search-articles-data must be a JSON object")?;
+
+    for record in entries.values_mut() {
+        let Some(record) = record.as_object_mut() else {
+            continue;
+        };
+
+        let Some(cover_src) = record
+            .get("cs")
+            .and_then(Value::as_str)
+            .map(str::to_string)
+        else {
+            continue;
+        };
+        if cover_src.trim().is_empty() {
+            continue;
+        }
+
+        let (rewritten_cover_src, rewrites) =
+            replace_url_with_count(&cover_src, old_host, new_host);
+        stats.urls_rewritten += rewrites;
+        if rewritten_cover_src != cover_src {
+            record.insert("cs".to_string(), Value::String(rewritten_cover_src.clone()));
+        }
+
+        let needs_thumbhash = !record.contains_key("ct");
+        let needs_width = !record.contains_key("cw");
+        let needs_height = !record.contains_key("ch");
+        if !(needs_thumbhash || needs_width || needs_height) {
+            continue;
+        }
+
+        let Some(image_path) = resolve_url_to_local_path(
+            &rewritten_cover_src,
+            html_path,
+            site_root,
+            old_host,
+            new_host,
+        ) else {
+            continue;
+        };
+
+        if let Some(metadata) = get_or_compute_image_metadata(&image_path, cache, &mut stats)? {
+            if needs_thumbhash {
+                record.insert("ct".to_string(), Value::String(metadata.thumbhash.clone()));
+                stats.metadata_injected += 1;
+            }
+            if needs_width {
+                record.insert("cw".to_string(), Value::Number(metadata.width.into()));
+                stats.metadata_injected += 1;
+            }
+            if needs_height {
+                record.insert("ch".to_string(), Value::Number(metadata.height.into()));
+                stats.metadata_injected += 1;
+            }
+        }
+    }
+
+    Ok((serde_json::to_string(&value)?, stats))
 }
 
 fn rewrite_image_tag(
@@ -579,6 +688,16 @@ fn has_class(tag: &ParsedTag, class_name: &str) -> bool {
                 .split_ascii_whitespace()
                 .any(|item| item == class_name)
         })
+}
+
+fn is_search_article_data_script(tag: &ParsedTag) -> bool {
+    tag.name.eq_ignore_ascii_case("script")
+        && get_attr(tag, "id")
+            .and_then(|attribute| attribute.value.as_deref())
+            .is_some_and(|value| value == SEARCH_ARTICLE_DATA_SCRIPT_ID)
+        && get_attr(tag, "type")
+            .and_then(|attribute| attribute.value.as_deref())
+            .is_some_and(|value| value.eq_ignore_ascii_case("application/json"))
 }
 
 fn is_html_comment_or_declaration(tag: &str) -> bool {
