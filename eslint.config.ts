@@ -15,6 +15,9 @@ export default antfu({
     '**/cache',
     '**/static',
   ],
+  formatters: {
+    css: true,
+  },
   stylistic: {
     indent: 2,
     quotes: 'single',
