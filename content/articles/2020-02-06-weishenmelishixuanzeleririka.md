@@ -30,9 +30,9 @@ abstract = "本文系统性的驳斥了《[为什么历史选择了久石奏](@/
 5. 《吹学经史子集汇编》<https://www.saraba1st.com/2b/thread-1336553- 680-1.html>--子部《京吹人物谱录》 
 6. 《吹学经史子集汇编》--集部《[北宇治吹奏部权力博弈考察](@/articles/2019-01-27-beiyuzhichuizoubuquanliboyikaocha.md)》<https://bbs.saraba1st.com/2b/thread-1806922-0-1.html>
 7. 《[北宇治高中吹奏乐部止步关西大赛，如何问责](@/articles/2020-01-10-ruhewenze.md)》<https://tieba.baidu.com/p/6438643209>
-8. 《[一个有良心的吹学研究者带你深入剖析伞木希美](/yi-ge-you-liang-xin-de-chui-xue-yan-jiu-zhe-dai-ni-shen-ru-pou-xi-san-mu-xi-mei/)》<https://tieba.baidu.com/p/6468593437> 
+8. 《[一个有良心的吹学研究者带你深入剖析伞木希美](@/articles/2020-02-01-一个有良心的吹学研究者带你深入剖析伞木希美.md)》<https://tieba.baidu.com/p/6468593437> 
 9. 《梨梨花列传》--第五章 如何过一个优质假期
-10. 《[后黄前时代北宇治吹奏部中枢政局初探](/postkumikochutan/)》<https://tieba.baidu.com/p/6516126509>
+10. 《[后黄前时代北宇治吹奏部中枢政局初探](@/articles/2020-02-27-postKumikochutan.md)》<https://tieba.baidu.com/p/6516126509>
 11. 《[旗帜鲜明反对《如何问责》的部分观点--伞木希美之我见](@/articles/2020-03-04-qizhixianmingfanduiruhewenze.md)》<https://www.bilibili.com/read/cv4947320>
 12.  《[为什么历史选择了久石奏](@/articles/2020-01-07-weishenmelishixuanzelekanade.md)》<https://tieba.baidu.com/p/6432219250?pn=1>
 

@@ -74,6 +74,6 @@ abstract = "本文对北宇治吹奏部在黄前十五至十七年的主要领�
 
 [^3]: [JF123258，2020：为什么剑崎梨梨花是北宇治吹奏部的下届部长？][link3]
 
-[link1]:https://hibikilogy.github.io/beiyuzhichuizoubuquanliboyikaocha/ "老仓唯，2019：北宇治吹奏部权力博弈考察"
-[link2]:https://hibikilogy.github.io/why-yoshikawayuuko/ "SOS阿虚，2020：吉川优子，北宇治吹奏乐部最伟大的部长"
-[link3]:https://hibikilogy.github.io/weishenmelishixuanzeleririka/ "JF123258，2020：为什么剑崎梨梨花是北宇治吹奏部的下届部长？"
+[link1]:@/articles/2019-01-27-beiyuzhichuizoubuquanliboyikaocha.md "老仓唯，2019：北宇治吹奏部权力博弈考察"
+[link2]:@/articles/2020-03-06-why-YoshikawaYuuko.md "SOS阿虚，2020：吉川优子，北宇治吹奏乐部最伟大的部长"
+[link3]:@/articles/2020-02-06-weishenmelishixuanzeleririka.md "JF123258，2020：为什么剑崎梨梨花是北宇治吹奏部的下届部长？"

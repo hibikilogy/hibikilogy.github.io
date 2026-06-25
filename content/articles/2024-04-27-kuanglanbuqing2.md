@@ -257,7 +257,7 @@ abstract = "本文深入分析了北宇治吹奏部从久〇年至久三年的�
 
 ## 参考文献
 
-[^8]: K622 (2024) ‘[历史上的悠风号战争：“部长失格事件”在现实音乐史上的投影](/euphoniumwar/)’ 载《京吹学报》.（访问于2024年4月24日）
+[^8]: K622 (2024) ‘[历史上的悠风号战争：“部长失格事件”在现实音乐史上的投影](@/articles/2024-04-22-EuphoniumWar.md)’ 载《京吹学报》.（访问于2024年4月24日）
 
 [^26]: 武田绫乃 （2017）《吹响吧！上低音号·波澜起伏的第二乐章·前篇·第二章·孤独的着重音》，东京：宝岛社。
 
@@ -281,6 +281,6 @@ abstract = "本文深入分析了北宇治吹奏部从久〇年至久三年的�
 
 [^36]: Rostow, W. W. (1960) The Stages of Economic Growth. Cambridge: Cambridge University Press.
 
-[link1]:https://hibikilogy.github.io/xi-mei-ai-qing-gu-shi/ "从《利兹与青鸟》解读伞木希美和铠冢霙的爱情之路"
+[link1]:@/articles/2020-04-11-希美爱情故事.md "从《利兹与青鸟》解读伞木希美和铠冢霙的爱情之路"
 
 [link2]:https://www.bilibili.com/video/BV1Hh4y1v765/ "《利兹与青鸟》拉片详解"
