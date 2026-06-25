@@ -161,20 +161,3 @@ export function createIndexedImagePlaceholder(index: number) {
   // Add a `data-id` attribute right after the opening SVG tag to identify the placeholder
   return DEFAULT_IMAGE_PLACEHOLDER.replace(/\s/, ` data-id='${now}-${index}' `)
 }
-
-export function debounce<T extends (...args: any[]) => void>(
-  fn: T,
-  delay: number,
-) {
-  let timeoutId: number | undefined
-
-  return function (...args: Parameters<T>) {
-    if (timeoutId != null)
-      clearTimeout(timeoutId)
-
-    timeoutId = (setTimeout as Window['setTimeout'])(() => {
-      fn(...args)
-      timeoutId = undefined
-    }, delay)
-  }
-}

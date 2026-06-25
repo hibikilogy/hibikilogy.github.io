@@ -1,6 +1,6 @@
 import type { AutoSizesOptions, TriggerLoadOptions } from './types'
+import { debounce } from 'lodash-es'
 import { createPngDataUri as createPngDataUriFromThumbHash } from './thumbhash'
-import { debounce } from './utils'
 
 export function autoSizes(
   element: HTMLImageElement | HTMLSourceElement,

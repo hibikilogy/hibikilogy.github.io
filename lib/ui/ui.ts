@@ -197,6 +197,11 @@ document.addEventListener('page-change', (event) => {
   swup.navigate(href)
 })
 
+function clearTransitionScopes(): void {
+  clearSearchTransitionScope()
+  clearPaginationTransitionDirection()
+}
+
 // --- Swup lifecycle hooks ---
 
 swup.hooks.on('visit:start', (visit) => {
@@ -211,15 +216,9 @@ swup.hooks.on('content:replace', () => {
   initializePageModules()
 })
 
-swup.hooks.on('visit:end', () => {
-  clearSearchTransitionScope()
-  clearPaginationTransitionDirection()
-})
+swup.hooks.on('visit:end', clearTransitionScopes)
 
-swup.hooks.on('visit:abort', () => {
-  clearSearchTransitionScope()
-  clearPaginationTransitionDirection()
-})
+swup.hooks.on('visit:abort', clearTransitionScopes)
 
 window.navigateToSearch = navigateToSearch
 

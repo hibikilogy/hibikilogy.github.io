@@ -1,5 +1,7 @@
 import type { SearchArticleSnapshot } from './articles.ts'
 import type { SearchResultRecord } from './types.ts'
+import { html, nothing, render } from 'lit'
+import { HIBIKILOGY_TRANSLATIONS } from 'virtual:hibikilogy-config'
 import { formatZhPublishDate } from '../ui/utils.ts'
 import { getArticleSnapshot } from './articles.ts'
 import {
@@ -27,64 +29,59 @@ interface SearchArticleProps {
 export async function buildSearchArticle(result: SearchResultRecord): Promise<HTMLElement> {
   const href = normalizeSiteUrl(result.url || result.path)
   const articleSnapshot = await getArticleSnapshot(href)
-  const articleContent = getSearchArticleProps(result, articleSnapshot)
+  const props = getSearchArticleProps(result, articleSnapshot)
 
   const article = document.createElement('article')
-  article.setAttribute('class', 'Section Article')
-
-  const link = document.createElement('a')
-  link.href = articleContent.href
-
-  const heading = document.createElement('h2')
-  heading.className = 'article-title'
-  const headingText = document.createElement('span')
-  headingText.className = 'PostTitleTransition'
-  headingText.style.viewTransitionName = articleContent.titleTransitionName
-  headingText.textContent = articleContent.title
-  heading.appendChild(headingText)
-  link.appendChild(heading)
-
-  if (articleContent.subtitle) {
-    const subtitle = document.createElement('p')
-    subtitle.className = 'article-subtitle'
-    subtitle.textContent = articleContent.subtitle
-    link.appendChild(subtitle)
-  }
-
-  const main = document.createElement('div')
-  main.className = 'article-main'
-
-  if (articleContent.coverSrc) {
-    const cover = document.createElement('lazy-image')
-    cover.className = 'article-cover'
-    cover.setAttribute('src', articleContent.coverSrc)
-    cover.setAttribute('alt', articleContent.coverAlt)
-    cover.setAttribute('loading', 'lazy')
-    cover.setAttribute('decoding', 'async')
-    if (typeof articleContent.coverWidth === 'number' && articleContent.coverWidth > 0)
-      cover.setAttribute('width', String(articleContent.coverWidth))
-    if (typeof articleContent.coverHeight === 'number' && articleContent.coverHeight > 0)
-      cover.setAttribute('height', String(articleContent.coverHeight))
-    if (articleContent.coverThumbhash)
-      cover.setAttribute('thumbhash', articleContent.coverThumbhash)
-    main.appendChild(cover)
-  }
-
-  const content = document.createElement('div')
-  content.className = 'article-content'
-  const excerpt = document.createElement('p')
-  excerpt.textContent = cleanSearchExcerptText(articleContent.excerpt)
-  content.appendChild(excerpt)
-  main.appendChild(content)
-
-  link.appendChild(main)
-  article.appendChild(link)
-  article.appendChild(buildSearchMeta(articleContent))
+  article.className = 'Section Article'
+  render(buildSearchArticleTemplate(props), article)
   return article
 }
 
+function buildSearchArticleTemplate(props: SearchArticleProps) {
+  const showCover = Boolean(props.coverSrc)
+  const coverAttrs = showCover
+    ? {
+        src: props.coverSrc,
+        alt: props.coverAlt,
+        width: props.coverWidth && props.coverWidth > 0 ? String(props.coverWidth) : undefined,
+        height: props.coverHeight && props.coverHeight > 0 ? String(props.coverHeight) : undefined,
+        thumbhash: props.coverThumbhash || undefined,
+      }
+    : null
+
+  return html`
+    <a href=${props.href}>
+      <h2 class="article-title">
+        <span class="PostTitleTransition" style="view-transition-name:${props.titleTransitionName}">
+          ${props.title}
+        </span>
+      </h2>
+      ${props.subtitle ? html`<p class="article-subtitle">${props.subtitle}</p>` : nothing}
+      <div class="article-main">
+        ${coverAttrs
+          ? html`
+          <lazy-image class="article-cover"
+            src=${coverAttrs.src}
+            alt=${coverAttrs.alt}
+            loading="lazy"
+            decoding="async"
+            width=${coverAttrs.width || nothing}
+            height=${coverAttrs.height || nothing}
+            thumbhash=${coverAttrs.thumbhash || nothing}>
+          </lazy-image>
+        `
+          : nothing}
+        <div class="article-content">
+          <p>${cleanSearchExcerptText(props.excerpt)}</p>
+        </div>
+      </div>
+    </a>
+    ${buildSearchMetaTemplate(props)}
+  `
+}
+
 export function getSearchTitle(result: Partial<SearchResultRecord>): string {
-  return result.title || result.slug || 'Untitled'
+  return result.title || result.slug || HIBIKILOGY_TRANSLATIONS.untitled
 }
 
 export function getSearchArticleProps(
@@ -130,44 +127,40 @@ export function cleanSearchExcerptText(value: string): string {
   return String(value || '').replaceAll('↩', '')
 }
 
-function buildSearchMeta(props: SearchArticleProps): HTMLElement {
-  const meta = document.createElement('div')
-  meta.className = 'article-meta'
-
-  if (props.publishDateValue) {
-    const publishDate = document.createElement('time')
-    publishDate.className = 'article-publish-date'
-    publishDate.dateTime = props.publishDateValue
-    publishDate.textContent = formatZhPublishDate(props.publishDateValue)
-    meta.appendChild(publishDate)
-  }
-
-  if (props.authorName) {
-    const authors = document.createElement('span')
-    authors.className = 'article-authors'
-
-    const authorTitle = document.createElement('span')
-    authorTitle.className = 'author-title'
-    authorTitle.innerHTML = '\u4F5C\u8005&nbsp;'
-    authors.appendChild(authorTitle)
-
-    const author: HTMLAnchorElement | HTMLSpanElement = props.authorHref
-      ? document.createElement('a')
-      : document.createElement('span')
-    author.className = 'article-author'
-    if (props.authorHref) {
-      author.setAttribute('href', props.authorHref)
-    }
-
-    const authorName = document.createElement('span')
-    authorName.className = 'author-name font-bold text-[var(--joh-c-text-1)] [font-variation-settings:\'opsz\'_auto]'
-    authorName.textContent = props.authorName
-    author.appendChild(authorName)
-    authors.appendChild(author)
-    meta.appendChild(authors)
-  }
-
-  return meta
+function buildSearchMetaTemplate(props: SearchArticleProps) {
+  return html`
+    <div class="article-meta">
+      ${props.publishDateValue
+        ? html`
+        <time class="article-publish-date" datetime=${props.publishDateValue}>
+          ${formatZhPublishDate(props.publishDateValue)}
+        </time>
+      `
+        : nothing}
+      ${props.authorName
+        ? html`
+        <span class="article-authors">
+          <span class="author-title">${HIBIKILOGY_TRANSLATIONS.authorTitle}&nbsp;</span>
+          ${props.authorHref
+            ? html`
+            <a class="article-author" href=${props.authorHref}>
+              <span class="author-name font-bold text-[var(--joh-c-text-1)] [font-variation-settings:'opsz'_auto]">
+                ${props.authorName}
+              </span>
+            </a>
+          `
+            : html`
+            <span class="article-author">
+              <span class="author-name font-bold text-[var(--joh-c-text-1)] [font-variation-settings:'opsz'_auto]">
+                ${props.authorName}
+              </span>
+            </span>
+          `}
+        </span>
+      `
+        : nothing}
+    </div>
+  `
 }
 
 function getPostTitleTransitionName(href: string): string {
@@ -181,5 +174,3 @@ function getPostTitleTransitionName(href: string): string {
 
   return `post-title-${normalizedPath || 'index'}`
 }
-
-// formatZhPublishDate — imported from ../ui/utils.ts (config-driven)

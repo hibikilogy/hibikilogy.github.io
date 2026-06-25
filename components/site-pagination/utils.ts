@@ -2,7 +2,7 @@
 
 import type { PaginationItem } from './types'
 
-const compactPageLimit = 10
+export const compactPageLimit = 10
 const siblingCount = 4
 const neighborPageBudget = siblingCount * 2
 

@@ -119,7 +119,7 @@ function useActiveAnchor(marker: HTMLElement): void {
     }
 
     // Read the actual scroll-margin-top from the first heading to stay in sync with CSS
-    const scrollMargin = parseFloat(getComputedStyle(headers[0].element).scrollMarginTop) || 0
+    const scrollMargin = Number.parseFloat(getComputedStyle(headers[0].element).scrollMarginTop) || 0
     const threshold = scrollMargin + 4
     let activeLink: string | null = null
     for (const { link, element } of headers) {

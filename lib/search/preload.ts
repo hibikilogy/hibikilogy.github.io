@@ -12,18 +12,9 @@ export function createResettablePreloadTask(
     current: () => pending,
     trigger: () => {
       if (!pending) {
-        try {
-          pending = Promise.resolve(load())
-            .finally(() => {
-              pending = null
-            })
-        }
-        catch (error) {
-          pending = Promise.reject(error)
-            .finally(() => {
-              pending = null
-            })
-        }
+        pending = Promise.resolve(load()).finally(() => {
+          pending = null
+        })
       }
 
       return pending

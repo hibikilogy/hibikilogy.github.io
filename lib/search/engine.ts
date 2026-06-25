@@ -29,6 +29,7 @@ import {
   parseSearchQuery,
 } from './query.ts'
 import { dedupeSearchResults } from './results.ts'
+import { buildTagsByUrl } from './tags.ts'
 import {
   getPathSlug,
   normalizeSearchText,
@@ -320,25 +321,4 @@ function searchTextIncludes(corpus: string, needle: string): boolean {
     return true
 
   return normalizedCorpus.replace(/\s+/g, '').includes(normalizedNeedle.replace(/\s+/g, ''))
-}
-
-function buildTagsByUrl(tagIndex: SearchTagIndexItem[]): Map<string, Array<{ name: string, href: string }>> {
-  const tagsByUrl = new Map<string, Array<{ name: string, href: string }>>()
-
-  for (const tag of tagIndex || []) {
-    if (!tag?.name)
-      continue
-
-    for (const pageUrl of tag.pages || []) {
-      const url = normalizeSearchUrl(pageUrl)
-      const tags = tagsByUrl.get(url) || []
-      tags.push({
-        name: tag.name,
-        href: tag.href || '#',
-      })
-      tagsByUrl.set(url, tags)
-    }
-  }
-
-  return tagsByUrl
 }

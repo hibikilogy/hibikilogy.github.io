@@ -31,6 +31,7 @@
     "@swup/scroll-plugin": "^4.0.0",
     "clsx": "^2.1.1",
     "fuse.js": "^7.4.2",
+    "heti-findandreplacedomtext": "^0.5.0",
     "katex": "^0.17.0",
     "lit": "^3.2.1",
     "lodash-es": "^4.18.1",

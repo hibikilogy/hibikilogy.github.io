@@ -1,26 +1,5 @@
 import { HIBIKILOGY_TRANSLATIONS } from 'virtual:hibikilogy-config'
 
-export function throttleAndDebounce(fn: () => void, delay: number): () => void {
-  let timeoutId: number | undefined
-  let called = false
-
-  return () => {
-    if (timeoutId)
-      window.clearTimeout(timeoutId)
-
-    if (!called) {
-      fn()
-      called = true
-      window.setTimeout(() => {
-        called = false
-      }, delay)
-    }
-    else {
-      timeoutId = window.setTimeout(fn, delay)
-    }
-  }
-}
-
 // Re-export shared URL utilities for backward compatibility
 export { getPathSlug, normalizeAssetUrl, normalizeSiteUrl } from '../shared/url.ts'
 
@@ -33,15 +12,6 @@ export function focusCurrentSearchInput(): boolean {
   input.focus()
   input.select()
   return true
-}
-
-export function escapeHtml(value: string): string {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll('\'', '&#39;')
 }
 
 export function formatZhPublishDate(dateString: string): string {

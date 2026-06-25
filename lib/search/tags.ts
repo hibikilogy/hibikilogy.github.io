@@ -10,6 +10,24 @@ export function getSearchTagIndex(): Promise<SearchTagIndexItem[]> {
 
 export const parseSearchTagIndex = parseJsonIndex
 
+export function buildTagsByUrl(tagIndex: SearchTagIndexItem[]): Map<string, SearchTagItem[]> {
+  const tagsByUrl = new Map<string, SearchTagItem[]>()
+
+  for (const tag of tagIndex || []) {
+    if (!tag?.name)
+      continue
+
+    for (const pageUrl of tag.pages || []) {
+      const url = normalizeSearchUrl(pageUrl)
+      const tags = tagsByUrl.get(url) || []
+      tags.push({ name: tag.name, href: tag.href || '#' })
+      tagsByUrl.set(url, tags)
+    }
+  }
+
+  return tagsByUrl
+}
+
 export function aggregateTagsForSearchRecords(
   records: SearchResultRecord[],
   tagIndex: SearchTagIndexItem[] | Record<string, SearchTagItem[]>,
@@ -18,43 +36,21 @@ export function aggregateTagsForSearchRecords(
     return []
 
   if (Array.isArray(tagIndex)) {
-    return aggregateTagPageIndex(records, tagIndex)
+    return aggregateUrlTagMap(records, buildTagsByUrl(tagIndex))
   }
 
-  return aggregateUrlTagMap(records, tagIndex)
-}
-
-function aggregateTagPageIndex(records: SearchResultRecord[], tagIndex: SearchTagIndexItem[]): SearchTagItem[] {
-  const recordUrls = new Set(records.map(record => normalizeSearchUrl(record.url || record.path)))
-  const items: Array<SearchTagItem & { count: number }> = []
-
-  for (const tag of tagIndex) {
-    const pages = Array.isArray(tag?.pages) ? tag.pages : []
-    const count = pages.reduce((total, pageUrl) => (
-      recordUrls.has(normalizeSearchUrl(pageUrl)) ? total + 1 : total
-    ), 0)
-
-    if (count > 0 && tag?.name) {
-      items.push({
-        name: tag.name,
-        href: tag.href || '#',
-        count,
-      })
-    }
-  }
-
-  return sortTagItems(items)
+  return aggregateUrlTagMap(records, new Map(Object.entries(tagIndex)))
 }
 
 function aggregateUrlTagMap(
   records: SearchResultRecord[],
-  tagsByUrl: Record<string, SearchTagItem[]>,
+  tagsByUrl: Map<string, SearchTagItem[]>,
 ): SearchTagItem[] {
   const tagCounts = new Map<string, SearchTagItem & { count: number }>()
 
   for (const record of records) {
     const recordUrl = normalizeSearchUrl(record.url || record.path)
-    const tags = getTagsForUrl(tagsByUrl, recordUrl)
+    const tags = tagsByUrl.get(recordUrl) || tagsByUrl.get(normalizeSearchUrl(recordUrl)) || []
 
     for (const tag of tags) {
       if (!tag?.name)
@@ -71,10 +67,4 @@ function aggregateUrlTagMap(
   }
 
   return sortTagItems([...tagCounts.values()])
-}
-
-function getTagsForUrl(tagsByUrl: Record<string, SearchTagItem[]>, recordUrl: string): SearchTagItem[] {
-  if (!tagsByUrl || typeof tagsByUrl !== 'object')
-    return []
-  return tagsByUrl[recordUrl] || tagsByUrl[normalizeSearchUrl(recordUrl)] || []
 }

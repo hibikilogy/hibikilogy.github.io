@@ -1,5 +1,6 @@
 import type { SearchJournalMotion } from './motion.ts'
 import type { SearchIndexBuildStatus, SearchResultRecord } from './types.ts'
+import { normalizePageNumber } from '../../components/site-pagination/utils.ts'
 import { focusCurrentSearchInput } from '../ui/utils.ts'
 import {
   buildSearchArticle,
@@ -119,7 +120,7 @@ export function initSearchPage(): void {
 
   const params = new URLSearchParams(window.location.search)
   const term = params.get('q')
-  const pageNumber = parsePositiveInt(params.get('p')) || 1
+  const pageNumber = normalizePageNumber(params.get('p'))
   const shouldFocusInput = consumeSearchFocusIntent() || !term
 
   if (term && input) {
@@ -348,21 +349,17 @@ function getSearchFailureMessage(error: unknown): string {
 
 function getSearchPageHref(page: number): string {
   const url = new URL(window.location.href)
-  url.searchParams.set('q', searchState.currentTerm)
-
-  if (page > 1) {
-    url.searchParams.set('p', String(page))
-  }
-  else {
-    url.searchParams.delete('p')
-  }
-
+  setSearchParams(url, searchState.currentTerm, page)
   return `${url.pathname}${url.search}${url.hash}`
 }
 
 function updateSearchUrl(term: string, page: number): void {
   const url = new URL(window.location.href)
+  setSearchParams(url, term, page)
+  window.history.replaceState(window.history.state, '', url)
+}
 
+function setSearchParams(url: URL, term: string, page: number): void {
   if (term) {
     url.searchParams.set('q', term)
     if (page > 1) {
@@ -376,8 +373,6 @@ function updateSearchUrl(term: string, page: number): void {
     url.searchParams.delete('q')
     url.searchParams.delete('p')
   }
-
-  window.history.replaceState(window.history.state, '', url)
 }
 
 function setSearchPaginationVisible(isVisible: boolean): void {
@@ -389,11 +384,6 @@ function setSearchPaginationVisible(isVisible: boolean): void {
 
 function getSearchJournal(): HTMLElement | null {
   return document.querySelector<HTMLElement>('.SearchJournal')
-}
-
-function parsePositiveInt(value: string | null): number {
-  const parsed = Number.parseInt(value || '', 10)
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 0
 }
 
 function consumeSearchFocusIntent(): boolean {

@@ -5,11 +5,11 @@ import { customElement, property } from 'lit/decorators.js'
 import { cn } from '../utils'
 import {
   clampPage,
+  compactPageLimit,
   getPaginationItems,
   normalizePageNumber,
 } from './utils'
 
-const COMPACT_PAGE_LIMIT = 10
 const DIRECTION_LINK_CLASS = [
   'inline-flex',
   'min-h-6',
@@ -139,7 +139,7 @@ export class SitePagination extends LitElement {
   }
 
   private renderPageLink(page: number, isCurrent: boolean) {
-    const showPageNumber = isCurrent && this.totalPages > COMPACT_PAGE_LIMIT
+    const showPageNumber = isCurrent && this.totalPages > compactPageLimit
     const label = showPageNumber
       ? this.formatTemplate(this.currentPageTemplate, page)
       : String(page)

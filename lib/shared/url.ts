@@ -2,11 +2,20 @@ import { getRuntimeConfig } from '../search/runtime-config.ts'
 
 export function getDefaultOrigin(): string {
   const { baseUrl } = getRuntimeConfig()
-  // Only treat baseUrl as an origin when it is an absolute http(s) URL;
+  // Only treat baseUrl as an absolute http(s) URL;
   // fall back to the runtime location origin for relative or empty values.
   if (baseUrl && /^https?:\/\//i.test(baseUrl))
     return baseUrl
   return (typeof location !== 'undefined' && location.origin) || 'http://localhost'
+}
+
+function safeParseUrl(raw: string, origin: string): URL | null {
+  try {
+    return new URL(raw, origin)
+  }
+  catch {
+    return null
+  }
 }
 
 /**
@@ -17,15 +26,10 @@ export function normalizeSiteUrl(value: string | null | undefined, origin = getD
   if (!value)
     return '#'
 
-  try {
-    const url = new URL(String(value), origin)
-    if (url.origin !== new URL(origin).origin)
-      return '#'
-    return `${url.pathname}${url.search}${url.hash}`
-  }
-  catch {
+  const url = safeParseUrl(String(value), origin)
+  if (!url || url.origin !== safeParseUrl(origin, origin)?.origin)
     return '#'
-  }
+  return `${url.pathname}${url.search}${url.hash}`
 }
 
 /**
@@ -36,12 +40,8 @@ export function normalizeAssetUrl(value: string | null | undefined, origin = get
   if (!value)
     return ''
 
-  try {
-    return new URL(String(value), origin).toString()
-  }
-  catch {
-    return ''
-  }
+  const url = safeParseUrl(String(value), origin)
+  return url ? url.toString() : ''
 }
 
 /**
@@ -69,12 +69,8 @@ export function getPathSlug(href: string): string {
  * Falls back to returning the raw value if parsing fails.
  */
 export function getPathname(url: string, origin: string): string {
-  try {
-    return new URL(url, origin).pathname
-  }
-  catch {
-    return url
-  }
+  const parsed = safeParseUrl(url, origin)
+  return parsed ? parsed.pathname : url
 }
 
 /**

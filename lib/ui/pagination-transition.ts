@@ -1,11 +1,11 @@
-import { getPathname, normalizePathname } from '../shared/url.ts'
+import { getDefaultOrigin, getPathname, normalizePathname } from '../shared/url.ts'
 
 export type PaginationTransitionDirection = 'forward' | 'backward'
 
 export function getPaginationTransitionDirection(
   fromUrl: string,
   toUrl: string,
-  origin = 'https://hibikilogy.local',
+  origin = getDefaultOrigin(),
 ): PaginationTransitionDirection | null {
   const fromPage = parsePaginationLocation(fromUrl, origin)
   const toPage = parsePaginationLocation(toUrl, origin)
