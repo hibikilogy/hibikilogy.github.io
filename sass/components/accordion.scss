@@ -1,82 +1,81 @@
-@use "../config.scss";
+@use '../config.scss';
 
 @layer components {
+  .content-container {
+    .joh-accordion {
+      margin: 24px 0;
+      border-top: 1px solid var(--joh-c-divider);
+    }
 
-.content-container {
-  .joh-accordion {
-    margin: 24px 0;
-    border-top: 1px solid var(--joh-c-divider);
-  }
+    .joh-accordion__item {
+      margin: 0;
+      border-bottom: 1px solid var(--joh-c-divider);
+    }
 
-  .joh-accordion__item {
-    margin: 0;
-    border-bottom: 1px solid var(--joh-c-divider);
-  }
-
-  .joh-accordion__summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin: 0;
-    padding: 18px 0;
-    cursor: pointer;
-    list-style: none;
-    font-weight: 500;
-    color: var(--joh-c-text-1);
-  }
-
-  .joh-accordion__summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .joh-accordion__title {
-    flex: 1;
-    min-width: 0;
-    line-height: 1.6;
-  }
-
-  .joh-accordion__icon {
-    flex: none;
-    width: 1.125rem;
-    height: 1.125rem;
-    color: var(--joh-c-text-2);
-    transition:
-      transform 0.25s ease,
-      color 0.25s ease;
-  }
-
-  .joh-accordion__item[open] .joh-accordion__icon {
-    transform: rotate(180deg);
-    color: var(--joh-c-text-1);
-  }
-
-  .joh-accordion__content {
-    padding: 0 0 20px;
-    color: var(--joh-c-text-2);
-  }
-
-  .joh-accordion__content > :first-child {
-    margin-top: 0;
-  }
-
-  .joh-accordion__content > :last-child {
-    margin-bottom: 0;
-  }
-
-  .joh-accordion__content :is(p, ul, ol, blockquote, pre, table) {
-    margin-top: 12px;
-    margin-bottom: 12px;
-  }
-
-  @media (min-width: config.$tablet) {
     .joh-accordion__summary {
-      padding: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0;
+      padding: 18px 0;
+      cursor: pointer;
+      list-style: none;
+      font-weight: 500;
+      color: var(--joh-c-text-1);
+    }
+
+    .joh-accordion__summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .joh-accordion__title {
+      flex: 1;
+      min-width: 0;
+      line-height: 1.6;
+    }
+
+    .joh-accordion__icon {
+      flex: none;
+      width: 1.125rem;
+      height: 1.125rem;
+      color: var(--joh-c-text-2);
+      transition:
+        transform 0.25s ease,
+        color 0.25s ease;
+    }
+
+    .joh-accordion__item[open] .joh-accordion__icon {
+      transform: rotate(180deg);
+      color: var(--joh-c-text-1);
     }
 
     .joh-accordion__content {
-      padding-bottom: 24px;
+      padding: 0 0 20px;
+      color: var(--joh-c-text-2);
+    }
+
+    .joh-accordion__content > :first-child {
+      margin-top: 0;
+    }
+
+    .joh-accordion__content > :last-child {
+      margin-bottom: 0;
+    }
+
+    .joh-accordion__content :is(p, ul, ol, blockquote, pre, table) {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (min-width: config.$tablet) {
+      .joh-accordion__summary {
+        padding: 20px 0;
+      }
+
+      .joh-accordion__content {
+        padding-bottom: 24px;
+      }
     }
   }
-}
 }

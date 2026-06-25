@@ -1,16 +1,1 @@
-@use "../components/hero.scss";
-@use "../components/medium-zoom.scss";
-@use "../components/footnotes.scss";
-@use "../components/code.scss";
-@use "../components/custom-block.scss";
-@use "../components/content.scss";
-@use "../components/accordion.scss";
-@use "../components/collapsible.scss";
-@use "../components/bilibili-iframe.scss";
-
-@layer pages {
-
-.content {
-  margin-bottom: 64px;
-}
-}
+@use 'page.scss';

@@ -33,11 +33,11 @@ placeholder="Search", title="Search", value="", click_action="", extra_class="")
     {% endif %}
     {% if show_submit %}
     <button class="SearchShellSubmit" type="submit" aria-label="{{ title }}">
-      <span class="SearchShellIcon johi-icon-search" aria-hidden="true"></span>
+      <span class="SearchShellIcon i-custom-search" aria-hidden="true"></span>
       <span class="SearchShellSubmitText">{{ trans(key="search_submit_text") }}</span>
     </button>
     {% else %}
-    <span class="SearchShellIcon johi-icon-search" aria-hidden="true"></span>
+    <span class="SearchShellIcon i-custom-search" aria-hidden="true"></span>
     {% endif %}
     {% if show_clear %}
     <button id="search-clear" class="SearchShellClear" type="button"

@@ -10,6 +10,16 @@ import {
 import { presetHibikilogyComponents } from './components/preset'
 
 export default defineConfig({
+  outputToCssLayers: {
+    cssLayerName(layer) {
+      // presetWind4 internal layers → base
+      if (layer === 'properties' || layer === 'theme' || layer === 'base') {
+        return 'base'
+      }
+
+      return 'utilities'
+    },
+  },
   theme: {
     font: {
       family: 'var(--joh-font-family-base)',
@@ -27,6 +37,7 @@ export default defineConfig({
     }),
     presetAttributify(),
     presetIcons({
+      mode: 'mask',
       scale: 1,
       warn: true,
       collections: {

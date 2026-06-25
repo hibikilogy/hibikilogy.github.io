@@ -28,10 +28,9 @@
       <h3>{{ item.frendlinks_text }}</h3>
       <div class="footer-list">
         {% for nav in item.frendlinks %}
-        <a class="Link link FoooterFriendLink" aria-expanded="false" aria-label="menu" role="button"
+        <a class="Link link FoooterFriendLink joh-external-link-icon" aria-expanded="false" aria-label="menu" role="button"
           href="{{ nav.link | replace(from='$BASE_URL', to=config.base_url) }}" title="{{ nav.link | replace(from='$BASE_URL', to=config.base_url) }}" tabindex="0">
           <span>{{ nav.text }}</span>
-          <span class="johi-icon-tags"></span>
         </a>
         {% endfor %}
       </div>

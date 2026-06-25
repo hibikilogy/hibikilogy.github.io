@@ -1,24 +1,32 @@
 @layer components {
-	.TagsList {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  margin-top: 6px;
-  row-gap: 8px;
-
-  a {
-    margin-right: 8px;
-    font-size: 18px;
+  .joh-tag::before {
+    content: var(--joh-header-anchor-symbol);
+    color: var(--joh-c-text-muted);
     font-weight: 500;
-    line-height: 24px;
-    white-space: nowrap;
+    user-select: none;
+    text-decoration: none;
   }
 
-  .tag-count {
-    display: none;
-    font-size: 0.8rem;
-    color: var(--footer-directory-title-color);
+  .TagsList {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-top: 6px;
+    row-gap: 8px;
+
+    a {
+      margin-right: 8px;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 24px;
+      white-space: nowrap;
+    }
+
+    .tag-count {
+      display: none;
+      font-size: 0.8rem;
+      color: var(--footer-directory-title-color);
+    }
   }
-}
 }

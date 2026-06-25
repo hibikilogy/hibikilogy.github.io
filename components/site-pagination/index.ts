@@ -19,7 +19,7 @@ const DIRECTION_LINK_CLASS = [
   'text-inherit',
   'no-underline',
 ].join(' ')
-const DIRECTION_ICON_CLASS = 'inline-block h-[1.25em] w-[1.25em] align-sub'
+const DIRECTION_ICON_CLASS = 'inline-block h-[1.5em] w-[1.5em] align-sub'
 
 /**
  * `<site-pagination>` - paginated navigation, rendered into Shadow DOM.
@@ -182,7 +182,7 @@ export class SitePagination extends LitElement {
   private renderMobileNav() {
     return html`
       <nav
-        class="hidden w-full items-center justify-end gap-2 text-right lt-md:flex"
+        class="hidden w-full items-center justify-end gap-2 text-right lt-md:flex font-bold"
         aria-label=${this.navigationLabel}
       >
         ${this.currentPage > 1

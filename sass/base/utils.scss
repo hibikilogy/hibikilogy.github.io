@@ -1,29 +1,23 @@
 @layer utilities {
-	.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  white-space: nowrap;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  overflow: hidden;
-}
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    white-space: nowrap;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+  }
 
-a:not([class]) {
-  text-decoration-skip-ink: auto;
-}
+  .hide-in-mobile {
+    @media (max-width: 719px) {
+      display: none;
+    }
+  }
 
-img:not([src]),
-img[src=""] {
-  opacity: 0;
-}
-
-svg:not(:root) {
-  overflow: hidden;
-}
-
-button,
-input {
-  overflow: visible;
-}
+  .hide-in-pad {
+    @media (max-width: 959px) {
+      display: none;
+    }
+  }
 }

@@ -1,92 +1,92 @@
 @layer base {
-	:root {
-	  --johi-c-white: #ffffff;
-	  --joh-c-black: #000000;
+  :root {
+    --joh-c-white: #ffffff;
+    --joh-c-black: #000000;
 
-  --joh-c-neutral: var(--joh-c-black);
-  --joh-c-neutral-inverse: var(--joh-c-white);
-}
+    --joh-c-neutral: var(--joh-c-black);
+    --joh-c-neutral-inverse: var(--joh-c-white);
+  }
 
-html.dark {
-  --joh-c-neutral: var(--joh-c-white);
-  --joh-c-neutral-inverse: var(--joh-c-black);
-}
+  html.dark {
+    --joh-c-neutral: var(--joh-c-white);
+    --joh-c-neutral-inverse: var(--joh-c-black);
+  }
 
-html {
-  --joh-search-shell-key-modifier: 'Ctrl'
-}
+  html {
+    --joh-search-shell-key-modifier: 'Ctrl';
+  }
 
-html.mac {
-  --joh-search-shell-key-modifier: '\2318'
-}
+  html.mac {
+    --joh-search-shell-key-modifier: '\2318';
+  }
 
-:root {
-  --joh-c-gray-1: #dddde3;
-  --joh-c-gray-2: #e4e4e9;
-  --joh-c-gray-3: #ebebef;
-  --joh-c-gray-soft: rgba(142, 150, 170, 0.14);
+  :root {
+    --joh-c-gray-1: #dddde3;
+    --joh-c-gray-2: #e4e4e9;
+    --joh-c-gray-3: #ebebef;
+    --joh-c-gray-soft: rgba(142, 150, 170, 0.14);
 
-  --joh-c-indigo-1: #2076df;
-  --joh-c-indigo-2: #00a0e9;
-  --joh-c-indigo-3: #5672cd;
-  --joh-c-indigo-soft: rgba(100, 108, 255, 0.14);
+    --joh-c-indigo-1: #2076df;
+    --joh-c-indigo-2: #00a0e9;
+    --joh-c-indigo-3: #5672cd;
+    --joh-c-indigo-soft: rgba(100, 108, 255, 0.14);
 
-  --joh-c-purple-1: #6f42c1;
-  --joh-c-purple-2: #7e4cc9;
-  --joh-c-purple-3: #8e5cd9;
-  --joh-c-purple-soft: rgba(159, 122, 234, 0.14);
+    --joh-c-purple-1: #6f42c1;
+    --joh-c-purple-2: #7e4cc9;
+    --joh-c-purple-3: #8e5cd9;
+    --joh-c-purple-soft: rgba(159, 122, 234, 0.14);
 
-  --joh-c-green-1: #18794e;
-  --joh-c-green-2: #299764;
-  --joh-c-green-3: #30a46c;
-  --joh-c-green-soft: rgba(16, 185, 129, 0.14);
+    --joh-c-green-1: #18794e;
+    --joh-c-green-2: #299764;
+    --joh-c-green-3: #30a46c;
+    --joh-c-green-soft: rgba(16, 185, 129, 0.14);
 
-  --joh-c-yellow-1: #915930;
-  --joh-c-yellow-2: #946300;
-  --joh-c-yellow-3: #9f6a00;
-  --joh-c-yellow-soft: rgba(234, 179, 8, 0.14);
+    --joh-c-yellow-1: #915930;
+    --joh-c-yellow-2: #946300;
+    --joh-c-yellow-3: #9f6a00;
+    --joh-c-yellow-soft: rgba(234, 179, 8, 0.14);
 
-  --joh-c-red-1: #b8272c;
-  --joh-c-red-2: #d5393e;
-  --joh-c-red-3: #e0575b;
-  --joh-c-red-soft: rgba(244, 63, 94, 0.14);
+    --joh-c-red-1: #b8272c;
+    --joh-c-red-2: #d5393e;
+    --joh-c-red-3: #e0575b;
+    --joh-c-red-soft: rgba(244, 63, 94, 0.14);
 
-  --joh-c-sponsor: #db2777;
-}
+    --joh-c-sponsor: #db2777;
+  }
 
-html.dark {
-  --joh-c-gray-1: #515c67;
-  --joh-c-gray-2: #414853;
-  --joh-c-gray-3: #32363f;
-  --joh-c-gray-soft: rgba(101, 117, 133, 0.16);
+  html.dark {
+    --joh-c-gray-1: #515c67;
+    --joh-c-gray-2: #414853;
+    --joh-c-gray-3: #32363f;
+    --joh-c-gray-soft: rgba(101, 117, 133, 0.16);
 
-  --joh-c-indigo-1: #a8b1ff;
-  --joh-c-indigo-2: #5c73e7;
-  --joh-c-indigo-3: #3e63dd;
-  --joh-c-indigo-soft: rgba(100, 108, 255, 0.16);
+    --joh-c-indigo-1: #a8b1ff;
+    --joh-c-indigo-2: #5c73e7;
+    --joh-c-indigo-3: #3e63dd;
+    --joh-c-indigo-soft: rgba(100, 108, 255, 0.16);
 
-  --joh-c-purple-1: #c8abfa;
-  --joh-c-purple-2: #a879e6;
-  --joh-c-purple-3: #8e5cd9;
-  --joh-c-purple-soft: rgba(159, 122, 234, 0.16);
+    --joh-c-purple-1: #c8abfa;
+    --joh-c-purple-2: #a879e6;
+    --joh-c-purple-3: #8e5cd9;
+    --joh-c-purple-soft: rgba(159, 122, 234, 0.16);
 
-  --joh-c-green-1: #3dd68c;
-  --joh-c-green-2: #30a46c;
-  --joh-c-green-3: #298459;
-  --joh-c-green-soft: rgba(16, 185, 129, 0.16);
+    --joh-c-green-1: #3dd68c;
+    --joh-c-green-2: #30a46c;
+    --joh-c-green-3: #298459;
+    --joh-c-green-soft: rgba(16, 185, 129, 0.16);
 
-  --joh-c-yellow-1: #f9b44e;
-  --joh-c-yellow-2: #da8b17;
-  --joh-c-yellow-3: #a46a0a;
-  --joh-c-yellow-soft: rgba(234, 179, 8, 0.16);
+    --joh-c-yellow-1: #f9b44e;
+    --joh-c-yellow-2: #da8b17;
+    --joh-c-yellow-3: #a46a0a;
+    --joh-c-yellow-soft: rgba(234, 179, 8, 0.16);
 
-  --joh-c-red-1: #f66f81;
-  --joh-c-red-2: #f14158;
-  --joh-c-red-3: #b62a3c;
-  --joh-c-red-soft: rgba(244, 63, 94, 0.16);
-}
+    --joh-c-red-1: #f66f81;
+    --joh-c-red-2: #f14158;
+    --joh-c-red-3: #b62a3c;
+    --joh-c-red-soft: rgba(244, 63, 94, 0.16);
+  }
 
-/**
+  /**
  * Colors: Background
  *
  * - `bg`: The bg color used for main screen.
@@ -101,23 +101,21 @@ html.dark {
  *   the page. Used for things like "carbon ads" or "table".
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-c-bg: #ffffff;
-  --joh-c-bg-alt: #f6f6f7;
-  --joh-c-bg-elv: #ffffff;
-  --joh-c-bg-soft: #f6f6f7;
-  --joh-nav-screen-overlay-bg-color: rgba(255, 255, 255, 0.95);
-}
+  :root {
+    --joh-c-bg: #ffffff;
+    --joh-c-bg-alt: #f6f6f7;
+    --joh-c-bg-soft: #f6f6f7;
+    --joh-nav-screen-overlay-bg-color: rgba(255, 255, 255, 0.95);
+  }
 
-html.dark {
-  --joh-c-bg: #1b1b1f;
-  --joh-c-bg-alt: #161618;
-  --joh-c-bg-elv: #202127;
-  --joh-c-bg-soft: #202127;
-  --joh-nav-screen-overlay-bg-color: rgba(27, 27, 31, 0.95);
-}
+  html.dark {
+    --joh-c-bg: #1b1b1f;
+    --joh-c-bg-alt: #161618;
+    --joh-c-bg-soft: #202127;
+    --joh-nav-screen-overlay-bg-color: rgba(27, 27, 31, 0.95);
+  }
 
-/**
+  /**
  * Colors: Borders
  *
  * - `divider`: This is used for separators. This is used to divide sections
@@ -130,19 +128,19 @@ html.dark {
  *   the header and the lest of the page.
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-c-border: #c2c2c4;
-  --joh-c-divider: #e2e2e3;
-  --joh-c-gutter: #e2e2e3;
-}
+  :root {
+    --joh-c-border: #c2c2c4;
+    --joh-c-divider: #e2e2e3;
+    --joh-c-gutter: #e2e2e3;
+  }
 
-html.dark {
-  --joh-c-border: #3c3f44;
-  --joh-c-divider: #2e2e32;
-  --joh-c-gutter: #000000;
-}
+  html.dark {
+    --joh-c-border: #3c3f44;
+    --joh-c-divider: #2e2e32;
+    --joh-c-gutter: #000000;
+  }
 
-/**
+  /**
  * Colors: Text
  *
  * - `text-1`: Used for primary text.
@@ -152,19 +150,19 @@ html.dark {
  * - `text-3`: Used for subtle texts, such as "placeholders" or "caret icon".
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-c-text-1: rgba(34, 34, 34);
-  --joh-c-text-2: rgba(34, 34, 34, 0.78);
-  --joh-c-text-3: rgba(34, 34, 34, 0.56);
-}
+  :root {
+    --joh-c-text-1: rgba(34, 34, 34, 1);
+    --joh-c-text-2: rgba(34, 34, 34, 0.78);
+    --joh-c-text-3: rgba(34, 34, 34, 0.56);
+  }
 
-html.dark {
-  --joh-c-text-1: rgba(255, 255, 245, 0.86);
-  --joh-c-text-2: rgba(235, 235, 245, 0.6);
-  --joh-c-text-3: rgba(235, 235, 245, 0.38);
-}
+  html.dark {
+    --joh-c-text-1: rgba(255, 255, 245, 0.86);
+    --joh-c-text-2: rgba(235, 235, 245, 0.6);
+    --joh-c-text-3: rgba(235, 235, 245, 0.38);
+  }
 
-/**
+  /**
  * Colors: Function
  *
  * - `default`: The color used purely for subtle indication without any
@@ -185,331 +183,265 @@ html.dark {
  * To understand the scaling system, refer to "Colors: Palette" section.
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-c-default-1: var(--joh-c-gray-1);
-  --joh-c-default-2: var(--joh-c-gray-2);
-  --joh-c-default-3: var(--joh-c-gray-3);
-  --joh-c-default-soft: var(--joh-c-gray-soft);
+  :root {
+    --joh-c-default-1: var(--joh-c-gray-1);
+    --joh-c-default-2: var(--joh-c-gray-2);
+    --joh-c-default-3: var(--joh-c-gray-3);
+    --joh-c-default-soft: var(--joh-c-gray-soft);
 
-  --joh-c-brand-1: var(--joh-c-indigo-1);
-  --joh-c-brand-2: var(--joh-c-indigo-2);
-  --joh-c-brand-3: var(--joh-c-indigo-3);
-  --joh-c-brand-soft: var(--joh-c-indigo-soft);
+    --joh-c-brand-1: var(--joh-c-indigo-1);
+    --joh-c-brand-2: var(--joh-c-indigo-2);
+    --joh-c-brand-3: var(--joh-c-indigo-3);
+    --joh-c-brand-soft: var(--joh-c-indigo-soft);
 
-  /* DEPRECATED: Use `--joh-c-brand-1` instead. */
-  --joh-c-brand: var(--joh-c-brand-1);
+    /* DEPRECATED: Use `--joh-c-brand-1` instead. */
+    --joh-c-brand: var(--joh-c-brand-1);
 
-  --joh-c-tip-1: var(--joh-c-brand-1);
-  --joh-c-tip-2: var(--joh-c-brand-2);
-  --joh-c-tip-3: var(--joh-c-brand-3);
-  --joh-c-tip-soft: var(--joh-c-brand-soft);
+    --joh-c-tip-1: var(--joh-c-brand-1);
+    --joh-c-tip-2: var(--joh-c-brand-2);
+    --joh-c-tip-3: var(--joh-c-brand-3);
+    --joh-c-tip-soft: var(--joh-c-brand-soft);
 
-  --joh-c-note-1: var(--joh-c-brand-1);
-  --joh-c-note-2: var(--joh-c-brand-2);
-  --joh-c-note-3: var(--joh-c-brand-3);
-  --joh-c-note-soft: var(--joh-c-brand-soft);
+    --joh-c-note-1: var(--joh-c-brand-1);
+    --joh-c-note-2: var(--joh-c-brand-2);
+    --joh-c-note-3: var(--joh-c-brand-3);
+    --joh-c-note-soft: var(--joh-c-brand-soft);
 
-  --joh-c-success-1: var(--joh-c-green-1);
-  --joh-c-success-2: var(--joh-c-green-2);
-  --joh-c-success-3: var(--joh-c-green-3);
-  --joh-c-success-soft: var(--joh-c-green-soft);
+    --joh-c-success-1: var(--joh-c-green-1);
+    --joh-c-success-2: var(--joh-c-green-2);
+    --joh-c-success-3: var(--joh-c-green-3);
+    --joh-c-success-soft: var(--joh-c-green-soft);
 
-  --joh-c-important-1: var(--joh-c-purple-1);
-  --joh-c-important-2: var(--joh-c-purple-2);
-  --joh-c-important-3: var(--joh-c-purple-3);
-  --joh-c-important-soft: var(--joh-c-purple-soft);
+    --joh-c-important-1: var(--joh-c-purple-1);
+    --joh-c-important-2: var(--joh-c-purple-2);
+    --joh-c-important-3: var(--joh-c-purple-3);
+    --joh-c-important-soft: var(--joh-c-purple-soft);
 
-  --joh-c-warning-1: var(--joh-c-yellow-1);
-  --joh-c-warning-2: var(--joh-c-yellow-2);
-  --joh-c-warning-3: var(--joh-c-yellow-3);
-  --joh-c-warning-soft: var(--joh-c-yellow-soft);
+    --joh-c-warning-1: var(--joh-c-yellow-1);
+    --joh-c-warning-2: var(--joh-c-yellow-2);
+    --joh-c-warning-3: var(--joh-c-yellow-3);
+    --joh-c-warning-soft: var(--joh-c-yellow-soft);
 
-  --joh-c-danger-1: var(--joh-c-red-1);
-  --joh-c-danger-2: var(--joh-c-red-2);
-  --joh-c-danger-3: var(--joh-c-red-3);
-  --joh-c-danger-soft: var(--joh-c-red-soft);
+    --joh-c-danger-1: var(--joh-c-red-1);
+    --joh-c-danger-2: var(--joh-c-red-2);
+    --joh-c-danger-3: var(--joh-c-red-3);
+    --joh-c-danger-soft: var(--joh-c-red-soft);
 
-  --joh-c-caution-1: var(--joh-c-red-1);
-  --joh-c-caution-2: var(--joh-c-red-2);
-  --joh-c-caution-3: var(--joh-c-red-3);
-  --joh-c-caution-soft: var(--joh-c-red-soft);
-}
+    --joh-c-caution-1: var(--joh-c-red-1);
+    --joh-c-caution-2: var(--joh-c-red-2);
+    --joh-c-caution-3: var(--joh-c-red-3);
+    --joh-c-caution-soft: var(--joh-c-red-soft);
+  }
 
-/**
+  /**
  * Typography
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-font-family-base: "Source Han Sans SC VF", "Source Han Serif SC VF", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --joh-font-family-serif: "Hibikilogy Title Serif", "Times New Roman";
-  --joh-font-family-mono: ui-monospace, "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", monospace;
-  font-optical-sizing: auto;
-}
+  :root {
+    --joh-font-family-base:
+      'Source Han Sans SC VF', 'Source Han Serif SC VF', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --joh-font-family-serif: 'Hibikilogy Title Serif', 'Times New Roman';
+    --joh-font-family-mono: ui-monospace, 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+    font-optical-sizing: auto;
+  }
 
-:root:where(:lang(zh)) {
-  --joh-font-family-base: "Source Han Sans SC VF", "Source Han Serif SC VF", ui-sans-serif, system-ui, "PingFang SC", "Noto Sans CJK SC",
-    "Noto Sans SC", "Heiti SC", "Microsoft YaHei", "DengXian", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
-}
+  :root:where(:lang(zh)) {
+    --joh-font-family-base:
+      'Source Han Sans SC VF', 'Source Han Serif SC VF', ui-sans-serif, system-ui, 'PingFang SC', 'Noto Sans CJK SC',
+      'Noto Sans SC', 'Heiti SC', 'Microsoft YaHei', 'DengXian', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+      'Segoe UI Symbol', 'Noto Color Emoji';
+  }
 
-/**
+  /**
  * Shadows
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-  --joh-shadow-2: 0 3px 12px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.07);
-  --joh-shadow-3: 0 12px 32px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.08);
-  --joh-shadow-4: 0 14px 44px rgba(0, 0, 0, 0.12), 0 3px 9px rgba(0, 0, 0, 0.12);
-  --joh-shadow-5: 0 18px 56px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.16);
-}
+  :root {
+    --joh-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --joh-shadow-2: 0 3px 12px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.07);
+    --joh-shadow-3: 0 12px 32px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.08);
+    --joh-shadow-4: 0 14px 44px rgba(0, 0, 0, 0.12), 0 3px 9px rgba(0, 0, 0, 0.12);
+    --joh-shadow-5: 0 18px 56px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.16);
+  }
 
-/**
+  /**
  * Z-indexes
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-z-index-footer: 10;
-  --joh-z-index-header-hero: 15;
-  --joh-z-index-local-nav: 20;
-  --joh-z-index-nav: 30;
-  --joh-z-index-layout-top: 40;
-  --joh-z-index-backdrop: 50;
-  --joh-z-index-sidebar: 60;
-}
-
-@media (min-width: 960px) {
   :root {
-    --joh-z-index-sidebar: 25;
+    --joh-z-index-footer: 10;
+    --joh-z-index-header-hero: 15;
+    --joh-z-index-local-nav: 20;
+    --joh-z-index-nav: 30;
+    --joh-z-index-layout-top: 40;
+    --joh-z-index-backdrop: 50;
+    --joh-z-index-sidebar: 60;
   }
-}
 
-/**
+  @media (min-width: 960px) {
+    :root {
+      --joh-z-index-sidebar: 25;
+    }
+  }
+
+  /**
  * Layouts
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-layout-max-width: 982px;
-  --joh-breakpoint-tablet: 719px;
-}
+  :root {
+    --joh-layout-max-width: 982px;
+  }
 
-/**
+  /**
  * Component: Header Anchor
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-header-anchor-symbol: "#";
-}
+  :root {
+    --joh-header-anchor-symbol: '#';
+  }
 
-/**
+  /**
  * Component: Code
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-code-line-height: 1.7;
-  --joh-code-font-size: 0.875em;
-  --joh-code-inline-border-radius: 4px;
-  --joh-code-inline-padding-block: 3px;
-  --joh-code-inline-padding-inline: 6px;
-  --joh-code-color: var(--joh-c-brand-1);
-  --joh-code-link-color: var(--joh-c-brand-1);
-  --joh-code-link-hover-color: var(--joh-c-brand-2);
-  --joh-code-bg: var(--joh-c-default-soft);
+  :root {
+    --joh-code-line-height: 1.7;
+    --joh-code-font-size: 0.875em;
 
-  --joh-code-block-color: var(--joh-c-text-2);
-  --joh-code-block-bg: var(--joh-c-bg-alt);
-  --joh-code-block-border-color: var(--joh-c-divider);
-  --joh-code-block-border-radius: 8px;
-  --joh-code-block-padding-top: 1.25rem;
-  --joh-code-block-padding-right: 1.5rem;
-  --joh-code-block-padding-bottom: 1.25rem;
-  --joh-code-block-padding-left: 1.5rem;
-  --joh-code-block-margin-block: 16px;
-  --joh-code-block-mobile-bleed: 24px;
-  --joh-code-block-mobile-item-radius: 8px;
-  --joh-code-block-divider-color: var(--joh-c-gutter);
+    --joh-code-block-padding-top: 1.25rem;
+    --joh-code-block-padding-right: 1.5rem;
+    --joh-code-block-padding-bottom: 1.25rem;
+    --joh-code-block-padding-left: 1.5rem;
+    --joh-code-block-margin-block: 16px;
+    --joh-code-block-mobile-bleed: 24px;
+    --joh-code-block-mobile-item-radius: 8px;
 
-  --joh-code-lang-color: var(--joh-c-text-3);
-  --joh-code-lang-bg: transparent;
-  --joh-code-lang-top: 2px;
-  --joh-code-lang-right: 8px;
-  --joh-code-lang-font-size: 12px;
-  --joh-code-lang-font-weight: 500;
+    --joh-code-lang-top: 2px;
+    --joh-code-lang-right: 8px;
+    --joh-code-lang-font-size: 12px;
+    --joh-code-lang-font-weight: 500;
 
-  --joh-code-line-highlight-color: var(--joh-c-default-soft);
-  --joh-code-line-number-color: var(--joh-c-text-3);
-  --joh-code-line-number-width: 32px;
+    --joh-code-line-number-width: 32px;
 
-  --joh-code-line-diff-add-color: var(--joh-c-success-soft);
-  --joh-code-line-diff-add-symbol-color: var(--joh-c-success-1);
+    --joh-custom-block-font-size: 0.9375rem;
+    --joh-custom-block-line-height: 1.75;
+    --joh-custom-block-border-radius: 12px;
+    --joh-custom-block-border-width: 1px;
+    --joh-custom-block-border-color: var(--joh-c-divider);
+    --joh-custom-block-bg: color-mix(in srgb, var(--joh-c-bg) 92%, var(--joh-c-text-1) 8%);
+    --joh-custom-block-title-color: var(--joh-c-text-1);
+    --joh-custom-block-text-color: var(--joh-c-text-2);
+    --joh-custom-block-code-bg: rgba(255, 255, 255, 0.5);
+    --joh-custom-block-note-border: var(--joh-c-note-1);
+    --joh-custom-block-note-bg: var(--joh-c-bg-alt);
+    --joh-custom-block-note-title: var(--joh-c-note-1);
+    --joh-custom-block-tip-border: var(--joh-c-success-1);
+    --joh-custom-block-tip-bg: color-mix(in srgb, var(--joh-c-bg) 88%, var(--joh-c-success-1) 12%);
+    --joh-custom-block-tip-title: var(--joh-c-success-1);
+    --joh-custom-block-important-border: var(--joh-c-important-1);
+    --joh-custom-block-important-bg: color-mix(in srgb, var(--joh-c-bg) 88%, var(--joh-c-important-1) 12%);
+    --joh-custom-block-important-title: var(--joh-c-important-1);
+    --joh-custom-block-warning-border: var(--joh-c-warning-1);
+    --joh-custom-block-warning-bg: color-mix(in srgb, var(--joh-c-bg) 88%, var(--joh-c-warning-1) 12%);
+    --joh-custom-block-warning-title: var(--joh-c-warning-1);
+    --joh-custom-block-caution-border: var(--joh-c-caution-1);
+    --joh-custom-block-caution-bg: color-mix(in srgb, var(--joh-c-bg) 88%, var(--joh-c-caution-1) 12%);
+    --joh-custom-block-caution-title: var(--joh-c-caution-1);
+  }
 
-  --joh-code-line-diff-remove-color: var(--joh-c-danger-soft);
-  --joh-code-line-diff-remove-symbol-color: var(--joh-c-danger-1);
-
-  --joh-code-line-warning-color: var(--joh-c-warning-soft);
-  --joh-code-line-error-color: var(--joh-c-danger-soft);
-
-  --joh-code-copy-code-border-color: var(--joh-c-divider);
-  --joh-code-copy-code-bg: var(--joh-c-bg-soft);
-  --joh-code-copy-code-hover-border-color: var(--joh-c-divider);
-  --joh-code-copy-code-hover-bg: var(--joh-c-bg);
-  --joh-code-copy-code-active-text: var(--joh-c-text-2);
-  --joh-code-copy-copied-text-content: "Copied";
-  --joh-code-copy-size: 40px;
-  --joh-code-copy-radius: 4px;
-  --joh-code-copy-top: 12px;
-  --joh-code-copy-right: 12px;
-  --joh-code-copy-icon-size: 20px;
-  --joh-code-copy-label-font-size: 12px;
-  --joh-code-copy-label-padding-inline: 10px;
-
-  --joh-code-tab-divider: var(--joh-code-block-divider-color);
-  --joh-code-tab-text-color: var(--joh-c-text-2);
-  --joh-code-tab-bg: var(--joh-code-block-bg);
-  --joh-code-tab-hover-text-color: var(--joh-c-text-1);
-  --joh-code-tab-active-text-color: var(--joh-c-text-1);
-  --joh-code-tab-active-bar-color: var(--joh-c-brand-1);
-
-  --joh-custom-block-font-size: 0.9375rem;
-  --joh-custom-block-line-height: 1.75;
-  --joh-custom-block-border-radius: 12px;
-  --joh-custom-block-border-width: 1px;
-  --joh-custom-block-border-color: var(--joh-c-divider);
-  --joh-custom-block-bg: color-mix(in srgb, var(--joh-c-bg) 92%, var(--joh-c-text-1) 8%);
-  --joh-custom-block-title-color: var(--joh-c-text-1);
-  --joh-custom-block-text-color: var(--joh-c-text-2);
-  --joh-custom-block-code-bg: rgba(255, 255, 255, 0.5);
-  --joh-custom-block-note-border: var(--joh-c-note-1);
-  --joh-custom-block-note-bg: var(--joh-c-bg-alt);
-  --joh-custom-block-note-title: var(--joh-c-note-1);
-  --joh-custom-block-tip-border: var(--joh-c-success-1);
-  --joh-custom-block-tip-bg: color-mix(in srgb, var(--joh-c-bg) 88%, var(--joh-c-success-1) 12%);
-  --joh-custom-block-tip-title: var(--joh-c-success-1);
-  --joh-custom-block-important-border: var(--joh-c-important-1);
-  --joh-custom-block-important-bg: color-mix(in srgb, var(--joh-c-bg) 88%, var(--joh-c-important-1) 12%);
-  --joh-custom-block-important-title: var(--joh-c-important-1);
-  --joh-custom-block-warning-border: var(--joh-c-warning-1);
-  --joh-custom-block-warning-bg: color-mix(in srgb, var(--joh-c-bg) 88%, var(--joh-c-warning-1) 12%);
-  --joh-custom-block-warning-title: var(--joh-c-warning-1);
-  --joh-custom-block-caution-border: var(--joh-c-caution-1);
-  --joh-custom-block-caution-bg: color-mix(in srgb, var(--joh-c-bg) 88%, var(--joh-c-caution-1) 12%);
-  --joh-custom-block-caution-title: var(--joh-c-caution-1);
-}
-
-/**
+  /**
  * Component: Input
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-input-border-color: var(--joh-c-border);
-  --joh-input-bg-color: var(--joh-c-bg-alt);
-
-  --joh-input-switch-bg-color: var(--joh-c-default-soft);
-}
-
-/**
+  /**
  * Component: Nav
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-nav-height: 64px;
-  --joh-nav-bg-color: var(--joh-c-bg);
-  --joh-nav-screen-bg-color: var(--joh-c-bg);
-  --joh-nav-logo-width: 73.5px;
-  --joh-nav-logo-height: 42px;
-}
+  :root {
+    --joh-nav-height: 64px;
+    --joh-nav-bg-color: var(--joh-c-bg);
+    --joh-nav-screen-bg-color: var(--joh-c-bg);
+    --joh-nav-logo-height: 42px;
+    --joh-nav-search-border-color: var(--joh-c-text-1);
+    --joh-nav-search-muted-color: var(--joh-c-text-2);
+  }
 
-.hide-nav {
-  --joh-nav-height: 0px;
-}
+  .hide-nav {
+    --joh-nav-height: 0px;
+  }
 
-/**
- * Component: Local Nav
+  /**
+ * Component: Home / Hero / Journal
  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-local-nav-bg-color: var(--joh-c-bg);
-}
+  :root {
+    --joh-hero-heading-bg: #bfbfbf;
+    --joh-hero-taxonomies-banner-bg: #222222;
+    --joh-journal-frontpage-bg: #222222;
+  }
 
-/**
- * Colors Backdrop
- * -------------------------------------------------------------------------- */
+  /**
+  * Colors: Text (supplement)
+  * - `text-muted`: Used for muted/description text (e.g. "999999").
+  * -------------------------------------------------------------------------- */
 
-:root {
-  --joh-backdrop-bg-color: rgba(0, 0, 0, 0.6);
-}
+  :root {
+    --joh-c-text-muted: #999999;
+  }
 
-/**
- * Component: Home
- * -------------------------------------------------------------------------- */
+  html.dark {
+    --joh-c-text-muted: #8b8b8b;
+  }
 
-:root {
-  --joh-home-hero-name-color: var(--joh-c-brand-1);
-  --joh-home-hero-name-background: transparent;
-
-  --joh-home-hero-image-background-image: none;
-  --joh-home-hero-image-filter: none;
-}
-
-/**
- * Component: Badge
- * -------------------------------------------------------------------------- */
-
-:root {
-  --joh-badge-info-border: transparent;
-  --joh-badge-info-text: var(--joh-c-text-2);
-  --joh-badge-info-bg: var(--joh-c-default-soft);
-
-  --joh-badge-tip-border: transparent;
-  --joh-badge-tip-text: var(--joh-c-tip-1);
-  --joh-badge-tip-bg: var(--joh-c-tip-soft);
-
-  --joh-badge-warning-border: transparent;
-  --joh-badge-warning-text: var(--joh-c-warning-1);
-  --joh-badge-warning-bg: var(--joh-c-warning-soft);
-
-  --joh-badge-danger-border: transparent;
-  --joh-badge-danger-text: var(--joh-c-danger-1);
-  --joh-badge-danger-bg: var(--joh-c-danger-soft);
-}
-
-:root {
-  --docsearch-primary-color: var(--joh-c-brand-1);
-  --docsearch-highlight-color: var(--docsearch-primary-color);
-  --docsearch-text-color: var(--joh-c-text-1);
-  --docsearch-border-color: var(--joh-c-text-1);
-  --docsearch-muted-color: var(--joh-c-text-2);
-  --docsearch-searchbox-shadow: none;
-  --docsearch-searchbox-background: transparent;
-  --docsearch-searchbox-focus-background: transparent;
-  --docsearch-key-gradient: transparent;
-  --docsearch-key-shadow: none;
-}
-
-html.dark {
-  --docsearch-modal-shadow: none;
-  --docsearch-footer-shadow: none;
-  --docsearch-logo-color: var(--joh-c-text-2);
-  --docsearch-hit-background: var(--joh-c-default-soft);
-  --docsearch-hit-color: var(--joh-c-text-2);
-  --docsearch-hit-shadow: none;
-}
-
-/**
+  /**
   * Component: Footer
   * -------------------------------------------------------------------------- */
 
-:root {
-  --footer-directory-title-color: #999999;
-}
+  :root {
+    --footer-directory-title-color: var(--joh-c-text-muted);
+  }
 
-/**
+  /**
   * Component: Article
   * -------------------------------------------------------------------------- */
 
-:root {
-  --article-description-title-color: #999999;
-  --article-border-color: #222222;
-}
+  :root {
+    --article-description-title-color: var(--joh-c-text-muted);
+    --article-border-color: var(--joh-c-neutral);
+  }
+
+  /**
+  * Component: Content
+  * -------------------------------------------------------------------------- */
+
+  :root {
+    --joh-c-mark-bg: rgba(0, 191, 255, 0.37);
+  }
+
+  html.dark {
+    --joh-c-mark-bg: rgba(0, 191, 255, 0.24);
+  }
+
+  /**
+  * Scrollbar
+  * -------------------------------------------------------------------------- */
+
+  :root {
+    --theme-color: var(--joh-c-text-3);
+    --theme-color-light: var(--joh-c-text-2);
+  }
+
+  html.dark {
+    --theme-color: var(--joh-c-text-3);
+    --theme-color-light: var(--joh-c-text-2);
+  }
+
+  /**
+  * Icon: Arrow
+  * -------------------------------------------------------------------------- */
+
+  :root {
+    --joh-icon-svg-arrow-down: url('data:image/svg+xml,%0A%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20fill%3D%22none%22%20version%3D%221.1%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cg%3E%3Cg%20transform%3D%22matrix(0%2C-1%2C1%2C0%2C-10.5859375%2C27.914794921875)%22%3E%3Cpath%20d%3D%22M8.9573517109375%2C20.9574462109375L15.457628710937499%2C27.4573862109375C15.4711487109375%2C27.4708962109375%2C15.4849487109375%2C27.4839362109375%2C15.4990187109375%2C27.4965162109375C15.5130987109375%2C27.5124962109375%2C15.5277687109375%2C27.5281462109375%2C15.5430487109375%2C27.5434162109375C15.9335687109375%2C27.9339362109375%2C16.5667287109375%2C27.9339362109375%2C16.9572787109375%2C27.5433962109375L23.4572287109375%2C21.0430962109375C23.8477287109375%2C20.6525662109375%2C23.8477287109375%2C20.0194192109375%2C23.4572287109375%2C19.6289022109375C23.0667287109375%2C19.2383780109375%2C22.4335287109375%2C19.2383780109375%2C22.042928710937503%2C19.6289212109375L16.2504287109375%2C25.4217862109375L10.3715287109375%2C19.5431982109375C9.9809987109375%2C19.1526915109375%2C9.3478497109375%2C19.1526999109375%2C8.9573327109375%2C19.5432172109375C8.5668082109375%2C19.9337412109375%2C8.5668082109375%2C20.5669062109375%2C8.9573517109375%2C20.9574462109375Z%22%20fill-rule%3D%22evenodd%22%20fill%3D%22%23222222%22%20fill-opacity%3D%221%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+  }
 }

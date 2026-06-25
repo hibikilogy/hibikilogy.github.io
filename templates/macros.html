@@ -76,13 +76,13 @@ quality=quality, format="webp") %}
 {% macro prev_page(paginator) %}
 <a class="pagination-previous" title="{{ trans(key="pagination_prev") }}" href='{{ paginator.previous }}' {% if not paginator.previous %}disabled{%
   endif %}>
-  <i class="johi-icon-left"></i>
+  <i class="i-custom-prev"></i>
 </a>
 {% endmacro %}
 
 {% macro next_page(paginator) %}
 <a class="pagination-next" title="{{ trans(key="pagination_next") }}" href='{{ paginator.next }}' {% if not paginator.next %}disabled{% endif %}>
-  <i class="johi-icon-right"></i>
+  <i class="i-custom-next"></i>
 </a>
 {% endmacro %}
 

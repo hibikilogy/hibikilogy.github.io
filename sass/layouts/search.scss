@@ -1,321 +1,144 @@
-@use "../config.scss";
-@use "../components/journal.scss";
-@use "../components/tags-list.scss";
+@use '../config.scss';
+@use '../components/journal.scss';
+@use '../components/tags-list.scss';
+@use '../components/search.scss';
 
 @layer pages {
+  body.search {
+    @media (min-width: config.$tablet) {
+      .content-body > :not(.NavBarMenu):not(.NavBarSocialLink) {
+        display: none;
+      }
 
-body.search {
-  @media (min-width: config.$tablet) {
-    .content-body > :not(.NavBarMenu):not(.NavBarSocialLink) {
-      display: none ;
+      .NavBar .content-body {
+        justify-content: space-between;
+      }
+
+      .NavBarSocialLink {
+        opacity: 0;
+        display: inline-flex;
+        margin-left: auto;
+        white-space: nowrap;
+        view-transition-name: navbar-social-slot;
+      }
+
+      .NavBarSearch {
+        display: none;
+      }
     }
 
-    .NavBar .content-body {
-      justify-content: space-between;
+    @media (max-width: calc(config.$tablet - 1px)) {
+      .NavBar .container {
+        position: relative;
+      }
+
+      .NavBar .content-body {
+        justify-content: flex-end;
+        gap: 0;
+      }
+
+      .NavBar .content-body > .NavBarSocialLink {
+        display: inline-flex;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: max-content;
+        margin-left: 0;
+        text-align: center;
+        white-space: nowrap;
+        view-transition-name: none;
+      }
+
+      .NavBarSearch {
+        display: flex;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .NavBar .NavBarSearch .SearchShell--compact {
+        gap: 0;
+        justify-content: center;
+      }
+
+      .NavBar .NavBarSearch .SearchShellBody {
+        display: none;
+      }
     }
 
-    .NavBarSocialLink {
-      opacity: 0;
-      display: inline-flex ;
-      margin-left: auto;
-      white-space: nowrap;
-      view-transition-name: navbar-social-slot;
+    .SearchPage > .content {
+      margin-bottom: 0;
     }
 
-    .NavBarSearch {
-      display: none;
-    }
-  }
-
-  @media (max-width: calc(config.$tablet - 1px)) {
-    .NavBar .container {
-      position: relative;
-    }
-
-    .NavBar .content-body {
-      justify-content: flex-end;
-      gap: 0;
-    }
-
-    .NavBar .content-body > .NavBarSocialLink {
-      display: inline-flex ;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%) ;
-      width: max-content ;
-      margin-left: 0;
-      text-align: center;
-      white-space: nowrap;
-      view-transition-name: none ;
-    }
-
-    .NavBarSearch {
-      display: flex;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    .NavBar .NavBarSearch .SearchShell--compact {
-      gap: 0 ;
-      justify-content: center ;
-    }
-
-    .NavBar .NavBarSearch .SearchShellBody {
-      display: none ;
-    }
-  }
-
-  @media (max-width: config.$mobile) {
-    .SearchPage {
-      padding: 0 16px;
-    }
-  }
-}
-
-#search {
-  --search-ui-scale: 0.8;
-  --search-ui-border: #000;
-  --search-ui-border-width: 2px;
-  --search-ui-font: var(--joh-font-family-base);
-  --slide-visible-once-bottom-dur: 320ms;
-  --slide-visible-once-bottom-y: 24px;
-  --slide-visible-once-bottom-ease: cubic-bezier(0.33, 0, 0.13, 1);
-  --search-journal-drawer-dur: 260ms;
-  --search-journal-drawer-x: 44px;
-  --search-journal-drawer-y: 24px;
-  --search-journal-drawer-ease: cubic-bezier(0.33, 0, 0.13, 1);
-
-  margin-top: 2rem;
-
-  .content {
-    margin: 0;
-  }
-  .SearchShell--page {
-    position: relative;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    width: 100%;
-    max-width: 480px;
-    min-height: 64px;
-    margin: 0 auto;
-    gap: 0;
-    border: var(--search-ui-border-width) solid var(--search-ui-border);
-    border-radius: 8px;
-    background-color: var(--joh-c-bg);
-  }
-
-  .SearchShell--page .SearchShellSubmit {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    right: 10px;
-    z-index: 1;
-    width: 100px;
-    height: 44px;
-    border: 0;
-    border-radius: 2px;
-    opacity: 1;
-    background: #222222;
-    font-size: 18px;
-    font-weight: 500;
-    color: #ffff;
-    cursor: pointer;
-  }
-
-    .SearchShellSubmit::after {
-      content: "";
-      border: 1px solid #000;
-      opacity: 0;
-      transition: opacity 0.6s 0.1s var(--ease);
-    }
-
-    .SearchShellSubmit:active::after {
-      opacity: 1;
-      transition-duration: 0s;
-    }
-
-  .SearchShell--page .SearchShellSubmit .SearchShellIcon {
-    display: inline-block;
-    width: 16px;
-    height: 16px;
-    opacity: 1;
-    color: #fff;
-    background-color: currentColor;
-    mask-image: url(data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBmaWxsPSJub25lIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSIxNC4yOTk5OTkyMzcwNjA1NDciIGhlaWdodD0iMTQuNjk5OTk4ODU1NTkwODIiIHZpZXdCb3g9IjAgMCAxNC4yOTk5OTkyMzcwNjA1NDcgMTQuNjk5OTk4ODU1NTkwODIiPgogICAgICAgICAgICAgICAgICAgIDxnPgogICAgICAgICAgICAgICAgICAgICAgPHBhdGggZD0iTTEyLjUsMTAuMkMxMy43LDksMTQuMyw3LjYsMTQuMyw2QzE0LjMsNC40LDEzLjcsMi45LDEyLjUsMS44QzExLjQsMC42LDkuOSwwLDguMywwQzYuNiwwLDUuMiwwLjYsNCwxLjhDMi44LDMsMi4zLDQuMywyLjMsNkMyLjMsNy40LDIuNyw4LjcsMy42LDkuN0wwLjMsMTNDLTAuMDk5OTk5OSwxMy40LC0wLjA5OTk5OTksMTQsMC4zLDE0LjRDMC43LDE0LjgsMS4zLDE0LjgsMS43LDE0LjRMNSwxMS4xQzUuOSwxMS43LDcsMTIsOC4yLDEyQzkuOSwxMiwxMS40LDExLjQsMTIuNSwxMC4yWk01LjgsOS4yQzYuNSw5LjcsNy4zLDEwLDguMywxMEMxMC41LDEwLDEyLjMsOC4yLDEyLjMsNkMxMi4zLDMuOCwxMC41LDIsOC4zLDJDNi4xLDIsNC4zLDMuOCw0LjMsNkM0LjMsNy4xLDQuNyw4LjEsNS41LDguOEM1LjYsOSw1LjcsOS4xLDUuOCw5LjJaIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGZpbGw9IiMwMDAwMDAiIGZpbGwtb3BhY2l0eT0iMSI+PC9wYXRoPgogICAgICAgICAgICAgICAgICAgIDwvZz4KICAgICAgICAgICAgICAgICAgPC9zdmc+);
-    mask-size: 100%;
-    mask-repeat: no-repeat;
-    margin-right: 8px;
-  }
-
-  .SearchShell--page .SearchShellBody {
-    position: relative;
-    display: flex;
-    align-items: center;
-    flex: 1 1 auto;
-    min-width: 0;
-    width: 100%;
-  }
-
-  .SearchShell--page .SearchShellInput {
-    box-sizing: border-box;
-    display: flex;
-    width: 100%;
-    height: 44px;
-    padding: 0 128px 0 22px;
-    border: 0;
-    border-radius: 2px;
-    appearance: none;
-    background-color: transparent;
-    color: var(--joh-c-text-1);
-    font-family: var(--search-ui-font);
-    font-size: 18px;
-    font-weight: 700;
-
-    &::placeholder {
-      opacity: 0.2;
+    @media (max-width: config.$mobile) {
+      .SearchPage {
+        padding: 0 16px;
+      }
     }
   }
 
-  @media (max-width: config.$mobile) {
-    .SearchShell--page .SearchShellInput {
-      font-size: 20px;
-    }
-  }
+  /* Search overlay – global layout effects when search is active */
 
-  @supports (view-transition-name: none) {
-    .SearchShell--page,
-    .SearchShell--page .SearchShellBody {
-      contain: layout;
-    }
-  }
-
-  .SearchShell--page .SearchShellClear {
-    position: absolute;
-    top: 0;
+  body::before {
+    content: '';
+    position: fixed;
+    top: calc(var(--joh-nav-height) + var(--joh-layout-top-height, 0px));
     right: 0;
-    height: 44px;
-    padding: 0 16px 0 8px;
-    border: 0;
-    border-radius: 2px;
-    background-color: var(--joh-c-bg);
-    color: var(--joh-c-text-1);
-    cursor: pointer;
-    font-family: var(--search-ui-font);
-    font-size: 14px;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(0, calc(-100% * var(--search-overlay-direction, 1)), 0);
+    background: var(--joh-c-bg);
+    box-shadow: var(--joh-shadow-1);
+    will-change: transform;
   }
 
-  .SearchMessage {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 24px;
-    margin: 20px 0;
-    color: #999999;
-    font-family: var(--search-ui-font);
-    font-size: calc(16px * var(--search-ui-scale));
-    font-weight: 700;
+  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'] {
+    --search-overlay-direction: -1;
   }
 
-  @media (max-width: config.$mobile) {
-    .SearchMessage {
-      justify-content: flex-start;
-    }
-  }
-
-  .SearchJournal {
-    margin-top: 12px;
-    overflow: clip;
-  }
-
-  .SearchJournal--drawer {
+  html[data-search-overlay='active'] body::before {
     opacity: 1;
+  }
+
+  html[data-search-overlay='active'].is-changing body::before {
+    transition: transform 420ms cubic-bezier(0.33, 0, 0.13, 1);
+  }
+
+  html[data-search-overlay='active'].is-animating body::before {
     transform: translate3d(0, 0, 0);
-    transition:
-      opacity var(--search-journal-drawer-dur) var(--search-journal-drawer-ease),
-      transform var(--search-journal-drawer-dur) var(--search-journal-drawer-ease);
-    will-change: opacity, transform;
   }
 
-  .SearchJournal--drawer[data-journal-motion="replace"].is-exit,
-  .SearchJournal--drawer[data-journal-motion="replace"].is-enter-start {
-    opacity: 0;
-    transform: translate3d(0, var(--search-journal-drawer-y), 0);
+  html[data-search-overlay='active'].is-rendering body::before {
+    transform: translate3d(0, calc(100% * var(--search-overlay-direction, 1)), 0);
   }
 
-  .SearchJournal--drawer[data-journal-motion="forward"].is-exit {
-    opacity: 0;
-    transform: translate3d(calc(var(--search-journal-drawer-x) * -1), 0, 0);
+  html[data-search-overlay='active'].is-changing main.Content {
+    transition: transform 420ms cubic-bezier(0.33, 0, 0.13, 1);
+    will-change: transform;
   }
 
-  .SearchJournal--drawer[data-journal-motion="forward"].is-enter-start {
-    opacity: 0;
-    transform: translate3d(var(--search-journal-drawer-x), 0, 0);
+  html[data-search-overlay='active'].is-animating.is-leaving main.Content {
+    transform: translateY(calc(4vh * var(--search-overlay-direction, 1)));
   }
 
-  .SearchJournal--drawer[data-journal-motion="backward"].is-exit {
-    opacity: 0;
-    transform: translate3d(var(--search-journal-drawer-x), 0, 0);
+  html[data-search-overlay='active'].is-animating.is-rendering main.Content {
+    transform: translateY(calc(-4vh * var(--search-overlay-direction, 1)));
   }
 
-  .SearchJournal--drawer[data-journal-motion="backward"].is-enter-start {
-    opacity: 0;
-    transform: translate3d(calc(var(--search-journal-drawer-x) * -1), 0, 0);
-  }
-
-  .SearchJournal--drawer.is-enter-start {
-    transition: none;
-  }
-
-  .slideVisibleOnceBottom {
-    opacity: 1;
+  html[data-search-overlay='active'].is-rendering main.Content,
+  html[data-search-overlay='active']:not(.is-changing) main.Content {
     transform: translateY(0);
-    transition:
-      opacity var(--slide-visible-once-bottom-dur) var(--slide-visible-once-bottom-ease),
-      transform var(--slide-visible-once-bottom-dur) var(--slide-visible-once-bottom-ease);
-    will-change: opacity, transform;
   }
 
-  .slideVisibleOnceBottom.is-exit,
-  .slideVisibleOnceBottom.is-enter-start {
-    opacity: 0;
-    transform: translateY(var(--slide-visible-once-bottom-y));
-  }
-
-  .slideVisibleOnceBottom.is-enter-start {
-    transition: none;
-  }
-
-  .SearchPagination {
-    .pagination-previous[disabled],
-    .pagination-next[disabled] {
-      cursor: default;
-      opacity: 0.4;
-      pointer-events: none;
+  @media (prefers-reduced-motion: reduce) {
+    html[data-search-overlay='active'] body::before,
+    html[data-search-overlay='active'] main.Content {
+      transition: none;
+      animation: none;
+      transform: none;
     }
   }
-
-  .SearchRelatedTags {
-    box-sizing: border-box;
-    width: 100%;
-    max-width: var(--joh-layout-max-width);
-    margin: 24px auto;
-    padding-right: 24px;
-
-    h3 {
-      font-size: 0.9rem;
-      color: var(--footer-directory-title-color);
-    }
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #search .slideVisibleOnceBottom,
-  #search .SearchJournal--drawer {
-    transition: none;
-  }
-}
 }

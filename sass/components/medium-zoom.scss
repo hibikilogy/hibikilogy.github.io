@@ -1,13 +1,13 @@
 @layer components {
-	.medium-zoom-overlay {
-  backdrop-filter: blur(5rem);
-}
+  .medium-zoom-overlay {
+    backdrop-filter: blur(5rem);
+  }
 
-.medium-zoom-overlay,
-.medium-zoom-image--opened {
-  object-fit: contain !important;
-  border-radius: 0 !important;
-  border: none !important;
-  z-index: 999;
-}
+  .medium-zoom-overlay,
+  .medium-zoom-image--opened {
+    object-fit: contain !important;
+    border-radius: 0 !important;
+    border: none !important;
+    z-index: 999;
+  }
 }

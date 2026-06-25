@@ -1,209 +1,207 @@
-@use "../config.scss";
+@use '../config.scss';
 
 @layer components {
-
-.Pagination {
-  position: relative;
-  background-color: var(--joh-c-bg);
-  margin-top: 2.1rem;
-
-  .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0 auto;
-    max-width: var(--joh-layout-max-width);
-  }
-
-  .sorting {
-    display: flex;
-    align-items: flex-end;
+  .Pagination {
     position: relative;
-    flex-shrink: 0;
-    margin-right: 24px;
+    background-color: var(--joh-c-bg);
 
-    @supports (appearance: base-select) {
-      margin-right: 0px;
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0 auto;
+      max-width: var(--joh-layout-max-width);
     }
 
-    select {
-      height: 34px;
-      border-radius: 4px;
-      line-height: 24px;
-      font-family: var(--joh-font-family-base);
-      font-size: 14px;
-      font-weight: 400;
-      color: #000000;
-      background-color: #ffffff;
-      cursor: pointer;
-
-      &:focus-visible {
-        box-shadow: 0 0 0 2px rgba(34, 34, 34, 0.12);
-      }
-
-      option {
-        color: #000000;
-        background-color: #ffffff;
-      }
+    .sorting {
+      display: flex;
+      align-items: flex-end;
+      position: relative;
+      flex-shrink: 0;
+      margin-right: 24px;
 
       @supports (appearance: base-select) {
-        --icon: url("data:image/svg+xml,%0A%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2F1999%2Fxlink%22%20fill%3D%22none%22%20version%3D%221.1%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cg%3E%3Cg%20transform%3D%22matrix(0%2C-1%2C1%2C0%2C-10.5859375%2C27.914794921875)%22%3E%3Cpath%20d%3D%22M8.9573517109375%2C20.9574462109375L15.457628710937499%2C27.4573862109375C15.4711487109375%2C27.4708962109375%2C15.4849487109375%2C27.4839362109375%2C15.4990187109375%2C27.4965162109375C15.5130987109375%2C27.5124962109375%2C15.5277687109375%2C27.5281462109375%2C15.5430487109375%2C27.5434162109375C15.9335687109375%2C27.9339362109375%2C16.5667287109375%2C27.9339362109375%2C16.9572787109375%2C27.5433962109375L23.4572287109375%2C21.0430962109375C23.8477287109375%2C20.6525662109375%2C23.8477287109375%2C20.0194192109375%2C23.4572287109375%2C19.6289022109375C23.0667287109375%2C19.2383780109375%2C22.4335287109375%2C19.2383780109375%2C22.042928710937503%2C19.6289212109375L16.2504287109375%2C25.4217862109375L10.3715287109375%2C19.5431982109375C9.9809987109375%2C19.1526915109375%2C9.3478497109375%2C19.1526999109375%2C8.9573327109375%2C19.5432172109375C8.5668082109375%2C19.9337412109375%2C8.5668082109375%2C20.5669062109375%2C8.9573517109375%2C20.9574462109375Z%22%20fill-rule%3D%22evenodd%22%20fill%3D%22%23222222%22%20fill-opacity%3D%221%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+        margin-right: 0px;
+      }
 
-        appearance: base-select;
-        align-items: center;
+      select {
+        height: 34px;
+        border-radius: 4px;
+        line-height: 24px;
+        font-family: var(--joh-font-family-base);
+        font-size: 1rem;
+        font-weight: 400;
+        color: var(--joh-c-text-1);
+        background-color: var(--joh-c-bg);
+        cursor: pointer;
 
-        &::picker(select) {
-          border: 1px solid #000000;
-          border-radius: 4px;
-          padding: 4px 0;
-          box-shadow: none;
-          background-color: #ffffff;
-        }
-
-        &::picker-icon {
-          color: #000000;
-          width: 20px;
-          height: 20px;
-          background: currentColor;
-          -webkit-mask: var(--icon) no-repeat;
-          mask: var(--icon) no-repeat;
-          -webkit-mask-size: 100% 100%;
-          mask-size: 100% 100%;
-          rotate: 90deg;
-          transition: color 0.25s, rotate 0.25s;
-        }
-
-        &:open::picker-icon {
-          rotate: 270deg;
+        &:focus-visible {
+          box-shadow: 0 0 0 2px rgba(34, 34, 34, 0.12);
         }
 
         option {
-          white-space: normal;
-          padding-block: 0.375rem;
-          padding-inline: 0.75rem;
-          border-radius: 4px;
-          color: #000000;
-          background-color: #ffffff;
-          transition-property: color, background-color;
-          transition-duration: 0.2s;
-          transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+          color: var(--joh-c-text-1);
+          background-color: var(--joh-c-bg);
+        }
 
-          &:hover,
-          &:focus {
-            background-color: #f5f5f5;
-            color: #000000;
+        @supports (appearance: base-select) {
+          appearance: base-select;
+          align-items: center;
+
+          &::picker(select) {
+            border: 1px solid var(--joh-c-border);
+            border-radius: 4px;
+            padding: 4px 0;
+            box-shadow: none;
+            background-color: var(--joh-c-bg);
           }
 
-          &:checked {
-            color: #000000;
-            background-color: #ffffff;
-            font-weight: 500;
+          &::picker-icon {
+            color: var(--joh-c-text-1);
+            width: 20px;
+            height: 20px;
+            background: currentColor;
+            -webkit-mask: var(--joh-icon-svg-arrow-down) no-repeat;
+            mask: var(--joh-icon-svg-arrow-down) no-repeat;
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
+            rotate: 90deg;
+            transition:
+              color 0.25s,
+              rotate 0.25s;
           }
+
+          &:open::picker-icon {
+            rotate: 270deg;
+          }
+
+          option {
+            white-space: normal;
+            padding-block: 0.375rem;
+            padding-inline: 0.75rem;
+            border-radius: 4px;
+            color: var(--joh-c-text-1);
+            background-color: var(--joh-c-bg);
+            transition-property: color, background-color;
+            transition-duration: 0.2s;
+            transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+
+            &:hover,
+            &:focus {
+              background-color: var(--joh-c-bg-soft);
+              color: var(--joh-c-text-1);
+            }
+
+            &:checked {
+              color: var(--joh-c-text-1);
+              background-color: var(--joh-c-bg);
+              font-weight: 500;
+            }
+          }
+        }
+      }
+
+      label {
+        @supports (appearance: base-select) {
+          display: none;
+        }
+
+        position: absolute;
+        top: 50%;
+        right: -22px;
+        color: var(--joh-c-text-2);
+        font-size: 12px;
+        line-height: 1;
+        pointer-events: none;
+        transform: translateY(-50%);
+        transition: color 0.25s;
+      }
+
+      &:hover,
+      &:focus-within {
+        label {
+          color: var(--joh-c-text-1);
         }
       }
     }
 
-    label {
-      @supports (appearance: base-select) {
-        display: none;
-      }
-
-      position: absolute;
-      top: 50%;
-      right: -22px;
-      color: var(--joh-c-text-2);
-      font-size: 12px;
-      line-height: 1;
-      pointer-events: none;
-      transform: translateY(-50%);
-      transition: color 0.25s;
+    site-pagination {
+      display: block;
+      width: 100%;
     }
 
-    &:hover,
-    &:focus-within {
-      label {
-        color: var(--joh-c-text-1);
-      }
+    .paging {
+      width: 100%;
     }
-  }
 
-  site-pagination {
-    display: block;
-    width: 100%;
-  }
-
-  .paging {
-    width: 100%;
-  }
-
-  .pagination-fallback,
-  .paging-mobile {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 8px;
-    text-align: right;
-  }
-
-  .paging-mobile {
-    display: none;
-  }
-
-  .paging-desktop {
-    .pagination-list {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-left: 32px;
-      padding: 0;
-      list-style: none;
-
-      li {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 32px;
-        min-height: 32px;
-        text-align: center;
-        padding: 0 4px;
-      }
-    }
-  }
-
-  .pagination-link,
-  .pagination-previous,
-  .pagination-next {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 24px;
-    min-height: 24px;
-  }
-
-  .is-current {
-    font-size: 16px;
-    font-weight: bold;
-    line-height: 1;
-    text-align: center;
-    letter-spacing: 0;
-    cursor: default;
-  }
-
-  .pager-more {
-    padding: 5px 4px !important;
-    color: #999;
-    cursor: default;
-  }
-
-  @media (max-width: config.$tablet) {
+    .pagination-fallback,
     .paging-mobile {
       display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      text-align: right;
+    }
+
+    .paging-mobile {
+      display: none;
     }
 
     .paging-desktop {
-      display: none;
+      .pagination-list {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-left: 32px;
+        padding: 0;
+        list-style: none;
+
+        li {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-width: 32px;
+          min-height: 32px;
+          text-align: center;
+          padding: 0 4px;
+        }
+      }
+    }
+
+    .pagination-link,
+    .pagination-previous,
+    .pagination-next {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 24px;
+      min-height: 24px;
+    }
+
+    .is-current {
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 1;
+      text-align: center;
+      letter-spacing: 0;
+      cursor: default;
+    }
+
+    .pager-more {
+      padding: 5px 4px !important;
+      color: var(--joh-c-text-muted);
+      cursor: default;
+    }
+
+    @media (max-width: config.$tablet) {
+      .paging-mobile {
+        display: flex;
+      }
+
+      .paging-desktop {
+        display: none;
+      }
     }
   }
-}
 }
