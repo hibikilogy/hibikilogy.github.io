@@ -10,6 +10,7 @@ interface HeaderItem {
 
 const resolvedHeaders: Array<Pick<HeaderItem, 'element' | 'link'>> = []
 let cleanupActiveAnchor: (() => void) | null = null
+let currentActiveHash: string | null = null
 
 function getHeaders(range: number | [number, number] | 'deep' | false): HeaderItem[] {
   const headers = [...document.querySelectorAll<HTMLElement>('.content-container :where(h1,h2,h3,h4,h5,h6)')]
@@ -145,6 +146,14 @@ function useActiveAnchor(marker: HTMLElement): void {
       marker.style.top = '40px'
       marker.style.opacity = '0'
     }
+
+    // Sync URL hash with current active heading (without triggering scroll)
+    if (hash !== currentActiveHash) {
+      currentActiveHash = hash
+      const url = new URL(window.location.href)
+      url.hash = hash ?? ''
+      history.replaceState(history.state, '', url)
+    }
   }
 }
 
@@ -157,4 +166,12 @@ export function initOutline(): void {
 
   getHeaders([1, 2])
   useActiveAnchor(marker)
+
+  // Scroll to heading if page was loaded with a hash
+  const hash = decodeURIComponent(location.hash)
+  if (hash) {
+    currentActiveHash = hash
+    const heading = resolvedHeaders.find(h => h.link === hash)?.element
+    heading?.scrollIntoView()
+  }
 }
