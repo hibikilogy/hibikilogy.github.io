@@ -15,6 +15,10 @@ path = "scripts/convert.rs"
 name = "article-short-links"
 path = "scripts/article_short_links.rs"
 
+[[bin]]
+name = "body-font-subset"
+path = "scripts/body_font_subset.rs"
+
 [dependencies]
 anyhow = "1"
 base64 = "0.22"

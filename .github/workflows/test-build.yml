@@ -55,6 +55,9 @@ jobs:
       - name: Subset title font
         run: pnpm build:subset-titlefont
 
+      - name: Subset body font
+        run: pnpm build:subset-bodyfont
+
       # --base-url 覆盖 config.toml 的生产域名，让预览站的 canonical / atom
       # feed / 导航 / __HIBIKILOGY_BASE_URL 等内部链接都指向 surge.sh 预览域名
       # 而非生产站点（get_url 生成的 static 资源路径是根相对 /xxx，surge 部署

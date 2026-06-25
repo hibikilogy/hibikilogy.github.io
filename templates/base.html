@@ -94,8 +94,9 @@
   {% endblock critical_css %}
 
   <link href="{{ get_url(path='styles/uno.css', cachebust=true) }}"  rel="stylesheet">
-  <link href="{{ get_url(path='styles/source-han-serif-title.css', cachebust=true) }}" rel="stylesheet">
-  <link rel="stylesheet" href="{{ get_url(path='styles/source-han-sans-sc-vf.full.css', cachebust=true) }}" >
+  <link href="{{ get_url(path='styles/source-han-serif-cn-vf.css', cachebust=true) }}" rel="stylesheet">
+  <link rel="stylesheet" href="{{ get_url(path='styles/source-han-sans-sc-vf.css', cachebust=true) }}" >
+  <link rel="stylesheet" href="{{ get_url(path='styles/source-han-sans-sc-vf.patch.css', cachebust=true) }}" >
   {% block style %}
   {% endblock %}
 

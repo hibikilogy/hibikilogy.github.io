@@ -65,6 +65,9 @@ jobs:
       - name: Subset title font
         run: pnpm build:subset-titlefont
 
+      - name: Subset body font
+        run: pnpm build:subset-bodyfont
+
       # the action tag pins the zola version used to build
       - name: Build site
         uses: shalzz/zola-deploy-action@v0.22.1
