@@ -1,4 +1,4 @@
-import { throttleAndDebounce } from './utils.ts'
+import { throttle } from 'lodash-es'
 
 interface HeaderItem {
   element: HTMLElement
@@ -84,7 +84,7 @@ function appendToParentOrRoot(
 }
 
 function useActiveAnchor(marker: HTMLElement): void {
-  const onScroll = throttleAndDebounce(setActiveLink, 100)
+  const onScroll = throttle(setActiveLink, 100)
   let previousActiveLink: Element | null = null
 
   requestAnimationFrame(setActiveLink)
@@ -102,11 +102,10 @@ function useActiveAnchor(marker: HTMLElement): void {
     const isBottom = Math.abs(scrollY + innerHeight - offsetHeight) < 1
     const headers = resolvedHeaders
       .map(({ element, link }) => ({
+        element,
         link,
-        top: getAbsoluteTop(element),
       }))
-      .filter(({ top }) => !Number.isNaN(top))
-      .sort((a, b) => a.top - b.top)
+      .filter(({ element }) => !Number.isNaN(element.getBoundingClientRect().top))
 
     if (!headers.length || scrollY < 1) {
       activateLink(null)
@@ -118,9 +117,12 @@ function useActiveAnchor(marker: HTMLElement): void {
       return
     }
 
+    // Read the actual scroll-margin-top from the first heading to stay in sync with CSS
+    const scrollMargin = parseFloat(getComputedStyle(headers[0].element).scrollMarginTop) || 0
+    const threshold = scrollMargin + 4
     let activeLink: string | null = null
-    for (const { link, top } of headers) {
-      if (top > scrollY + 4)
+    for (const { link, element } of headers) {
+      if (element.getBoundingClientRect().top > threshold)
         break
       activeLink = link
     }
@@ -132,7 +134,7 @@ function useActiveAnchor(marker: HTMLElement): void {
 
     previousActiveLink = hash == null
       ? null
-      : document.querySelector(`a[href="${location.origin + location.pathname + decodeURIComponent(hash)}"]`)
+      : document.querySelector(`a.outline-link[href$="${decodeURIComponent(hash)}"]`)
 
     if (previousActiveLink instanceof HTMLElement) {
       previousActiveLink.classList.add('active')
@@ -144,10 +146,6 @@ function useActiveAnchor(marker: HTMLElement): void {
       marker.style.opacity = '0'
     }
   }
-}
-
-function getAbsoluteTop(element: HTMLElement): number {
-  return element.getBoundingClientRect().top + window.scrollY
 }
 
 export function initOutline(): void {
