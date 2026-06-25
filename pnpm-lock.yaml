@@ -29,6 +29,9 @@ importers:
       fuse.js:
         specifier: ^7.4.2
         version: 7.4.2
+      heti-findandreplacedomtext:
+        specifier: ^0.5.0
+        version: 0.5.0
       katex:
         specifier: ^0.17.0
         version: 0.17.0
@@ -2517,6 +2520,9 @@ packages:
   hasown@2.0.4:
     resolution: {integrity: sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==}
     engines: {node: '>= 0.4'}
+
+  heti-findandreplacedomtext@0.5.0:
+    resolution: {integrity: sha512-GFZjqU8LAdu1uR72GqrReI+lzNLMlcWtvdz1TKNJiofyo1mfTecFYSZEoEbcLcRMl+KwEldnNQoS4BwO8wtg0A==}
 
   html-entities@2.6.0:
     resolution: {integrity: sha512-kig+rMn/QOVRvr7c86gQ8lWXq+Hkv6CbAH1hLu+RG338StTpE8Z0b44SDVaqVu7HGKf27frdmUYEs9hTUX/cLQ==}
@@ -6938,6 +6944,8 @@ snapshots:
   hasown@2.0.4:
     dependencies:
       function-bind: 1.1.2
+
+  heti-findandreplacedomtext@0.5.0: {}
 
   html-entities@2.6.0: {}
 
