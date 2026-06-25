@@ -49,6 +49,7 @@
     "@unocss/preset-wind4": "^66.7.2",
     "concurrently": "^10.0.3",
     "eslint": "^10.3.0",
+    "eslint-plugin-format": "^2.0.1",
     "smol-toml": "^1.7.0",
     "typescript": "^6.0.0",
     "unocss": "^66.7.2",
