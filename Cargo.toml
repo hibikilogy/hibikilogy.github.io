@@ -33,6 +33,7 @@ serde_json = "1"
 sha2 = "0.10"
 skera = "0.3"
 skrifa = "0.43"
+chrono = { version = "0.4", default-features = false, features = [ "std" ] }
 toml = "0.8"
 walkdir = "2"
 woofwoof = "1"
