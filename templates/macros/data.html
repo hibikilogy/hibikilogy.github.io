@@ -1,0 +1,24 @@
+{# Data utilities — return strings, no HTML output #}
+
+{% macro cover_url(page, default="") -%}
+{%- if page.extra.cover -%}
+{%- set cover = page.extra.cover | trim -%}
+{%- if cover is starting_with("http://") or cover is starting_with("https://") -%}
+{{- cover | trim -}}
+{%- else -%}
+{{- get_url(path=cover) | trim -}}
+{%- endif -%}
+{%- elif default -%}
+{%- if default is starting_with("http://") or default is starting_with("https://") -%}
+{{- default | trim -}}
+{%- else -%}
+{{- get_url(path=default) | trim -}}
+{%- endif -%}
+{%- endif -%}
+{% endmacro %}
+
+{% macro post_title_transition_name(page) -%}
+{%- set id = page.slug | default(value=page.relative_path | default(value=page.path | default(value=page.permalink))) -%}
+{%- set name = "post-title-" ~ id -%}
+{{- name | replace(from="/", to="-") | replace(from=".", to="-") -}}
+{% endmacro %}

@@ -1,0 +1,34 @@
+{# Tag taxonomy helpers #}
+
+{% macro tags_list(show_count=false) %}
+{% set tags = get_taxonomy(kind="tags") %}
+{% for tag in tags.items | sort(attribute='pages') | reverse %}
+<a href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" class="joh-tag" title="{{ tag.name }}">
+  <span>{{ tag.name }}</span>
+  {% if show_count %}
+  <span class="tag-count">{{ tag.pages | length }}</span>
+  {% endif %}
+</a>
+{% endfor %}
+{% endmacro %}
+
+{% macro tags_list_for_pages(pages, show_count=false) %}
+{% set page_permalinks = pages | map(attribute="permalink") %}
+{% set tags = get_taxonomy(kind="tags") %}
+{% for tag in tags.items | sort(attribute='pages') | reverse %}
+  {% set_global tag_count = 0 %}
+  {% for tag_page in tag.pages %}
+    {% if tag_page.permalink in page_permalinks %}
+      {% set_global tag_count = tag_count + 1 %}
+    {% endif %}
+  {% endfor %}
+  {% if tag_count > 0 %}
+  <a href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" class="joh-tag" title="{{ tag.name }}">
+    <span>{{ tag.name }}</span>
+    {% if show_count %}
+    <span class="tag-count">{{ tag_count }}</span>
+    {% endif %}
+  </a>
+  {% endif %}
+{% endfor %}
+{% endmacro %}

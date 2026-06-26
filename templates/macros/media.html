@@ -1,0 +1,34 @@
+{# Image rendering macros #}
+
+{% macro image(path, alt="", class="", loading="lazy", decoding="auto", fetchpriority="auto") %}
+<img src="{{ path }}" alt="{{ alt }}"{% if class %} class="{{ class }}"{% endif %}
+  loading="{{ loading }}" decoding="{{ decoding }}" fetchpriority="{{ fetchpriority }}" />
+{% endmacro %}
+
+{% macro img(path, class="", alt="", caption="", scale=1, quality=100, width=1, height=1) %}
+{% if path is starting_with("./") %}
+{% set relative_path = page.relative_path | split(pat="/") | slice(end=-1) | join(sep="/") %}
+{% set img_path = path | trim_start_matches(pat="./") %}
+{% set img_path = relative_path ~ "/" ~ img_path %}
+{% else %}
+{% set img_path = path %}
+{% endif %}
+
+{% set file_ext = path | split(pat=".") | last %}
+{% set mdata = get_image_metadata(path=path) %}
+{% set resized_image = resize_image(path=img_path, width=width, op="fit_width", quality=quality) %}
+{% set webp = resize_image(path=img_path, width=width, op="fit_width", quality=quality, format="webp") %}
+{% set high_res_url = resized_image.url %}
+
+<figure>
+  <picture>
+    <source srcset="{{ webp.url }}" type="image/webp" data-resolution-width="{{ width }}">
+    <source srcset="{{ high_res_url }}" media="(min-width: 2x)" type="image/{{ file_ext }}" data-resolution-width="{{ width }}">
+    <img src="{{ resized_image.url }}" loading="eager" class="{{ class }}" alt="{{ alt }}"
+      style="width: 100%; height: auto;" data-resolution-width="{{ width }}">
+  </picture>
+  {% if caption %}
+  <figcaption>{{ caption | safe }}</figcaption>
+  {% endif %}
+</figure>
+{% endmacro %}

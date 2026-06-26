@@ -1,0 +1,29 @@
+{# Build & pagination utilities #}
+
+{% macro css(path) %}
+{% if config.mode == "serve" %}
+<link rel="stylesheet" href="{{ get_url(path=path) }}">
+{% else %}
+<style>{{ load_data(path=path) | trim | safe }}</style>
+{% endif %}
+{% endmacro %}
+
+{% macro script(path, cachebust=true, module=false, async=false, defer=false) %}
+  {% set is_serve = config.mode == "serve" %}
+
+  {% if is_serve %}
+    {% set src = get_url(path=path) %}
+  {% else %}
+    {% set src = get_url(path=path, cachebust=cachebust) %}
+  {% endif %}
+
+  <script
+    src="{{ src | safe }}"
+    {% if module %}type="module"{% endif %}
+    {% if async %}async{% endif %}
+    {% if defer %}defer{% endif %}
+    {% if not is_serve %}
+      integrity="sha384-{{ get_hash(path=path, sha_type=384, base64=true) | safe }}"
+    {% endif %}
+  ></script>
+{% endmacro %}

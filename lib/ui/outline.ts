@@ -1,5 +1,11 @@
 import { throttle } from 'lodash-es'
 
+declare global {
+  interface Window {
+    outlineItemOnClick?: (event: Event) => void
+  }
+}
+
 interface HeaderItem {
   element: HTMLElement
   title: string
@@ -165,6 +171,17 @@ export function initOutline(): void {
     return
 
   getHeaders([1, 2])
+
+  // Ensure outline link click handler is always available (inline script may not re-run after Swup navigation)
+  window.outlineItemOnClick = (event: Event) => {
+    const el = event.target
+    if (el instanceof HTMLAnchorElement) {
+      const id = el.href.split('#')[1]
+      const heading = document.getElementById(decodeURIComponent(id))
+      heading?.focus({ preventScroll: true })
+    }
+  }
+
   useActiveAnchor(marker)
 
   // Scroll to heading if page was loaded with a hash
