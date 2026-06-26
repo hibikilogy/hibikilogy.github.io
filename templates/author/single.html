@@ -3,9 +3,24 @@
 {% extends "base.html" %}
 
 {% block critical_css %}
-{{ macros::css(path="components/journal.css") }}
-{{ macros::css(path="components/hero.css") }}
+{{ build::css(path="components/journal.css") }}
+{{ build::css(path="components/hero.css") }}
 {% endblock critical_css %}
+
+{% block meta %}
+<meta name="author" content="{{ term.name }}">
+{% endblock %}
+
+{% block structured_data -%}
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "{{ term.name }}",
+    "url": "{{ current_url | safe }}"
+  }
+</script>
+{%- endblock structured_data %}
 
 {% block header %}
 {{ hero::main(isPost=false, page="", title=trans(key="author_title"), name=term.name, kind="author")}}

@@ -1,7 +1,7 @@
 {% macro main(page, show_cover) %}
 <article class="Section Article">
   <a href="{{ page.permalink }}">
-    {% set title_transition_name = macros::post_title_transition_name(page=page) | trim %}
+    {% set title_transition_name = data::post_title_transition_name(page=page) | trim %}
     <h2 class="article-title">
       <span class="PostTitleTransition" style="view-transition-name: {{ title_transition_name }}">
         {{ page.title }}
@@ -28,7 +28,7 @@
     </div>
   </a>
   <div class="article-meta">
-    {{ macros::page_publish_metadata(page=page) }}
+    {{ post::page_publish_metadata(page=page) }}
   </div>
 </article>
 {% endmacro %}

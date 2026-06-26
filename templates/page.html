@@ -3,12 +3,22 @@
 
 {% extends 'base.html' %}
 
+{# ── Data layer: all preprocessing lives here, runs once in parent scope ── #}
+{% block vars %}
+{% set authors    = page.taxonomies.author | default(value=[]) %}
+{% set has_author = authors | length > 0 %}
+{% set tags       = page.taxonomies.tags | default(value=[]) %}
+{% set modified   = page.updated | default(value=page.date) %}
+{% set cover_url  = data::cover_url(page=page) | default(value="") %}
+{% set has_cover  = cover_url | length > 0 %}
+{% endblock vars %}
+
 {% block title %}
-{{ config.title }} | {{ page.title }}
+{%- include 'title.html' -%}
 {% endblock %}
 
 {% block critical_css %}
-{{ macros::css(path="layouts/page.css") }}
+{{ build::css(path="layouts/page.css") }}
 {% endblock critical_css %}
 
 {% block class %}
@@ -17,26 +27,31 @@ post
 
 {% block meta %}
 <meta property="og:type" content="article">
-{% if page.taxonomies.author and page.taxonomies.author | length > 0 %}
-<meta property="article:author" content="{{ page.taxonomies.author | join(sep='、') }}">
+<meta property="article:published_time" content="{{ page.date }}">
+<meta property="og:updated_time" content="{{ modified }}">
+<meta property="article:modified_time" content="{{ modified }}">
+{% if has_author %}
+<meta property="article:author" content="{{ authors | join(sep='、') }}">
+<meta name="author" content="{{ authors | join(sep='、') }}">
 {% endif %}
-{% if page.extra.cover %}
-{% set cover_image = page.extra.cover | trim %}
-{% if cover_image is starting_with("http://") or cover_image is starting_with("https://") %}
-<meta property="og:image" content="{{ cover_image }}">
-<meta name="twitter:image" content="{{ cover_image }}">
-{% else %}
-{% set cover_image_url = get_url(path=cover_image) %}
-<meta property="og:image" content="{{ cover_image_url }}">
-<meta name="twitter:image" content="{{ cover_image_url }}">
-{% endif %}
+{% for tag in tags %}
+<meta property="article:tag" content="{{ tag }}">
+{% endfor %}
+{% if has_cover %}
+<meta property="og:image" content="{{ cover_url }}">
+<meta name="twitter:image" content="{{ cover_url }}">
 <meta property="og:image:alt" content="{{ page.extra.cover_alt | default(value=page.title) }}">
 <meta name="twitter:image:alt" content="{{ page.extra.cover_alt | default(value=page.title) }}">
 {% endif %}
-<meta property="og:updated_time" content="{{ page.updated | default(value=page.date) }}">
-<meta property="article:modified_time" content="{{ page.updated | default(value=page.date)  }}">
+{% endblock meta %}
+
+{% block style %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css" integrity="sha384-vlBdW0r3AcZO/HboRPznQNowvexd3fY8qHOWkBi5q7KGgqJ+F48+DceybYmrVbmB" crossorigin="anonymous">
 {% endblock %}
+
+{% block structured_data %}
+{{ post::article_json_ld(page=page, cover_url=cover_url) }}
+{% endblock structured_data %}
 
 {% block header %}
 {{ hero::main(isPost=true, page=page) }}
@@ -54,4 +69,3 @@ post
   {{ aside::main(page=page) }}
 </div>
 {% endblock %}
-

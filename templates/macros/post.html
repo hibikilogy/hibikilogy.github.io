@@ -50,11 +50,11 @@
   {
     "@context": "https://schema.org",
     "@type": "Article",
-    "@id": "{{ current_url }}",
+    "@id": "{{ current_url | safe }}",
     "headline": "{{ page.title }}",
     "description": "{% if page.description %}{{ page.description }}{% elif page.extra.abstract %}{{ page.extra.abstract }}{% endif %}",
-    "url": "{{ current_url }}",
-    "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ current_url }}" },
+    "url": "{{ current_url | safe }}",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ current_url | safe }}" },
     "datePublished": "{{ page.date }}",
     "dateModified": "{{ modified }}",
     "inLanguage": "{{ lang }}",
@@ -66,10 +66,10 @@
     {% endif %}"publisher": {
       "@type": "Organization",
       "name": "{{ config.title }}",
-      "url": "{{ config.base_url | trim_end_matches(pat="/") }}",
+      "url": "{{ config.base_url | trim_end_matches(pat="/") | safe }}",
       "logo": { "@type": "ImageObject", "url": "{{ get_url(path=config.extra.navbar_logo) }}" }
     }{% if page.extra.original %},
-    "isBasedOn": "{{ page.extra.original }}"{% endif %}
+    "isBasedOn": "{{ page.extra.original | safe }}"{% endif %}
   }
 </script>
 {% endmacro %}

@@ -14,9 +14,9 @@
       {% endfor %}
       <tags-list class="footer-list TagsList">
         {% if tag_pages %}
-        {{ macros::tags_list_for_pages(pages=tag_pages, show_count=true) }}
+        {{ tags::tags_list_for_pages(pages=tag_pages, show_count=true) }}
         {% else %}
-        {{ macros::tags_list(show_count=true) }}
+        {{ tags::tags_list(show_count=true) }}
         {% endif %}
       </tags-list>
     </section>

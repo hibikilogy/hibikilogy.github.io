@@ -2,12 +2,7 @@
 <header class="Hero {% if page.extra.cover is defined and page.extra.cover %} has-cover{% else %} no-cover {% endif %}">
   <div class="container">
     {% if isPost %}
-    {% set cover_src = page.extra.cover | default(value=config.extra.default_cover) | trim %}
-    {% if cover_src is starting_with("http://") or cover_src is starting_with("https://") %}
-    {% set cover_url = cover_src %}
-    {% else %}
-    {% set cover_url = get_url(path=cover_src) %}
-    {% endif %}
+    {% set cover_url = data::cover_url(page=page, default=config.extra.default_cover) %}
     <div class="post-heading">
       <img class="article-cover"
         src="{{ cover_url }}"
@@ -18,11 +13,11 @@
         <div class="post-heading-info-container">
           <div class="post-heading-tags TagsList">
             {% if page.taxonomies.tags %}
-            {{ macros::post_tags_list(page=page) }}
+            {{ post::post_tags_list(page=page) }}
             {% endif %}
           </div>
           {% set title_transition_name =
-          macros::post_title_transition_name(page=page) | trim %}
+          data::post_title_transition_name(page=page) | trim %}
           <h1 class="post-heading-title">
             <span class="PostTitleTransition"
               style="view-transition-name: {{ title_transition_name }}">
@@ -31,7 +26,7 @@
           </h1>
           <p class="post-heading-subtitle">{{ page.description }}</p>
           <div class="post-heading-meta">
-            {{ macros::page_publish_metadata(page=page) }}
+            {{ post::page_publish_metadata(page=page) }}
           </div>
         </div>
       </div>

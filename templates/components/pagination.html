@@ -14,17 +14,7 @@
       mode="link"
       {% if paginator.previous %}previous-url="{{ paginator.previous }}"{% endif %}
       {% if paginator.next %}next-url="{{ paginator.next }}"{% endif %}
-    >
-      <nav class="paging pagination-fallback" aria-label="{{ trans(key='pagination_aria') }}">
-        {% if paginator.previous %}
-        {{ macros::prev_page(paginator=paginator) }}
-        {% endif %}
-        <span>{{ trans(key='pagination_page_prefix') }} {{ paginator.current_index }} {{ trans(key='pagination_page_middle') }} {{ paginator.number_pagers }} {{ trans(key='pagination_page_suffix') }}</span>
-        {% if paginator.next %}
-        {{ macros::next_page(paginator=paginator) }}
-        {% endif %}
-      </nav>
-    </site-pagination>
+    ></site-pagination>
   </div>
 </div>
 {% endif %}
