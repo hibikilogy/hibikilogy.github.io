@@ -89,14 +89,14 @@ quality=quality, format="webp") %}
 {% macro tags_list(show_count=false) %}
 {% set tags = get_taxonomy(kind="tags") %}
 {% for tag in tags.items | sort(attribute='pages') | reverse %}
-<a href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" class="joh-tag" target="_blank" title="{{tag.name}}">
-  <span>{{tag.name}}</span>
-  {% if show_count %}
-  <span class="tag-count">
-    {{ tag.pages | length }}
-  </span>
-  {% endif %}
-</a>
+	<a href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" class="joh-tag" title="{{tag.name}}">
+	  <span>{{tag.name}}</span>
+	  {% if show_count %}
+	  <span class="tag-count">
+	    {{ tag.pages | length }}
+	  </span>
+	  {% endif %}
+	</a>
 {% endfor %}
 {% endmacro %}
 
@@ -114,14 +114,14 @@ quality=quality, format="webp") %}
 {% endif %}
 {% endfor %}
 {% if tag_count > 0 %}
-<a href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" class="joh-tag" target="_blank" title="{{tag.name}}">
-  <span>{{tag.name}}</span>
-  {% if show_count %}
-  <span class="tag-count">
-    {{ tag_count }}
-  </span>
-  {% endif %}
-</a>
+	<a href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" class="joh-tag" title="{{tag.name}}">
+	  <span>{{tag.name}}</span>
+	  {% if show_count %}
+	  <span class="tag-count">
+	    {{ tag_count }}
+	  </span>
+	  {% endif %}
+	</a>
 {% endif %}
 {% endfor %}
 {% endmacro %}
@@ -129,7 +129,7 @@ quality=quality, format="webp") %}
 {% macro post_tags_list(page) %}
 {% if page.taxonomies.tags %}
 {% for tag in page.taxonomies.tags %}
-<a href="{{ get_taxonomy_url(kind='tags', name=tag) }}" class="joh-tag" target="_blank" title="{{tag}}">
+	<a href="{{ get_taxonomy_url(kind='tags', name=tag) }}" class="joh-tag" title="{{tag}}">
   <span>{{tag}}</span>
 </a>
 {% endfor %}

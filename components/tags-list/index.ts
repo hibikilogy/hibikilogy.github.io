@@ -65,7 +65,6 @@ export class TagsList extends LitElement {
       <a
         class="joh-tag mr-2 font-700 text-inherit no-underline"
         href=${item.href || '#'}
-        target="_blank"
         title=${item.name}
       >
         <span>${item.name}</span>

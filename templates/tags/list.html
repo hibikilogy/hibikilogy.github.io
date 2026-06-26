@@ -23,7 +23,7 @@
       <div class="tag-category-list">
         {% for tag in sorted_terms %}
         {% if tag.name in person_tags %}
-        <a class="joh-tag" href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" target="_blank" title="{{tag.name}}">
+        <a class="joh-tag" href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" title="{{tag.name}}">
           <span>{{tag.name}}</span>
           <span class="tag-count">{{ tag.pages | length }}</span>
         </a>
@@ -39,7 +39,7 @@
       <div class="tag-category-list">
         {% for tag in sorted_terms %}
         {% if tag.name in section_tags %}
-        <a class="joh-tag" href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" target="_blank" title="{{tag.name}}">
+        <a class="joh-tag" href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" title="{{tag.name}}">
           <span>{{tag.name}}</span>
           <span class="tag-count">{{ tag.pages | length }}</span>
         </a>
@@ -55,7 +55,7 @@
       <div class="tag-category-list">
         {% for tag in sorted_terms %}
         {% if tag.name not in person_tags and tag.name not in section_tags %}
-        <a class="joh-tag" href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" target="_blank" title="{{tag.name}}">
+        <a class="joh-tag" href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" title="{{tag.name}}">
           <span>{{tag.name}}</span>
           <span class="tag-count">{{ tag.pages | length }}</span>
         </a>
