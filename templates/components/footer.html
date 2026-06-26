@@ -29,7 +29,7 @@
       <div class="footer-list">
         {% for nav in item.frendlinks %}
         <a class="Link link FoooterFriendLink joh-external-link-icon" aria-expanded="false" aria-label="menu" role="button"
-          href="{{ nav.link | replace(from='$BASE_URL', to=config.base_url) }}" title="{{ nav.link | replace(from='$BASE_URL', to=config.base_url) }}" tabindex="0">
+          href="{{ nav.link | replace(from='$BASE_URL', to=config.base_url) }}" title="{{ nav.link | replace(from='$BASE_URL', to=config.base_url) }}" tabindex="0" target="_blank" rel="noopener noreferrer">
           <span>{{ nav.text }}</span>
         </a>
         {% endfor %}
