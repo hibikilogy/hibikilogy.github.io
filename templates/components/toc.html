@@ -9,7 +9,7 @@
     <ul class="DocOutlineItem">
       {% for h1 in page.toc %}
       <li>
-        <a class="outline-link" href="{{ h1.permalink | safe }}" onclick="outlineItemOnClick(event)"
+        <a class="outline-link" href="{{ h1.permalink | safe }}"
           title="{{h1.title}}">{{
           h1.title
           }}</a>
@@ -17,7 +17,7 @@
         <ul class="DocOutlineItem">
           {% for h2 in h1.children %}
           <li>
-            <a class="outline-link" href="{{ h2.permalink | safe }}" onclick="outlineItemOnClick(event)"
+            <a class="outline-link" href="{{ h2.permalink | safe }}"
               title="{{h2.title}}">{{ h2.title
               }}</a>
           </li>
@@ -29,12 +29,5 @@
     </ul>
   </div>
 </nav>
-<script>
-  function outlineItemOnClick({ target: el }) {
-    const id = el.href.split('#')[1]
-    const heading = document.getElementById(decodeURIComponent(id))
-    heading?.focus({ preventScroll: true })
-  }
-</script>
 {% endif %}
 {% endmacro %}

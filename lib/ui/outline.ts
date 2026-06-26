@@ -1,11 +1,5 @@
 import { throttle } from 'lodash-es'
 
-declare global {
-  interface Window {
-    outlineItemOnClick?: (event: Event) => void
-  }
-}
-
 interface HeaderItem {
   element: HTMLElement
   title: string
@@ -172,15 +166,19 @@ export function initOutline(): void {
 
   getHeaders([1, 2])
 
-  // Ensure outline link click handler is always available (inline script may not re-run after Swup navigation)
-  window.outlineItemOnClick = (event: Event) => {
+  // Delegated click handler on outline: focus the target heading for accessibility
+  marker.closest('.AsideOutline')?.addEventListener('click', (event) => {
     const el = event.target
-    if (el instanceof HTMLAnchorElement) {
+    if (el instanceof HTMLAnchorElement && el.classList.contains('outline-link')) {
+      event.preventDefault()
       const id = el.href.split('#')[1]
       const heading = document.getElementById(decodeURIComponent(id))
-      heading?.focus({ preventScroll: true })
+      if (heading) {
+        heading.focus({ preventScroll: true })
+        heading.scrollIntoView()
+      }
     }
-  }
+  })
 
   useActiveAnchor(marker)
 
