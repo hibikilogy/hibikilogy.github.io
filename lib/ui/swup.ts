@@ -1,6 +1,7 @@
 import SwupBodyClassPlugin from '@swup/body-class-plugin'
 import SwupGaPlugin from '@swup/ga-plugin'
 import SwupHeadPlugin from '@swup/head-plugin'
+import SwupPreloadPlugin from '@swup/preload-plugin'
 import SwupScrollPlugin from '@swup/scroll-plugin'
 import Swup from 'swup'
 import { HIBIKILOGY_CONFIG } from 'virtual:hibikilogy-config'
@@ -38,6 +39,13 @@ export function createSwup(): Swup {
       betweenPages: false,
       samePageWithHash: false,
       samePage: false,
+    },
+  }))
+
+  swup.use(new SwupPreloadPlugin({
+    preloadVisibleLinks: {
+      threshold: 0.2,
+      delay: 300,
     },
   }))
 

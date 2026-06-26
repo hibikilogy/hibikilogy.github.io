@@ -29,6 +29,7 @@
     "@swup/body-class-plugin": "^3.3.0",
     "@swup/ga-plugin": "^2.0.0",
     "@swup/head-plugin": "^2.3.1",
+    "@swup/preload-plugin": "^3.2.11",
     "@swup/scroll-plugin": "^4.0.0",
     "clsx": "^2.1.1",
     "fuse.js": "^7.4.2",

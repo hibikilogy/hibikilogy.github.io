@@ -133,6 +133,26 @@
   <link rel="prefetch" href="{{ url }}">
   {% endfor %}
 
+  {% if not config.mode == "serve" %}
+  <script type="speculationrules">
+  {
+    "prefetch": [
+      {
+        "where": {
+          "and": [
+            { "href_matches": "/*" },
+            { "not": { "selector_matches": "[download]" } },
+            { "not": { "selector_matches": "[target=_blank]" } },
+            { "not": { "selector_matches": "[data-no-swup]" } }
+          ]
+        },
+        "eagerness": "moderate"
+      }
+    ]
+  }
+  </script>
+  {% endif %}
+
   {% block script %}
   {% endblock %}
 
@@ -178,13 +198,22 @@
   {% block user_custom_js %}
   {% endblock %}
 
-   {% if config.extra.quicklink.enabled %}
-  <script type="module">
-    import { listen } from "https://unpkg.com/quicklink@3.0.1/dist/quicklink.mjs";
-
-    window.addEventListener("load", () => listen());
+  {# Hover-prefetch fallback for browsers that don't support Speculation Rules (Firefox, Safari) #}
+  <script>
+  (function() {
+    if (HTMLScriptElement.supports?.('speculationrules')) return;
+    var done = new Set();
+    document.addEventListener('mouseover', function(e) {
+      var a = e.target.closest('a[href^="/"]');
+      if (!a || a.host !== location.host || done.has(a.href)) return;
+      done.add(a.href);
+      var link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = a.href;
+      document.head.append(link);
+    }, { capture: true, passive: true });
+  })();
   </script>
-  {% endif %}
 </body>
 
 </html>

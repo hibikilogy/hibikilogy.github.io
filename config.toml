@@ -111,8 +111,6 @@ chart.enabled = true
 katex.enabled = true
 katex.auto_render = true
 
-quicklink.enabled = true
-
 [extra.image_host_rewrite]
 old_host = "https://hibikilogy.vercel.app/"
 new_host = "https://hibikilogy.interknot.site/"
