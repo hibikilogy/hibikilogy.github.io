@@ -157,8 +157,9 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
     journal.classList.toggle('is-waterfall-right-border-owner', !leftOwnsMiddleBorder)
   }
 
+  const waterfallMedia = window.matchMedia('(min-width: 1151px)')
   function isWaterfallLayout(): boolean {
-    return getComputedStyle(journal).display === 'grid'
+    return waterfallMedia.matches
   }
 
   function updateFrontPageNeighbor(items: HTMLElement[]): void {
