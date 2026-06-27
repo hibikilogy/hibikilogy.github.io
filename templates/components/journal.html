@@ -51,7 +51,7 @@
     {% for page in pages %}
       {{ article::main(
         page=page,
-        show_cover=(idx == cover_index),
+        show_cover=true,
         cover_eager=(idx == cover_index)
       ) }}
       {% set_global idx = idx + 1 %}
