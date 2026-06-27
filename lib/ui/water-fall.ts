@@ -61,6 +61,14 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
   let animationFrame = 0
   let pendingResolve: (() => void) | null = null
   let currentChildSelector = childSelector
+
+  const C_BELOW_FRONTPAGE = 'is-below-frontpage'
+  const C_LEFT_COLUMN = 'is-waterfall-left-column'
+  const C_RIGHT_COLUMN = 'is-waterfall-right-column'
+  const C_LEFT_BORDER = 'is-waterfall-left-border-owner'
+  const C_RIGHT_BORDER = 'is-waterfall-right-border-owner'
+  const C_FRONTPAGE = 'FrontPage'
+  const C_ARTICLE = 'Article'
   const observedImages = new WeakSet<HTMLImageElement>()
   const observedItems = new WeakSet<Element>()
   const resizeObserver = window.ResizeObserver
@@ -119,7 +127,7 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
 
   function updateColumnClasses(items: HTMLElement[]): void {
     if (!items.length) {
-      journal.classList.remove('is-waterfall-left-border-owner', 'is-waterfall-right-border-owner')
+      journal.classList.remove(C_LEFT_BORDER, C_RIGHT_BORDER)
       return
     }
 
@@ -129,16 +137,16 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
 
     if (minOffsetLeft === maxOffsetLeft) {
       items.forEach((item) => {
-        item.classList.remove('is-waterfall-left-column', 'is-waterfall-right-column')
+        item.classList.remove(C_LEFT_COLUMN, C_RIGHT_COLUMN)
       })
-      journal.classList.remove('is-waterfall-left-border-owner', 'is-waterfall-right-border-owner')
+      journal.classList.remove(C_LEFT_BORDER, C_RIGHT_BORDER)
       return
     }
 
     items.forEach((item) => {
       const offsetLeft = Math.round(item.offsetLeft)
-      item.classList.toggle('is-waterfall-left-column', offsetLeft <= minOffsetLeft)
-      item.classList.toggle('is-waterfall-right-column', offsetLeft >= maxOffsetLeft)
+      item.classList.toggle(C_LEFT_COLUMN, offsetLeft <= minOffsetLeft)
+      item.classList.toggle(C_RIGHT_COLUMN, offsetLeft >= maxOffsetLeft)
     })
 
     let leftColumnBottom = Number.NEGATIVE_INFINITY
@@ -146,41 +154,43 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
 
     items.forEach((item) => {
       const bottom = Math.round(item.offsetTop + item.offsetHeight)
-      if (item.classList.contains('is-waterfall-left-column'))
+      if (item.classList.contains(C_LEFT_COLUMN))
         leftColumnBottom = Math.max(leftColumnBottom, bottom)
-      if (item.classList.contains('is-waterfall-right-column'))
+      if (item.classList.contains(C_RIGHT_COLUMN))
         rightColumnBottom = Math.max(rightColumnBottom, bottom)
     })
 
     const leftOwnsMiddleBorder = leftColumnBottom > rightColumnBottom
-    journal.classList.toggle('is-waterfall-left-border-owner', leftOwnsMiddleBorder)
-    journal.classList.toggle('is-waterfall-right-border-owner', !leftOwnsMiddleBorder)
+    journal.classList.toggle(C_LEFT_BORDER, leftOwnsMiddleBorder)
+    journal.classList.toggle(C_RIGHT_BORDER, !leftOwnsMiddleBorder)
   }
 
-  const waterfallMedia = window.matchMedia('(min-width: 1151px)')
   function isWaterfallLayout(): boolean {
-    return waterfallMedia.matches
+    const item = journal.querySelector('.Section') as HTMLElement | null
+    if (!item)
+      return false
+    return journal.clientWidth >= item.offsetWidth * 2
   }
 
   function updateFrontPageNeighbor(items: HTMLElement[]): void {
-    const frontPage = items.find(item => item.classList.contains('FrontPage'))
+    const frontPage = items.find(item => item.classList.contains(C_FRONTPAGE))
     if (!frontPage)
       return
 
     const bottom = Math.round(frontPage.offsetTop + frontPage.offsetHeight)
     const left = Math.round(frontPage.offsetLeft)
 
-    items.forEach(item => item.classList.remove('is-below-frontpage'))
+    items.forEach(item => item.classList.remove(C_BELOW_FRONTPAGE))
 
     for (const item of items) {
-      if (!item.classList.contains('Article'))
+      if (!item.classList.contains(C_ARTICLE))
         continue
       if (Math.round(item.offsetTop) < bottom)
         continue
       if (Math.round(item.offsetLeft) !== left)
         continue
 
-      item.classList.add('is-below-frontpage')
+      item.classList.add(C_BELOW_FRONTPAGE)
       break
     }
   }
@@ -196,7 +206,12 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
 
     if (!isWaterfallLayout()) {
       journal.style.opacity = '1'
-      allArticles.forEach(item => item.classList.remove('is-below-frontpage'))
+      allArticles.forEach(item => item.classList.remove(
+        C_BELOW_FRONTPAGE,
+        C_LEFT_COLUMN,
+        C_RIGHT_COLUMN,
+      ))
+      journal.classList.remove(C_LEFT_BORDER, C_RIGHT_BORDER)
       return
     }
 
