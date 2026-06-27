@@ -157,6 +157,29 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
     journal.classList.toggle('is-waterfall-right-border-owner', !leftOwnsMiddleBorder)
   }
 
+  function updateFrontPageNeighbor(items: HTMLElement[]): void {
+    const frontPage = items.find(item => item.classList.contains('FrontPage'))
+    if (!frontPage)
+      return
+
+    const bottom = Math.round(frontPage.offsetTop + frontPage.offsetHeight)
+    const left = Math.round(frontPage.offsetLeft)
+
+    items.forEach(item => item.classList.remove('is-below-frontpage'))
+
+    for (const item of items) {
+      if (!item.classList.contains('Article'))
+        continue
+      if (Math.round(item.offsetTop) < bottom)
+        continue
+      if (Math.round(item.offsetLeft) !== left)
+        continue
+
+      item.classList.add('is-below-frontpage')
+      break
+    }
+  }
+
   function programming(): void {
     animationFrame = 0
     const allArticles = queryChildren(journal, currentChildSelector)
@@ -179,6 +202,7 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
     })
     journal.style.display = 'grid'
     updateColumnClasses(allArticles)
+    updateFrontPageNeighbor(allArticles)
     journal.style.opacity = '1'
   }
 

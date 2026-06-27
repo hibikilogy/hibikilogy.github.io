@@ -97,10 +97,6 @@
       width: $width;
     }
 
-    :has(> :first-child.FrontPage) > .Section:nth-child(2 of article) {
-      border-top: none;
-    }
-
     .container.is-waterfall-right-border-owner > .Section.is-waterfall-left-column {
       border-right-width: 0;
     }
@@ -116,6 +112,10 @@
 
     .FrontPage.Section {
       background-color: var(--joh-journal-frontpage-bg);
+    }
+
+    .Section.is-below-frontpage {
+      border-top: none;
     }
 
     .Article {
@@ -190,14 +190,6 @@
         border-right-width: $border-width;
         margin: calc(-1 * $border-width) 0 0;
         width: 100%;
-      }
-
-      :has(> :first-child.FrontPage) > .Section:nth-child(1 of article) {
-        border-top: none;
-      }
-
-      :has(> :first-child.FrontPage) > .Section:nth-child(2 of article) {
-        border-top: $border-width solid var(--article-border-color);
       }
 
       .FrontPage {
