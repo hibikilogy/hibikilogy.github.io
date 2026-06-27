@@ -157,6 +157,10 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
     journal.classList.toggle('is-waterfall-right-border-owner', !leftOwnsMiddleBorder)
   }
 
+  function isWaterfallLayout(): boolean {
+    return getComputedStyle(journal).display === 'grid'
+  }
+
   function updateFrontPageNeighbor(items: HTMLElement[]): void {
     const frontPage = items.find(item => item.classList.contains('FrontPage'))
     if (!frontPage)
@@ -186,6 +190,12 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
 
     if (!allArticles.length) {
       journal.style.opacity = '1'
+      return
+    }
+
+    if (!isWaterfallLayout()) {
+      journal.style.opacity = '1'
+      allArticles.forEach(item => item.classList.remove('is-below-frontpage'))
       return
     }
 
