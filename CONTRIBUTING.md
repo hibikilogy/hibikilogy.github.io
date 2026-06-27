@@ -16,8 +16,8 @@
 
 - **[Node.js](https://nodejs.org/en/download)** >= 24
 - **[pnpm](https://pnpm.io/installation)** >= 10
-- **[Rust](https://rust-lang.org/tools/install/)** 工具链（用于字体子集化等脚本）
-- **[Zola](https://www.getzola.org/)** >= 0.18
+- **[Rust](https://rust-lang.org/tools/install/)** >= 1.70
+- **[Zola](https://www.getzola.org/)** >= 0.22.1
 
 #### 快速开始
 
@@ -45,10 +45,28 @@ hibikilogy.github.io/
 │   ├── articles/          # Markdown 格式文章
 │   └── docs/              # 静态文档页（投稿、加入我们等）
 ├── templates/             # Zola Tera 模板
-│   ├── components/        # 可复用模板片段
-│   ├── shortcodes/        # 自定义 shortcode 模板
-├── sass/                  # 网站 ass 样式
-├── components/            # Lit Web Components
+│   ├── base.html          # 全局基础布局
+│   ├── page.html          # 文章详情页模板
+│   ├── section.html       # 文章列表/分区页模板
+│   ├── index.html         # 首页模板
+│   ├── docs.html          # 文档页模板
+│   ├── search.html        # 搜索页模板
+│   ├── anchor-link.html   # 锚点链接
+│   ├── 404.html           # 404 错误页
+│   ├── robots.txt         # robots.txt 模板
+│   ├── macros/            # Tera 宏（可复用逻辑函数）
+│   ├── components/        # 可复用 UI 组件模板
+│   ├── shortcodes/        # Zola Shortcode 模板
+│   ├── tags/              # 标签分类页面模板
+│   │   ├── list.html      # 标签列表页
+│   │   └── single.html    # 单个标签的文章列表页
+│   ├── author/            # 作者分类页面模板
+│   │   ├── list.html      # 作者列表页
+│   │   └── single.html    # 单个作者的文章列表页
+│   ├── search-articles.html # 搜索文章索引数据
+│   └── search-tags.html   # 搜索标签索引数据
+├── sass/                  # 网站 Sass 样式
+├── components/            # Lit Web Components（lazy-image 等）
 ├── lib/                   # 网页交互和搜索相关逻辑实现
 │   ├── search/            # 基于 fuse.js 的站内搜索
 │   └── ui/                # UI 小组件
