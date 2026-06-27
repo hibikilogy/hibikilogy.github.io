@@ -120,11 +120,11 @@
     will-change: transform;
   }
 
-  html[data-search-overlay='active'].is-animating.is-leaving main.Content {
+  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'].is-animating.is-leaving main.Content {
     transform: translateY(calc(4vh * var(--search-overlay-direction, 1)));
   }
 
-  html[data-search-overlay='active'].is-animating.is-rendering main.Content {
+  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'].is-animating.is-rendering main.Content {
     transform: translateY(calc(-4vh * var(--search-overlay-direction, 1)));
   }
 
@@ -133,9 +133,32 @@
     transform: translateY(0);
   }
 
+  /* Footer entrance — synced with overlay reveal on enter-search */
+
+  html[data-search-overlay='active'][data-search-transition-scope='enter-search'] .Footer {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(4px);
+  }
+
+  html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-changing .Footer {
+    transition:
+      opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform, filter;
+  }
+
+  html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-rendering .Footer {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html[data-search-overlay='active'] body::before,
-    html[data-search-overlay='active'] main.Content {
+    html[data-search-overlay='active'] main.Content,
+    html[data-search-overlay='active'] .Footer {
       transition: none;
       animation: none;
       transform: none;
