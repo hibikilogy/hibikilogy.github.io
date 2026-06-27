@@ -3,12 +3,19 @@ import { css, html, LitElement, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
 import { cn } from '../utils'
-import { DEFAULT_IMAGE_PLACEHOLDER, DEV_DEFAULT_THUMBHASH, REVEAL_ANIMATION_THRESHOLD_MS } from './constants'
+import {
+  DEFAULT_IMAGE_PLACEHOLDER,
+  DEFAULT_PRELOAD_ROOT_MARGIN,
+  DEV_DEFAULT_THUMBHASH,
+  REVEAL_ANIMATION_THRESHOLD_MS,
+} from './constants'
 import {
   autoSizes,
   createPlaceholderFromThumbHash,
   triggerLoad,
 } from './LazyLoad'
+import { getPreloadRootMargin, isWithinLoadThreshold, shouldLoadImmediately } from './loadPolicy'
+import { FrameLoadScheduler } from './loadScheduler'
 import { attachToZoom, detachFromZoom } from './zoom'
 
 @customElement('lazy-image')
@@ -62,6 +69,9 @@ export class LazyImage extends LitElement {
   @property({ type: Boolean })
   preload = false
 
+  @property({ attribute: 'preload-margin' })
+  preloadMargin: string | number = DEFAULT_PRELOAD_ROOT_MARGIN
+
   @property({ attribute: 'thumbhash' })
   thumbhash?: string
 
@@ -102,13 +112,14 @@ export class LazyImage extends LitElement {
   private loadCleanup?: () => void
   private sizesCleanup?: () => void
   private placeholderHideTimeout?: number
+  private readonly loadScheduler = new FrameLoadScheduler()
   private loadStarted = false
   private loadStartedAt = 0
   private runtimeSetup = false
-  private ensureScheduled = false
   private zoomAttached = false
 
   override disconnectedCallback(): void {
+    this.loadScheduler.cancel()
     this.detachZoom()
     this.teardownRuntime()
     super.disconnectedCallback()
@@ -118,23 +129,13 @@ export class LazyImage extends LitElement {
     super.connectedCallback()
     void this.updateComplete.then(() => {
       this.syncCurrentImageSrc()
-      if (this.shouldLoadImmediately()) {
+      if (this.shouldLoadImmediately) {
         this.ensureImageLoading()
         return
       }
 
       this.scheduleEnsureImageLoading()
     })
-  }
-
-  override firstUpdated(): void {
-    this.syncCurrentImageSrc()
-    if (this.shouldLoadImmediately()) {
-      this.ensureImageLoading()
-      return
-    }
-
-    this.scheduleEnsureImageLoading()
   }
 
   override willUpdate(changed: Map<PropertyKey, unknown>): void {
@@ -156,16 +157,29 @@ export class LazyImage extends LitElement {
       this.syncCurrentImageSrc()
     }
 
-    if (changed.has('zoomable') && !this.zoomable)
-      this.detachZoom()
+    if (changed.has('zoomable')) {
+      if (!this.zoomable) {
+        this.detachZoom()
+        return
+      }
+
+      if (this.isContentVisible) {
+        const image = this.getContentImageElement()
+        if (image)
+          void this.attachZoom(image)
+      }
+    }
   }
 
   override updated(changed: Map<PropertyKey, unknown>): void {
     if (this.hasLoadConfigChange(changed)) {
       this.teardownRuntime()
     }
+    else if (changed.has('preloadMargin') && !this.loadStarted && !this.isContentVisible) {
+      this.teardownRuntime()
+    }
 
-    if (this.shouldLoadImmediately()) {
+    if (this.shouldLoadImmediately) {
       this.ensureImageLoading()
       return
     }
@@ -276,9 +290,9 @@ export class LazyImage extends LitElement {
     this.debugLoadingState('setup-start', image)
 
     if (
-      this.shouldLoadImmediately()
+      this.shouldLoadImmediately
       || typeof IntersectionObserver === 'undefined'
-      || this.isWithinLoadThreshold(image)
+      || isWithinLoadThreshold(image, this.preloadMargin)
     ) {
       this.startLoad(image)
       return
@@ -287,7 +301,7 @@ export class LazyImage extends LitElement {
     this.intersectionObserver = new IntersectionObserver((entries) => {
       if (entries.some(entry => entry.isIntersecting || entry.intersectionRatio > 0))
         this.startLoad(image)
-    }, { rootMargin: '200px 0px' })
+    }, { rootMargin: getPreloadRootMargin(this.preloadMargin) })
     this.intersectionObserver.observe(image)
   }
 
@@ -298,37 +312,12 @@ export class LazyImage extends LitElement {
     this.setupImageLoading()
   }
 
-  private isWithinLoadThreshold(image: HTMLImageElement): boolean {
-    if (typeof window === 'undefined')
-      return false
-
-    const rect = image.getBoundingClientRect()
-    const rootMargin = 200
-    const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0
-
-    if (rect.width === 0 && rect.height === 0)
-      return false
-
-    return (
-      rect.bottom >= -rootMargin
-      && rect.right >= -rootMargin
-      && rect.top <= viewportHeight + rootMargin
-      && rect.left <= viewportWidth + rootMargin
-    )
-  }
-
   private scheduleEnsureImageLoading(): void {
-    if (this.ensureScheduled)
-      return
-
-    this.ensureScheduled = true
-    void this.updateComplete.then(() => {
-      requestAnimationFrame(() => {
-        this.ensureScheduled = false
-        this.ensureImageLoading()
-      })
-    })
+    this.loadScheduler.schedule(
+      this.updateComplete,
+      () => this.isConnected,
+      () => this.ensureImageLoading(),
+    )
   }
 
   private startLoad(image: HTMLImageElement): void {
@@ -337,6 +326,8 @@ export class LazyImage extends LitElement {
 
     this.loadStarted = true
     this.loadStartedAt = performance.now()
+    if (image.loading === 'lazy')
+      image.loading = 'eager'
     this.debugLoadingState('start-load', image)
     this.intersectionObserver?.disconnect()
     this.intersectionObserver = undefined
@@ -362,6 +353,7 @@ export class LazyImage extends LitElement {
         this.detachZoom()
         if (this.errorPlaceholderSrc) {
           this.currentImageSrc = this.errorPlaceholderSrc
+          this.showPlaceholder = true
         }
         this.isContentVisible = false
         this.shouldAnimateReveal = false
@@ -377,6 +369,7 @@ export class LazyImage extends LitElement {
   }
 
   private teardownRuntime(): void {
+    this.loadScheduler.cancel()
     this.intersectionObserver?.disconnect()
     this.intersectionObserver = undefined
     this.loadCleanup?.()
@@ -387,8 +380,8 @@ export class LazyImage extends LitElement {
     this.runtimeSetup = false
   }
 
-  private shouldLoadImmediately(): boolean {
-    return this.preload || this.loading === 'eager'
+  private get shouldLoadImmediately(): boolean {
+    return shouldLoadImmediately(this.preload, this.loading)
   }
 
   private hasPendingAsset(): boolean {
@@ -531,14 +524,7 @@ export class LazyImage extends LitElement {
   }
 
   private isLocalDevelopmentRuntime(): boolean {
-    if (typeof window === 'undefined')
-      return false
-
-    const { hostname, protocol } = window.location
-    return protocol === 'file:'
-      || hostname === 'localhost'
-      || hostname === '127.0.0.1'
-      || hostname === '0.0.0.0'
+    return import.meta.env.DEV
   }
 
   private debugLoadingState(stage: string, image: HTMLImageElement | null): void {

@@ -34,7 +34,9 @@ export function triggerLoad(
   { onImageLoad, onImageError }: TriggerLoadOptions = {},
 ): () => void {
   const cleanups: Array<() => void> = []
+  let isActive = true
   const cleanup = () => {
+    isActive = false
     for (const fn of cleanups) fn()
     cleanups.length = 0
   }
@@ -43,13 +45,29 @@ export function triggerLoad(
   if (!dataSrcset && !dataSrc)
     return cleanup
 
+  let isSettled = false
+  const resolveLoad = () => {
+    if (!isActive || isSettled)
+      return
+
+    isSettled = true
+    onImageLoad?.(image)
+  }
+  const resolveError = (event: Event) => {
+    if (!isActive || isSettled)
+      return
+
+    isSettled = true
+    onImageError?.(image, event)
+  }
+
   if (onImageLoad) {
-    const handler = () => onImageLoad(image)
+    const handler = () => resolveLoad()
     image.addEventListener('load', handler, { once: true })
     cleanups.push(() => image.removeEventListener('load', handler))
   }
   if (onImageError) {
-    const handler = (event: Event) => onImageError(image, event)
+    const handler = (event: Event) => resolveError(event)
     image.addEventListener('error', handler, { once: true })
     cleanups.push(() => image.removeEventListener('error', handler))
   }
@@ -65,6 +83,9 @@ export function triggerLoad(
 
   swapDataAttribute(image, 'srcset')
   swapDataAttribute(image, 'src')
+
+  if (image.complete && image.naturalWidth > 0 && onImageLoad)
+    queueMicrotask(resolveLoad)
 
   return cleanup
 }

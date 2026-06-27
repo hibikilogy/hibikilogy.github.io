@@ -1,3 +1,4 @@
+// @ts-expect-error no types
 import Finder from 'heti-findandreplacedomtext'
 
 // ── Finder type ──────────────────────────────────────────────────

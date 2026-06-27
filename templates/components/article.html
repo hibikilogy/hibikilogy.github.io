@@ -1,32 +1,61 @@
-{% macro main(page, show_cover) %}
+{% macro main(page, show_cover, cover_eager=false) %}
+{% set cover_loading = "lazy" %}
+{% set cover_fetchpriority = "auto" %}
+
+{% if cover_eager %}
+  {% set cover_loading = "eager" %}
+  {% set cover_fetchpriority = "high" %}
+{% endif %}
+
+{% set title_transition_name = data::post_title_transition_name(page=page) | trim %}
+
 <article class="Section Article">
   <a href="{{ page.permalink }}">
-    {% set title_transition_name = data::post_title_transition_name(page=page) | trim %}
     <h2 class="article-title">
-      <span class="PostTitleTransition" style="view-transition-name: {{ title_transition_name }}">
+      <span
+        class="PostTitleTransition"
+        style="view-transition-name: {{ title_transition_name }}"
+      >
         {{ page.title }}
       </span>
     </h2>
-    <p class="article-subtitle">{{ page.description }}</p>
+
+    {% if page.description %}
+      <p class="article-subtitle">{{ page.description }}</p>
+    {% endif %}
+
     <div class="article-main">
       {% if show_cover and page.extra.cover %}
-      {% set cover_alt = page.extra.cover_alt | default(value=page.title) %}
-      {% if page.extra.cover is starting_with("http") %}
-      <lazy-image class="article-cover" src="{{ page.extra.cover }}"
-        alt="{{ cover_alt }}"
-        loading="lazy" decoding="async"></lazy-image>
-      {% else %}
-      {% set img_meta = get_image_metadata(path=page.extra.cover) %}
-      <lazy-image class="article-cover" src="{{ page.extra.cover }}"
-        alt="{{ cover_alt }}"
-        width="{{ img_meta.width }}" height="{{ img_meta.height }}" loading="lazy" decoding="async"></lazy-image>
+        {% set cover_src = page.extra.cover %}
+        {% set cover_alt = page.extra.cover_alt | default(value=page.title) %}
+        {% set is_remote_cover = cover_src is starting_with("http") %}
+
+        {% if not is_remote_cover %}
+          {% set img_meta = get_image_metadata(path=cover_src) %}
+        {% endif %}
+
+        <lazy-image
+          class="article-cover"
+          src="{{ cover_src }}"
+          alt="{{ cover_alt }}"
+          {% if not is_remote_cover %}
+            width="{{ img_meta.width }}"
+            height="{{ img_meta.height }}"
+          {% endif %}
+          loading="{{ cover_loading }}"
+          decoding="async"
+          fetchpriority="{{ cover_fetchpriority }}"
+        ></lazy-image>
       {% endif %}
+
+      {% if page.extra.abstract %}
+        <div class="article-content">
+          {{ page.extra.abstract | markdown | safe }}
+        </div>
       {% endif %}
-      <div class="article-content">
-        {{ page.extra.abstract | markdown | safe }}
-      </div>
     </div>
   </a>
+
   <div class="article-meta">
     {{ post::page_publish_metadata(page=page) }}
   </div>

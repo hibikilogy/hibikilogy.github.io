@@ -96,6 +96,9 @@ function leaveSearchPage(): boolean {
   if (!isSearchPage())
     return false
 
+  if (swup.visit.to.url !== '' && !swup.visit.done)
+    return true
+
   if (window.history.length > 1) {
     window.history.back()
     return true

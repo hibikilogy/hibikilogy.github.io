@@ -8,39 +8,56 @@
 {% endmacro search %}
 
 {% macro main(show_frontpage=false, pages=false) %}
+{% if not pages %}
+  {% if paginator %}
+    {% set pages = paginator.pages %}
+  {% else %}
+    {% set pages = section.pages %}
+  {% endif %}
+{% endif %}
+
 <div class="Journal">
   <div class="container">
     {% if show_frontpage %}
-	    <a class="FrontPage Section" aria-label="Logo" href="/" target="_blank" rel="noopener noreferrer">
-	      {% include 'components/svg/logo.html' %}
-	    </a>
-    </a>
+      <a class="FrontPage Section" aria-label="Logo" href="/">
+        {% include 'components/svg/logo.html' %}
+      </a>
     {% endif %}
 
-    {% if not pages %}
-      {% if paginator %}
-        {% set pages = paginator.pages %}
-      {% else %}
-        {% set pages = section.pages %}
-      {% endif %}
-    {% endif %}
-
-    {# Find the first article among the first 3 that has a cover #}
     {% set_global cover_index = -1 %}
+    {% set_global cover_preload_src = "" %}
     {% set_global scan_idx = 0 %}
     {% for page in pages %}
-      {% if scan_idx < 3 and cover_index == -1 and page.extra.cover %}
-        {% set_global cover_index = scan_idx %}
+      {% if scan_idx < 3 and cover_index == -1 %}
+        {% set cover = page.extra.cover | default(value="") %}
+        {% if cover %}
+          {% set_global cover_index = scan_idx %}
+          {% set_global cover_preload_src = cover %}
+        {% endif %}
       {% endif %}
       {% set_global scan_idx = scan_idx + 1 %}
     {% endfor %}
 
+    {% if cover_preload_src %}
+      <link
+        rel="preload"
+        as="image"
+        href="{{ cover_preload_src }}"
+        fetchpriority="high"
+      >
+    {% endif %}
+
     {% set_global idx = 0 %}
     {% for page in pages %}
-      {{ article::main(page=page, show_cover=(idx == cover_index)) }}
+      {{ article::main(
+        page=page,
+        show_cover=(idx == cover_index),
+        cover_eager=(idx == cover_index)
+      ) }}
       {% set_global idx = idx + 1 %}
     {% endfor %}
   </div>
 </div>
+
 {{ build::script(path="js/water-fall.js", module=true) }}
 {% endmacro main %}
