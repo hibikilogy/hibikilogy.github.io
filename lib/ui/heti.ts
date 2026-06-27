@@ -43,10 +43,12 @@ const HETI_SKIPPED_CLASS = 'heti-skip'
 // ── Character classes ───────────────────────────────────────────
 
 // 部分正则表达式修改自 pangu.js https://github.com/vinta/pangu.js
+
+/* eslint-disable regexp/no-obscure-range, regexp/prefer-w */
 const CJK = '\u2E80-\u2EFF\u2F00-\u2FDF\u3040-\u309F\u30A0-\u30FA\u30FC-\u30FF\u3100-\u312F\u3200-\u32FF\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF'
 const A = 'A-Za-z\u0080-\u00FF\u0370-\u03FF'
 const N = '0-9'
-const S = '`~!@#\\$%\\^&\\*\\(\\)-_=\\+\\[\\]{}\\\\\\|;:\'",<.>\\/\\?'
+const S = '`~!@#$%^&*()_=+[\\]{}\\\\|;:\'",<.>/?-'
 const ANS = `${A}${N}${S}`
 
 const REG_CJK_FULL = `(?<=[${CJK}])( *[${ANS}]+(?: +[${ANS}]+)* *)(?=[${CJK}])`
@@ -54,6 +56,7 @@ const REG_CJK_START = `([${ANS}]+(?: +[${ANS}]+)* *)(?=[${CJK}])`
 const REG_CJK_END = `(?<=[${CJK}])( *[${ANS}]+(?: +[${ANS}]+)*)`
 const REG_CJK_FULL_WITHOUT_LOOKBEHIND = `(?:[${CJK}])( *[${ANS}]+(?: +[${ANS}]+)* *)(?=[${CJK}])`
 const REG_CJK_END_WITHOUT_LOOKBEHIND = `(?:[${CJK}])( *[${ANS}]+(?: +[${ANS}]+)*)`
+/* eslint-enable regexp/no-obscure-range, regexp/prefer-w */
 
 const REG_BD_STOP = '。．，、：；！‼？⁇'
 const REG_BD_SEP = '·・‧'
@@ -80,6 +83,7 @@ export class Heti {
     let supportLookBehind = true
 
     try {
+      // eslint-disable-next-line prefer-regex-literals -- must use constructor to defer lookbehind check to runtime
       new RegExp('(?<=\\d)\\d', '').test('')
     }
     catch (err) {
@@ -117,36 +121,36 @@ export class Heti {
 
     findAndReplace($$elm, Object.assign({}, commonConfig, {
       find: this.REG_FULL,
-      replace: portion => getWrapper('heti-spacing', 'heti-spacing-start heti-spacing-end', portion.text),
+      replace: (portion: { text: string }) => getWrapper('heti-spacing', 'heti-spacing-start heti-spacing-end', portion.text),
       offset: this.offsetWidth,
     }))
 
     findAndReplace($$elm, Object.assign({}, commonConfig, {
       find: this.REG_START,
-      replace: portion => getWrapper('heti-spacing', 'heti-spacing-start', portion.text),
+      replace: (portion: { text: string }) => getWrapper('heti-spacing', 'heti-spacing-start', portion.text),
     }))
 
     findAndReplace($$elm, Object.assign({}, commonConfig, {
       find: this.REG_END,
-      replace: portion => getWrapper('heti-spacing', 'heti-spacing-end', portion.text),
+      replace: (portion: { text: string }) => getWrapper('heti-spacing', 'heti-spacing-end', portion.text),
       offset: this.offsetWidth,
     }))
 
     findAndReplace($$elm, Object.assign({}, commonConfig, {
       find: new RegExp(`([${REG_BD_STOP}])(?=[${REG_BD_START}])|([${REG_BD_OPEN}])(?=[${REG_BD_OPEN}])|([${REG_BD_CLOSE}])(?=[${REG_BD_END}])`, 'g'),
-      replace: portion => getWrapper('heti-adjacent', 'heti-adjacent-half', portion.text),
+      replace: (portion: { text: string }) => getWrapper('heti-adjacent', 'heti-adjacent-half', portion.text),
       offset: this.offsetWidth,
     }))
 
     findAndReplace($$elm, Object.assign({}, commonConfig, {
       find: new RegExp(`([${REG_BD_SEP}])(?=[${REG_BD_OPEN}])|([${REG_BD_CLOSE}])(?=[${REG_BD_SEP}])`, 'g'),
-      replace: portion => getWrapper('heti-adjacent', 'heti-adjacent-quarter', portion.text),
+      replace: (portion: { text: string }) => getWrapper('heti-adjacent', 'heti-adjacent-quarter', portion.text),
       offset: this.offsetWidth,
     }))
 
     findAndReplace($$elm, Object.assign({}, commonConfig, {
       find: new RegExp(`([${REG_BD_STOP}])(?=[${REG_BD_HALF_START}])|([${REG_BD_HALF_OPEN}])(?=[${REG_BD_OPEN}])`, 'g'),
-      replace: portion => getWrapper('heti-adjacent', 'heti-adjacent-quarter', portion.text),
+      replace: (portion: { text: string }) => getWrapper('heti-adjacent', 'heti-adjacent-quarter', portion.text),
       offset: this.offsetWidth,
     }))
   }

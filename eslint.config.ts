@@ -13,7 +13,7 @@ export default antfu({
     '**/public',
     '**/temp',
     '**/cache',
-    "static/**"
+    'static/**',
   ],
   formatters: {
     css: true,
