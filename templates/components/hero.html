@@ -1,4 +1,4 @@
-{% macro main(isPost=true, page="", title="", name="", kind="none", description="", count=0) %}
+{% macro main(isPost=true, page="", title="", name="", kind="none", description="", count=0, bg="") %}
 <header class="Hero {% if page.extra.cover is defined and page.extra.cover %} has-cover{% else %} no-cover {% endif %}">
   <div class="container">
     {% if isPost %}
@@ -32,7 +32,10 @@
       </div>
     </div>
     {% else %}
-    <div class="taxonomies-banner">
+    {% if bg -%}
+    {%- set bg_url = data::resolve_url(path=bg) -%}
+    {%- endif %}
+    <div class="taxonomies-banner{% if bg %} has-bg{% endif %}"{% if bg %} style="--hero-bg: url('{{ bg_url }}')"{% endif %}>
       <div class="taxonomies-meta">
         <h2 class="title">
           <span class="banner-title">{{ title }}</span>

@@ -186,13 +186,16 @@
         width: 100%;
         min-height: 190px;
         background-color: var(--joh-hero-taxonomies-banner-bg);
-        background-image: url('/imgs/tag-cloud.svg');
-        background-position: center 0;
-        background-size: cover;
-        background-repeat: no-repeat;
 
-        @media (max-width: config.$mobile) {
-          background-position: -10%;
+        &.has-bg {
+          background-image: var(--hero-bg);
+          background-position: center 0;
+          background-size: cover;
+          background-repeat: no-repeat;
+
+          @media (max-width: config.$mobile) {
+            background-position: -10%;
+          }
         }
       }
 

@@ -6,7 +6,7 @@
 {% endblock critical_css %}
 
 {% block header %}
-{{ hero::main(isPost=false, page="", name=trans(key="tags_title"), count=terms | length) }}
+{{ hero::main(isPost=false, page="", name=trans(key="tags_title"), count=terms | length, bg="/imgs/tag-cloud.svg") }}
 {% endblock %}
 
 {% block content %}

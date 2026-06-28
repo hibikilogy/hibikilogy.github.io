@@ -3,17 +3,17 @@
 {% macro cover_url(page, default="") -%}
 {%- if page.extra.cover -%}
 {%- set cover = page.extra.cover | trim -%}
-{%- if cover is starting_with("http://") or cover is starting_with("https://") -%}
-{{- cover | trim -}}
-{%- else -%}
-{{- get_url(path=cover) | trim -}}
-{%- endif -%}
+{{- data::resolve_url(path=cover) -}}
 {%- elif default -%}
-{%- if default is starting_with("http://") or default is starting_with("https://") -%}
-{{- default | trim -}}
-{%- else -%}
-{{- get_url(path=default) | trim -}}
+{{- data::resolve_url(path=default) -}}
 {%- endif -%}
+{% endmacro %}
+
+{% macro resolve_url(path="") -%}
+{%- if path is starting_with("http://") or path is starting_with("https://") -%}
+{{- path | trim -}}
+{%- else -%}
+{{- get_url(path=path) | trim -}}
 {%- endif -%}
 {% endmacro %}
 
