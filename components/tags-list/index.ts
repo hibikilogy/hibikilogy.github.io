@@ -22,6 +22,20 @@ export class TagsList extends LitElement {
       color: inherit;
       line-height: inherit;
     }
+
+    .joh-tag {
+      display: inline-flex;
+      align-items: baseline;
+      column-gap: 0.1em;
+    }
+
+    .joh-tag::before {
+      content: var(--joh-header-anchor-symbol);
+      color: var(--joh-c-text-muted);
+      font-weight: 500;
+      user-select: none;
+      text-decoration: none;
+    }
   `
 
   @state()

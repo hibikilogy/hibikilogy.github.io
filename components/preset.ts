@@ -6,6 +6,12 @@ export function presetHibikilogyComponents(): Preset {
     preflights: [
       {
         getCSS: () => `
+          .joh-tag {
+            display: inline-flex;
+            align-items: baseline;
+            column-gap: 0.1em;
+          }
+
           .joh-tag::before {
             content: var(--joh-header-anchor-symbol);
             color: var(--footer-directory-title-color);
