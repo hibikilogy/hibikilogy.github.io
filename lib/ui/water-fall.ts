@@ -69,6 +69,11 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
   const C_RIGHT_BORDER = 'is-waterfall-right-border-owner'
   const C_FRONTPAGE = 'FrontPage'
   const C_ARTICLE = 'Article'
+
+  function resetBorderOwner(): void {
+    journal.classList.remove(C_LEFT_BORDER, C_RIGHT_BORDER)
+  }
+
   const observedImages = new WeakSet<HTMLImageElement>()
   const observedItems = new WeakSet<Element>()
   const resizeObserver = window.ResizeObserver
@@ -130,6 +135,8 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
       journal.classList.remove(C_LEFT_BORDER, C_RIGHT_BORDER)
       return
     }
+
+    resetBorderOwner()
 
     const offsets = items.map(item => Math.round(item.offsetLeft))
     const minOffsetLeft = Math.min(...offsets)
@@ -214,6 +221,8 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
       journal.classList.remove(C_LEFT_BORDER, C_RIGHT_BORDER)
       return
     }
+
+    resetBorderOwner()
 
     observeDynamicContent(allArticles)
 
