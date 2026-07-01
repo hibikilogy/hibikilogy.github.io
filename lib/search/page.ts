@@ -219,10 +219,7 @@ async function runSearch(term: string, page: number): Promise<void> {
       void updateSearchMessage(message, getResultMessage(term, searchState.records.length))
     }
 
-    const didRenderPage = await renderSearchPage(page, searchId, 'replace')
-    if (didRenderPage) {
-      await renderSearchRelatedTags(searchState.records, () => searchId !== searchState.activeSearchId)
-    }
+    await renderSearchPage(page, searchId, 'replace')
   }
   catch (error) {
     if (searchId !== searchState.activeSearchId)
@@ -265,15 +262,17 @@ async function renderSearchPage(
   const records = getSortedSearchRecords()
   const pageRecords = records.slice((nextPage - 1) * searchPageSize, nextPage * searchPageSize)
   const motion = resolveSearchJournalMotion(nextPage, previousPage, motionOverride)
+  const viewSort = searchState.currentSort
+  const isStaleView = () => isSearchViewStale(searchId, nextPage, viewSort)
 
   searchState.currentPage = nextPage
   const articles = await Promise.all(pageRecords.map(result => buildSearchArticle(result)))
-  if (searchId !== searchState.activeSearchId || nextPage !== searchState.currentPage)
+  if (isStaleView())
     return undefined
 
   const didTransitionResults = await transitionSearchJournalResults(searchJournal, motion, async () => {
     resultsContainer?.replaceChildren(...articles)
-    if (searchId !== searchState.activeSearchId || nextPage !== searchState.currentPage)
+    if (isStaleView())
       return
 
     setSearchPaginationVisible(searchState.records.length > searchPageSize)
@@ -287,11 +286,18 @@ async function renderSearchPage(
     })
     updateSearchUrl(searchState.currentTerm, nextPage)
     await refreshSearchWaterfall()
+    await renderSearchRelatedTags(pageRecords, isStaleView)
   })
-  if (!didTransitionResults || searchId !== searchState.activeSearchId || nextPage !== searchState.currentPage)
+  if (!didTransitionResults || isStaleView())
     return false
 
   return true
+}
+
+function isSearchViewStale(searchId: number, page: number, sort: string): boolean {
+  return searchId !== searchState.activeSearchId
+    || page !== searchState.currentPage
+    || sort !== searchState.currentSort
 }
 
 function resolveSearchJournalMotion(
