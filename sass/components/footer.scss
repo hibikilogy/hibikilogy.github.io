@@ -5,7 +5,7 @@
   .Footer {
     position: relative;
     z-index: var(--joh-z-index-footer);
-    padding: 8px 16px 32px;
+    padding: 8px 20px 32px;
     background-color: var(--joh-c-bg);
 
     .Footer.has-sidebar {
@@ -14,7 +14,8 @@
 
     @media (min-width: config.$tablet) {
       .Footer {
-        padding: 32px;
+        padding: 2rem;
+        margin-top: 1rem;
       }
     }
 

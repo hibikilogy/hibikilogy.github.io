@@ -3,14 +3,9 @@
 @layer components {
   .content-container {
     article:first-child {
-      padding: 32px 24px 96px;
+      padding: 0 0 96px;
     }
 
-    @media (min-width: config.$tablet) {
-      article:first-child {
-        padding: 0 0 96px;
-      }
-    }
     /**
  * Headings
  * -------------------------------------------------------------------------- */
