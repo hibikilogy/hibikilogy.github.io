@@ -10,6 +10,9 @@ interface ZoomSession {
   zoomed: HTMLImageElement
   keydownHandler: (event: KeyboardEvent) => void
   resizeHandler: () => void
+  scrollHandler: () => void
+  wheelHandler: () => void
+  touchMoveHandler: () => void
   cleanupTimer?: number
   closing: boolean
 }
@@ -106,12 +109,26 @@ function openZoom(source: HTMLImageElement): void {
     applyRect(activeSession.zoomed, targetRect)
   }
 
+  const closeOnViewportMotion = () => {
+    if (!activeSession || activeSession.source !== source || activeSession.closing)
+      return
+
+    closeSession(activeSession)
+  }
+
+  const scrollHandler = () => closeOnViewportMotion()
+  const wheelHandler = () => closeOnViewportMotion()
+  const touchMoveHandler = () => closeOnViewportMotion()
+
   const session: ZoomSession = {
     source,
     overlay,
     zoomed,
     keydownHandler,
     resizeHandler,
+    scrollHandler,
+    wheelHandler,
+    touchMoveHandler,
     closing: false,
   }
 
@@ -124,6 +141,9 @@ function openZoom(source: HTMLImageElement): void {
   zoomed.addEventListener('click', () => closeSession(session))
   window.addEventListener('keydown', keydownHandler)
   window.addEventListener('resize', resizeHandler)
+  window.addEventListener('scroll', scrollHandler, { passive: true })
+  window.addEventListener('wheel', wheelHandler, { passive: true })
+  window.addEventListener('touchmove', touchMoveHandler, { passive: true })
 
   requestAnimationFrame(() => {
     if (activeSession !== session || session.closing)
@@ -141,6 +161,9 @@ function closeSession(session: ZoomSession): void {
   session.closing = true
   window.removeEventListener('keydown', session.keydownHandler)
   window.removeEventListener('resize', session.resizeHandler)
+  window.removeEventListener('scroll', session.scrollHandler)
+  window.removeEventListener('wheel', session.wheelHandler)
+  window.removeEventListener('touchmove', session.touchMoveHandler)
 
   session.overlay.style.opacity = '0'
   const sourceRect = session.source.isConnected
@@ -163,6 +186,9 @@ function closeSession(session: ZoomSession): void {
 function destroySession(session: ZoomSession): void {
   window.removeEventListener('keydown', session.keydownHandler)
   window.removeEventListener('resize', session.resizeHandler)
+  window.removeEventListener('scroll', session.scrollHandler)
+  window.removeEventListener('wheel', session.wheelHandler)
+  window.removeEventListener('touchmove', session.touchMoveHandler)
 
   if (session.cleanupTimer !== undefined)
     window.clearTimeout(session.cleanupTimer)
