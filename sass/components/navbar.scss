@@ -143,6 +143,11 @@
       background: var(--joh-nav-screen-overlay-bg-color) !important;
     }
 
+    // Prevent content shift when NavBar becomes fixed
+    &.open ~ .Content {
+      margin-top: var(--joh-nav-height);
+    }
+
     &:not(.home) {
       background-color: var(--joh-nav-bg-color);
     }
@@ -612,7 +617,7 @@
       z-index: -1;
       display: none;
       position: fixed;
-      top: calc(var(--joh-nav-height) + var(--joh-layout-top-height, 0px));
+      top: calc(var(--joh-nav-height) - 1px);
       /*rtl:ignore*/
       right: 0;
       bottom: 0;
@@ -628,11 +633,10 @@
       transition: all 0.25s ease;
       transition-behavior: allow-discrete;
       transition-property: display opacity transform;
-      transform: translateY(-8px);
 
       @starting-style {
         opacity: 0;
-        transform: translateY(0);
+        transform: translateY(8px);
       }
 
       .container,
