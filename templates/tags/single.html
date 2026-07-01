@@ -7,6 +7,10 @@
 {{ build::css(path="components/hero.css") }}
 {% endblock critical_css %}
 
+{% block meta %}
+<link rel="alternate" type="application/atom+xml" href="{{ term.permalink | safe }}atom.xml" title="{{ config.title }} - {{ term.name }} Atom Feed">
+{% endblock %}
+
 {% block header %}
 {{ hero::main(isPost=false, page="", title="#", name=term.name, kind="tags", bg="/imgs/tag-cloud.svg") }}
 {% endblock %}

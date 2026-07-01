@@ -22,7 +22,7 @@
   {% endif %}
   {% endfor %}
   {% else %}
-  <span class="author-name font-bold">{{ config.extra.search_default_author }}</span>
+  <span class="author-name font-bold">{{ config.author | default(value=config.title) }}</span>
   {% endif %}
 </span>
 {% endmacro %}
