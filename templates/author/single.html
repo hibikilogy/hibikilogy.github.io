@@ -7,6 +7,8 @@
 {{ build::css(path="components/hero.css") }}
 {% endblock critical_css %}
 
+{% block title %}{{ term.name }} - {{ config.title }}{% endblock title %}
+
 {% block meta %}
 <meta name="author" content="{{ term.name }}">
 <link rel="alternate" type="application/atom+xml" href="{{ term.permalink | safe }}atom.xml" title="{{ config.title }} - {{ term.name }} Atom Feed">

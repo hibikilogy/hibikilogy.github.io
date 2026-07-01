@@ -44,7 +44,7 @@
   <link rel="alternate" hreflang="{{lang}}" href="{{ base_url_clean }}/{{ lang }}">
   <link href="{{ canonical_url }}" rel="canonical">
 
-  <title>{%- include 'title.html' -%}</title>
+  <title>{% block title %}{%- include 'title.html' -%}{% endblock title %}</title>
 
   {% set meta_description = config.description %}
   {% set meta_keywords = config.extra.meta_keywords %}

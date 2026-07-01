@@ -1,6 +1,8 @@
 {% import 'components/hero.html' as hero %}
 {% extends "base.html" %}
 
+{% block title %}{{ trans(key="tags_title") }} - {{ config.title }}{% endblock title %}
+
 {% block critical_css %}
 {{ build::css(path="layouts/tags.css") }}
 {% endblock critical_css %}

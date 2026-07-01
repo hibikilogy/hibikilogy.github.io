@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="{{ lang }}">
 {%- if term is defined %}
-  <title>{{ config.title }} — {{ term.name }}</title>
+   <title>{{ term.name }} - {{ config.title }}</title>
 {%- if taxonomy.name == "author" %}
-  <subtitle>{{ config.description }} — 作者：{{ term.name }}</subtitle>
+  <subtitle>{{ trans(key="author_title") }}：{{ term.name }} - {{ config.description }}</subtitle>
 {%- elif taxonomy.name == "tags" %}
-  <subtitle>{{ config.description }} — 标签：{{ term.name }}</subtitle>
+  <subtitle>{{ trans(key="tags_title") }}：{{ term.name }} - {{ config.description }}</subtitle>
 {%- else %}
-  <subtitle>{{ config.description }} — {{ taxonomy.name }} / {{ term.name }}</subtitle>
+  <subtitle>{{ taxonomy.name }} / {{ term.name }} - {{ config.description }}</subtitle>
 {%- endif %}
   {%- set feed_self = term.permalink ~ "atom.xml" %}
 {%- else %}
