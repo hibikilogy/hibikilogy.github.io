@@ -55,12 +55,12 @@
     "description": "{% if page.description %}{{ page.description }}{% elif page.extra.abstract %}{{ page.extra.abstract }}{% endif %}",
     "url": "{{ current_url | safe }}",
     "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ current_url | safe }}" },
-    "datePublished": "{{ page.date }}",
-    "dateModified": "{{ modified }}",
+    "datePublished": "{{ page.date }}T00:00:00+08:00",
+    "dateModified": "{{ modified }}T00:00:00+08:00",
     "inLanguage": "{{ lang }}",
     "wordCount": {{ page.word_count }}{% if has_cover or has_author or has_tags %},{% endif %}{% if has_cover %}
-    "image": "{{ cv }}",
-    "thumbnailUrl": "{{ cv }}"{% if has_author or has_tags %},{% endif %}{% endif %}{% if has_author %}
+    "image": "{{ cv | safe }}",
+    "thumbnailUrl": "{{ cv | safe }}"{% if has_author or has_tags %},{% endif %}{% endif %}{% if has_author %}
     "author": [{% for author_name in authors %}{% if not loop.first %}, {% endif %}{ "@type": "Person", "name": "{{ author_name }}", "url": "{{ get_taxonomy_url(kind='author', name=author_name) | safe }}" }{% endfor %}]{% if has_tags %},{% endif %}{% endif %}{% if has_tags %}
     "keywords": [{% for tag in tags %}{% if not loop.first %}, {% endif %}"{{ tag }}"{% endfor %}]{% endif %}{% if has_cover or has_author or has_tags %},
     {% endif %}"publisher": {

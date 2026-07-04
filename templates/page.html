@@ -9,7 +9,7 @@
 {% set has_author = authors | length > 0 %}
 {% set tags       = page.taxonomies.tags | default(value=[]) %}
 {% set modified   = page.updated | default(value=page.date) %}
-{% set cover_url  = data::cover_url(page=page) | default(value="") %}
+{% set cover_url  = data::cover_url(page=page, default=config.extra.default_cover) | default(value="") %}
 {% set has_cover  = cover_url | length > 0 %}
 {% endblock vars %}
 
