@@ -1,0 +1,36 @@
+name = "hibikilogy"
+description = ""
+license = ""
+homepage = "https://github.com/hibikilogy/hibikilogy.github.io"
+min_version = "0.19.0"
+
+[author]
+name = "Hibikilogy"
+homepage = "https://hibikilogy.vercel.app"
+
+[extra]
+# Default theme configuration — users can override these in their site's config.toml [extra].
+article_section = "articles/_index.md"
+stylesheets = [
+  "styles/uno.css",
+  "styles/source-han-serif-cn-vf.css",
+  "styles/source-han-sans-sc-vf.css",
+  "styles/source-han-sans-sc-vf.patch.css",
+]
+busuanzi = false
+search_page_size = 12
+
+katex.css_cdn = "https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css"
+katex.css_integrity = "sha384-gK+yZX6a4p2WSJ6t6dViH1f7eqB9iQc23mRFQonCZkrjF5nWtQaU/YU2JbB1k6n"
+
+tag_categories = []
+tag_category_misc_title = ""
+tag_cloud_bg = ""
+theme_color = "#ffffff"
+twitter_card = "summary_large_image"
+navbar_logo = ""
+default_cover = ""
+prefetch_urls = []
+footer = []
+navbar = []
+slogan = []

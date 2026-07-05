@@ -7,7 +7,7 @@ import {
   presetIcons,
   presetWind4,
 } from 'unocss'
-import { presetHibikilogyComponents } from './components/preset'
+import { presetHibikilogyComponents } from './themes/hibikilogy/components/preset'
 
 export default defineConfig({
   outputToCssLayers: {
@@ -58,7 +58,7 @@ interface IconData {
 
 export function resolveCustomIcons(): IconData {
   const svgDir = path.resolve(
-    fileURLToPath(new URL('./static/svg/', import.meta.url)),
+    fileURLToPath(new URL('./themes/hibikilogy/static/svg/', import.meta.url)),
   )
   const data: IconData = {}
 

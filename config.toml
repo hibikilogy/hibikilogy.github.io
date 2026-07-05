@@ -2,6 +2,7 @@ base_url = "https://hibikilogy.vercel.app/"
 title = "京吹学报 (Dev Preview)"
 description = "吹学著作集锦"
 default_language = "zh"
+theme = "hibikilogy"
 compile_sass = true
 minify_html = true
 generate_feeds = true
@@ -73,6 +74,18 @@ paths = "on"
 taxonomies = "on"
 
 [extra]
+# Theme configuration overrides
+article_section = "articles/_index.md"
+stylesheets = [
+  "styles/uno.css",
+  "styles/source-han-serif-cn-vf.css",
+  "styles/source-han-sans-sc-vf.css",
+  "styles/source-han-sans-sc-vf.patch.css",
+]
+busuanzi = true
+tag_cloud_bg = "/imgs/tag-cloud.svg"
+journal_logo = "/logo-wordmark.svg"
+tag_category_misc_title = "杂类"
 theme_color = "#ffffff"
 twitter_card = "summary_large_image"
 search_page_size = 12
@@ -94,7 +107,6 @@ footer = [
     { text = "粳米团子", link = "https://kyoani.cn/" },
   ], contact = { text = "投稿邮箱 journal@kyoani.cn", link = "journal@kyoani.cn" } },
 ]
-section = [ { code = "zh", publish = "发布于", author = "作者" }, ]
 navbar = [
   { code = "zh", list = [
     { text = "我要投稿", link = "$BASE_URLdocs/contribute" },
@@ -110,6 +122,8 @@ chart.enabled = true
 
 katex.enabled = true
 katex.auto_render = true
+katex.css_cdn = "https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css"
+katex.css_integrity = "sha384-vlBdW0r3AcZO/HboRPznQNowvexd3fY8qHOWkBi5q7KGgqJ+F48+DceybYmrVbmB"
 
 [extra.image_host_rewrite]
 old_host = "https://hibikilogy.vercel.app/"
@@ -126,8 +140,9 @@ webmanifest = "/site.manifest"
 google = "G-DWY77Z5HMS"
 
 # Display grouping for the tags index page.
-[extra.tags]
-people = [
+[[extra.tag_categories]]
+title = "人物"
+tags = [
   "上石弥生",
   "义井沙里",
   "井上调",
@@ -209,7 +224,10 @@ people = [
   "雾岛七海",
   "冢本秀一",
 ]
-sections = [
+
+[[extra.tag_categories]]
+title = "版块"
+tags = [
   "合奏比赛",
   "黄前十四年",
   "黄前十五年",
@@ -235,39 +253,3 @@ sections = [
   "驳文",
   "考据",
 ]
-
-[translations]
-search_placeholder = "搜索"
-search_submit_text = "搜索"
-search_related_tags = "相关标签"
-author_label = "作者"
-author_title = "作者"
-publish_prefix = "发布于"
-date_format = "%Y 年 %m 月 %d 日"
-pagination_aria = "分页"
-pagination_page_prefix = "第"
-pagination_page_middle = "页 / 共"
-pagination_page_suffix = "页"
-pagination_prev = "上一页"
-pagination_next = "下一页"
-sort_relevance = "相关度排序"
-sort_title_asc = "文章标题正序"
-sort_date_asc = "发布日期正序"
-tags_title = "标签"
-tags_count_suffix = "个标签"
-related_articles_suffix = "篇相关文章"
-not_found_title = "404 Not Found"
-tag_category_people = "人物"
-tag_category_section = "版块"
-tag_category_misc = "杂类"
-search_clear = "清空"
-search_index_loading = "正在加载索引数据中"
-search_cache_reading = "正在读取搜索序列化索引缓存中"
-search_index_building = "正在构建搜索序列化索引数据中"
-search_loading = "正在搜索「{0}」"
-search_failed = "搜索失败"
-search_failed_with_error = "搜索失败：{0}"
-search_empty = "没有找到与「{0}」相关的搜索结果"
-search_found = "共找到 {0} 条与「{1}」相关的结果"
-search_idle = "当前共 {0} 篇文章"
-untitled = "无标题"

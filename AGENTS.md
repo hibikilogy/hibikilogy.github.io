@@ -2,17 +2,43 @@
 
 ## Project Structure & Module Organization
 
-This repository is a Zola static site. Source content lives in `content/` as Markdown pages and posts. Tera templates live in `templates/`, with reusable partials under `templates/components/` and taxonomy views under `templates/tags/` and `templates/author/`. Sass source is in `sass/`; static files that should be copied as-is are in `static/`. `public/` is the generated site output. Prefer editing source files, then regenerate output, rather than hand-editing `public/`.
+This repository is a Zola static site using the built-in `hibikilogy` theme. The theme lives in `themes/hibikilogy/` and contains templates, Sass, static assets, TypeScript source (`src/`), and Web Components (`components/`).
+
+### Site-level (overrides theme defaults)
+- `config.toml` — site configuration (base_url, title, taxonomies, extra settings)
+- `content/` — Markdown pages and posts
+- `static/` — site-specific static files (logos, favicons, images, opensearch.xml, site.manifest, build caches). Files here override theme `static/` by path.
+
+### Theme (`themes/hibikilogy/`)
+- `templates/` — Tera templates with reusable partials under `components/`, taxonomy views under `tags/` and `author/`, macros under `macros/`, and shortcodes under `shortcodes/`
+- `sass/` — SCSS stylesheets organized as `base/`, `components/`, `layouts/`
+- `static/` — theme static assets (JS bundle, CSS, SVG icons, fonts, KaTeX files)
+- `src/` — TypeScript source for search, UI components, and utilities (compiled to `static/js/` by Vite)
+- `components/` — Lit Web Components (lazy-image, site-pagination, tags-list)
+- `i18n/zh.toml` — theme default translations. Site can override via `[translations]` in `config.toml`, or replace by adding `i18n/<lang>.toml` files. Templates use `tr::t(key="...")` macro which loads from theme i18n first, falls back to Zola's built-in `trans()`.
+- `theme.toml` — theme metadata and default `[extra]` values
+
+`public/` is the generated site output. Prefer editing source files, then regenerate output, rather than hand-editing `public/`.
 
 ## Build, Test, and Development Commands
 
-- `zola serve`: run the local development server at `http://127.0.0.1:1111/`. With the `-f` (fast) flag incremental rebuilds are quick enough; the search index is only built in CI via Pagefind.
+- `zola serve`: run the local development server at `http://127.0.0.1:1111/`. The `-f` (fast) flag enables incremental rebuilds. Zola watches `themes/` directory for live reload since v0.9.0.
 - `zola build`: build the site into `public/` (uses default `config.toml`).
 - `zola build --drafts`: match the GitHub Pages workflow build behavior.
 - `npx pagefind --source public`: rebuild the search index after `zola build`.
 - `zola check`: validate pages, links, templates, and configuration without producing a deployment artifact.
+- `pnpm build:all`: full build pipeline (Vite → UnoCSS → font subset → Zola → image rewrite → short links).
+- `pnpm dev:all`: start all dev servers in parallel (Zola + Vite watch + UnoCSS watch).
 
-Requires Zola 0.18+ and Node.js 18+.
+Requires Zola 0.19+ and Node.js 18+.
+
+## i18n / Translations
+
+Translations live in `themes/hibikilogy/i18n/zh.toml`. Templates access them via the `tr::t(key, default)` macro (defined in `themes/hibikilogy/templates/macros/i18n.html`). The macro loads theme i18n via `load_data()`, then falls back to Zola's `trans()` (which reads site `config.toml` `[translations]`), then to the inline `default` parameter.
+
+To override a translation, add a `[translations]` section in site `config.toml` with the specific key. To add a new language, create `i18n/<lang>.toml` in the theme.
+
+The Vite plugin at `scripts/vite/hibikilogy-config.ts` also reads i18n for client-side JS search messages. It loads from `config.toml` `[translations]` first, then falls back to `themes/<theme>/i18n/<lang>.toml`.
 
 ## Coding Style & Naming Conventions
 
@@ -24,12 +50,10 @@ There is no separate unit test suite. Treat static-site validation as the requir
 
 ## Commit & Pull Request Guidelines
 
-The repository includes `.github/commit-convention.md`, based on Conventional Commits. Prefer headers like `docs(content): add article guide`, `fix(template): correct pagination`, or `build(search): update pagefind output`. Keep the subject imperative, lowercase, and under 50 characters when practical. Recent history contains generic `update` commits, but new work should use the documented convention.
+The repository includes `.github/commit-convention.md`, based on Conventional Commits. Prefer headers like `docs(content): add article guide`, `fix(template): correct pagination`, or `build(search): update pagefind output`. Keep the subject imperative, lowercase, and under 50 characters when practical.
 
 PRs should describe the change, note affected content/templates/assets, link related issues, and include screenshots for visible layout changes. Mention whether `zola check`, `zola build`, and Pagefind were run.
 
 ## Security & Configuration Tips
 
 Do not commit local secrets or analytics changes without review. Confirm `base_url`, feeds, taxonomies, and deployment branch expectations before changing `config.toml` or `.github/workflows/pages.yml`.
-
-

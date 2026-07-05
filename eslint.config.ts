@@ -13,7 +13,7 @@ export default antfu({
     '**/public',
     '**/temp',
     '**/cache',
-    'static/**',
+    'themes/hibikilogy/static/**',
   ],
   formatters: {
     css: true,

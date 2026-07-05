@@ -1,0 +1,12 @@
+{# i18n helper — Theme i18n/ files > Zola built-in trans() > inline default.
+   Loaded via load_data(), falls back to site config.toml [translations] via trans().
+   Call: tr::t(key="search_placeholder") or tr::t(key="key", default="Fallback") #}
+
+{% macro t(key, default="") %}
+  {%- set theme_i18n = load_data(path="themes/hibikilogy/i18n/" ~ lang ~ ".toml", required=false) -%}
+  {%- if theme_i18n[key] is defined -%}
+    {{- theme_i18n[key] -}}
+  {%- else -%}
+    {{- trans(key=key, default=default) -}}
+  {%- endif -%}
+{% endmacro %}

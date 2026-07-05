@@ -1,0 +1,35 @@
+{% import 'components/hero.html' as hero %}
+{% extends "base.html" %}
+
+{% block class %}
+author
+{% endblock %}
+
+{% block title %}{{ tr::t(key="author_title") }} - {{ config.title }}{% endblock title %}
+
+{% block critical_css %}
+{{ build::css(path="layouts/authors.css") }}
+{% endblock critical_css %}
+
+{% block header %}
+{% set author_count = terms | length %}
+{% set suffix = tr::t(key="author_count_suffix", default=" authors") %}
+{% set author_description = author_count ~ suffix %}
+{{ hero::main(isPost=false, page="", title=tr::t(key="author_title"), description=author_description) }}
+{% endblock %}
+
+{% block content %}
+{% set sorted_terms = terms | sort(attribute="pages") | reverse %}
+
+<section class="section authors-list-page">
+  <div class="container">
+    {% for author in sorted_terms %}
+    <a class="author-list-item" href="{{ get_taxonomy_url(kind='author', name=author.name) }}" target="_blank"
+      title="{{ author.name }}">
+      <span class="author-name">{{ author.name }}</span>
+      <span class="author-count">{{ author.pages | length }}{{ tr::t(key="article_count_suffix", default=" articles") }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock lists %}

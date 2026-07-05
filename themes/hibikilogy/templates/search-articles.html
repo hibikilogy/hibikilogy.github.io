@@ -1,0 +1,38 @@
+{%- set article_section = config.extra.article_section | default(value="articles/_index.md") -%}
+{%- set section = get_section(path=article_section) -%}
+{%- set author_taxonomy = get_taxonomy(kind="author", required=false) -%}
+{%- set default_author_name = config.author | default(value=config.extra.meta_author | default(value=tr::t(key="anonymous_author", default="Anonymous"))) -%}
+{
+{%- for page in section.pages %}
+  {%- set_global author_name = default_author_name -%}
+  {%- set_global author_href = "" -%}
+  {%- set_global author_count = 0 -%}
+  {%- for author in author_taxonomy.items | default(value=[]) -%}
+    {%- for author_page in author.pages -%}
+      {%- if author_page.permalink == page.permalink -%}
+        {%- if author_count == 0 -%}
+          {%- set_global author_name = author.name -%}
+          {%- set_global author_href = get_taxonomy_url(kind="author", name=author.name) -%}
+        {%- else -%}
+          {%- set_global author_name = author_name ~ "、" ~ author.name -%}
+          {%- set_global author_href = "" -%}
+        {%- endif -%}
+        {%- set_global author_count = author_count + 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endfor -%}
+  {%- set cover_src = page.extra.cover | default(value="") -%}
+  {%- set cover_alt = "" -%}
+  {%- if cover_src -%}
+    {%- set_global cover_alt = page.extra.cover_alt | default(value=page.title) -%}
+  {%- endif -%}
+  {{ page.path | json_encode | safe }}: {
+    "dv": {{ page.date | json_encode | safe }},
+    "an": {{ author_name | json_encode | safe }}{% if page.description %},
+    "s": {{ page.description | json_encode | safe }}{% endif %}{% if cover_src %},
+    "cs": {{ cover_src | json_encode | safe }}{% endif %}{% if cover_alt %},
+    "ca": {{ cover_alt | json_encode | safe }}{% endif %}{% if author_href %},
+    "ah": {{ author_href | json_encode | safe }}{% endif %}
+  }{% if not loop.last %},{% endif %}
+{%- endfor %}
+}

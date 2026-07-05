@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% import 'components/hero.html' as hero %}
+
+{% block critical_css %}
+{{ build::css(path="layouts/docs.css") }}
+{% endblock critical_css %}
+
+{% block header %}
+{{ hero::main(isPost=false, page="", name=tr::t(key="not_found_title")) }}
+{% endblock %}
+

@@ -1,0 +1,33 @@
+{% macro main(page) %}
+{% if page.toc and page.extra.toc | default(value=true) != false %}
+<nav aria-labelledby="doc-outline-aria-label" class="AsideOutline ">
+  <div class="content">
+    <div class="outline-marker"></div>
+    <div aria-level="2" class="outline-title" id="doc-outline-aria-label" role="heading">
+       {{ tr::t(key="toc_heading", default="CATALOG") }}
+    </div>
+    <ul class="DocOutlineItem">
+      {% for h1 in page.toc %}
+      <li>
+        <a class="outline-link" href="{{ h1.permalink | safe }}"
+          title="{{h1.title}}">{{
+          h1.title
+          }}</a>
+        {% if h1.children %}
+        <ul class="DocOutlineItem">
+          {% for h2 in h1.children %}
+          <li>
+            <a class="outline-link" href="{{ h2.permalink | safe }}"
+              title="{{h2.title}}">{{ h2.title
+              }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</nav>
+{% endif %}
+{% endmacro %}

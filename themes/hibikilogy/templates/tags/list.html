@@ -1,0 +1,82 @@
+{% import 'components/hero.html' as hero %}
+{% extends "base.html" %}
+
+{# Shared tag link — reused by category and flat modes. #}
+{% macro tag_link(tag) %}
+<a class="joh-tag" href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" title="{{ tag.name }}">
+  <span>{{ tag.name }}</span>
+  <span class="tag-count">{{ tag.pages | length }}</span>
+</a>
+{% endmacro tag_link %}
+
+{% block title %}{{ tr::t(key="tags_title") }} - {{ config.title }}{% endblock title %}
+
+{% block class %}
+tags
+{% endblock %}
+
+{% block critical_css %}
+{{ build::css(path="layouts/tags.css") }}
+{% endblock critical_css %}
+
+{% block header %}
+{{ hero::main(isPost=false, page="", name=tr::t(key="tags_title"), count=terms | length, bg=config.extra.tag_cloud_bg | default(value="")) }}
+{% endblock %}
+
+{% block content %}
+{% set tag_categories = config.extra.tag_categories | default(value=[]) %}
+{% set misc_title = config.extra.tag_category_misc_title | default(value="") %}
+{% set sorted_terms = terms | sort(attribute="pages") | reverse %}
+
+{% if tag_categories | length > 0 %}
+  {# Gather all categorized tag names once. #}
+  {% set all_cat_names = [] %}
+  {% for cat in tag_categories %}
+    {% for t in cat.tags %}
+      {% set_global all_cat_names = all_cat_names | concat(with=[t]) %}
+    {% endfor %}
+  {% endfor %}
+
+  <section class="section tags-list-page">
+    <div class="container">
+      {% for cat in tag_categories %}
+      <section class="tag-category">
+        <div class="tag-category-header">
+          <h3>{{ cat.title }}</h3>
+        </div>
+        <div class="tag-category-list">
+          {% for tag in sorted_terms %}
+          {% if tag.name in cat.tags %}
+          {{ self::tag_link(tag=tag) }}
+          {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+      {% endfor %}
+
+      {% if misc_title %}
+      <section class="tag-category">
+        <div class="tag-category-header">
+          <h3>{{ misc_title }}</h3>
+        </div>
+        <div class="tag-category-list">
+          {% for tag in sorted_terms %}
+          {% if tag.name not in all_cat_names %}
+          {{ self::tag_link(tag=tag) }}
+          {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+    </div>
+  </section>
+{% else %}
+  <section class="section tags-list-page">
+    <div class="container">
+      {% for tag in sorted_terms %}
+      {{ self::tag_link(tag=tag) }}
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+{% endblock content %}

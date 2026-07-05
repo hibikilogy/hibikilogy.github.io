@@ -1,0 +1,91 @@
+@use '../config.scss';
+@use './tags-list.scss';
+
+@layer components {
+  .Footer {
+    position: relative;
+    z-index: var(--joh-z-index-footer);
+    padding: 8px 20px 32px;
+    background-color: var(--joh-c-bg);
+
+    .container {
+      margin: 0 auto;
+      max-width: var(--joh-layout-max-width);
+    }
+
+    .footer-column:not(:first-child) {
+      padding-top: 24px;
+    }
+
+    .footer-tags h3,
+    .footer-friendlinks h3 {
+      font-size: 0.9rem;
+      color: var(--footer-directory-title-color);
+      cursor: pointer;
+    }
+
+    .footer-friendlinks {
+      .footer-list {
+        margin-top: 6px;
+
+        a {
+          margin-right: 8px;
+          font-size: 18px;
+          line-height: 24px;
+        }
+      }
+    }
+
+    .footer-siteinfo-nav {
+      a {
+        --padding: 16px;
+        padding-right: var(--padding);
+        &::after {
+          content: '/';
+          position: relative;
+          left: calc(var(--padding) / 2);
+        }
+      }
+
+      a:first-child {
+        font-weight: 700;
+      }
+      a:nth-last-child(2)::after,
+      a:nth-last-child(1)::after {
+        content: '';
+      }
+    }
+
+    @media (min-width: 640px) {
+      .footer-siteinfo {
+        grid-template-columns: repeat(2, 1fr);
+        grid-column-gap: 16px;
+      }
+
+      .footer-siteinfo-meta {
+        text-align: right;
+        margin-left: auto;
+      }
+    }
+
+    .footer-siteinfo-meta {
+      color: var(--footer-directory-title-color);
+    }
+
+    .footer-contact-link {
+      display: inline-block;
+      width: 100%;
+    }
+
+    .footer-siteinfo-meta,
+    .footer-contact-link {
+      font-size: 1rem;
+    }
+
+    .footer-siteinfo {
+      padding-top: 24px;
+      display: grid;
+      grid-row-gap: 24px;
+    }
+  }
+}

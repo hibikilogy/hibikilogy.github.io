@@ -1,0 +1,26 @@
+{% import 'components/journal.html' as journal %}
+{% import 'components/hero.html' as hero %}
+{% extends "base.html" %}
+
+{% block critical_css %}
+{{ build::css(path="components/journal.css") }}
+{{ build::css(path="components/hero.css") }}
+{% endblock critical_css %}
+
+{% block class %}
+tags
+{% endblock %}
+
+{% block title %}{{ term.name }} - {{ config.title }}{% endblock title %}
+
+{% block meta %}
+<link rel="alternate" type="application/atom+xml" href="{{ term.permalink | safe }}atom.xml" title="{{ config.title }} - {{ term.name }} Atom Feed">
+{% endblock %}
+
+{% block header %}
+{{ hero::main(isPost=false, page="", title="#", name=term.name, kind="tags", bg=config.extra.tag_cloud_bg | default(value="")) }}
+{% endblock %}
+
+{% block content %}
+{{ journal::main() }}
+{% endblock content %}

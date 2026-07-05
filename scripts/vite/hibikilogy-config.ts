@@ -46,7 +46,7 @@ function flattenScalars(
   return result
 }
 
-function generateModule(tomlPath: string): string {
+function generateModule(tomlPath: string, rootDir: string): string {
   const parsed = parse(
     readFileSync(tomlPath, 'utf8'),
   ) as TomlObject
@@ -79,6 +79,20 @@ function generateModule(tomlPath: string): string {
   const translations = flattenScalars(rootTranslations)
   flattenScalars(extraTranslations, [], translations)
 
+  // Load theme i18n file (site config.toml [translations] take priority via merge order above)
+  const themeName = root.theme as string | undefined
+  const lang = (root.default_language as string) || 'zh'
+  if (themeName && Object.keys(translations).length === 0) {
+    const i18nPath = resolve(rootDir, 'themes', themeName, 'i18n', `${lang}.toml`)
+    try {
+      const i18nParsed = parse(readFileSync(i18nPath, 'utf8')) as TomlObject
+      flattenScalars(i18nParsed, [], translations)
+    }
+    catch {
+      // i18n file not found or unparseable — use site translations only
+    }
+  }
+
   return [
     '// Generated from config.toml.',
     '// DO NOT EDIT.',
@@ -109,11 +123,17 @@ export function hibikilogyConfigPlugin(rootDir: string): Plugin {
 
       this.addWatchFile(tomlPath)
 
-      return generateModule(tomlPath)
+      // Also watch the theme i18n file for HMR
+      const i18nPath = resolve(rootDir, 'themes', 'hibikilogy', 'i18n', 'zh.toml')
+      this.addWatchFile(i18nPath)
+
+      return generateModule(tomlPath, rootDir)
     },
 
     async handleHotUpdate({ file, server }) {
-      if (normalizePath(file) !== normalizedTomlPath)
+      const normalizedFile = normalizePath(file)
+      const i18nPath = normalizePath(resolve(rootDir, 'themes', 'hibikilogy', 'i18n', 'zh.toml'))
+      if (normalizedFile !== normalizedTomlPath && normalizedFile !== i18nPath)
         return
 
       const module = server.moduleGraph.getModuleById(RESOLVED_ID)
