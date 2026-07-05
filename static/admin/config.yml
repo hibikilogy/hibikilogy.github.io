@@ -1,0 +1,750 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms@0.170.0/schema/sveltia-cms.json
+publish_mode: editorial_workflow
+
+backend:
+  name: github
+  repo: hibikilogy/hibikilogy.github.io
+  branch: Refactor/zola
+  base_url: https://gh-oauth.interknot.site/
+  open_authoring: true
+  squash_merges: true
+
+# —— Output ——
+output:
+  omit_empty_optional_fields: true
+
+# —— Slug ——
+slug:
+  encoding: unicode
+  clean_accents: false
+  lowercase: true
+  timezone: local
+
+# —— App UI (Sveltia CMS) ——
+app_title: 京吹学报 CMS (DEV)
+site_url: https://hibikilogy.vercel.app/
+show_preview_links: true
+logo:
+  src: /logo-blue.svg
+  show_in_header: true
+
+# —— Media ——
+media_folder: /static/uploads
+public_folder: /uploads
+media_libraries:
+  default:
+    config:
+      slugify_filename: true
+
+#  Collections
+collections:
+    # ——— Posts (articles) ———
+    # Matches the existing flat-file convention: content/articles/YYYY-MM-DD-slug.md
+    - name: posts
+      label: 文章
+      folder: content/articles
+      create: true
+      delete: false
+      path: '{{year}}-{{month}}-{{day}}-{{slug}}'
+      media_folder: /static/imgs/{{year}}-{{month}}-{{day}}
+      public_folder: /imgs/{{year}}-{{month}}-{{day}}
+      thumbnail: ["extra.cover"]
+      format: toml-frontmatter
+      summary: '{{title}} — {{taxonomies.author}}'
+      preview_path: '/search?q={{title}}'
+      reorder:
+        key: weight
+      editor:
+        preview: true
+      view_filters:
+        - label: 已发布
+          field: draft
+          pattern: false
+        - label: 草稿
+          field: draft
+          pattern: true
+      sortable_fields:
+        - date
+        - weight
+      view_groups:
+        - label: 年份
+          field: date
+          pattern: '^\d{4}'
+
+      # ——— Fields ———
+      fields:
+          # 标题
+          - name: title
+            label: 标题
+            widget: string
+            required: true
+            hint: 文章标题，同时用作 slug 生成源
+          # 摘要
+          - name: description
+            label: 副标题
+            widget: string
+            required: false
+            hint: 文章副标题/导语
+          # 短链接标识
+          - name: slug
+            label: Slug
+            widget: string
+            required: false
+            hint: 可选，控制文章页面的PATH。留空则自动生成
+
+          # 日期
+          - name: date
+            label: 发布日期
+            widget: datetime
+            default: '{{now}}'
+            format: 'YYYY-MM-DD'
+            picker_utc: false
+            required: true
+          # 更新日期
+          - name: updated
+            label: 最后更新
+            widget: datetime
+            format: 'YYYY-MM-DD'
+            picker_utc: false
+            required: false
+            hint: 文章有重要修订时填写
+          # —— Zola 页面控制 ——
+          - name: draft
+            label: 草稿
+            widget: boolean
+            default: false
+            required: false
+            hint: 草稿仅在 zola build --drafts 时可见，适合未完成文章
+
+          - name: weight
+            label: 排序权重
+            widget: number
+            default: 0
+            required: false
+            hint: 当 section 按 weight 排序时使用，越小越靠前
+
+          - name: template
+            widget: hidden
+            default: page.html
+
+          - name: render
+            widget: hidden
+            default: true
+
+          - name: in_search_index
+            widget: hidden
+            default: true
+
+          # 分类标签与作者
+          - name: taxonomies
+            label: 分类与作者
+            widget: object
+            required: false
+            summary: '标签: {{tags}}  作者: {{author}}'
+            fields:
+                - name: tags
+                  label: 标签
+                  widget: relation
+                  collection: tags
+                  value_field: title
+                  display_fields: [title]
+                  search_fields: [title]
+                  multiple: true
+                  required: false
+                  hint: 搜不到的标签请去侧栏「标签库」新建
+                - name: author
+                  label: 作者
+                  widget: list
+                  required: false
+
+          - name: aliases
+            label: 旧链接
+            widget: list
+            required: false
+            hint: 留空即可，发布后 CMS 会自动生成日期路径别名
+
+          - name: extra
+            label: 摘要以及封面图和原文链接配置
+            widget: object
+            collapsed: true
+            summary: '{{abstract}}'
+            fields:
+                - name: abstract
+                  label: 文章摘要
+                  widget: markdown
+                  required: false
+                  hint: 支持 Markdown 格式，显示在列表和搜索卡片中
+                - name: cover
+                  label: 封面图
+                  widget: image
+                  required: false
+                  default: /imgs/tags.svg
+                  choose_url: false
+                  hint: 文章封面图，建议 1200×630
+                - name: cover_alt
+                  label: 封面图描述
+                  widget: string
+                  required: false
+                  hint: 封面图的 alt 文本，留空则用标题
+                - name: toc
+                  label: 显示目录
+                  widget: boolean
+                  default: true
+                  hint: 是否在文章侧边栏显示目录
+                - name: original
+                  label: 原文链接
+                  widget: string
+                  required: false
+                  hint: 转载文章请填写原始出处 URL
+          # 正文
+          - name: body
+            label: 正文
+            widget: markdown
+            required: true
+
+    # ——— Docs (documentation pages) ———
+    - name: docs
+      label: 页面
+      folder: content/docs
+      create: false
+      delete: false
+      format: toml-frontmatter
+      media_folder: /static/imgs/docs/{{slug}}
+      public_folder: /imgs/docs/{{slug}}
+      summary: '{{title}}'
+      fields:
+          - name: title
+            label: 标题
+            widget: string
+            required: true
+          - name: template
+            widget: hidden
+            default: docs.html
+          - name: in_search_index
+            widget: boolean
+            default: true
+            required: false
+          - name: extra
+            label: 附加设置
+            widget: object
+            collapsed: true
+            fields:
+                - name: toc
+                  label: 显示目录
+                  widget: boolean
+                  default: false
+                - name: original
+                  label: 原文链接
+                  widget: string
+                  required: false
+          - name: body
+            label: 正文
+            widget: markdown
+            required: true
+
+    # ——— Tags 标签库 ———
+    - name: tags
+      label: 标签库
+      folder: static/admin/data/tags
+      create: true
+      delete: true
+      format: toml-frontmatter
+      editor:
+        preview: false
+      identifier_field: title
+      summary: '{{title}}'
+      fields:
+          - name: title
+            label: 标签名
+            widget: string
+            required: true
+
+# ═══════════════════════════════════════
+#  Singletons
+# ═══════════════════════════════════════
+
+singletons:
+    - name: site
+      label: 站点设置
+      file: config.toml
+      editor:
+        preview: false
+      fields:
+          - name: title
+            label: 站点标题
+            widget: string
+          - name: base_url
+            label: 站点地址
+            widget: string
+          - name: description
+            label: 站点描述
+            widget: text
+          - name: author
+            label: 默认作者
+            widget: string
+          - name: generate_feeds
+            label: 生成 RSS Feed
+            widget: boolean
+          - name: generate_sitemap
+            label: 生成 Sitemap
+            widget: boolean
+          - name: build_search_index
+            label: 生成搜索索引
+            widget: boolean
+          - name: hard_link_static
+            label: 硬链接静态文件
+            widget: boolean
+          - name: minify_html
+            label: 压缩 HTML
+            widget: boolean
+          - name: compile_sass
+            label: 编译 Sass
+            widget: boolean
+          - name: default_language
+            label: 默认语言
+            widget: string
+            default: zh
+          - name: markdown
+            label: Markdown 渲染
+            widget: object
+            collapsed: true
+            fields:
+                - name: render_emoji
+                  label: 渲染 Emoji
+                  widget: boolean
+                  default: true
+                - name: external_links_target_blank
+                  label: 外链新窗口打开
+                  widget: boolean
+                  default: true
+                - name: external_links_no_follow
+                  label: 外链 nofollow
+                  widget: boolean
+                  default: true
+                - name: bottom_footnotes
+                  label: 文末脚注
+                  widget: boolean
+                  default: true
+                - name: github_alerts
+                  label: GitHub Alerts
+                  widget: boolean
+                  default: true
+                - name: insert_anchor_links
+                  label: 标题锚点位置
+                  widget: select
+                  options: [none, left, right, heading]
+                  default: left
+                - name: highlighting
+                  label: 代码高亮
+                  widget: object
+                  collapsed: true
+                  fields:
+                      - name: style
+                        label: 样式
+                        widget: select
+                        options: [inline, class]
+                        default: inline
+                      - name: light_theme
+                        label: 亮色主题
+                        widget: string
+                        default: one-light
+                      - name: dark_theme
+                        label: 暗色主题
+                        widget: string
+                        default: one-dark-pro
+          - name: search
+            label: 搜索设置
+            widget: object
+            collapsed: true
+            fields:
+                - name: include_title
+                  label: 包含标题
+                  widget: boolean
+                  default: true
+                - name: include_description
+                  label: 包含描述
+                  widget: boolean
+                  default: true
+                - name: include_content
+                  label: 包含正文
+                  widget: boolean
+                  default: true
+                - name: truncate_content_length
+                  label: 正文截断长度
+                  widget: number
+                  default: 12000
+          - name: extra
+            label: 更多设置
+            widget: object
+            collapsed: true
+            fields:
+                - name: theme_color
+                  label: 主题色
+                  widget: string
+                  default: '#ffffff'
+                - name: default_cover
+                  label: 默认封面图
+                  widget: string
+                - name: meta_keywords
+                  label: 默认关键词
+                  widget: string
+                - name: twitter_card
+                  label: Twitter Card 类型
+                  widget: select
+                  options: [summary, summary_large_image]
+                  default: summary_large_image
+                - name: katex
+                  label: KaTeX 数学公式
+                  widget: object
+                  collapsed: true
+                  fields:
+                      - name: enabled
+                        label: 启用 KaTeX
+                        widget: boolean
+                        default: true
+                      - name: auto_render
+                        label: 自动渲染
+                        widget: boolean
+                        default: true
+                - name: analytics
+                  label: Google Analytics
+                  widget: object
+                  collapsed: true
+                  fields:
+                      - name: google
+                        label: GA 测量 ID
+                        widget: string
+                        required: false
+                - name: busuanzi
+                  label: 启用不蒜子统计
+                  widget: boolean
+                - name: medium_zoom
+                  label: 图片放大
+                  widget: object
+                  collapsed: true
+                  fields:
+                      - name: enabled
+                        label: 启用 Medium Zoom
+                        widget: boolean
+                - name: chart
+                  label: 图表
+                  widget: object
+                  collapsed: true
+                  fields:
+                      - name: enabled
+                        label: 启用 Chart
+                        widget: boolean
+                - name: navbar_logo
+                  label: 导航栏 Logo
+                  widget: string
+                - name: journal_logo
+                  label: 首页 Logo 文字
+                  widget: string
+                - name: tag_cloud_bg
+                  label: 标签云背景图
+                  widget: string
+                - name: search_page_size
+                  label: 每页搜索结果数
+                  widget: number
+                  default: 12
+                - name: tag_category_misc_title
+                  label: 杂类标签分类标题
+                  widget: string
+                  default: 杂类
+                - name: article_section
+                  label: 文章 Section 路径
+                  widget: string
+                  default: articles/_index.md
+                - name: favicon
+                  label: 站点图标
+                  widget: object
+                  collapsed: true
+                  fields:
+                      - name: apple_touch_icon
+                        label: Apple Touch Icon
+                        widget: string
+                      - name: small_icon
+                        label: 小图标 (48×48)
+                        widget: string
+                      - name: svg_icon
+                        label: SVG 图标
+                        widget: string
+                      - name: safari_pinned_tab
+                        label: Safari 固定标签
+                        widget: string
+                      - name: webmanifest
+                        label: Webmanifest 路径
+                        widget: string
+                - name: image_host_rewrite
+                  label: 图片域名替换
+                  widget: object
+                  collapsed: true
+                  fields:
+                      - name: old_host
+                        label: 旧域名
+                        widget: string
+                      - name: new_host
+                        label: 新域名
+                        widget: string
+                - name: tag_categories
+                  label: 标签分类
+                  widget: list
+                  collapsed: true
+                  summary: '{{title}} ({{tags.length}} 个标签)'
+                  fields:
+                      - name: title
+                        label: 分类名称
+                        widget: string
+                      - name: tags
+                        label: 标签列表
+                        widget: relation
+                        collection: tags
+                        value_field: title
+                        display_fields: [title]
+                        search_fields: [title]
+                        multiple: true
+                - name: footer
+                  label: 页脚配置
+                  widget: list
+                  collapsed: true
+                  summary: '{{code}}'
+                  fields:
+                      - name: code
+                        label: 语言代码
+                        widget: string
+                        default: zh
+                      - name: tags_text
+                        label: 标签文字
+                        widget: string
+                        default: 相关标签
+                      - name: copyright
+                        label: 版权声明
+                        widget: string
+                      - name: count
+                        label: 计数标题
+                        widget: string
+                        default: 总查询数
+                      - name: frendlinks_text
+                        label: 友链标题
+                        widget: string
+                        default: 友情链接
+                      - name: list
+                        label: 页脚链接
+                        widget: list
+                        summary: '{{text}} → {{link}}'
+                        fields:
+                            - name: text
+                              label: 文字
+                              widget: string
+                            - name: link
+                              label: 链接
+                              widget: string
+                      - name: frendlinks
+                        label: 友情链接
+                        widget: list
+                        summary: '{{text}} → {{link}}'
+                        fields:
+                            - name: text
+                              label: 文字
+                              widget: string
+                            - name: link
+                              label: 链接
+                              widget: string
+                      - name: contact
+                        label: 联系方式
+                        widget: object
+                        fields:
+                            - name: text
+                              label: 文字
+                              widget: string
+                            - name: link
+                              label: 链接
+                              widget: string
+                - name: navbar
+                  label: 导航栏
+                  widget: list
+                  collapsed: true
+                  summary: '{{code}}'
+                  fields:
+                      - name: code
+                        label: 语言代码
+                        widget: string
+                        default: zh
+                      - name: list
+                        label: 导航项
+                        widget: list
+                        summary: '{{text}} → {{link}}'
+                        fields:
+                            - name: text
+                              label: 文字
+                              widget: string
+                            - name: link
+                              label: 链接
+                              widget: string
+                - name: slogan
+                  label: 标语
+                  widget: list
+                  collapsed: true
+                  summary: '{{text}}'
+                  fields:
+                      - name: code
+                        label: 语言代码
+                        widget: string
+                        default: zh
+                      - name: text
+                        label: 文字
+                        widget: string
+                      - name: link
+                        label: 链接
+                        widget: string
+
+    - name: i18n
+      label: 界面翻译
+      file: themes/hibikilogy/i18n/zh.toml
+      editor:
+        preview: false
+      fields:
+          - name: search_placeholder
+            label: 搜索框占位符
+            widget: string
+            default: 搜索
+          - name: search_submit_text
+            label: 搜索提交文字
+            widget: string
+            default: 搜索
+          - name: search_related_tags
+            label: 相关标签
+            widget: string
+            default: 相关标签
+          - name: author_label
+            label: 作者标签
+            widget: string
+            default: 作者
+          - name: author_title
+            label: 作者标题
+            widget: string
+            default: 作者
+          - name: publish_prefix
+            label: 发布前缀
+            widget: string
+            default: 发布于
+          - name: date_format
+            label: 日期格式
+            widget: string
+            default: '%Y 年 %m 月 %d 日'
+          - name: pagination_aria
+            label: 分页 ARIA 标签
+            widget: string
+            default: 分页
+          - name: pagination_prev
+            label: 上一页
+            widget: string
+            default: 上一页
+          - name: pagination_next
+            label: 下一页
+            widget: string
+            default: 下一页
+          - name: sort_relevance
+            label: 相关度排序
+            widget: string
+            default: 相关度排序
+          - name: sort_title_asc
+            label: 标题正序
+            widget: string
+            default: 文章标题正序
+          - name: sort_date_asc
+            label: 日期正序
+            widget: string
+            default: 发布日期正序
+          - name: tags_title
+            label: 标签标题
+            widget: string
+            default: 标签
+          - name: tags_count_suffix
+            label: 标签计数后缀
+            widget: string
+            default: 个标签
+          - name: related_articles_suffix
+            label: 相关文章后缀
+            widget: string
+            default: 篇相关文章
+          - name: not_found_title
+            label: 404 标题
+            widget: string
+            default: 404 Not Found
+          - name: tag_category_people
+            label: 人物分类名
+            widget: string
+            default: 人物
+          - name: tag_category_section
+            label: 版块分类名
+            widget: string
+            default: 版块
+          - name: tag_category_misc
+            label: 杂类分类名
+            widget: string
+            default: 杂类
+          - name: search_clear
+            label: 清空搜索
+            widget: string
+            default: 清空
+          - name: search_index_loading
+            label: 加载索引提示
+            widget: string
+            default: 正在加载索引数据中
+          - name: search_cache_reading
+            label: 读取缓存提示
+            widget: string
+            default: 正在读取搜索序列化索引缓存中
+          - name: search_index_building
+            label: 构建索引提示
+            widget: string
+            default: 正在构建搜索序列化索引数据中
+          - name: search_loading
+            label: 搜索中提示
+            widget: string
+            default: 正在搜索「{0}」
+          - name: search_failed
+            label: 搜索失败
+            widget: string
+            default: 搜索失败
+          - name: search_failed_with_error
+            label: 搜索失败详情
+            widget: string
+            default: 搜索失败：{0}
+          - name: search_empty
+            label: 搜索无结果
+            widget: string
+            default: 没有找到与「{0}」相关的搜索结果
+          - name: search_found
+            label: 搜索结果
+            widget: string
+            default: 共找到 {0} 条与「{1}」相关的结果
+          - name: search_idle
+            label: 搜索待机
+            widget: string
+            default: 当前共 {0} 篇文章
+          - name: untitled
+            label: 无标题
+            widget: string
+            default: 无标题
+          - name: toc_heading
+            label: 目录标题
+            widget: string
+            default: CATALOG
+          - name: nav_aria_label
+            label: 导航 ARIA 标签
+            widget: string
+            default: 主导航
+          - name: anonymous_author
+            label: 匿名作者
+            widget: string
+            default: 匿名
+          - name: author_count_suffix
+            label: 作者计数后缀
+            widget: string
+            default: ' 个作者'
+          - name: article_count_suffix
+            label: 文章计数后缀
+            widget: string
+            default: ' 篇'

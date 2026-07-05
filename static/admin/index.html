@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>京吹学报 CMS (DEV)</title>
+    <meta name="robots" content="noindex, nofollow">
+  </head>
+  <body>
+    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+    <script>window.React=window.React||{createElement:window.h||function(){}}</script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+    CMS.registerPreviewStyle('/styles/uno.css');
+    CMS.registerPreviewStyle('/styles/source-han-sans-sc-vf.css');
+    CMS.registerPreviewStyle('/styles/source-han-sans-sc-vf.patch.css');
+    CMS.registerPreviewStyle('/critical.css');
+    CMS.registerPreviewStyle('/layouts/page.css');
+    CMS.registerPreviewStyle('/layouts/docs.css');
+
+    CMS.registerPreviewStyle('/admin/fonts.css');
+
+
+    CMS.registerEditorComponent({
+      id: 'bilibili',
+      label: 'Bilibili 视频',
+      icon: 'smart_display',
+      fields: [
+        { name: 'bvid', label: 'BV 号', widget: 'string', hint: '如 BV1vq421F7c5' },
+        { name: 'aid', label: 'AV 号', widget: 'string', required: false },
+        { name: 'title', label: '标题', widget: 'string', default: 'A BiliBili video' },
+        { name: 'time', label: '起始秒数', widget: 'number', required: false, default: 0 },
+        { name: 'ratio', label: '画面比例', widget: 'select', options: ['16 / 9', '4 / 3', '21 / 9'], default: '16 / 9' },
+      ],
+      pattern: /\{\{\s*bilibili\(\s*bvid="(?<bvid>[^"]*)"(\s*aid="(?<aid>[^"]*)")?(\s*cid="(?<cid>[^"]*)")?(\s*title="(?<title>[^"]*)")?(\s*page="(?<page>[^"]*)")?(\s*width="(?<width>[^"]*)")?(\s*height="(?<height>[^"]*)")?(\s*ratio="(?<ratio>[^"]*)")?(\s*time="(?<time>[^"]*)")?(\s*autoplay="(?<autoplay>[^"]*)")?\s*\)\s*\}\}/ms,
+      toBlock: ({ bvid, aid, title, time, ratio }) => {
+        let args = `bvid="${bvid}"`;
+        if (aid) args += ` aid="${aid}"`;
+        if (title && title !== 'A BiliBili video') args += ` title="${title}"`;
+        if (time && time != 0) args += ` time="${time}"`;
+        if (ratio && ratio !== '16 / 9') args += ` ratio="${ratio}"`;
+        return `{{ bilibili(${args}) }}`;
+      },
+      toPreview: ({ bvid, title }) =>
+        bvid ? `<iframe src="https://www.bilibili.com/blackboard/newplayer.html?bvid=${bvid}&as_wide=1"
+          title="${title || 'Bilibili'}" style="width:100%;aspect-ratio:16/9;border:none"
+          allowfullscreen></iframe>` : ''
+    });
+
+    CMS.registerEditorComponent({
+      id: 'collapsible',
+      label: '折叠块',
+      icon: 'expand_content',
+      fields: [
+        { name: 'title', label: '标题', widget: 'string' },
+        { name: 'content', label: '内容', widget: 'markdown' }
+      ],
+      pattern: /\{%\s*collapsible\((?<args>[^)]*)\)\s*%\}\s*\n:::title\s*\n(?<title>[^:]*)\s*\n:::content\s*\n(?<content>[\s\S]*?)\s*\n\{%\s*end\s*%\}/m,
+      toBlock: ({ title, content }) =>
+        `{% collapsible() %}\n:::title\n${title}\n:::content\n${content}\n{% end %}`,
+      toPreview: ({ title, content }) =>
+        `<details open><summary><strong>${title}</strong></summary><div style="margin-top:0.5em">${content}</div></details>`
+    });
+
+    CMS.registerEditorComponent({
+      id: 'accordion',
+      label: '手风琴',
+      icon: 'vertical_align_center',
+      fields: [
+        { name: 'type', label: '模式', widget: 'select', options: ['single', 'multiple'], default: 'single' },
+        { name: 'title1', label: '第一项标题', widget: 'string' },
+        { name: 'content1', label: '第一项内容', widget: 'markdown' },
+        { name: 'title2', label: '第二项标题', widget: 'string', required: false },
+        { name: 'content2', label: '第二项内容', widget: 'markdown', required: false }
+      ],
+      pattern: /\{%\s*accordion\((?<args>[^)]*)\)\s*%\}\s*\n([\s\S]*?)\n\{%\s*end\s*%\}/m,
+      toBlock: ({ type, title1, content1, title2, content2 }) => {
+        let block = `{% accordion(type="${type}", collapsible=true) %}\n`;
+        block += `:::item item-1\n:::title\n${title1}\n:::content\n${content1}\n`;
+        if (title2 && content2) block += `:::item item-2\n:::title\n${title2}\n:::content\n${content2}\n`;
+        return block + '{% end %}';
+      },
+      toPreview: ({ title1, content1, title2, content2 }) => {
+        let html = `<details open style="margin-bottom:0.5em"><summary><strong>${title1}</strong></summary><div style="margin-top:0.5em">${content1}</div></details>`;
+        if (title2 && content2) html += `<details style="margin-bottom:0.5em"><summary><strong>${title2}</strong></summary><div style="margin-top:0.5em">${content2}</div></details>`;
+        return html;
+      }
+    });
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      return `${parts[0]} 年 ${parseInt(parts[1], 10)} 月 ${parseInt(parts[2], 10)} 日`;
+    }
+
+    const DocsPreview = createClass({
+      render() {
+        const { entry, widgetFor } = this.props;
+        const title = entry.getIn(['data', 'title']) || '';
+
+        return (
+          <div id="app">
+            <div className="Layout">
+              <header className="Hero no-cover">
+                <div className="container">
+                  <div className="taxonomies-banner">
+                    <div className="taxonomies-meta">
+                      <h2 className="title">
+                        <span className="banner-title">{title}</span>
+                      </h2>
+                    </div>
+                  </div>
+                </div>
+              </header>
+              <main className="Content">
+                <div className="container">
+                  <div className="content">
+                    <section className="content-container">
+                      <article>
+                        {widgetFor('body')}
+                      </article>
+                    </section>
+                  </div>
+                </div>
+              </main>
+
+            </div>
+          </div>
+        );
+      }
+    });
+
+    const PostPreview = createClass({
+      componentDidMount() {
+        const doc = this.props.document;
+        if (!doc || doc.querySelector('#unocss-runtime')) return;
+
+        const map = doc.createElement('script');
+        map.type = 'importmap';
+        map.textContent = JSON.stringify({
+          imports: {
+            '@unocss/runtime': 'https://esm.sh/@unocss/runtime',
+            '@unocss/preset-wind4': 'https://esm.sh/@unocss/preset-wind4',
+            '@unocss/preset-attributify': 'https://esm.sh/@unocss/preset-attributify',
+          }
+        });
+        doc.head.appendChild(map);
+
+        const script = doc.createElement('script');
+        script.id = 'unocss-runtime';
+        script.type = 'module';
+        script.textContent = `
+          import initRuntime from '@unocss/runtime';
+          import presetWind4 from '@unocss/preset-wind4';
+          import presetAttributify from '@unocss/preset-attributify';
+          initRuntime({
+            presets: [
+              presetWind4({ preflights: false }),
+              presetAttributify(),
+            ],
+            theme: {
+              font: { family: 'var(--joh-font-family-base)' },
+              breakpoint: { md: '720px' },
+            },
+          });
+        `;
+        doc.head.appendChild(script);
+      },
+      render() {
+        const { entry, widgetFor } = this.props;
+
+        const title = entry.getIn(['data', 'title']) || '';
+        const description = entry.getIn(['data', 'description']) || '';
+        const date = entry.getIn(['data', 'date']) || '';
+        const cover = entry.getIn(['data', 'extra', 'cover']) || '';
+        const coverAlt = entry.getIn(['data', 'extra', 'cover_alt']) || title;
+        const author = entry.getIn(['data', 'taxonomies', 'author']);
+        const tags = entry.getIn(['data', 'taxonomies', 'tags']);
+
+        const hasCustomCover = !!cover;
+        const hasDescription = !!description;
+        const hasAuthor = author && author.size > 0;
+        const hasTags = tags && tags.size > 0;
+        const coverUrl = cover || '/imgs/tags.svg';
+
+        return (
+          <div id="app">
+            <div className="Layout">
+
+              {/* —— Hero — 对应 hero.html isPost 分支 —— */}
+              <header className={`Hero ${hasCustomCover ? 'has-cover' : 'no-cover'}`}>
+                <div className="container">
+                  <div className="post-heading">
+                    <img
+                      className="article-cover"
+                      src={coverUrl}
+                      alt={coverAlt}
+                    />
+                    <div className="post-heading-gradient-overlay" />
+                    <div className="post-heading-dark-overlay" />
+                    <div className="post-heading-info">
+                      <div className="post-heading-info-container">
+
+                        {/* 标签 */}
+                        <div className="post-heading-tags TagsList">
+                          {hasTags && tags.toArray().map(tag => (
+                            <a className="joh-tag" href="#" title={tag} key={tag}>
+                              <span>{tag}</span>
+                            </a>
+                          ))}
+                        </div>
+
+                        {/* 标题 */}
+                        <h1 className="post-heading-title">
+                          <span className="PostTitleTransition">{title}</span>
+                        </h1>
+
+                        {/* 副标题 */}
+                        {hasDescription && (
+                          <p className="post-heading-subtitle">{description}</p>
+                        )}
+
+                        {/* 日期 + 作者 */}
+                        <div className="post-heading-meta">
+                          <time className="article-publish-date" datetime={date}>
+                            发布于 {formatDate(date)}
+                          </time>
+                          <span className="article-authors">
+                            <span className="author-title">作者</span>
+                            {hasAuthor ? (
+                              author.toArray().map((name, i) => (
+                                <span key={name}>
+                                  {i > 0 && <span className="author-separator">、</span>}
+                                  <a className="article-author" href="#">
+                                    <span className="author-name font-bold">{name}</span>
+                                  </a>
+                                </span>
+                              ))
+                            ) : (
+                              <span className="author-name font-bold">京吹学报</span>
+                            )}
+                          </span>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </header>
+
+              {/* —— 正文 —— */}
+              <main className="Content has-aside">
+                <div className="container">
+                  <div className="content">
+                    <section className="content-container">
+                      <article>
+                        {widgetFor('body')}
+                      </article>
+                    </section>
+                  </div>
+                </div>
+              </main>
+
+            </div>
+          </div>
+        );
+      }
+    });
+
+    CMS.registerPreviewTemplate('posts', PostPreview);
+    CMS.registerPreviewTemplate('docs', DocsPreview);
+  </script>
+  </body>
+</html>
