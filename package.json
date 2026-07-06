@@ -10,6 +10,7 @@
     "build:all": "pnpm run build:vite && pnpm run build:unocss && pnpm run build:subset-titlefont && pnpm run build:subset-bodyfont && pnpm run build && pnpm run build:rewrite-imgs && pnpm run build:short-links",
     "build:vite": "vite build",
     "dev:vite": "vite build --watch",
+    "dev:cms": "node -e \"const{watch,cpSync,existsSync,mkdirSync}=require('fs'),{join}=require('path');watch('static',{recursive:true},(_,f)=>{if(!f)return;const s=join('static',f),d=join('public',f);try{existsSync(s)&&(mkdirSync(join(d,'..'),{recursive:true}),cpSync(s,d,{recursive:true}))}catch{}})\"",
     "preview": "vite preview ./public",
     "typecheck": "tsc --noEmit",
     "build:subset-titlefont": "cargo run --bin title-font-subset -- --content-dir content --font themes/hibikilogy/static/fonts/SourceHanSerifCN-VF.ttf --font-output-dir themes/hibikilogy/static/fonts --css-output-dir themes/hibikilogy/static/styles --css-file source-han-serif-cn-vf.css --font-family \"Source Han Serif CN VF\" --output-file source-han-serif-cn-vf.woff2",
