@@ -1,12 +1,11 @@
 # yaml-language-server: $schema=https://unpkg.com/@sveltia/cms@0.170.0/schema/sveltia-cms.json
-publish_mode: editorial_workflow
+
 
 backend:
   name: github
   repo: hibikilogy/hibikilogy.github.io
   branch: Refactor/zola
-  base_url: https://gh-oauth.interknot.site/
-  open_authoring: true
+  base_url: https://gh-oauth.interknot.site
   squash_merges: true
 
 # —— Output ——
@@ -23,6 +22,8 @@ slug:
 # —— App UI (Sveltia CMS) ——
 app_title: 京吹学报 CMS (DEV)
 site_url: https://hibikilogy.vercel.app/
+display_url: https://hibikilogy.vercel.app/
+logout_redirect_url: https://hibikilogy.vercel.app/
 show_preview_links: true
 logo:
   src: /logo-blue.svg
@@ -57,9 +58,6 @@ collections:
       editor:
         preview: true
       view_filters:
-        - label: 已发布
-          field: draft
-          pattern: false
         - label: 草稿
           field: draft
           pattern: true
