@@ -2,11 +2,13 @@
 <header class="Hero {% if page.extra.cover is defined and page.extra.cover %} has-cover{% else %} no-cover {% endif %}">
   <div class="container">
     {% if isPost %}
-    {% set cover_url = data::cover_url(page=page, default=config.extra.default_cover) %}
-    <div class="post-heading">
-      <img class="article-cover"
-        src="{{ cover_url }}"
-        alt="{% if page.extra.cover_alt is defined %}{{ page.extra.cover_alt }}{% else %}{{ page.title }}{% endif %}" />
+	    {% set cover_url = data::cover_url(page=page, default=config.extra.default_cover) %}
+	    {% set default_cover_url = data::resolve_url(path=config.extra.default_cover) %}
+	    <div class="post-heading">
+	      <img class="article-cover{% if not page.extra.cover %} default-bg{% endif %}"
+	        src="{{ cover_url }}"
+	        alt="{% if page.extra.cover_alt is defined %}{{ page.extra.cover_alt }}{% else %}{{ page.title }}{% endif %}"
+	        onerror="this.onerror=null;this.src='{{ default_cover_url }}';this.classList.add('default-bg');this.closest('.Hero').classList.replace('has-cover','no-cover');" />
       <div class="post-heading-gradient-overlay"></div>
       <div class="post-heading-dark-overlay"></div>
       <div class="post-heading-info">
