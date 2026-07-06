@@ -47,8 +47,8 @@ collections:
       create: true
       delete: false
       path: '{{year}}-{{month}}-{{day}}-{{slug}}'
-      media_folder: /static/imgs/{{year}}-{{month}}-{{day}}
-      public_folder: /imgs/{{year}}-{{month}}-{{day}}
+      media_folder: /static/imgs/{{year}}-{{month}}-{{day}}-{{slug}}
+      public_folder: /imgs/{{year}}-{{month}}-{{day}}-{{slug}}
       thumbnail: ["extra.cover"]
       format: toml-frontmatter
       summary: '{{title}} — {{taxonomies.author}}'
