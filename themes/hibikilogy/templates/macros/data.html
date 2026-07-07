@@ -9,6 +9,10 @@
 {%- endif -%}
 {% endmacro %}
 
+{% macro config_link(link) -%}
+{{- link | replace(from='$BASE_URL', to=config.base_url) -}}
+{%- endmacro %}
+
 {% macro resolve_url(path="") -%}
 {%- if path is starting_with("http://") or path is starting_with("https://") -%}
 {{- path | trim -}}

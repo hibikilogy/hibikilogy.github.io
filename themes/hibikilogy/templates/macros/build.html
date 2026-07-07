@@ -27,3 +27,9 @@
     {% endif %}
   ></script>
 {% endmacro %}
+
+{% macro katex_css() %}
+{% if config.extra.katex and config.extra.katex.enabled %}
+<link rel="stylesheet" href="{{ config.extra.katex.css_cdn | default(value='https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css') }}"{% if config.extra.katex.css_integrity %} integrity="{{ config.extra.katex.css_integrity }}"{% endif %} crossorigin="anonymous">
+{% endif %}
+{% endmacro %}

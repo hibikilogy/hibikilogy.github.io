@@ -3,11 +3,6 @@
 {% import 'components/pagination.html' as pagination %}
 {% import 'components/search_shell.html' as search_shell %}
 
-{% block title %}
-{{ section.title }} | {{ config.title }}
-{% endblock %}
-
-
 {% block critical_css %}
 {{ build::css(path="layouts/search.css") }}
 {% endblock critical_css %}

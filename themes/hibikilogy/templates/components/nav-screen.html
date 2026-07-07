@@ -11,7 +11,7 @@
       {% if nav.link %}
       <a class="Link link NavScreenMenuLink" aria-expanded="false"
         aria-label="menu" role="button"
-        href="{{ nav.link | replace(from='$BASE_URL', to=config.base_url) }}"
+        href="{{ data::config_link(link=nav.link) }}"
         tabindex="0">
         <span>{{ nav.text }}</span>
       </a>
@@ -30,7 +30,7 @@
               {% for _nav in nav.items %}
               <div class="MenuLink">
                 <a class="Link NavScreenMenuLink"
-                  href="{{ _nav.link | replace(from='$BASE_URL', to=config.base_url) }}"
+                  href="{{ data::config_link(link=_nav.link) }}"
                   target="_blank"
                   rel="noreferrer">
                   {{ _nav.text }}

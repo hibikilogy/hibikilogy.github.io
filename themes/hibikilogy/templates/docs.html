@@ -2,18 +2,12 @@
 {% import 'components/aside.html' as aside %}
 {% extends 'base.html' %}
 
-{% block title %}
-{{ config.title }} | {{ page.title }}
-{% endblock %}
-
 {% block class %}
 docs
 {% endblock %}
 
 {% block meta %}
-{% if config.extra.katex and config.extra.katex.enabled %}
-<link rel="stylesheet" href="{{ config.extra.katex.css_cdn | default(value='https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css') }}"{% if config.extra.katex.css_integrity %} integrity="{{ config.extra.katex.css_integrity }}"{% endif %} crossorigin="anonymous">
-{% endif %}
+{{ build::katex_css() }}
 {% endblock %}
 
 {% block critical_css %}

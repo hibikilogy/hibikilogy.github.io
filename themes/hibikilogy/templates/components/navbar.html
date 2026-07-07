@@ -33,7 +33,7 @@
             {% for nav in item.list %}
             {% if nav.link %}
             <a class="Link link NavBarMenuLink" aria-expanded="false" aria-label="menu" role="button"
-              href="{{ nav.link | replace(from='$BASE_URL', to=config.base_url) }}" tabindex="0">
+              href="{{ data::config_link(link=nav.link) }}" tabindex="0">
               <span>{{ nav.text }}</span>
             </a>
             {% else %}
@@ -49,7 +49,7 @@
                   <div class="items">
                     {% for _nav in nav.items %}
                     <div class="MenuLink">
-                      <a class="Link" href="{{ _nav.link | replace(from='$BASE_URL', to=config.base_url) }}"
+                      <a class="Link" href="{{ data::config_link(link=_nav.link) }}"
                         target="_blank" rel="noreferrer">
                         {{ _nav.text }}
                       </a>
