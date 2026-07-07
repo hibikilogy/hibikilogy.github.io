@@ -4,6 +4,12 @@
     {% if isPost %}
 	    {% set cover_url = data::cover_url(page=page, default=config.extra.default_cover) %}
 	    {% set default_cover_url = data::resolve_url(path=config.extra.default_cover) %}
+      {% set title_wrap_class = "text-pretty" %}
+
+      {% set title_len = page.title | length %}
+      {% if title_len >= 28 and title_len <= 32 %}
+        {% set title_wrap_class = "text-balance" %}
+      {% endif %}
 	    <div class="post-heading">
 	      <img class="article-cover{% if not page.extra.cover %} default-bg{% endif %}"
 	        src="{{ cover_url }}"
@@ -20,7 +26,7 @@
           </div>
           {% set title_transition_name =
           data::post_title_transition_name(page=page) | trim %}
-          <h1 class="post-heading-title">
+          <h1 class="post-heading-title {{ title_wrap_class }}">
             <span class="PostTitleTransition"
               style="view-transition-name: {{ title_transition_name }}">
               {{ page.title }}

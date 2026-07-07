@@ -151,6 +151,9 @@
       .article-subtitle {
         font-weight: 700;
         line-height: 1.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .article-meta {
