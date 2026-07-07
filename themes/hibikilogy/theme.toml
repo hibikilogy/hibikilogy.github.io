@@ -9,7 +9,6 @@ name = "Hibikilogy"
 homepage = "https://hibikilogy.vercel.app"
 
 [extra]
-# Default theme configuration — users can override these in their site's config.toml [extra].
 article_section = "articles/_index.md"
 stylesheets = [
   "styles/uno.css",
@@ -19,9 +18,14 @@ stylesheets = [
 ]
 busuanzi = false
 search_page_size = 12
+journal_logo = ""
+meta_keywords = ""
+meta_author = ""
 
+katex.enabled = false
+katex.auto_render = false
 katex.css_cdn = "https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css"
-katex.css_integrity = "sha384-gK+yZX6a4p2WSJ6t6dViH1f7eqB9iQc23mRFQonCZkrjF5nWtQaU/YU2JbB1k6n"
+katex.css_integrity = "sha384-vlBdW0r3AcZO/HboRPznQNowvexd3fY8qHOWkBi5q7KGgqJ+F48+DceybYmrVbmB"
 
 tag_categories = []
 tag_category_misc_title = ""
@@ -34,3 +38,13 @@ prefetch_urls = []
 footer = []
 navbar = []
 slogan = []
+
+[extra.favicon]
+webmanifest = ""
+safari_pinned_tab = ""
+small_icon = ""
+svg_icon = ""
+apple_touch_icon = ""
+
+[extra.analytics]
+google = ""

@@ -1,12 +1,29 @@
-{# i18n helper — Theme i18n/ files > Zola built-in trans() > inline default.
-   Loaded via load_data(), falls back to site config.toml [translations] via trans().
+{# i18n helper - Site translations > theme i18n/ files > inline default.
+   Site config.toml/zola.toml translations override the reusable theme defaults.
    Call: tr::t(key="search_placeholder") or tr::t(key="key", default="Fallback") #}
 
 {% macro t(key, default="") %}
-  {%- set theme_i18n = load_data(path="themes/hibikilogy/i18n/" ~ lang ~ ".toml", required=false) -%}
-  {%- if theme_i18n[key] is defined -%}
-    {{- theme_i18n[key] -}}
+  {%- set site_config = load_data(path="config.toml", required=false) -%}
+  {%- if not site_config -%}
+    {%- set site_config = load_data(path="zola.toml", required=false) -%}
+  {%- endif -%}
+  {%- if site_config
+    and lang != config.default_language
+    and site_config.languages is defined
+    and site_config.languages[lang] is defined
+    and site_config.languages[lang].translations is defined
+    and site_config.languages[lang].translations[key] is defined -%}
+    {{- site_config.languages[lang].translations[key] -}}
+  {%- elif site_config
+    and site_config.translations is defined
+    and site_config.translations[key] is defined -%}
+    {{- site_config.translations[key] -}}
   {%- else -%}
-    {{- trans(key=key, default=default) -}}
+    {%- set theme_i18n = load_data(path="themes/hibikilogy/i18n/" ~ lang ~ ".toml", required=false) -%}
+    {%- if theme_i18n[key] is defined -%}
+      {{- theme_i18n[key] -}}
+    {%- else -%}
+      {{- default -}}
+    {%- endif -%}
   {%- endif -%}
 {% endmacro %}

@@ -1,5 +1,5 @@
 import type { Plugin } from 'vite'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { camelCase, isPlainObject } from 'lodash-es'
 import { parse } from 'smol-toml'
@@ -13,6 +13,24 @@ const RESOLVED_ID = `\0${VIRTUAL_ID}`
 
 function isTomlObject(value: unknown): value is TomlObject {
   return isPlainObject(value)
+}
+
+function getThemeI18nPath(config: TomlObject, rootDir: string): string | null {
+  const themeName = typeof config.theme === 'string'
+    ? config.theme
+    : undefined
+  const lang = typeof config.default_language === 'string'
+    ? config.default_language
+    : 'zh'
+
+  return themeName
+    ? resolve(rootDir, 'themes', themeName, 'i18n', `${lang}.toml`)
+    : null
+}
+
+function getConfiguredThemeI18nPath(tomlPath: string, rootDir: string): string | null {
+  const parsed = parse(readFileSync(tomlPath, 'utf8')) as TomlObject
+  return getThemeI18nPath(parsed, rootDir)
 }
 
 function flattenScalars(
@@ -76,22 +94,16 @@ function generateModule(tomlPath: string, rootDir: string): string {
   const config = flattenScalars(root)
   flattenScalars(extra, [], config)
 
-  const translations = flattenScalars(rootTranslations)
-  flattenScalars(extraTranslations, [], translations)
-
-  // Load theme i18n file (site config.toml [translations] take priority via merge order above)
-  const themeName = root.theme as string | undefined
-  const lang = (root.default_language as string) || 'zh'
-  if (themeName && Object.keys(translations).length === 0) {
-    const i18nPath = resolve(rootDir, 'themes', themeName, 'i18n', `${lang}.toml`)
-    try {
-      const i18nParsed = parse(readFileSync(i18nPath, 'utf8')) as TomlObject
-      flattenScalars(i18nParsed, [], translations)
-    }
-    catch {
-      // i18n file not found or unparseable — use site translations only
-    }
+  const translations: Record<string, Scalar> = {}
+  const themeI18nPath = getThemeI18nPath(root, rootDir)
+  if (themeI18nPath && existsSync(themeI18nPath)) {
+    const i18nParsed = parse(readFileSync(themeI18nPath, 'utf8')) as TomlObject
+    flattenScalars(i18nParsed, [], translations)
   }
+
+  const siteTranslations = flattenScalars(rootTranslations)
+  flattenScalars(extraTranslations, [], siteTranslations)
+  Object.assign(translations, siteTranslations)
 
   return [
     '// Generated from config.toml.',
@@ -123,17 +135,18 @@ export function hibikilogyConfigPlugin(rootDir: string): Plugin {
 
       this.addWatchFile(tomlPath)
 
-      // Also watch the theme i18n file for HMR
-      const i18nPath = resolve(rootDir, 'themes', 'hibikilogy', 'i18n', 'zh.toml')
-      this.addWatchFile(i18nPath)
+      const i18nPath = getConfiguredThemeI18nPath(tomlPath, rootDir)
+      if (i18nPath)
+        this.addWatchFile(i18nPath)
 
       return generateModule(tomlPath, rootDir)
     },
 
     async handleHotUpdate({ file, server }) {
       const normalizedFile = normalizePath(file)
-      const i18nPath = normalizePath(resolve(rootDir, 'themes', 'hibikilogy', 'i18n', 'zh.toml'))
-      if (normalizedFile !== normalizedTomlPath && normalizedFile !== i18nPath)
+      const i18nPath = getConfiguredThemeI18nPath(tomlPath, rootDir)
+      const normalizedI18nPath = i18nPath ? normalizePath(i18nPath) : ''
+      if (normalizedFile !== normalizedTomlPath && normalizedFile !== normalizedI18nPath)
         return
 
       const module = server.moduleGraph.getModuleById(RESOLVED_ID)
