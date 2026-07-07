@@ -46,11 +46,11 @@ Follow `.editorconfig`: UTF-8, LF endings, two-space indentation, final newline 
 
 ## Testing Guidelines
 
-There is no separate unit test suite. Treat static-site validation as the required test path: run `zola check`, then `zola build`, and run Pagefind when search output changes. For template, Sass, or navigation changes, inspect the local site with `zola serve` before opening a PR.
+There is no separate unit test suite. Treat static-site validation as the required test path: run `zola check`, then `zola build`, For template, Sass, or navigation changes, inspect the local site with `zola serve` before opening a PR.
 
 ## Commit & Pull Request Guidelines
 
-The repository includes `.github/commit-convention.md`, based on Conventional Commits. Prefer headers like `docs(content): add article guide`, `fix(template): correct pagination`, or `build(search): update pagefind output`. Keep the subject imperative, lowercase, and under 50 characters when practical.
+Follow [Angular's commit convention](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular): `<type>(<scope>): <subject>`. Allowed scopes are limited to: `theme`, `scripts`, `content`, `docs`, `build`. Examples: `feat(theme): add dark mode support`, `fix(scripts): correct build cache path`, `docs(content): add article guide`. Keep the subject imperative, lowercase, and under 50 characters when practical. See `.github/commit-convention.md` for the full format.
 
 PRs should describe the change, note affected content/templates/assets, link related issues, and include screenshots for visible layout changes. Mention whether `zola check`, `zola build`, and Pagefind were run.
 
