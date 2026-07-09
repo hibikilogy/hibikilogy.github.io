@@ -118,7 +118,7 @@ export class SitePagination extends LitElement {
   private renderItem(item: PaginationItem) {
     switch (item.type) {
       case 'ellipsis':
-        return html`<li class="flex min-h-8 min-w-8 items-center justify-center px-1 text-[#999]">
+        return html`<li class="flex min-h-8 min-w-8 items-center justify-center px-1 text-[#999] cursor-default">
           <span aria-hidden="true">...</span>
         </li>`
       case 'previous':
