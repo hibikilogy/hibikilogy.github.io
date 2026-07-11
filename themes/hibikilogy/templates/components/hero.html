@@ -11,13 +11,14 @@
         {% set title_wrap_class = "text-balance" %}
       {% endif %}
 	    <div class="post-heading">
-	      <img class="article-cover{% if not page.extra.cover %} default-bg{% endif %}"
-	        src="{{ cover_url }}"
-	        alt="{% if page.extra.cover_alt is defined %}{{ page.extra.cover_alt }}{% else %}{{ page.title }}{% endif %}"
-	        onerror="this.onerror=null;this.src='{{ default_cover_url }}';this.classList.add('default-bg');this.closest('.Hero').classList.replace('has-cover','no-cover');" />
-      <div class="post-heading-gradient-overlay"></div>
-      <div class="post-heading-dark-overlay"></div>
-      <div class="post-heading-info">
+		      <img class="article-cover{% if not page.extra.cover %} default-bg{% endif %}"
+		        src="{{ cover_url }}"
+		        alt="{% if page.extra.cover_alt is defined %}{{ page.extra.cover_alt }}{% else %}{{ page.title }}{% endif %}"
+		        onload="this.closest('.post-heading').classList.add('image-loaded');"
+		        onerror="this.onerror=null;this.src='{{ default_cover_url }}';this.classList.add('default-bg');this.closest('.Hero').classList.replace('has-cover','no-cover');" />
+	      <div class="post-heading-gradient-overlay"></div>
+	      <div class="post-heading-dark-overlay"></div>
+	      <div class="post-heading-info">
         <div class="post-heading-info-container">
           <div class="post-heading-tags TagsList">
             {% if page.taxonomies.tags %}
