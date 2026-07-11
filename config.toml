@@ -69,6 +69,8 @@ skip_prefixes = [
   "https://nga.178.com/",
 ]
 
+trailing_slashes = false
+
 [slugify]
 anchors = "on"
 paths = "on"

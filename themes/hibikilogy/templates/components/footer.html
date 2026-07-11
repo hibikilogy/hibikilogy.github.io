@@ -7,7 +7,7 @@
       {% for item in config.extra.footer %}
       {% if lang == item.code %}
       <h3>
-        <a href="{{ get_url(path='/tags/') }}" title="{{ get_url(path='/tags/') }}" aria-expanded="false" aria-label="menu" role="button">
+        <a href="{{ get_url(path='/tags') | trim_end_matches(pat='/') }}" title="{{ get_url(path='/tags') | trim_end_matches(pat='/') }}" aria-expanded="false" aria-label="menu" role="button">
           {{ item.tags_text }}
         </a>
       </h3>

@@ -3,7 +3,7 @@
 {% macro tags_list(show_count=false) %}
 {% set tags = get_taxonomy(kind="tags") %}
 {% for tag in tags.items | sort(attribute='pages') | reverse %}
-<a href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" class="joh-tag" title="{{ tag.name }}">
+<a href="{{ get_taxonomy_url(kind='tags', name=tag.name) | trim_end_matches(pat='/') }}" class="joh-tag" title="{{ tag.name }}">
   <span>{{ tag.name }}</span>
   {% if show_count %}
   <span class="tag-count">{{ tag.pages | length }}</span>
@@ -23,7 +23,7 @@
     {% endif %}
   {% endfor %}
   {% if tag_count > 0 %}
-  <a href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" class="joh-tag" title="{{ tag.name }}">
+  <a href="{{ get_taxonomy_url(kind='tags', name=tag.name) | trim_end_matches(pat='/') }}" class="joh-tag" title="{{ tag.name }}">
     <span>{{ tag.name }}</span>
     {% if show_count %}
     <span class="tag-count">{{ tag_count }}</span>

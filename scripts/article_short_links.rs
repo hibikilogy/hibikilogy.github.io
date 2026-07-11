@@ -294,7 +294,7 @@ fn ensure_target_page_exists(
 ) -> Result<()> {
     validate_slug(slug)?;
 
-    let target_url = format!("/articles/{slug}/");
+    let target_url = format!("/articles/{slug}");
     if !article_urls.is_empty() && !article_urls.contains(&target_url) {
         bail!("{target_url} not found in search_index.zh.json");
     }
@@ -321,7 +321,7 @@ fn load_article_urls(site_root: &Path) -> Result<BTreeSet<String>> {
     Ok(entries
         .into_iter()
         .map(|entry| entry.url)
-        .filter(|url| url.starts_with("/articles/") && url.ends_with('/'))
+        .filter(|url| url.starts_with("/articles/"))
         .collect())
 }
 
@@ -714,7 +714,7 @@ fn article_redirect_target(redirect: &RedirectRecord) -> String {
     let source_path = format!("/{SHORT_LINK_DIRECTORY}/{}/", redirect.code);
     let source_param = url_encode_query_value(&source_path);
     format!(
-        "/articles/{}/?from={}",
+        "/articles/{}?from={}",
         redirect.target_slug, source_param
     )
 }
@@ -1015,13 +1015,13 @@ mod tests {
 
     #[test]
     fn renders_meta_refresh_and_js_redirect_html() {
-        let html = render_redirect_html("/articles/daxue/?from=%2Fs%2F26abc%2F");
+        let html = render_redirect_html("/articles/daxue?from=%2Fs%2F26abc%2F");
 
         assert!(html.contains(r#"<meta name="robots" content="noindex">"#));
-        assert!(html.contains(r#"<meta http-equiv="refresh" content="0; url=/articles/daxue/?from=%2Fs%2F26abc%2F">"#));
-        assert!(html.contains(r#"<link rel="canonical" href="/articles/daxue/?from=%2Fs%2F26abc%2F">"#));
-        assert!(html.contains(r#"window.location.replace("/articles/daxue/?from=%2Fs%2F26abc%2F")"#));
-        assert!(html.contains(r#"<a href="/articles/daxue/?from=%2Fs%2F26abc%2F">/articles/daxue/?from=%2Fs%2F26abc%2F</a>"#));
+        assert!(html.contains(r#"<meta http-equiv="refresh" content="0; url=/articles/daxue?from=%2Fs%2F26abc%2F">"#));
+        assert!(html.contains(r#"<link rel="canonical" href="/articles/daxue?from=%2Fs%2F26abc%2F">"#));
+        assert!(html.contains(r#"window.location.replace("/articles/daxue?from=%2Fs%2F26abc%2F")"#));
+        assert!(html.contains(r#"<a href="/articles/daxue?from=%2Fs%2F26abc%2F">/articles/daxue?from=%2Fs%2F26abc%2F</a>"#));
     }
 
     #[test]
@@ -1044,7 +1044,7 @@ mod tests {
         );
         fixture.write(
             "public/search_index.zh.json",
-            r#"[{"url":"/articles/kaori/","title":"kaori"}]"#,
+            r#"[{"url":"/articles/kaori","title":"kaori"}]"#,
         );
         fixture.write("public/articles/kaori/index.html", "<html>kaori</html>");
 
@@ -1069,7 +1069,7 @@ mod tests {
         );
         fixture.write(
             "public/search_index.zh.json",
-            r#"[{"url":"/articles/daxue/","title":"daxue"}]"#,
+            r#"[{"url":"/articles/daxue","title":"daxue"}]"#,
         );
         fixture.write("public/articles/daxue/index.html", "<html>daxue</html>");
 
@@ -1093,7 +1093,7 @@ mod tests {
         assert!(manifest.records[0].code.starts_with("26"));
 
         let redirect = fixture.read(&format!("public/s/{}/index.html", manifest.records[0].code));
-        assert!(redirect.contains("/articles/daxue/?from=%2Fs%2F26"));
+        assert!(redirect.contains("/articles/daxue?from=%2Fs%2F26"));
     }
 
     #[test]
@@ -1105,7 +1105,7 @@ mod tests {
         );
         fixture.write(
             "public/search_index.zh.json",
-            r#"[{"url":"/articles/daxue/","title":"daxue"}]"#,
+            r#"[{"url":"/articles/daxue","title":"daxue"}]"#,
         );
         fixture.write("public/articles/daxue/index.html", "<html>daxue</html>");
 
@@ -1173,7 +1173,7 @@ mod tests {
         );
         fixture.write(
             "public/search_index.zh.json",
-            r#"[{"url":"/articles/kaori/","title":"kaori"}]"#,
+            r#"[{"url":"/articles/kaori","title":"kaori"}]"#,
         );
         fixture.write("public/articles/kaori/index.html", "<html>kaori</html>");
 
@@ -1189,8 +1189,8 @@ mod tests {
         assert_eq!(manifest.records[0].target_slug, "kaori");
 
         let redirect = fixture.read(&format!("public/s/{}/index.html", manifest.records[0].code));
-        assert!(redirect.contains("/articles/kaori/?from=%2Fs%2F"));
-        assert!(!redirect.contains("/articles/Kaori/"));
+        assert!(redirect.contains("/articles/kaori?from=%2Fs%2F"));
+        assert!(!redirect.contains("/articles/Kaori"));
     }
 
     #[test]
@@ -1202,7 +1202,7 @@ mod tests {
         );
         fixture.write(
             "public/search_index.zh.json",
-            r#"[{"url":"/articles/omae-s16th/","title":"omae"}]"#,
+            r#"[{"url":"/articles/omae-s16th","title":"omae"}]"#,
         );
         fixture.write("public/articles/omae-s16th/index.html", "<html>omae</html>");
 

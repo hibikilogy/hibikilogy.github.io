@@ -10,7 +10,7 @@
 {%- else %}
   <subtitle>{{ taxonomy.name }} / {{ term.name }} - {{ config.description }}</subtitle>
 {%- endif %}
-  {%- set feed_self = term.permalink ~ "atom.xml" %}
+  {%- set feed_self = term.permalink ~ "/atom.xml" %}
 {%- else %}
   <title>{{ config.title }}</title>
   <subtitle>{{ config.description }}</subtitle>
@@ -41,7 +41,7 @@
 {%- for author_name in authors %}
     <author>
       <name>{{ author_name }}</name>
-      <uri>{{ get_taxonomy_url(kind='author', name=author_name) | safe }}</uri>
+      <uri>{{ get_taxonomy_url(kind='author', name=author_name) | trim_end_matches(pat='/') | safe }}</uri>
     </author>
 {%- endfor %}
 {%- else %}
@@ -50,17 +50,17 @@
     </author>
 {%- endif %}
 {%- for tag in tags %}
-    <category term="{{ tag }}" scheme="{{ get_taxonomy_url(kind='tags', name=tag) | safe }}"/>
+    <category term="{{ tag }}" scheme="{{ get_taxonomy_url(kind='tags', name=tag) | trim_end_matches(pat='/') | safe }}"/>
 {%- endfor %}
-    <link rel="alternate" type="text/html" href="{{ page.permalink | safe }}"/>
-    <id>{{ page.permalink | safe }}</id>
+    <link rel="alternate" type="text/html" href="{{ page.permalink | trim_end_matches(pat='/') | safe }}"/>
+    <id>{{ page.permalink | trim_end_matches(pat='/') | safe }}</id>
 {%- if page.extra.abstract %}
     <summary>{{ page.extra.abstract }}</summary>
 {%- endif %}
 {%- if page.extra.original %}
     <link rel="related" href="{{ page.extra.original }}" title="原文链接"/>
 {%- endif %}
-    <content type="html" xml:base="{{ page.permalink | safe }}">
+    <content type="html" xml:base="{{ page.permalink | trim_end_matches(pat='/') | safe }}">
       {{ page.content }}
     </content>
   </entry>

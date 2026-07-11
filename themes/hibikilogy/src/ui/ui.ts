@@ -205,6 +205,17 @@ function clearTransitionScopes(): void {
   clearPaginationTransitionDirection()
 }
 
+function cleanTrailingSlash(): void {
+  const { pathname, search, hash } = window.location
+  if (pathname.length > 1 && pathname.endsWith('/')) {
+    window.history.replaceState(
+      window.history.state,
+      '',
+      pathname.replace(/\/+$/, '') + search + hash,
+    )
+  }
+}
+
 // --- Swup lifecycle hooks ---
 
 swup.hooks.on('visit:start', (visit) => {
@@ -217,6 +228,7 @@ swup.hooks.on('visit:start', (visit) => {
 swup.hooks.on('content:replace', () => {
   mountUI()
   initializePageModules()
+  cleanTrailingSlash()
 })
 
 swup.hooks.on('visit:end', clearTransitionScopes)
@@ -255,3 +267,4 @@ document.addEventListener('keydown', (event) => {
 
 mountUI()
 initializePageModules()
+cleanTrailingSlash()

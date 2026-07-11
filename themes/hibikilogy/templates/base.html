@@ -17,7 +17,10 @@
 ])%}
 
 {% if current_url %}
-  {% set canonical_url = current_url %}
+  {% set canonical_url = current_url | trim_end_matches(pat="/") %}
+  {% if canonical_url == base_url_clean %}
+    {% set canonical_url = base_url_clean ~ "/" %}
+  {% endif %}
   {% else %}
   {% set canonical_url = base_url_clean ~ "/404.html" %}
 {% endif %}
@@ -66,7 +69,7 @@
   <meta property="og:locale" content="{{ lang }}">
   <meta property="og:title" content="{%- include 'title.html' -%}">
   <meta property="og:locale:alternate" content="{{ lang }}">
-  <meta property="og:url" content="{{ current_url | default(value='/') | safe }}">
+  <meta property="og:url" content="{{ data::clean_url(url=current_url | default(value='/')) | safe }}">
   <meta property="og:description" content="{{ meta_description }}">
 
   {% block meta %}

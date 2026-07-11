@@ -3,7 +3,7 @@
 
 {# Shared tag link — reused by category and flat modes. #}
 {% macro tag_link(tag) %}
-<a class="joh-tag" href="{{ get_taxonomy_url(kind='tags', name=tag.name) }}" title="{{ tag.name }}">
+<a class="joh-tag" href="{{ get_taxonomy_url(kind='tags', name=tag.name) | trim_end_matches(pat='/') }}" title="{{ tag.name }}">
   <span>{{ tag.name }}</span>
   <span class="tag-count">{{ tag.pages | length }}</span>
 </a>

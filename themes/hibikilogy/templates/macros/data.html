@@ -1,5 +1,13 @@
 {# Data utilities — return strings, no HTML output #}
 
+{% macro clean_url(url) -%}
+{%- if url and url != "/" and url != config.base_url -%}
+{{ url | trim_end_matches(pat="/") }}
+{%- else -%}
+{{ url }}
+{%- endif -%}
+{%- endmacro %}
+
 {% macro cover_url(page, default="") -%}
 {%- if page.extra.cover -%}
 {%- set cover = page.extra.cover | trim -%}

@@ -26,13 +26,13 @@
   {%- if cover_src -%}
     {%- set_global cover_alt = page.extra.cover_alt | default(value=page.title) -%}
   {%- endif -%}
-  {{ page.path | json_encode | safe }}: {
+  {{ page.path | trim_end_matches(pat="/") | json_encode | safe }}: {
     "dv": {{ page.date | json_encode | safe }},
     "an": {{ author_name | json_encode | safe }}{% if page.description %},
     "s": {{ page.description | json_encode | safe }}{% endif %}{% if cover_src %},
     "cs": {{ cover_src | json_encode | safe }}{% endif %}{% if cover_alt %},
     "ca": {{ cover_alt | json_encode | safe }}{% endif %}{% if author_href %},
-    "ah": {{ author_href | json_encode | safe }}{% endif %}
+    "ah": {{ author_href | trim_end_matches(pat="/") | json_encode | safe }}{% endif %}
   }{% if not loop.last %},{% endif %}
 {%- endfor %}
 }

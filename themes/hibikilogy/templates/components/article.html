@@ -10,7 +10,7 @@
 {% set title_transition_name = data::post_title_transition_name(page=page) | trim %}
 
 <article class="Section Article">
-  <a href="{{ page.permalink }}">
+  <a href="{{ page.permalink | trim_end_matches(pat='/') }}">
     <h2 class="article-title">
       <span
         class="PostTitleTransition"
