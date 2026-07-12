@@ -6,7 +6,7 @@
     "href": {{ get_taxonomy_url(kind="tags", name=tag.name) | trim_end_matches(pat="/") | json_encode | safe }},
     "pages": [
       {%- for page in tag.pages %}
-      {{ page.permalink | trim_end_matches(pat="/") | json_encode | safe }}{% if not loop.last %},{% endif %}
+      {{ page.permalink | json_encode | safe }}{% if not loop.last %},{% endif %}
       {%- endfor %}
     ]
   }{% if not loop.last %},{% endif %}
