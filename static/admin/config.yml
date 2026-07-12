@@ -153,6 +153,10 @@ collections:
                   label: 作者
                   widget: list
                   required: false
+                  field:
+                    name: author
+                    label: 作者名
+                    widget: string
 
           - name: aliases
             label: 旧链接
@@ -242,19 +246,35 @@ collections:
     # ——— Tags 标签库 ———
     - name: tags
       label: 标签库
-      folder: static/admin/data/tags
+      folder: content/tags
       create: true
       delete: true
-      format: toml-frontmatter
+      format: yml
+      extension: yml
       editor:
         preview: false
       identifier_field: title
-      summary: '{{title}}'
+      summary: "{{title}}"
+      view_groups:
+        - label: 人物
+          field: category
+          pattern: 人物
+        - label: 版块
+          field: category
+          pattern: 版块
+        - label: 杂类
+          field: category
+          pattern: 杂类
       fields:
           - name: title
             label: 标签名
             widget: string
             required: true
+          - name: category
+            label: 分类
+            widget: select
+            options: [人物, 版块, 杂类]
+            default: 杂类
 
     # ——— Authors 作者库 ———
     - name: authors
@@ -471,6 +491,15 @@ singletons:
                 - name: journal_logo
                   label: 首页 Logo 文字
                   widget: string
+                - name: tag_category_order
+                  label: 分类排序
+                  widget: list
+                  default: [人物, 版块, 杂类]
+                - name: tag_category_default
+                  label: 默认标签分类
+                  widget: select
+                  options: [人物, 版块, 杂类]
+                  default: 杂类
                 - name: tag_cloud_bg
                   label: 标签云背景图
                   widget: string
@@ -478,10 +507,6 @@ singletons:
                   label: 每页搜索结果数
                   widget: number
                   default: 12
-                - name: tag_category_misc_title
-                  label: 杂类标签分类标题
-                  widget: string
-                  default: 杂类
                 - name: article_section
                   label: 文章 Section 路径
                   widget: string
@@ -517,23 +542,6 @@ singletons:
                       - name: new_host
                         label: 新域名
                         widget: string
-                - name: tag_categories
-                  label: 标签分类
-                  widget: list
-                  collapsed: true
-                  summary: '{{title}} ({{tags.length}} 个标签)'
-                  fields:
-                      - name: title
-                        label: 分类名称
-                        widget: string
-                      - name: tags
-                        label: 标签列表
-                        widget: relation
-                        collection: tags
-                        value_field: title
-                        display_fields: [title]
-                        search_fields: [title]
-                        multiple: true
                 - name: footer
                   label: 页脚配置
                   widget: list

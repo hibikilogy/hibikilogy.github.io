@@ -27,9 +27,13 @@ katex.auto_render = false
 katex.css_cdn = "https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css"
 katex.css_integrity = "sha384-vlBdW0r3AcZO/HboRPznQNowvexd3fY8qHOWkBi5q7KGgqJ+F48+DceybYmrVbmB"
 
-tag_categories = []
-tag_category_misc_title = ""
 tag_cloud_bg = ""
+tag_category_order = [
+  "人物",
+  "版块",
+  "杂类",
+]
+tag_category_default = "杂类"
 theme_color = "#ffffff"
 twitter_card = "summary_large_image"
 navbar_logo = ""
