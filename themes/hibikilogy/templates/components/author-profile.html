@@ -1,0 +1,37 @@
+{% macro main(term, custom_page) %}
+<header class="Hero no-cover">
+  <div class="container">
+    <div class="author-profile-banner">
+      {% if custom_page.avatar %}
+      <img class="author-avatar"
+           src="{{ custom_page.avatar | safe }}"
+           alt="{{ term.name }}"
+           loading="eager"
+           width="180" height="180" />
+      {% endif %}
+      <h2 class="author-profile-name">
+        <span class="author-profile-label">{{ tr::t(key="author_title") }}</span>
+        {{ term.name }}
+      </h2>
+      {% if custom_page.bio %}
+      <p class="author-profile-bio">{{ custom_page.bio }}</p>
+      {% endif %}
+      <div class="author-profile-meta">
+        <span class="author-profile-count">
+          {{ term.page_count }}{{ tr::t(key="related_articles_suffix", default="篇文章") }}
+        </span>
+        {% if custom_page.link %}
+          {% set domain = custom_page.link
+             | trim_start_matches(pat="https://")
+             | trim_start_matches(pat="http://")
+             | split(pat="/") | first %}
+        <a class="author-profile-link joh-external-link-icon"
+           href="{{ custom_page.link | safe }}"
+           target="_blank"
+           rel="noopener noreferrer">{{ domain }}</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</header>
+{% endmacro main %}

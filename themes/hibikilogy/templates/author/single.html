@@ -1,14 +1,22 @@
 {% import 'components/journal.html' as journal %}
 {% import 'components/hero.html' as hero %}
+{% import 'components/author-profile.html' as author_profile %}
 {% extends "base.html" %}
+
+{% block vars %}
+{% set_global custom_author = load_data(path="authors/" ~ term.name ~ ".yml", required=false, format="yaml") %}
+{% endblock vars %}
 
 {% block critical_css %}
 {{ build::css(path="components/journal.css") }}
 {{ build::css(path="components/hero.css") }}
+{% if custom_author %}
+{{ build::css(path="layouts/author-profile.css") }}
+{% endif %}
 {% endblock critical_css %}
 
 {% block class %}
-author
+author{% if custom_author %} has-custom-profile{% endif %}
 {% endblock %}
 
 {% block title %}{{ term.name }} - {{ config.title }}{% endblock title %}
@@ -16,6 +24,10 @@ author
 {% block meta %}
 <meta name="author" content="{{ term.name }}">
 <link rel="alternate" type="application/atom+xml" href="{{ term.permalink | safe }}/atom.xml" title="{{ config.title }} - {{ term.name }} Atom Feed">
+{% if custom_author and custom_author.avatar %}
+<meta property="og:image" content="{{ custom_author.avatar | safe }}">
+<meta name="twitter:image" content="{{ custom_author.avatar | safe }}">
+{% endif %}
 {% endblock %}
 
 {% block structured_data -%}
@@ -24,15 +36,27 @@ author
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "{{ term.name }}",
-    "url": "{{ current_url | trim_end_matches(pat='/') | safe }}"
+    "url": "{{ current_url | trim_end_matches(pat='/') | safe }}"{% if custom_author and custom_author.avatar %},
+    "image": "{{ custom_author.avatar | safe }}"{% endif %}{% if custom_author and custom_author.bio %},
+    "description": "{{ custom_author.bio }}"{% endif %}{% if custom_author and custom_author.link %},
+    "sameAs": "{{ custom_author.link | safe }}"{% endif %}
   }
 </script>
 {%- endblock structured_data %}
 
 {% block header %}
+{% if custom_author %}
+{{ author_profile::main(term=term, custom_page=custom_author) }}
+{% else %}
 {{ hero::main(isPost=false, page="", title=tr::t(key="author_title"), name=term.name, kind="author")}}
+{% endif %}
 {% endblock %}
 
 {% block content %}
+{% if custom_author %}
+<div class="container">
+  <p class="author-articles-label">{{ tr::t(key="author_articles_label", default="发表的文章") }}</p>
+</div>
+{% endif %}
 {{ journal::main() }}
 {% endblock content %}

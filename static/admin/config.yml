@@ -257,6 +257,40 @@ collections:
             widget: string
             required: true
 
+    # ——— Authors 作者库 ———
+    - name: authors
+      label: 作者资料集
+      folder: content/authors
+      create: true
+      delete: true
+      format: yml
+      media_folder: /static/imgs/authors
+      public_folder: /imgs/authors
+      identifier_field: title
+      editor:
+        preview: true
+      summary: '{{title}}'
+      fields:
+          - name: title
+            label: 作者名
+            widget: string
+            required: true
+            hint: 需与文章 front matter 中的 author 字段一致
+          - name: bio
+            label: 座右铭
+            widget: string
+            required: false
+            hint: 限 32 字以内
+          - name: avatar
+            label: 头像
+            widget: image
+            required: false
+            choose_url: true
+          - name: link
+            label: 个人主页
+            widget: string
+            required: false
+
 # ═══════════════════════════════════════
 #  Singletons
 # ═══════════════════════════════════════
@@ -746,3 +780,7 @@ singletons:
             label: 文章计数后缀
             widget: string
             default: ' 篇'
+          - name: author_articles_label
+            label: 作者页文章列表标题
+            widget: string
+            default: 发表的文章
