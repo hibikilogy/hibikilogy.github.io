@@ -45,6 +45,4 @@ themes/hibikilogy/static/styles/source-han-sans-sc-vf.patch.css
 static/_cache/
 themes/hibikilogy/src/virtual-hibikilogy-config.generated.d.ts
 # Generated build:cms
-static/admin/admin.js
-static/admin/admin.js.map
 static/admin/admin.css
