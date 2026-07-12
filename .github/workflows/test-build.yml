@@ -49,6 +49,9 @@ jobs:
       - name: Build TypeScript (vite)
         run: pnpm build:vite
 
+      - name: Build CMS
+        run: pnpm build:admin
+
       - name: Build UnoCSS
         run: pnpm build:unocss
 
