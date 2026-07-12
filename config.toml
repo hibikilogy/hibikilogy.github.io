@@ -87,7 +87,11 @@ stylesheets = [
 ]
 busuanzi = true
 tag_cloud_bg = "/imgs/tag-cloud.svg"
-tag_category_order = ["人物", "版块", "杂类"]
+tag_category_order = [
+  "人物",
+  "版块",
+  "杂类",
+]
 tag_category_default = "杂类"
 journal_logo = "/logo-wordmark.svg"
 theme_color = "#ffffff"

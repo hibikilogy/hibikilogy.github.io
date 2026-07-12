@@ -17,6 +17,7 @@ export default antfu({
     'themes/hibikilogy/static/**',
     'static/admin/admin.js',
     'static/admin/admin.js.map',
+    'static/admin/index.html',
   ],
   formatters: {
     css: true,
@@ -56,9 +57,15 @@ export default antfu({
     },
   },
 }, {
-  files: ['cms/**/*.tsx'],
+  files: ['themes/hibikilogy/src/ui/**/*.ts'],
   rules: {
-    // TypeScript's classic JSX transform consumes the CMS-provided `h` factory implicitly.
+    'react/rules-of-hooks': 'off',
+    'react/no-unnecessary-use-prefix': 'off',
+    'react/purity': 'off',
+  },
+}, {
+  files: ['static/admin/**/*.{js,jsx,ts,tsx,html}', 'cms/**/*.tsx'],
+  rules: {
     'unused-imports/no-unused-imports': 'off',
     'ts/no-unused-vars': 'off',
   },
