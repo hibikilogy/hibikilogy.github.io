@@ -28,11 +28,14 @@ cd hibikilogy.github.io
 # 安装依赖
 pnpm install
 
-# 启动开发服务器（同时编译前端组件和 UnoCSS）
+# 启动全部开发服务器（Zola + Vite watch + UnoCSS watch）
 pnpm dev:all
 
 # 或者仅启动 Zola 开发服务器
 pnpm dev
+
+# CMS 预览界面开发
+pnpm dev:admin
 ```
 
 开发服务器默认运行在 `http://127.0.0.1:1111`。
@@ -78,14 +81,25 @@ hibikilogy.github.io/
 │       │   └── zh.toml         # 中文翻译（站点可通过 config.toml 覆写）
 │       └── theme.toml          # 主题元数据及默认配置
 ├── static/                     # 站点专属静态资源（覆盖主题）
-│   ├── imgs/                   # 文章配图（按日期或文章分组）
-│   ├── logo.svg                # 站点 Logo
-│   └── opensearch.xml          # OpenSearch 描述文件
-├── scripts/                    # Rust 构建脚本（字体子集、图片链接重写、短链生成）
-│   └── vite/                   # Vite 插件
-├── config.toml                 # Zola 站点配置
-├── vite.config.ts              # Vite 打包配置
-└── unocss.config.ts            # UnoCSS 配置
+│   ├── admin/                   # Sveltia CMS 入口及构建产出
+│   │   ├── index.html           # CMS 入口页
+│   │   ├── config.yml           # CMS 配置（集合定义、后端、预览）
+│   │   ├── admin.js             # 构建产出的 CMS 预览 JS
+│   │   └── admin.css            # 构建产出的 CMS 预览样式
+│   ├── imgs/                    # 文章配图（按日期或文章分组）
+├── cms/                         # CMS 预览界面源码（TypeScript + JSX）
+│   ├── bootstrap.ts             # 入口：初始化 CMS、注册预览模板和样式
+│   ├── components.tsx           # 预览用展示组件（PreviewPage、PostHero 等）
+│   ├── previews/                # 各集合的预览模板适配器
+│   ├── adapters.ts              # CMS Immutable.js 数据访问适配层
+│   ├── runtime.ts               # Sveltia CMS JSX 运行时桥接
+│   └── shared.ts                # 共享常量和格式化工具
+├── scripts/                     # Rust 构建脚本（字体子集、图片链接重写、短链生成）
+│   └── vite/                    # Vite 插件
+├── config.toml                  # Zola 站点配置
+├── vite.config.ts               # Vite 打包配置（主题 JS）
+├── vite.admin.config.ts         # Vite 打包配置（CMS 预览）
+└── unocss.config.ts             # UnoCSS 配置
 ```
 
 #### 开发工作流
@@ -98,7 +112,6 @@ hibikilogy.github.io/
 #### 构建
 
 ```bash
-pnpm build:all     # 完整构建：Vite → UnoCSS → 字体子集 → Zola → 图片链接重写 → 短链生成
+pnpm build:all     # 完整构建：Vite → 构建 CMS →  UnoCSS → 字体子集 → Zola → 图片链接重写 → 短链生成
 pnpm build         # 仅 Zola 构建
-pnpm typecheck     # TypeScript 类型检查
 ```

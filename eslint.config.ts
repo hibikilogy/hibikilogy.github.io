@@ -4,6 +4,7 @@ export default antfu({
   unocss: true,
   pnpm: true,
   typescript: true,
+  react: true,
   ignores: [
     '**/*.md',
     '**/*.yaml',
@@ -14,6 +15,8 @@ export default antfu({
     '**/temp',
     '**/cache',
     'themes/hibikilogy/static/**',
+    'static/admin/admin.js',
+    'static/admin/admin.js.map',
   ],
   formatters: {
     css: true,
@@ -51,5 +54,12 @@ export default antfu({
     toml: {
       'toml/padding-line-between-pairs': 'warn',
     },
+  },
+}, {
+  files: ['cms/**/*.tsx'],
+  rules: {
+    // TypeScript's classic JSX transform consumes the CMS-provided `h` factory implicitly.
+    'unused-imports/no-unused-imports': 'off',
+    'ts/no-unused-vars': 'off',
   },
 })

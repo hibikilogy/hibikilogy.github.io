@@ -20,18 +20,27 @@ This repository is a Zola static site using the built-in `hibikilogy` theme. The
 
 `public/` is the generated site output. Prefer editing source files, then regenerate output, rather than hand-editing `public/`.
 
-### Sveltia CMS (`static/admin/`)
+### Sveltia CMS (`static/admin/` + `cms/`)
 
-The site includes a Sveltia CMS (v0.170.0) setup at `/admin/` for visual content editing:
+The site includes a Sveltia CMS setup at `/admin/` for visual content editing. The CMS runtime is bundled as an npm dependency, and the preview UI is authored in TypeScript + JSX under `cms/`, built by Vite into `static/admin/admin.js`.
 
-- `static/admin/index.html` — CMS entry point. Loads Sveltia CMS from CDN, registers site CSS for preview styling, and defines custom preview templates (JSX via Babel standalone) that replicate the Zola page structure. Also registers custom editor components for Bilibili embeds, collapsible blocks, and accordions.
+#### Runtime
+- `static/admin/index.html` — CMS entry point. Loads the bundled `admin.js` module.
 - `static/admin/config.yml` — CMS configuration. Defines `posts` (articles), `docs` (documentation pages), and `tags` (tag library) collections. Includes singletons for `config.toml` site settings and `themes/hibikilogy/i18n/zh.toml` translations. Uses GitHub backend for OAuth-authenticated content editing.
-- `static/admin/fonts.css` — Full Source Han Serif CN VF @font-face for the preview pane title font.
 
+#### CMS source (`cms/`)
+- `cms/bootstrap.ts` — entry point. Initialises the CMS, registers preview templates and styles.
+- `cms/runtime.ts` — bridges Sveltia CMS's React-compatible JSX runtime (`window.h`) to the module system.
+- `cms/components.tsx` — presentational components (`PreviewPage`, `PostHero`, `AuthorHero`, `SimpleHero`) that replicate the actual Zola template DOM structure so the site's real CSS applies correctly in the preview pane.
+- `cms/previews/*.tsx` — preview template adapters (`PostPreview`, `DocsPreview`, `AuthorsPreview`). Each maps CMS entry data to the corresponding presentational component.
+- `cms/adapters.ts` — CMS type adapters (`getField`, `toArray`, `resolveAsset`) for working with Immutable.js entry data.
+- `cms/shared.ts` — shared constants (`PREVIEW_FONT_STYLES`, `DEFAULT_COVER`) and formatting helpers.
+- `cms/preview.scss` — imports theme SCSS partials (`critical.scss`, `page.scss`, `author-profile.scss`) into the preview pane stylesheet.
 
-**Preview templates** (in `index.html`) replicate the actual Zola template DOM structure (`hero.html` + `page.html` for posts, `docs.html` for pages) so that the site's real CSS applies correctly in the preview pane.
-
-**Custom editor components** extend the Markdown editor with toolbar buttons for inserting Zola shortcodes (`{{ bilibili() }}`, `{% collapsible() %}`, `{% accordion() %}`).
+#### Build
+- `vite.admin.config.ts` — dedicated Vite config for the CMS admin bundle. Outputs to `static/admin/admin.js` (ES module) and `static/admin/admin.css` with source maps. Dev mode resolves `/admin/admin.js` to `cms/bootstrap.ts` with HMR.
+- `pnpm build:admin` — production build of the admin bundle.
+- `pnpm dev:admin` — dev server with HMR for CMS development.
 
 ## Build, Test, and Development Commands
 
@@ -42,7 +51,9 @@ The site includes a Sveltia CMS (v0.170.0) setup at `/admin/` for visual content
 - `zola check`: validate pages, links, templates, and configuration without producing a deployment artifact.
 - `pnpm build:all`: full build pipeline (Vite → UnoCSS → font subset → Zola → image rewrite → short links).
 - `pnpm dev:all`: start all dev servers in parallel (Zola + Vite watch + UnoCSS watch).
-- `pnpm dev:cms`: watch `static/` and sync changes to `public/` for CMS development.
+- `pnpm build:admin`: build the Sveltia CMS admin bundle to `static/admin/admin.js`.
+- `pnpm dev:admin`: start the CMS admin dev server with HMR.
+- `pnpm dev:cms`: watch `static/` and sync changes to `public/` for CMS config development.
 
 Requires Zola 0.19+ and Node.js 18+.
 
