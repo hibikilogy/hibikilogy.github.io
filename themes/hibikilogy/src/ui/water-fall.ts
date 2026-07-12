@@ -3,6 +3,7 @@ const defaultContainerSelector = '.Journal > .container'
 const defaultChildSelector = ':scope > .Section, :scope > .FrontPage'
 
 interface WaterFallInstance {
+  dispose: () => void
   refresh: () => Promise<void>
   setChildSelector: (selector: string) => void
 }
@@ -59,6 +60,7 @@ export function refreshWaterFalls(): Promise<void[]> {
 
 function createWaterFall(journal: HTMLElement, childSelector: string): WaterFallInstance {
   let animationFrame = 0
+  let isDisposed = false
   let pendingResolve: (() => void) | null = null
   let currentChildSelector = childSelector
 
@@ -113,6 +115,9 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
   }
 
   function scheduleProgramming(): Promise<void> {
+    if (isDisposed)
+      return Promise.resolve()
+
     if (animationFrame) {
       cancelAnimationFrame(animationFrame)
     }
@@ -256,6 +261,17 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
   void scheduleProgramming()
 
   return {
+    dispose() {
+      isDisposed = true
+      if (animationFrame)
+        cancelAnimationFrame(animationFrame)
+      pendingResolve?.()
+      pendingResolve = null
+      resizeObserver?.disconnect()
+      mutationObserver?.disconnect()
+      window.removeEventListener('resize', scheduleProgramming)
+      window.removeEventListener('load', scheduleProgramming)
+    },
     refresh,
     setChildSelector,
   }
@@ -282,6 +298,16 @@ export function bootWaterFalls(): void {
       subtree: true,
     })
   }
+}
+
+export function disposeWaterFalls(): void {
+  pageObserver?.disconnect()
+  pageObserver = null
+
+  document.querySelectorAll(defaultContainerSelector).forEach((journal) => {
+    instances.get(journal)?.dispose()
+    instances.delete(journal)
+  })
 }
 
 declare global {

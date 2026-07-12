@@ -1,0 +1,34 @@
+import { getPaginationTransitionDirection } from './pagination-transition.ts'
+import { getSearchTransitionScope } from './search-transition.ts'
+
+const transitionAttributes = [
+  'data-search-transition',
+  'data-search-transition-scope',
+  'data-search-overlay',
+  'data-search-overlay-scope',
+  'data-page-transition',
+  'data-page-transition-direction',
+]
+
+export function setTransitionState(fromUrl: string, toUrl: string): void {
+  const root = document.documentElement
+  const searchScope = getSearchTransitionScope(fromUrl, toUrl)
+  const paginationDirection = getPaginationTransitionDirection(fromUrl, toUrl)
+
+  if (searchScope) {
+    root.dataset.searchTransition = 'active'
+    root.dataset.searchTransitionScope = searchScope
+    root.dataset.searchOverlay = 'active'
+    root.dataset.searchOverlayScope = searchScope
+  }
+
+  if (paginationDirection) {
+    root.dataset.pageTransition = 'active'
+    root.dataset.pageTransitionDirection = paginationDirection
+  }
+}
+
+export function clearTransitionState(): void {
+  for (const attribute of transitionAttributes)
+    document.documentElement.removeAttribute(attribute)
+}

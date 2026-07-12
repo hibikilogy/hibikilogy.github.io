@@ -158,7 +158,7 @@ function useActiveAnchor(marker: HTMLElement): void {
 }
 
 export function initOutline(): void {
-  cleanupActiveAnchor?.()
+  disposeOutline()
 
   const marker = document.querySelector<HTMLElement>('.outline-marker')
   if (!marker)
@@ -189,4 +189,10 @@ export function initOutline(): void {
     const heading = resolvedHeaders.find(h => h.link === hash)?.element
     heading?.scrollIntoView()
   }
+}
+
+export function disposeOutline(): void {
+  cleanupActiveAnchor?.()
+  resolvedHeaders.length = 0
+  currentActiveHash = null
 }
