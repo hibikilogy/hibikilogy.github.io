@@ -11,7 +11,6 @@ import {
   extendedFuseSearchKeys,
   fuseSearchOptions,
   searchFieldDefinitions,
-  secondarySearchScoreThreshold,
 } from './config.ts'
 
 export const searchCacheSchemaVersion = 1
@@ -21,7 +20,6 @@ export const searchCacheConfigVersion = createStableHash({
   extendedFuseSearchKeys,
   fuseSearchOptions,
   searchFieldDefinitions,
-  secondarySearchScoreThreshold,
 })
 
 const searchCacheDbName = 'hibikilogy-search'
@@ -94,9 +92,15 @@ export function createIndexedDbSearchCacheStorage(): SearchEngineCacheStorage | 
     },
     write: async (entry) => {
       const db = await openSearchCacheDb()
-      await requestSearchCacheValue(
-        db.transaction(searchCacheStoreName, 'readwrite').objectStore(searchCacheStoreName).put(entry),
-      )
+      const transaction = db.transaction(searchCacheStoreName, 'readwrite')
+      const store = transaction.objectStore(searchCacheStoreName)
+
+      // Cache keys are content-addressed, so entries for previous site versions
+      // can never satisfy a current read. Keep one committed snapshot instead of
+      // accumulating a full copy of the search corpus after every deployment.
+      store.clear()
+      store.put(entry)
+      await waitForSearchCacheTransaction(transaction)
     },
   }
 }
@@ -120,6 +124,18 @@ function requestSearchCacheValue<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result)
     request.onerror = () => reject(request.error || new Error('Search cache request failed'))
+  })
+}
+
+function waitForSearchCacheTransaction(transaction: IDBTransaction): Promise<void> {
+  return new Promise((resolve, reject) => {
+    transaction.oncomplete = () => resolve()
+    transaction.onerror = () => reject(
+      transaction.error || new Error('Search cache transaction failed'),
+    )
+    transaction.onabort = () => reject(
+      transaction.error || new Error('Search cache transaction aborted'),
+    )
   })
 }
 

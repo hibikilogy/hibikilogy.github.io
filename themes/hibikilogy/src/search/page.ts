@@ -1,9 +1,10 @@
 import type { SearchJournalMotion } from './motion.ts'
-import type { SearchIndexBuildStatus, SearchResultRecord } from './types.ts'
+import type { SearchIndexBuildStatus, SearchResultRecord, SearchTimingPhase } from './types.ts'
 import { normalizePageNumber } from '../../components/site-pagination/utils.ts'
 import { focusCurrentSearchInput } from '../ui/utils.ts'
 import {
   buildSearchArticle,
+  getSearchHighlightTerms,
   getSearchTitle,
 } from './article.ts'
 import {
@@ -12,25 +13,35 @@ import {
   searchPageSize,
 } from './config.ts'
 import {
+  getDurationMs,
+  isSearchDebugEnabled,
+  logSearchRuntimeReport,
+  measureSearchPhase,
+  nowMs,
+} from './debug.ts'
+import {
   getSearchRecordCount,
   preloadSearch,
   searchIndexStatusEventName,
-  searchRecords,
+  searchRecordsWithTiming,
 } from './index.ts'
 import { resolveSearchLoadingMessage } from './loading-message.ts'
 import { transitionSearchJournalResults, updateSearchMessage } from './motion.ts'
 import { renderSearchPagination } from './pagination.ts'
 import { createResettablePreloadTask } from './preload.ts'
+import { parseSearchQuery } from './query.ts'
 import {
   renderSearchRelatedTags,
   setSearchRelatedTags,
 } from './related-tags.ts'
 
+type SearchSort = 'relevance' | 'title'
+
 const searchState: {
   records: SearchResultRecord[]
   currentTerm: string
   currentPage: number
-  currentSort: string
+  currentSort: SearchSort
   activeSearchId: number
 } = {
   records: [],
@@ -65,7 +76,6 @@ export function initSearchPage(): void {
 
   const input = document.querySelector<HTMLInputElement>('#search-input')
   const form = document.querySelector<HTMLFormElement>('.SearchShell--page')
-  const clearButton = document.querySelector<HTMLButtonElement>('#search-clear')
   const sorting = document.querySelector<HTMLSelectElement>('#search-sorting')
 
   const handleFormSubmit = (event: Event): void => {
@@ -76,38 +86,25 @@ export function initSearchPage(): void {
   const handleInput = (): void => {
     if (!input)
       return
-    if (clearButton)
-      clearButton.hidden = !input.value
     triggerPreload()
-  }
-
-  const handleClear = (): void => {
-    if (!input || !clearButton)
-      return
-    input.value = ''
-    clearButton.hidden = true
-    void runSearch('', 1)
-    input.focus()
   }
 
   const handleSortChange = (): void => {
     if (!sorting)
       return
-    searchState.currentSort = sorting.value
-    void renderSearchPage(1, searchState.activeSearchId, 'replace')
+    searchState.currentSort = normalizeSearchSort(sorting.value)
+    void renderInteractiveSearchPage(1, 'replace')
   }
 
   window.addEventListener(searchIndexStatusEventName, handleSearchIndexStatus)
   form?.addEventListener('submit', handleFormSubmit)
   input?.addEventListener('input', handleInput)
-  clearButton?.addEventListener('click', handleClear)
   sorting?.addEventListener('change', handleSortChange)
 
   cleanupSearchPage = () => {
     window.removeEventListener(searchIndexStatusEventName, handleSearchIndexStatus)
     form?.removeEventListener('submit', handleFormSubmit)
     input?.removeEventListener('input', handleInput)
-    clearButton?.removeEventListener('click', handleClear)
     sorting?.removeEventListener('change', handleSortChange)
     cleanupSearchPage = null
     activeSearchPage = null
@@ -116,25 +113,24 @@ export function initSearchPage(): void {
   searchState.currentTerm = ''
   searchState.currentPage = 1
   searchState.records = []
-  searchState.currentSort = sorting?.value || 'relevance'
-
   const params = new URLSearchParams(window.location.search)
-  const term = params.get('q')
+  const term = params.get('q')?.trim() || ''
   const pageNumber = normalizePageNumber(params.get('p'))
+  const sort = normalizeSearchSort(params.get('sort'))
   const shouldFocusInput = consumeSearchFocusIntent() || !term
+
+  searchState.currentSort = sort
+  if (sorting)
+    sorting.value = sort
 
   if (term && input) {
     input.value = term
-    if (clearButton)
-      clearButton.hidden = false
     void runSearch(term, pageNumber)
   }
   else {
     if (input)
       input.value = ''
-    if (clearButton)
-      clearButton.hidden = true
-    setSearchPaginationVisible(false)
+    setSearchControlsVisible(0)
     setSearchRelatedTags([])
   }
 
@@ -144,7 +140,7 @@ export function initSearchPage(): void {
 
   triggerPreload()
   if (!term) {
-    void updateIdleSearchMessage()
+    void updateIdleSearchMessage(searchState.activeSearchId)
   }
 }
 
@@ -153,9 +149,9 @@ export function disposeSearchPage(): void {
   cleanupSearchPage?.()
 }
 
-async function updateIdleSearchMessage(): Promise<void> {
+async function updateIdleSearchMessage(searchId: number): Promise<void> {
   const message = document.querySelector<HTMLElement>('#search-message')
-  if (!message || searchState.currentTerm)
+  if (!message || isSearchRequestStale(searchId) || searchState.currentTerm)
     return
 
   try {
@@ -163,16 +159,16 @@ async function updateIdleSearchMessage(): Promise<void> {
     if (pendingPreload) {
       await updateSearchMessage(message, getSearchIndexLoadingMessage(), { loading: true })
       await pendingPreload
-      if (searchState.currentTerm)
+      if (isSearchRequestStale(searchId) || searchState.currentTerm)
         return
     }
     const count = await getSearchRecordCount()
-    if (searchState.currentTerm)
+    if (isSearchRequestStale(searchId) || searchState.currentTerm)
       return
     await updateSearchMessage(message, getIdleSearchMessage(count))
   }
   catch {
-    if (!searchState.currentTerm) {
+    if (!isSearchRequestStale(searchId) && !searchState.currentTerm) {
       await updateSearchMessage(message, '')
     }
   }
@@ -181,54 +177,116 @@ async function updateIdleSearchMessage(): Promise<void> {
 async function runSearch(term: string, page: number): Promise<void> {
   const searchId = ++searchState.activeSearchId
   const message = document.querySelector<HTMLElement>('#search-message')
+  const phases: SearchTimingPhase[] = []
+  const runtimeStart = nowMs()
+  const parsedQuery = parseSearchQuery(term)
 
   searchState.currentTerm = term
   searchState.currentPage = page
   searchState.records = []
+  setSearchResultsBusy(true)
 
-  setSearchPaginationVisible(false)
-  setSearchRelatedTags([])
-  await transitionSearchJournalResults(getSearchJournal(), 'replace', async () => {
-    document.querySelector<HTMLElement>('#search-results')?.replaceChildren()
-    await refreshSearchWaterfall()
-  })
-  updateSearchUrl(term, page)
-
-  if (!term) {
-    await updateIdleSearchMessage()
-    return
-  }
-
-  if (message) {
-    const pendingPreload = indexPreload.current()
-    if (pendingPreload) {
-      void updateSearchMessage(message, searchMessages.indexLoading, { loading: true })
-      await pendingPreload
-      if (searchId !== searchState.activeSearchId)
-        return
-    }
-    void updateSearchMessage(message, searchMessages.loading(term), { loading: true })
-  }
+  let runtimeStatus: 'success' | 'failed' = 'success'
 
   try {
-    searchState.records = await searchRecords(term)
-    if (searchId !== searchState.activeSearchId)
+    setSearchControlsVisible(0)
+    setSearchRelatedTags([])
+    await measureSearchPhase(
+      phases,
+      'clear previous results',
+      () => clearSearchResults(Boolean(term)),
+      { immediate: Boolean(term) },
+    )
+    if (isSearchRequestStale(searchId))
       return
+    updateSearchUrl(term, page)
+
+    if (!term) {
+      await updateIdleSearchMessage(searchId)
+      return
+    }
+
+    if (message) {
+      const pendingPreload = indexPreload.current()
+      if (pendingPreload) {
+        void updateSearchMessage(message, searchMessages.indexLoading, { loading: true })
+        await measureSearchPhase(phases, 'wait for index readiness', () => pendingPreload)
+        if (isSearchRequestStale(searchId))
+          return
+      }
+      void updateSearchMessage(message, searchMessages.loading(term), { loading: true })
+    }
+
+    const searchExecution = await measureSearchPhase(
+      phases,
+      'search client round trip',
+      () => searchRecordsWithTiming(term),
+    )
+    if (isSearchRequestStale(searchId))
+      return
+    const roundTripPhase = phases.at(-1)
+    if (roundTripPhase) {
+      roundTripPhase.metadata = {
+        transportOverheadMs: Math.max(
+          0,
+          Math.round((roundTripPhase.durationMs - searchExecution.engineDurationMs) * 10) / 10,
+        ),
+      }
+    }
+    phases.push({ label: 'search engine execution', durationMs: searchExecution.engineDurationMs })
+    searchState.records = searchExecution.records
 
     if (message) {
       void updateSearchMessage(message, getResultMessage(term, searchState.records.length))
     }
 
-    await renderSearchPage(page, searchId, 'replace')
+    await renderSearchPage(page, searchId, 'replace', phases)
   }
   catch (error) {
-    if (searchId !== searchState.activeSearchId)
+    runtimeStatus = 'failed'
+    if (isSearchRequestStale(searchId))
       return
     if (message) {
       void updateSearchMessage(message, getSearchFailureMessage(error))
     }
     console.error(error)
   }
+  finally {
+    if (!isSearchRequestStale(searchId)) {
+      setSearchResultsBusy(false)
+      if (term) {
+        logSearchRuntimeReport(isSearchDebugEnabled(), {
+          status: runtimeStatus,
+          totalDurationMs: getDurationMs(runtimeStart),
+          termLength: term.length,
+          queryMode: parsedQuery.mode,
+          clauseCount: parsedQuery.clauses.length,
+          fieldClauseCount: parsedQuery.clauses.filter(clause => (
+            clause.type === 'field' || (clause.type === 'not' && clause.clause.type === 'field')
+          )).length,
+          negativeClauseCount: parsedQuery.clauses.filter(clause => clause.type === 'not').length,
+          resultCount: searchState.records.length,
+          page: searchState.currentPage,
+          phases,
+        })
+      }
+    }
+  }
+}
+
+async function clearSearchResults(immediate: boolean): Promise<void> {
+  const clear = async (): Promise<void> => {
+    document.querySelector<HTMLElement>('#search-results')?.replaceChildren()
+    if (!immediate)
+      await refreshSearchWaterfall()
+  }
+
+  if (immediate) {
+    await clear()
+    return
+  }
+
+  await transitionSearchJournalResults(getSearchJournal(), 'replace', clear)
 }
 
 function handleSearchIndexStatus(event: Event): void {
@@ -253,40 +311,66 @@ async function renderSearchPage(
   page: number,
   searchId = searchState.activeSearchId,
   motionOverride: SearchJournalMotion | null = null,
+  phases: SearchTimingPhase[] | null = null,
 ): Promise<boolean | undefined> {
   const resultsContainer = document.querySelector<HTMLElement>('#search-results')
   const searchJournal = getSearchJournal()
   const totalPages = Math.max(1, Math.ceil(searchState.records.length / searchPageSize))
   const nextPage = Math.min(Math.max(page, 1), totalPages)
   const previousPage = searchState.currentPage
+  const sortStart = nowMs()
   const records = getSortedSearchRecords()
   const pageRecords = records.slice((nextPage - 1) * searchPageSize, nextPage * searchPageSize)
+  const highlightTerms = getSearchHighlightTerms(searchState.currentTerm)
+  phases?.push({
+    label: 'sort and paginate results',
+    durationMs: getDurationMs(sortStart),
+    metadata: { pageRecords: pageRecords.length, totalRecords: records.length },
+  })
   const motion = resolveSearchJournalMotion(nextPage, previousPage, motionOverride)
   const viewSort = searchState.currentSort
   const isStaleView = () => isSearchViewStale(searchId, nextPage, viewSort)
 
   searchState.currentPage = nextPage
-  const articles = await Promise.all(pageRecords.map(result => buildSearchArticle(result)))
+  const articles = await measureOptionalSearchPhase(
+    phases,
+    'build result DOM',
+    () => Promise.all(pageRecords.map(result => buildSearchArticle(result, highlightTerms))),
+    { articles: pageRecords.length, highlightTerms: highlightTerms.length },
+  )
   if (isStaleView())
     return undefined
 
+  const transitionStart = nowMs()
   const didTransitionResults = await transitionSearchJournalResults(searchJournal, motion, async () => {
+    const replaceStart = nowMs()
     resultsContainer?.replaceChildren(...articles)
+    phases?.push({ label: 'replace result DOM', durationMs: getDurationMs(replaceStart) })
     if (isStaleView())
       return
 
-    setSearchPaginationVisible(searchState.records.length > searchPageSize)
+    setSearchControlsVisible(searchState.records.length)
     renderSearchPagination({
       currentPage: searchState.currentPage,
       totalPages,
       getHref: getSearchPageHref,
       onPageChange: (pageNumber) => {
-        void renderSearchPage(pageNumber)
+        void renderInteractiveSearchPage(pageNumber)
       },
     })
     updateSearchUrl(searchState.currentTerm, nextPage)
-    await refreshSearchWaterfall()
-    await renderSearchRelatedTags(pageRecords, isStaleView)
+    await measureOptionalSearchPhase(phases, 'waterfall layout', refreshSearchWaterfall)
+    await measureOptionalSearchPhase(
+      phases,
+      'render related tags',
+      () => renderSearchRelatedTags(pageRecords, isStaleView),
+      { pageRecords: pageRecords.length },
+    )
+  })
+  phases?.push({
+    label: 'result transition total',
+    durationMs: getDurationMs(transitionStart),
+    metadata: { motion },
   })
   if (!didTransitionResults || isStaleView())
     return false
@@ -294,10 +378,41 @@ async function renderSearchPage(
   return true
 }
 
-function isSearchViewStale(searchId: number, page: number, sort: string): boolean {
-  return searchId !== searchState.activeSearchId
+async function renderInteractiveSearchPage(
+  page: number,
+  motionOverride: SearchJournalMotion | null = null,
+): Promise<void> {
+  const viewId = ++searchState.activeSearchId
+  setSearchResultsBusy(true)
+
+  try {
+    await renderSearchPage(page, viewId, motionOverride)
+  }
+  finally {
+    if (!isSearchRequestStale(viewId))
+      setSearchResultsBusy(false)
+  }
+}
+
+function measureOptionalSearchPhase<T>(
+  phases: SearchTimingPhase[] | null,
+  label: string,
+  operation: () => Promise<T> | T,
+  metadata?: Record<string, unknown>,
+): Promise<T> {
+  if (!phases)
+    return Promise.resolve(operation())
+  return measureSearchPhase(phases, label, operation, metadata)
+}
+
+function isSearchViewStale(searchId: number, page: number, sort: SearchSort): boolean {
+  return isSearchRequestStale(searchId)
     || page !== searchState.currentPage
     || sort !== searchState.currentSort
+}
+
+function isSearchRequestStale(searchId: number): boolean {
+  return searchId !== searchState.activeSearchId
 }
 
 function resolveSearchJournalMotion(
@@ -349,6 +464,9 @@ function getSearchIndexLoadingMessage(status = currentIndexStatus): string {
 }
 
 function getSearchFailureMessage(error: unknown): string {
+  if (!isSearchDebugEnabled())
+    return searchMessages.failed
+
   const message = error instanceof Error ? error.message : String(error || '')
   return message ? searchMessages.failedWithError(message) : searchMessages.failed
 }
@@ -374,18 +492,36 @@ function setSearchParams(url: URL, term: string, page: number): void {
     else {
       url.searchParams.delete('p')
     }
+    if (searchState.currentSort === 'title')
+      url.searchParams.set('sort', 'title')
+    else
+      url.searchParams.delete('sort')
   }
   else {
     url.searchParams.delete('q')
     url.searchParams.delete('p')
+    url.searchParams.delete('sort')
   }
 }
 
-function setSearchPaginationVisible(isVisible: boolean): void {
-  const pagination = document.querySelector<HTMLElement>('#search-pagination')
-  if (pagination) {
-    pagination.hidden = !isVisible
-  }
+function setSearchControlsVisible(resultCount: number): void {
+  const controls = document.querySelector<HTMLElement>('#search-pagination')
+  const pagination = document.querySelector<HTMLElement>('site-pagination#search-page-control')
+  const hasMultiplePages = resultCount > searchPageSize
+
+  if (controls)
+    controls.hidden = !hasMultiplePages
+  if (pagination)
+    pagination.hidden = !hasMultiplePages
+}
+
+function setSearchResultsBusy(isBusy: boolean): void {
+  document.querySelector<HTMLElement>('#search-results')
+    ?.setAttribute('aria-busy', String(isBusy))
+}
+
+function normalizeSearchSort(value: string | null | undefined): SearchSort {
+  return value === 'title' ? 'title' : 'relevance'
 }
 
 function getSearchJournal(): HTMLElement | null {

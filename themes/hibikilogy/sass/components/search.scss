@@ -87,7 +87,7 @@
       display: flex;
       width: 100%;
       height: 44px;
-      padding: 0 128px 0 22px;
+      padding: 0 122px 0 22px;
       border: 0;
       border-radius: 2px;
       appearance: none;
@@ -137,6 +137,13 @@
     .SearchJournal {
       margin-top: 12px;
       overflow: clip;
+    }
+
+    .SearchHighlight {
+      padding: 0 0.08em;
+      border-radius: 0.12em;
+      background: color-mix(in srgb, var(--joh-c-primary) 24%, transparent);
+      color: inherit;
     }
 
     .SearchJournal--drawer {
@@ -198,6 +205,10 @@
     }
 
     .SearchPagination {
+      site-pagination[hidden] {
+        display: none;
+      }
+
       .pagination-previous[disabled],
       .pagination-next[disabled] {
         cursor: default;

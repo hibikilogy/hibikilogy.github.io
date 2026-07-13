@@ -49,17 +49,32 @@ export interface SearchRecord {
   titleSearch: string
   descriptionSearch: string
   slugSearch: string
-  bodySearch: string
   authorSearch: string
   tagSearch: string
-  metadataSearch: string
   bodyMatchExcerpt?: boolean
 }
 
-export interface SearchResultRecord extends SearchRecord {
+type SearchResultPresentationFields
+  = | 'url'
+    | 'path'
+    | 'title'
+    | 'description'
+    | 'body'
+    | 'date'
+    | 'slug'
+    | 'authorName'
+    | 'authorHref'
+    | 'tags'
+
+export interface SearchResultRecord extends Pick<SearchRecord, SearchResultPresentationFields> {
   bodyMatchExcerpt?: boolean
   searchRank: number
   searchScore: number
+}
+
+export interface SearchExecutionResult {
+  records: SearchResultRecord[]
+  engineDurationMs: number
 }
 
 export interface SearchEngine {
@@ -84,6 +99,19 @@ export interface SearchBuildReport {
   defaultFuseIndexRecordCount?: number
   extendedFuseIndexRecordCount?: number
   cacheStatus?: string
+  phases: SearchTimingPhase[]
+}
+
+export interface SearchRuntimeReport {
+  status: 'success' | 'failed'
+  totalDurationMs: number
+  termLength: number
+  queryMode: ParsedSearchQuery['mode']
+  clauseCount: number
+  fieldClauseCount: number
+  negativeClauseCount: number
+  resultCount: number
+  page: number
   phases: SearchTimingPhase[]
 }
 

@@ -1,5 +1,5 @@
 <div class="sorting" {% if not sorting_search %}v-scope{% endif %}>
-  <select id="{{ sorting_id }}" aria-label="{{ sorting_id }} State" {% if not sorting_search %}v-model.lazy="store.sortType" @change="sortingHandleSelect"{% endif %}>
+  <select id="{{ sorting_id }}" aria-label="{{ tr::t(key='sort_control_label') }}" {% if not sorting_search %}v-model.lazy="store.sortType" @change="sortingHandleSelect"{% endif %}>
     {% if sorting_search %}
     <option value="relevance">{{ tr::t(key="sort_relevance") }}</option>
     <option value="title">{{ tr::t(key="sort_title_asc") }}</option>

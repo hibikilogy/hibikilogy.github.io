@@ -14,6 +14,7 @@
     "dev:admin": "vite --config vite.admin.config.ts",
     "dev:cms": "node -e \"const{watch,cpSync,existsSync,mkdirSync}=require('fs'),{join}=require('path');watch('static',{recursive:true},(_,f)=>{if(!f)return;const s=join('static',f),d=join('public',f);try{existsSync(s)&&(mkdirSync(join(d,'..'),{recursive:true}),cpSync(s,d,{recursive:true}))}catch{}})\"",
     "preview": "vite preview --outDir ./public",
+    "benchmark:search": "node scripts/benchmark-search.ts",
     "typecheck": "tsc --noEmit",
     "build:subset-titlefont": "cargo run --bin title-font-subset -- --content-dir content --font themes/hibikilogy/static/fonts/SourceHanSerifCN-VF.ttf --font-output-dir themes/hibikilogy/static/fonts --css-output-dir themes/hibikilogy/static/styles --css-file source-han-serif-cn-vf.css --font-family \"Source Han Serif CN VF\" --output-file source-han-serif-cn-vf.woff2",
     "build:subset-bodyfont": "cargo run --bin body-font-subset -- --content-dir content --config config.toml --font themes/hibikilogy/static/fonts/SourceHanSansSC-VF.ttf --base-css themes/hibikilogy/static/styles/source-han-sans-sc-vf.css --font-output-dir themes/hibikilogy/static/fonts --css-output-dir themes/hibikilogy/static/styles --css-file source-han-sans-sc-vf.patch.css --font-family \"Source Han Sans SC VF\" --output-file source-han-sans-sc-vf.patch.woff2",

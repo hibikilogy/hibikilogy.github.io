@@ -1,4 +1,5 @@
 import { searchFocusIntentKey } from '../search/config.ts'
+import { preloadSearch } from '../search/index.ts'
 import { isSearchUrl, searchPath } from './search-transition.ts'
 import { focusCurrentSearchInput } from './utils.ts'
 
@@ -18,7 +19,15 @@ function isEditableTarget(target: EventTarget | null): boolean {
 export function createSearchNavigation({ isVisitInProgress, navigate }: SearchNavigationOptions) {
   const isSearchPage = () => isSearchUrl(window.location.href)
 
+  function preloadSearchOnIntent(force = false): void {
+    if (!force && shouldAvoidSearchPreload())
+      return
+
+    void preloadSearch().catch(() => {})
+  }
+
   function navigateToSearch({ focusIntent = 'pointer' }: { focusIntent?: string } = {}): void {
+    preloadSearchOnIntent(true)
     if (isSearchPage()) {
       focusCurrentSearchInput()
       return
@@ -59,9 +68,37 @@ export function createSearchNavigation({ isVisitInProgress, navigate }: SearchNa
     }
   }
 
+  function handleSearchPointerIntent(event: PointerEvent): void {
+    if (isCompactSearchTarget(event.target))
+      preloadSearchOnIntent()
+  }
+
+  function handleSearchFocusIntent(event: FocusEvent): void {
+    if (isCompactSearchTarget(event.target))
+      preloadSearchOnIntent()
+  }
+
   document.addEventListener('keydown', handleKeyboardNavigation)
+  document.addEventListener('pointerover', handleSearchPointerIntent, { passive: true })
+  document.addEventListener('focusin', handleSearchFocusIntent)
 
   return { isSearchPage, leaveSearchPage, navigateToSearch }
+}
+
+function isCompactSearchTarget(target: EventTarget | null): boolean {
+  return target instanceof Element && Boolean(target.closest('.SearchShell--compact'))
+}
+
+function shouldAvoidSearchPreload(): boolean {
+  const connection = (navigator as Navigator & {
+    connection?: { effectiveType?: string, saveData?: boolean }
+  }).connection
+
+  return Boolean(
+    connection?.saveData
+    || connection?.effectiveType === 'slow-2g'
+    || connection?.effectiveType === '2g',
+  )
 }
 
 export function removeTrailingSlash(): void {

@@ -14,8 +14,6 @@ export const searchPageSize = HIBIKILOGY_CONFIG.searchPageSize
 export const searchArticleIndexInlineId = 'hibikilogy-search-articles-data'
 export const searchTagIndexInlineId = 'hibikilogy-search-tags-data'
 export const searchFocusIntentKey = 'search-focus-intent'
-export const secondarySearchScoreThreshold = 0.06
-
 export const searchMessages = {
   indexLoading: HIBIKILOGY_TRANSLATIONS.searchIndexLoading,
   cacheReading: HIBIKILOGY_TRANSLATIONS.searchCacheReading,
@@ -30,8 +28,8 @@ export const searchMessages = {
 
 export const fuseSearchOptions = {
   includeScore: true,
-  includeMatches: true,
-  findAllMatches: true,
+  includeMatches: false,
+  findAllMatches: false,
   ignoreLocation: true,
   fieldNormWeight: 0.3,
   minMatchCharLength: 1,
@@ -45,7 +43,6 @@ export const defaultFuseSearchKeys = [
   { name: 'titleSearch', weight: 4 },
   { name: 'descriptionSearch', weight: 2.5 },
   { name: 'slugSearch', weight: 2 },
-  { name: 'bodySearch', weight: 0.9 },
 ] satisfies Array<{ name: keyof SearchRecord, weight: number }>
 
 export const extendedFuseSearchKeys = [
@@ -54,21 +51,7 @@ export const extendedFuseSearchKeys = [
   { name: 'authorSearch', weight: 2.8 },
   { name: 'descriptionSearch', weight: 2.5 },
   { name: 'slugSearch', weight: 2 },
-  { name: 'metadataSearch', weight: 1.5 },
-  { name: 'bodySearch', weight: 0.9 },
 ] satisfies Array<{ name: keyof SearchRecord, weight: number }>
-
-export const defaultPrimarySearchKeys = new Set<keyof SearchRecord>([
-  'titleSearch',
-  'descriptionSearch',
-  'slugSearch',
-])
-
-export const extendedPrimarySearchKeys = new Set<keyof SearchRecord>([
-  ...defaultPrimarySearchKeys,
-  'authorSearch',
-  'tagSearch',
-])
 
 export const searchFieldDefinitions = [
   {
@@ -93,7 +76,7 @@ export const searchFieldDefinitions = [
     field: 'body',
     aliases: ['body', '正文'],
     label: '正文',
-    searchKey: 'bodySearch',
+    searchKey: 'body',
   },
   {
     field: 'description',

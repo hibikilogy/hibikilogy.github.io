@@ -5,6 +5,7 @@ import type {
   SearchWorkerRequest,
   SearchWorkerResponse,
 } from './types.ts'
+import { getDurationMs, nowMs } from './debug.ts'
 import { searchRecordsInEngine } from './engine.ts'
 import {
   buildSearchEngine,
@@ -40,9 +41,15 @@ async function runSearchWorkerRequest(message: SearchWorkerRequest): Promise<unk
   if (message.type === 'count')
     return engine.records.length
   if (message.type === 'search')
-    return searchRecordsInEngine(engine, message.term || '')
+    return runTimedWorkerSearch(engine, message.term || '')
 
   throw new Error(`Unknown search worker request: ${message.type}`)
+}
+
+function runTimedWorkerSearch(engine: SearchEngine, term: string) {
+  const start = nowMs()
+  const records = searchRecordsInEngine(engine, term)
+  return { records, engineDurationMs: getDurationMs(start) }
 }
 
 function getWorkerSearchEngine(bootstrap?: SearchWorkerRequest['bootstrap']): Promise<SearchEngine> {

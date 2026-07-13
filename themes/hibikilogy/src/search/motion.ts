@@ -1,4 +1,4 @@
-import { enableAutoAnimate, parseCssTime, shouldSkipMotion, wait, waitForAutoAnimateFrame } from '../shared/animation.ts'
+import { parseCssTime, shouldSkipMotion, wait, waitForAutoAnimateFrame } from '../shared/animation.ts'
 import { setTextWithSwapAnimation } from '../ui/text-swap.ts'
 
 export { setTextWithSwapAnimation }
@@ -30,7 +30,6 @@ export async function transitionSearchJournalResults(
     return false
   }
 
-  enableAutoAnimate(journal)
   const token = {}
   activeTransitions.set(journal, token)
   prepareJournalMotion(journal, motion)

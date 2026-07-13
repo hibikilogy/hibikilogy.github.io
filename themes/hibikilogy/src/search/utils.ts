@@ -124,11 +124,15 @@ interface SearchSegmenter {
   segment: (value: string) => Iterable<SearchSegment>
 }
 
+let searchSegmenter: SearchSegmenter | null | undefined
+
 function getSegmenter(): SearchSegmenter | null {
+  if (searchSegmenter !== undefined)
+    return searchSegmenter
   if (typeof Intl === 'undefined' || !('Segmenter' in Intl))
-    return null
+    return searchSegmenter = null
   const Segmenter = (Intl as typeof Intl & {
     Segmenter: new (locale: string, options: { granularity: 'word' }) => SearchSegmenter
   }).Segmenter
-  return new Segmenter('zh-Hans', { granularity: 'word' })
+  return searchSegmenter = new Segmenter('zh-Hans', { granularity: 'word' })
 }

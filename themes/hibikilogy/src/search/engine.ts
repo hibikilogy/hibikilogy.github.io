@@ -15,12 +15,9 @@ import Fuse from 'fuse.js'
 import { buildExactBodySearchResults } from './body-match.ts'
 import {
   defaultFuseSearchKeys,
-  defaultPrimarySearchKeys,
   extendedFuseSearchKeys,
-  extendedPrimarySearchKeys,
   fuseSearchOptions,
   searchFieldDefinitions,
-  secondarySearchScoreThreshold,
 } from './config.ts'
 import {
   getFuseQueryText,
@@ -31,6 +28,7 @@ import {
 import { dedupeSearchResults } from './results.ts'
 import { buildTagsByUrl } from './tags.ts'
 import {
+  createExcerpt,
   getPathSlug,
   normalizeSearchText,
   normalizeSearchUrl,
@@ -79,13 +77,8 @@ export function normalizeSearchRecords(
         titleSearch: segmentSearchText(title),
         descriptionSearch: segmentSearchText(description),
         slugSearch: segmentSearchText(slug),
-        bodySearch: segmentSearchText(body),
         authorSearch: segmentSearchText(authorName),
         tagSearch: segmentSearchText(tags.map(tag => tag.name).join(' ')),
-        metadataSearch: segmentSearchText([
-          authorName,
-          ...tags.map(tag => tag.name),
-        ].join(' ')),
       }
     })
     .filter(entry => (
@@ -135,26 +128,45 @@ export function searchRecordsInEngine(engine: SearchEngine, term: string): Searc
     return []
 
   const query = parseSearchQuery(term)
-  const explicitFieldSearch = hasExplicitFieldSearch(query)
-  const primaryKeys = explicitFieldSearch ? extendedPrimarySearchKeys : defaultPrimarySearchKeys
   const fuseResults = runParsedSearch(engine, query)
-  const useFullCorpusCandidates = shouldUseFullCorpusCandidates(query)
-  const bodyFallbackTerm = getBodyFallbackTerm(query)
-  const exactBodyResults = bodyFallbackTerm
-    ? buildExactBodySearchResults(engine.records, bodyFallbackTerm)
-    : []
+  const exactBodyResults = getBodyFallbackTerms(query)
+    .flatMap(({ minimumQueryLength, value }) => (
+      buildExactBodySearchResults(engine.records, value, minimumQueryLength)
+    ))
   const filtered = dedupeSearchResults([
-    ...(useFullCorpusCandidates ? fuseResults : fuseResults.filter(result => shouldKeepSearchResult(result, primaryKeys))),
+    ...fuseResults,
     ...exactBodyResults,
   ])
+  const matched = shouldRequireExactQueryMatch(query)
+    ? filtered.filter(result => matchesParsedQuery(result.item, query))
+    : filtered
 
-  return filtered
-    .filter(result => matchesParsedQuery(result.item, query))
-    .map((result, index) => ({
-      ...result.item,
-      searchRank: index,
-      searchScore: result.score ?? 1,
-    }))
+  return matched
+    .map((result, index) => toSearchResultRecord(result, index))
+}
+
+function shouldRequireExactQueryMatch(query: ReturnType<typeof parseSearchQuery>): boolean {
+  return !getSimpleFuzzyClause(query)
+}
+
+function toSearchResultRecord(result: FuseSearchResult, searchRank: number): SearchResultRecord {
+  const record = result.item
+
+  return {
+    url: record.url,
+    path: record.path,
+    title: record.title,
+    description: record.description,
+    body: record.bodyMatchExcerpt ? record.body : createExcerpt(record.body),
+    date: record.date,
+    slug: record.slug,
+    authorName: record.authorName,
+    authorHref: record.authorHref,
+    tags: record.tags,
+    bodyMatchExcerpt: record.bodyMatchExcerpt,
+    searchRank,
+    searchScore: result.score ?? 1,
+  }
 }
 
 function runParsedSearch(engine: SearchEngine, query: ReturnType<typeof parseSearchQuery>): FuseSearchResult[] {
@@ -181,7 +193,32 @@ function runParsedSearch(engine: SearchEngine, query: ReturnType<typeof parseSea
   if (logicalQuery)
     return fuse.search(logicalQuery)
 
-  return fuse.search(getFuseQueryText(positiveText))
+  return fuse.search(getPrimaryFuseQueryText(query, positiveText))
+}
+
+function getPrimaryFuseQueryText(
+  query: ReturnType<typeof parseSearchQuery>,
+  positiveText: string,
+): string {
+  const fuzzyClause = getSimpleFuzzyClause(query)
+  if (fuzzyClause)
+    return normalizeSearchText(fuzzyClause.value)
+
+  return getFuseQueryText(positiveText)
+}
+
+function getSimpleFuzzyClause(
+  query: ReturnType<typeof parseSearchQuery>,
+): Extract<SearchClause, { type: 'term' }> | null {
+  if (query.clauses.length !== 1)
+    return null
+
+  const clause = query.clauses[0]
+  return clause.type === 'term'
+    && !clause.phrase
+    && /^[\p{L}\p{N}\s_-]+$/u.test(clause.value)
+    ? clause
+    : null
 }
 
 function buildRecordCandidates(records: SearchRecord[]): FuseSearchResult[] {
@@ -217,21 +254,6 @@ function toFuseLogicalFieldQuery(query: ReturnType<typeof parseSearchQuery>): Fu
   if (fieldClauses.length === 1)
     return fieldClauses[0]
   return { $and: fieldClauses }
-}
-
-function shouldKeepSearchResult(result: FuseSearchResult, primarySearchKeys: Set<keyof SearchRecord>): boolean {
-  const matchedKeys = new Set((result.matches || []).map(match => match.key))
-  for (const key of matchedKeys) {
-    if (primarySearchKeys.has(String(key) as keyof SearchRecord)) {
-      return true
-    }
-  }
-
-  if (matchedKeys.has('bodySearch')) {
-    return false
-  }
-
-  return (result.score ?? 1) <= secondarySearchScoreThreshold
 }
 
 function matchesParsedQuery(record: SearchRecord, query: ReturnType<typeof parseSearchQuery>): boolean {
@@ -275,18 +297,30 @@ function getRecordCorpus(record: SearchRecord): string {
   ].join(' ')
 }
 
-function getBodyFallbackTerm(query: ReturnType<typeof parseSearchQuery>): string {
-  const positiveText = getPositiveQueryText(query)
-  if (!positiveText)
-    return ''
+interface BodyFallbackTerm {
+  value: string
+  minimumQueryLength: number
+}
 
-  if (!hasExplicitFieldSearch(query))
-    return positiveText
+function getBodyFallbackTerms(query: ReturnType<typeof parseSearchQuery>): BodyFallbackTerm[] {
+  const terms = query.clauses
+    .filter((clause): clause is Exclude<SearchClause, { type: 'not' }> => clause.type !== 'not')
+    .filter(clause => clause.type === 'term' || clause.field === 'body')
+    .map(clause => ({
+      value: normalizeSearchText(clause.value),
+      minimumQueryLength: clause.type === 'field' ? 1 : 2,
+    }))
+    .filter(term => Boolean(term.value))
 
-  const hasPositiveBodyField = query.clauses.some((clause) => {
-    return clause.type === 'field' && clause.field === 'body'
-  })
-  return hasPositiveBodyField ? positiveText : ''
+  const minimumLengths = new Map<string, number>()
+  for (const term of terms) {
+    minimumLengths.set(
+      term.value,
+      Math.min(minimumLengths.get(term.value) ?? term.minimumQueryLength, term.minimumQueryLength),
+    )
+  }
+
+  return [...minimumLengths].map(([value, minimumQueryLength]) => ({ value, minimumQueryLength }))
 }
 
 function shouldUseFullCorpusCandidates(query: ReturnType<typeof parseSearchQuery>): boolean {
@@ -307,9 +341,7 @@ function shouldUsePositiveClauseUnion(query: ReturnType<typeof parseSearchQuery>
     return false
 
   const positiveClauses = query.clauses.filter(clause => clause.type !== 'not')
-  const hasFieldClause = positiveClauses.some(clause => clause.type === 'field')
-  const hasTermClause = positiveClauses.some(clause => clause.type === 'term')
-  return hasFieldClause && hasTermClause
+  return positiveClauses.length > 1
 }
 
 function searchTextIncludes(corpus: string, needle: string): boolean {

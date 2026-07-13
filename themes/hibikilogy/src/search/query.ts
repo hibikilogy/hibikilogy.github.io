@@ -24,7 +24,7 @@ export function tokenizeSearchQuery(value: string): string[] {
 }
 
 export function parseSearchQuery(value: string): ParsedSearchQuery {
-  const rawTokens = splitQueryTokens(value)
+  const rawTokens = mergeNotTokens(splitQueryTokens(value))
   const mode = rawTokens.some(token => token.toUpperCase() === 'OR') ? 'or' : 'and'
   const clauses = rawTokens
     .filter(token => !isBooleanOperator(token))
@@ -61,16 +61,20 @@ function parseClauseToken(token: string): SearchClause | null {
   const unquoted = stripQuotes(raw)
   const fieldMatch = unquoted.match(/^([^:：]+)[:：](.+)$/)
   const clause = fieldMatch
-    ? parseFieldClause(fieldMatch[1], fieldMatch[2])
-    : {
-        type: 'term' as const,
-        value: normalizeSearchText(unquoted),
-        phrase: isQuoted(raw),
-      }
+    ? parseFieldClause(fieldMatch[1], fieldMatch[2]) || createTermClause(unquoted, raw)
+    : createTermClause(unquoted, raw)
 
   if (!clause || !hasClauseValue(clause))
     return null
   return isNegative ? { type: 'not', clause } : clause
+}
+
+function createTermClause(value: string, raw: string): Exclude<SearchClause, { type: 'not' | 'field' }> {
+  return {
+    type: 'term',
+    value: normalizeSearchText(value),
+    phrase: isQuoted(raw),
+  }
 }
 
 function parseFieldClause(field: string, value: string): SearchClause | null {
@@ -109,6 +113,23 @@ function splitQueryTokens(value: string): string[] {
 
   pushToken(tokens, buffer)
   return tokens
+}
+
+function mergeNotTokens(tokens: string[]): string[] {
+  const merged: string[] = []
+
+  for (let index = 0; index < tokens.length; index += 1) {
+    const token = tokens[index]
+    if (token.toUpperCase() === 'NOT' && tokens[index + 1]) {
+      merged.push(`NOT ${tokens[index + 1]}`)
+      index += 1
+      continue
+    }
+    if (token.toUpperCase() !== 'NOT')
+      merged.push(token)
+  }
+
+  return merged
 }
 
 function pushToken(tokens: string[], value: string): void {

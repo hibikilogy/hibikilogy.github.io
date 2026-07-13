@@ -4,6 +4,7 @@ import { html, nothing, render } from 'lit'
 import { HIBIKILOGY_TRANSLATIONS } from 'virtual:hibikilogy-config'
 import { formatZhPublishDate } from '../ui/utils.ts'
 import { getArticleSnapshot } from './articles.ts'
+import { parseSearchQuery } from './query.ts'
 import {
   createExcerpt,
   getPathSlug,
@@ -26,18 +27,24 @@ interface SearchArticleProps {
   titleTransitionName: string
 }
 
-export async function buildSearchArticle(result: SearchResultRecord): Promise<HTMLElement> {
+export async function buildSearchArticle(
+  result: SearchResultRecord,
+  highlightTerms: readonly string[] = [],
+): Promise<HTMLElement> {
   const href = normalizeSiteUrl(result.url || result.path)
   const articleSnapshot = await getArticleSnapshot(href)
   const props = getSearchArticleProps(result, articleSnapshot)
 
   const article = document.createElement('article')
   article.className = 'Section Article'
-  render(buildSearchArticleTemplate(props), article)
+  render(buildSearchArticleTemplate(props, highlightTerms), article)
   return article
 }
 
-function buildSearchArticleTemplate(props: SearchArticleProps) {
+function buildSearchArticleTemplate(
+  props: SearchArticleProps,
+  highlightTerms: readonly string[],
+) {
   const showCover = Boolean(props.coverSrc)
   const coverAttrs = showCover
     ? {
@@ -72,7 +79,7 @@ function buildSearchArticleTemplate(props: SearchArticleProps) {
         `
           : nothing}
         <div class="article-content">
-          <p>${cleanSearchExcerptText(props.excerpt)}</p>
+          <p>${renderHighlightedSearchText(cleanSearchExcerptText(props.excerpt), highlightTerms)}</p>
         </div>
       </div>
     </a>
@@ -108,6 +115,32 @@ export function getSearchArticleProps(
     authorHref: articleSnapshot.authorHref || '',
     titleTransitionName: getPostTitleTransitionName(href),
   }
+}
+
+export function getSearchHighlightTerms(searchTerm: string): string[] {
+  const terms = parseSearchQuery(searchTerm).clauses.filter(clause => clause.type !== 'not').map(clause => clause.value.trim()).filter(Boolean)
+
+  return [...new Set(terms)]
+    .sort((a, b) => b.length - a.length)
+    .slice(0, 6)
+}
+
+function renderHighlightedSearchText(value: string, terms: readonly string[]) {
+  if (!value || !terms.length)
+    return value
+
+  const pattern = terms.map(escapeRegExp).join('|')
+  if (!pattern)
+    return value
+
+  const matcher = new RegExp(`(${pattern})`, 'giu')
+  return value.split(matcher).map((part, index) => (
+    index % 2 === 1 ? html`<mark class="SearchHighlight">${part}</mark>` : part
+  ))
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 function buildSearchExcerpt(result: Partial<SearchResultRecord>, subtitle: string): string {

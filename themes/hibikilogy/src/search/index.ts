@@ -6,6 +6,7 @@ import type {
   SearchEngineBootstrapData,
   SearchEngineCacheEntry,
   SearchEngineCacheStorage,
+  SearchExecutionResult,
   SearchIndexBuildStatus,
   SearchResultRecord,
   SearchTagIndexItem,
@@ -31,7 +32,6 @@ import {
   getSearchDebugFlag,
   isSearchDebugEnabled,
   logSearchBuildReport,
-  logSearchTiming,
   nowMs,
 } from './debug.ts'
 import {
@@ -52,7 +52,7 @@ interface SearchEngineBuildOptions {
 interface SearchClient {
   preload: () => Promise<void>
   count: () => Promise<number>
-  search: (term: string) => Promise<SearchResultRecord[]>
+  search: (term: string) => Promise<SearchExecutionResult>
 }
 
 export const searchIndexStatusEventName = 'hibikilogy:search-index-status'
@@ -66,16 +66,21 @@ export async function getSearchRecordCount(): Promise<number> {
 }
 
 export async function searchRecords(term: string): Promise<SearchResultRecord[]> {
-  const debug = isSearchDebugEnabled()
-  const start = nowMs()
-  const results = await (await getSearchClient()).search(term)
-  logSearchTiming(debug, 'search request', start)
-  return results
+  return (await searchRecordsWithTiming(term)).records
+}
+
+export async function searchRecordsWithTiming(term: string): Promise<SearchExecutionResult> {
+  return (await getSearchClient()).search(term)
 }
 
 function getSearchClient(): Promise<SearchClient> {
   if (!searchClientPromise) {
-    searchClientPromise = createSearchClient()
+    const pending = createSearchClient()
+    searchClientPromise = pending
+    void pending.catch(() => {
+      if (searchClientPromise === pending)
+        searchClientPromise = null
+    })
   }
 
   return searchClientPromise
@@ -140,6 +145,14 @@ function createWorkerSearchClient(): (SearchClient & { dispose: () => void }) | 
     resolve: (value: unknown) => void
     reject: (error: Error) => void
   }>()
+  let disposed = false
+
+  function rejectPendingRequests(error: Error): void {
+    for (const pending of pendingRequests.values()) {
+      pending.reject(error)
+    }
+    pendingRequests.clear()
+  }
 
   worker.addEventListener('message', (event) => {
     const message = event.data as SearchWorkerResponse
@@ -148,7 +161,7 @@ function createWorkerSearchClient(): (SearchClient & { dispose: () => void }) | 
       return
     }
     if ('buildReport' in message) {
-      logSearchBuildReport(false, message.buildReport)
+      logSearchBuildReport(isSearchDebugEnabled(), message.buildReport)
       return
     }
 
@@ -167,36 +180,46 @@ function createWorkerSearchClient(): (SearchClient & { dispose: () => void }) | 
 
   worker.addEventListener('error', (event) => {
     const error = new Error(event.message || 'Search worker failed')
-    for (const pending of pendingRequests.values()) {
-      pending.reject(error)
-    }
-    pendingRequests.clear()
+    rejectPendingRequests(error)
   })
 
   function request<T>(type: SearchWorkerRequest['type'], term = ''): Promise<T> {
+    if (disposed)
+      return Promise.reject(new Error('Search worker client has been disposed'))
+
     const id = ++nextRequestId
-    worker.postMessage({
-      id,
-      type,
-      term,
-      bootstrap: type === 'preload' ? bootstrap : undefined,
-    })
 
     return new Promise((resolve, reject) => {
       pendingRequests.set(id, {
         resolve: value => resolve(value as T),
         reject,
       })
+
+      try {
+        worker.postMessage({
+          id,
+          type,
+          term,
+          bootstrap: type === 'preload' ? bootstrap : undefined,
+        })
+      }
+      catch (error) {
+        pendingRequests.delete(id)
+        reject(error instanceof Error ? error : new Error(String(error)))
+      }
     })
   }
 
   return {
     preload: () => request<void>('preload'),
     count: () => request<number>('count'),
-    search: term => request<SearchResultRecord[]>('search', term),
+    search: term => request<SearchExecutionResult>('search', term),
     dispose: () => {
+      if (disposed)
+        return
+      disposed = true
       worker.terminate()
-      pendingRequests.clear()
+      rejectPendingRequests(new Error('Search worker client has been disposed'))
     },
   }
 }
@@ -206,7 +229,12 @@ function createMainThreadSearchClient(): SearchClient {
 
   async function getEngine(): Promise<SearchEngine> {
     if (!enginePromise) {
-      enginePromise = buildSearchEngine(getSearchEngineBootstrapData(), { onStatus: emitSearchIndexStatus })
+      const pending = buildSearchEngine(getSearchEngineBootstrapData(), { onStatus: emitSearchIndexStatus })
+      enginePromise = pending
+      void pending.catch(() => {
+        if (enginePromise === pending)
+          enginePromise = null
+      })
     }
 
     return enginePromise
@@ -222,7 +250,9 @@ function createMainThreadSearchClient(): SearchClient {
     },
     search: async (term) => {
       const engine = await getEngine()
-      return searchRecordsInEngine(engine, term)
+      const start = nowMs()
+      const records = searchRecordsInEngine(engine, term)
+      return { records, engineDurationMs: getDurationMs(start) }
     },
   }
 }
@@ -357,7 +387,8 @@ function reportSearchEngineBuild(
   onReport: (report: SearchBuildReport) => void,
   report: SearchBuildReport,
 ): void {
-  logSearchBuildReport(debug, report)
+  if (typeof window !== 'undefined')
+    logSearchBuildReport(debug, report)
   onReport(report)
 }
 

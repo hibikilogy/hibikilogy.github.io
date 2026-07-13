@@ -3,16 +3,22 @@ import { normalizeSearchText } from './utils.ts'
 
 const minExactBodyQueryLength = 2
 const bodyExcerptRadius = 90
+const maxScoredBodyOccurrences = 4
+const normalizedBodyCache = new WeakMap<object, string>()
 
 export function hasExactSearchBodyMatch(record: Pick<SearchRecord, 'body'>, normalizedTerm: string): boolean {
   if (!shouldUseExactBodySearch(normalizedTerm))
     return false
 
-  return normalizedTextIncludes(normalizeSearchText(record.body || ''), normalizedTerm)
+  return normalizedTextIncludes(getNormalizedBody(record), normalizedTerm)
 }
 
-export function buildExactBodySearchResults(records: SearchRecord[], normalizedTerm: string): FuseSearchResult[] {
-  if (!Array.isArray(records) || !shouldUseExactBodySearch(normalizedTerm))
+export function buildExactBodySearchResults(
+  records: SearchRecord[],
+  normalizedTerm: string,
+  minimumQueryLength = minExactBodyQueryLength,
+): FuseSearchResult[] {
+  if (!Array.isArray(records) || normalizedTerm.length < minimumQueryLength)
     return []
 
   return records
@@ -21,12 +27,12 @@ export function buildExactBodySearchResults(records: SearchRecord[], normalizedT
 }
 
 function buildExactBodySearchResult(record: SearchRecord, normalizedTerm: string): FuseSearchResult | null {
-  const normalizedBody = normalizeSearchText(record.body || '')
+  const normalizedBody = getNormalizedBody(record)
   const matchIndex = findNormalizedMatchIndex(normalizedBody, normalizedTerm)
   if (matchIndex === -1)
     return null
 
-  const occurrenceCount = countOccurrences(normalizedBody, normalizedTerm)
+  const occurrenceCount = countOccurrences(normalizedBody, normalizedTerm, maxScoredBodyOccurrences)
   const positionRatio = normalizedBody.length ? matchIndex / normalizedBody.length : 1
 
   return {
@@ -49,7 +55,7 @@ function shouldUseExactBodySearch(normalizedTerm: string): boolean {
   return normalizedTerm.length >= minExactBodyQueryLength
 }
 
-function countOccurrences(value: string, needle: string): number {
+function countOccurrences(value: string, needle: string, limit = Number.POSITIVE_INFINITY): number {
   if (!needle)
     return 0
 
@@ -58,7 +64,7 @@ function countOccurrences(value: string, needle: string): number {
   const searchNeedle = directMatch ? needle : needle.replace(/\s+/g, '')
   let count = 0
   let index = searchValue.indexOf(searchNeedle)
-  while (index !== -1) {
+  while (index !== -1 && count < limit) {
     count += 1
     index = searchValue.indexOf(searchNeedle, index + searchNeedle.length)
   }
@@ -87,12 +93,26 @@ function createBodyMatchExcerpt(body: string, normalizedTerm: string): string {
 }
 
 function findOriginalMatchIndex(text: string, normalizedTerm: string): number {
+  const directIndex = text.indexOf(normalizedTerm)
+  if (directIndex !== -1)
+    return directIndex
+
   const mapped = normalizeTextWithIndexMap(text)
   const normalizedIndex = findNormalizedMatchIndex(mapped.value, normalizedTerm)
   if (normalizedIndex === -1)
     return 0
 
   return mapped.indexes[normalizedIndex] ?? 0
+}
+
+function getNormalizedBody(record: Pick<SearchRecord, 'body'>): string {
+  const cached = normalizedBodyCache.get(record)
+  if (cached !== undefined)
+    return cached
+
+  const normalized = normalizeSearchText(record.body || '')
+  normalizedBodyCache.set(record, normalized)
+  return normalized
 }
 
 function normalizedTextIncludes(value: string, needle: string): boolean {
