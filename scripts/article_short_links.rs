@@ -294,7 +294,7 @@ fn ensure_target_page_exists(
 ) -> Result<()> {
     validate_slug(slug)?;
 
-    let target_url = format!("/articles/{slug}");
+    let target_url = format!("/articles/{slug}/");
     if !article_urls.is_empty() && !article_urls.contains(&target_url) {
         bail!("{target_url} not found in search_index.zh.json");
     }
@@ -1044,7 +1044,7 @@ mod tests {
         );
         fixture.write(
             "public/search_index.zh.json",
-            r#"[{"url":"/articles/kaori","title":"kaori"}]"#,
+            r#"[{"url":"/articles/kaori/","title":"kaori"}]"#,
         );
         fixture.write("public/articles/kaori/index.html", "<html>kaori</html>");
 
@@ -1069,7 +1069,7 @@ mod tests {
         );
         fixture.write(
             "public/search_index.zh.json",
-            r#"[{"url":"/articles/daxue","title":"daxue"}]"#,
+            r#"[{"url":"/articles/daxue/","title":"daxue"}]"#,
         );
         fixture.write("public/articles/daxue/index.html", "<html>daxue</html>");
 
@@ -1105,7 +1105,7 @@ mod tests {
         );
         fixture.write(
             "public/search_index.zh.json",
-            r#"[{"url":"/articles/daxue","title":"daxue"}]"#,
+            r#"[{"url":"/articles/daxue/","title":"daxue"}]"#,
         );
         fixture.write("public/articles/daxue/index.html", "<html>daxue</html>");
 
@@ -1173,7 +1173,7 @@ mod tests {
         );
         fixture.write(
             "public/search_index.zh.json",
-            r#"[{"url":"/articles/kaori","title":"kaori"}]"#,
+            r#"[{"url":"/articles/kaori/","title":"kaori"}]"#,
         );
         fixture.write("public/articles/kaori/index.html", "<html>kaori</html>");
 
@@ -1202,7 +1202,7 @@ mod tests {
         );
         fixture.write(
             "public/search_index.zh.json",
-            r#"[{"url":"/articles/omae-s16th","title":"omae"}]"#,
+            r#"[{"url":"/articles/omae-s16th/","title":"omae"}]"#,
         );
         fixture.write("public/articles/omae-s16th/index.html", "<html>omae</html>");
 
