@@ -10,6 +10,7 @@
   .Content {
     flex: 1;
     width: 100%;
+    min-height: calc(100svh - var(--joh-nav-height));
 
     &:not(.has-aside) > .container > .Aside {
       display: none;
