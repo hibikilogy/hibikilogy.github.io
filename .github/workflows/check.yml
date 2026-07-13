@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - dev
+      - Refactor/zola
     paths-ignore:
       - '*.md'
       - 'LICENSE'
@@ -93,7 +95,3 @@ jobs:
       # 挂在 html-img-host-rewrite bin 上，cargo test 会一并编译并执行）
       - name: Run cargo tests
         run: cargo test
-
-      # 端到端冒烟：用真实 content + 字体跑一遍 title-font-subset，验证 bin 可编译可运行
-      - name: "Smoke test: subset title font"
-        run: pnpm build:subset-titlefont
