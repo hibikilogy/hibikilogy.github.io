@@ -1,0 +1,104 @@
+name: VERCEL_DEPLOY
+
+on:
+  push:
+    branches:
+      - Refactor/zola
+      - dev
+    paths-ignore:
+      - 'README.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Allow only one concurrent deployment per branch, cancelling queued runs
+concurrency:
+  group: vercel-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: Development
+      url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      # static/js is gitignored, so frontend assets must be regenerated on every build
+      - name: Build TypeScript (vite)
+        run: pnpm build:vite
+
+      - name: Build CMS
+        run: pnpm build:admin
+
+      - name: Build UnoCSS
+        run: pnpm build:unocss
+
+      - name: Subset title font
+        run: pnpm build:subset-titlefont
+
+      - name: Subset body font
+        run: pnpm build:subset-bodyfont
+
+      # the action tag pins the zola version used to build
+      - name: Build site
+        uses: shalzz/zola-deploy-action@v0.22.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_ONLY: true
+          BUILD_FLAGS: --drafts
+
+      # the zola build runs inside a container as root; restore ownership so
+      # later runner steps can write to public/
+      - name: chown
+        run: echo "$(whoami):$(id -gn)" | xargs -I {} sudo chown -R {} public
+
+      - name: Rewrite image hosts
+        run: pnpm build:rewrite-imgs
+
+      - name: Generate short links
+        run: pnpm build:short-links
+
+      # vercel.json must live inside the deployed directory for cleanUrls / headers to apply
+      - name: Copy vercel.json into deploy dir
+        run: cp vercel.json public/vercel.json
+
+      # VERCEL_TOKEN / VERCEL_ORG_ID / VERCEL_PROJECT_ID are read from env vars automatically.
+      # stdout is the deployment URL; stderr is build logs.
+      - name: Deploy to Vercel
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          DEPLOY_URL=$(npx vercel deploy public --prod --yes)
+          echo "url=${DEPLOY_URL}" >> "$GITHUB_OUTPUT"
+          echo "## 🚀 Vercel 部署完成" >> "$GITHUB_STEP_SUMMARY"
+          echo "**部署地址**: [${DEPLOY_URL}](${DEPLOY_URL})" >> "$GITHUB_STEP_SUMMARY"

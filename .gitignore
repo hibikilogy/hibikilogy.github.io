@@ -48,3 +48,5 @@ themes/hibikilogy/src/virtual-hibikilogy-config.generated.d.ts
 static/admin/admin.css
 static/admin/admin.js
 static/admin/admin.js.map
+
+.vercel

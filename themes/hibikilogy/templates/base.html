@@ -72,6 +72,10 @@
   <meta property="og:url" content="{{ data::clean_url(url=current_url | default(value='/')) | safe }}">
   <meta property="og:description" content="{{ meta_description }}">
 
+  {% if page is defined and page.draft %}
+    <meta name="robots" content="noindex">
+  {% endif %}
+
   {% block meta %}
   {% endblock %}
 
