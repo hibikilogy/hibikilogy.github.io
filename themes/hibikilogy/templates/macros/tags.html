@@ -13,22 +13,33 @@
 {% endmacro %}
 
 {% macro tags_list_for_pages(pages, show_count=false) %}
-{% set page_permalinks = pages | map(attribute="permalink") %}
-{% set tags = get_taxonomy(kind="tags") %}
-{% for tag in tags.items | sort(attribute='pages') | reverse %}
-  {% set_global tag_count = 0 %}
-  {% for tag_page in tag.pages %}
-    {% if tag_page.permalink in page_permalinks %}
-      {% set_global tag_count = tag_count + 1 %}
-    {% endif %}
+{% set_global page_tag_names = [] %}
+{% for page in pages %}
+  {% for tag_name in page.taxonomies.tags | default(value=[]) %}
+    {% set_global page_tag_names = page_tag_names | concat(with=tag_name) %}
   {% endfor %}
-  {% if tag_count > 0 %}
-  <a href="{{ get_taxonomy_url(kind='tags', name=tag.name) | trim_end_matches(pat='/') }}" class="joh-tag" title="{{ tag.name }}">
-    <span>{{ tag.name }}</span>
-    {% if show_count %}
-    <span class="tag-count">{{ tag_count }}</span>
-    {% endif %}
-  </a>
+{% endfor %}
+
+{% set page_count = pages | length %}
+{% for relevance in range(end=page_count + 1) | reverse %}
+  {% if relevance > 0 %}
+    {% for tag_name in page_tag_names | unique %}
+      {% set_global tag_count = 0 %}
+      {% for page in pages %}
+        {% set current_page_tags = page.taxonomies.tags | default(value=[]) %}
+        {% if tag_name in current_page_tags %}
+          {% set_global tag_count = tag_count + 1 %}
+        {% endif %}
+      {% endfor %}
+      {% if tag_count == relevance %}
+        <a href="{{ get_taxonomy_url(kind='tags', name=tag_name) | trim_end_matches(pat='/') }}" class="joh-tag" title="{{ tag_name }}">
+          <span>{{ tag_name }}</span>
+          {% if show_count %}
+          <span class="tag-count">{{ tag_count }}</span>
+          {% endif %}
+        </a>
+      {% endif %}
+    {% endfor %}
   {% endif %}
 {% endfor %}
 {% endmacro %}
