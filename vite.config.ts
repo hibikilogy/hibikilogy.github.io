@@ -3,7 +3,6 @@ import { fileURLToPath } from 'node:url'
 import UnoCSS from 'unocss/vite'
 import { defineConfig } from 'vite'
 import { hibikilogyConfigPlugin } from './scripts/vite/hibikilogy-config'
-import { presetHibikilogyComponents } from './themes/hibikilogy/components/preset'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -57,9 +56,6 @@ export default defineConfig({
     UnoCSS({
       mode: 'shadow-dom',
       inspector: false,
-      presets: [
-        presetHibikilogyComponents(),
-      ],
     }),
     hibikilogyConfigPlugin(__dirname),
   ],

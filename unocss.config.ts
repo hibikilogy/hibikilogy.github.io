@@ -7,7 +7,6 @@ import {
   presetIcons,
   presetWind4,
 } from 'unocss'
-import { presetHibikilogyComponents } from './themes/hibikilogy/components/preset'
 
 export default defineConfig({
   outputToCssLayers: {
@@ -44,7 +43,6 @@ export default defineConfig({
         custom: resolveCustomIcons(),
       },
     }),
-    presetHibikilogyComponents(),
   ],
   blocklist: [
     'container',
