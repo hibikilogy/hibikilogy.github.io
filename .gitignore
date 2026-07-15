@@ -25,6 +25,7 @@ UserInterfaceState.xcuserstate
 .env
 public/
 .claude
+.workbuddy
 .remember
 tests/
 tmp_*/
