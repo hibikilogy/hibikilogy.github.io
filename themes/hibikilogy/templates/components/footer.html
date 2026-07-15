@@ -29,9 +29,9 @@
       <h3>{{ item.frendlinks_text }}</h3>
       <div class="footer-list">
         {% for nav in item.frendlinks %}
-        <a class="Link link FooterFriendLink joh-external-link-icon" aria-expanded="false" aria-label="menu" role="button"
+        <a class="Link link FooterFriendLink" aria-expanded="false" aria-label="menu" role="button"
           href="{{ data::config_link(link=nav.link) }}" title="{{ data::config_link(link=nav.link) }}" tabindex="0" target="_blank" rel="noopener noreferrer">
-          <span>{{ nav.text }}</span>
+          <span>{{ nav.text }}</span><span class="i-custom-link inline-block w-[1.25em] h-[1.25em] align-text-bottom ml-[0.25em]"></span>
         </a>
         {% endfor %}
       </div>

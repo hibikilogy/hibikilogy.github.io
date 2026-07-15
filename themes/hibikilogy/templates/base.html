@@ -103,16 +103,18 @@
   <link href='{{ get_url(path=config.extra.favicon.apple_touch_icon) | safe }}' rel="apple-touch-icon" sizes="180x180">
   {% endif %}
 
-  {{ build::css(path="critical.css") }}
+  {{ build::css(path="styles/critical.css") }}
 
   {% block critical_css %}
   {% endblock critical_css %}
 
-  {% block stylesheets %}
-  {% for stylesheet in stylesheets %}
-    <link rel="stylesheet" href="{{ get_url(path=stylesheet, cachebust=true) }}" >
-  {% endfor %}
-  {% endblock stylesheets %}
+{% block stylesheets %}
+{% for stylesheet in stylesheets %}
+  <link rel="stylesheet" href="{{ get_url(path=stylesheet, cachebust=true) }}"
+    {%- if 'source-han' in stylesheet %} data-beasties-skip{% endif -%}
+  >
+{% endfor %}
+{% endblock stylesheets %}
 
   {% block style %}
   {% endblock %}

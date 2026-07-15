@@ -1,11 +1,7 @@
 {# Build & pagination utilities #}
 
 {% macro css(path) %}
-{% if config.mode == "serve" %}
-<link rel="stylesheet" href="{{ get_url(path=path) }}">
-{% else %}
-<style>{{ load_data(path=path) | trim | safe }}</style>
-{% endif %}
+<link rel="stylesheet" href="{{ get_url(path=path, cachebust=true) }}">
 {% endmacro %}
 
 {% macro script(path, cachebust=true, module=false, async=false, defer=false) %}

@@ -1,0 +1,44 @@
+@import '../lib/media.css';
+@import '../components/hero.css';
+
+@layer pages {
+  .authors-list-page {
+    .container {
+      display: flex;
+      flex-direction: column;
+      padding: 0px 12px;
+    }
+
+    .author-list-item {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 16px 12px;
+      border-bottom: 1px solid var(--joh-c-divider);
+      color: var(--joh-c-neutral);
+      text-decoration: none;
+
+      @media (--max-mobile) {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+
+    .author-name {
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .author-count {
+      flex-shrink: 0;
+      color: var(--joh-c-text-muted);
+      font-size: 15px;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+  }
+}

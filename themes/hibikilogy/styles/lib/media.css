@@ -1,0 +1,24 @@
+/* Responsive breakpoints — CSS Custom Media Queries
+ * Compiled by Lightning CSS to actual @media values
+ * (browsers do not natively support @custom-media)
+ * -------------------------------------------------------------------------- */
+
+/* wide screen */
+@custom-media --pc (min-width: 1440px);
+
+/* desktop */
+@custom-media --laptop (min-width: 1280px);
+
+/* narrow desktop / iPad */
+@custom-media --pad (min-width: 960px);
+
+/* wide mobile */
+@custom-media --tablet (min-width: 720px);
+
+/* narrow mobile */
+@custom-media --mobile (min-width: 420px);
+
+/* max-width variants */
+@custom-media --max-laptop (max-width: 1279px);
+@custom-media --max-tablet (max-width: 719px);
+@custom-media --max-mobile (max-width: 419px);

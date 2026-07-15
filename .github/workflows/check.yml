@@ -81,7 +81,7 @@ jobs:
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
 
-      # zola check：校验模板、内部链接、配置（不生成产物）
+      # pnpm lint 会先生成模板引用的 Vite CSS，再运行 zola check
       - name: Zola Check
         run: pnpm lint
 

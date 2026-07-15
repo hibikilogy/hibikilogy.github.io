@@ -1,0 +1,169 @@
+@import '../lib/media.css';
+
+@layer components {
+  .content-container {
+    /* inline code */
+    :not(pre, h1, h2, h3, h4, h5, h6) > code {
+      font-size: var(--joh-code-font-size);
+    }
+
+    :not(pre) > code {
+      border-radius: 4px;
+      padding: 3px 6px;
+      background-color: var(--joh-c-bg-alt) !important;
+    }
+
+    h1 > code,
+    h2 > code,
+    h3 > code,
+    h4 > code {
+      font-size: 0.9em;
+    }
+
+    div[data-lang],
+    pre.giallo,
+    pre[class*='language-'] {
+      position: relative;
+      margin: var(--joh-code-block-margin-block) calc(var(--joh-code-block-mobile-bleed) * -1);
+      background-color: var(--joh-c-bg-alt) !important;
+      overflow: hidden;
+    }
+
+    div[data-lang] + div[data-lang],
+    div[class$='-api'] + div[data-lang],
+    div[data-lang] + div[class$='-api'] > div[data-lang] {
+      margin-top: -8px;
+    }
+
+    [data-lang] pre,
+    pre.giallo,
+    pre[class*='language-'],
+    code[class*='language-'] {
+      direction: ltr;
+      text-align: left;
+      white-space: pre;
+      word-spacing: normal;
+      word-break: normal;
+      word-wrap: normal;
+      tab-size: 4;
+      hyphens: none;
+    }
+
+    pre[data-lang],
+    pre.giallo,
+    pre[class*='language-'] {
+      z-index: 1;
+      margin: 0;
+      padding: var(--joh-code-block-padding-top) 0 var(--joh-code-block-padding-bottom);
+      background: transparent;
+      overflow-x: auto;
+    }
+
+    code[class*='language-'],
+    pre.giallo > code,
+    pre[class*='language-'] > code {
+      display: block;
+      width: fit-content;
+      min-width: 100%;
+      padding: 0 var(--joh-code-block-padding-right) 0 var(--joh-code-block-padding-left);
+      line-height: var(--joh-code-line-height);
+      font-size: var(--joh-code-font-size);
+    }
+
+    pre.giallo > code[data-lang]::before,
+    pre[class*='language-'] > code[data-lang]::before {
+      content: attr(data-lang);
+      position: absolute;
+      top: var(--joh-code-lang-top);
+      right: var(--joh-code-lang-right);
+      z-index: 2;
+      font-size: var(--joh-code-lang-font-size);
+      font-weight: var(--joh-code-lang-font-weight);
+      user-select: none;
+      text-transform: uppercase;
+    }
+
+    [data-lang] > span.lang {
+      position: absolute;
+      top: var(--joh-code-lang-top);
+      right: var(--joh-code-lang-right);
+      z-index: 2;
+      font-size: var(--joh-code-lang-font-size);
+      font-weight: var(--joh-code-lang-font-weight);
+      user-select: none;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    code[class*='language-'] .highlighted,
+    code[class*='language-'] .diff,
+    pre.giallo .giallo-l {
+      display: block;
+      margin: 0 calc(var(--joh-code-block-padding-left) * -1);
+      padding: 0 var(--joh-code-block-padding-left);
+      width: calc(100% + (var(--joh-code-block-padding-left) * 2));
+    }
+
+    code[class*='language-'] .diff {
+      position: relative;
+    }
+
+    code[class*='language-'] .diff.remove::before {
+      content: '-';
+      position: absolute;
+      left: 0.75rem;
+    }
+
+    code[class*='language-'] .diff.add::before {
+      content: '+';
+      position: absolute;
+      left: 0.75rem;
+    }
+
+    div[data-lang].line-numbers-mode {
+      padding-left: var(--joh-code-line-number-width);
+    }
+
+    .line-numbers-wrapper {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 3;
+      padding-top: var(--joh-code-block-padding-top);
+      width: var(--joh-code-line-number-width);
+      text-align: center;
+      font-family: var(--joh-font-family-mono);
+      line-height: var(--joh-code-line-height);
+      font-size: var(--joh-code-font-size);
+    }
+
+    @media (--tablet) {
+      div[data-lang],
+      pre.giallo,
+      pre[class*='language-'] {
+        border-radius: 8px;
+        margin: var(--joh-code-block-margin-block) 0;
+      }
+    }
+
+    @media (--max-tablet) {
+      li div[data-lang] {
+        border-radius: var(--joh-code-block-mobile-item-radius) 0 0 var(--joh-code-block-mobile-item-radius);
+      }
+
+      div[data-lang],
+      pre.giallo,
+      pre[class*='language-'] {
+        border-radius: 0;
+      }
+
+      code[class*='language-'],
+      pre.giallo > code,
+      pre[class*='language-'] > code {
+        padding-right: 1rem;
+        padding-left: 1rem;
+      }
+    }
+  }
+}

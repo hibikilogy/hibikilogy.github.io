@@ -1,0 +1,60 @@
+@import '../lib/media.css';
+@import '../components/hero.css';
+@import '../components/medium-zoom.css';
+@import '../components/toc.css';
+@import '../components/footnotes.css';
+@import '../components/code.css';
+@import '../components/custom-block.css';
+@import '../components/content.css';
+@import '../components/accordion.css';
+@import '../components/collapsible.css';
+@import '../components/bilibili-iframe.css';
+
+@layer pages {
+  /* Post page: transparent navbar over hero cover */
+
+  .post > #app > .Layout > .NavBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: transparent;
+
+    .divider {
+      display: none;
+    }
+  }
+
+  .post > #app > .Layout > .NavBar:has(+ .has-cover):not(.open) {
+    .NavBarTitle > .title,
+    a.NavBarMenuLink.Link {
+      color: var(--joh-c-white);
+    }
+
+    .NavBarTitle .logo {
+      filter: brightness(0) invert(1);
+      transition: filter 0.5s ease;
+    }
+
+    .NavBarHamburger .container > span {
+      background-color: var(--joh-c-white);
+    }
+
+    @media (--max-tablet) {
+      .SearchShellIcon {
+        background-color: var(--joh-c-white) !important;
+      }
+    }
+  }
+
+  .post .Footer,
+  .docs .Footer,
+  .tags .Footer,
+  .author .Footer {
+    margin-top: 2rem;
+
+    @media (--tablet) {
+      margin-top: 3rem;
+    }
+  }
+}

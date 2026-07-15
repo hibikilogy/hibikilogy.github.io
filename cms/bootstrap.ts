@@ -4,7 +4,7 @@ import { PostPreview } from './previews/post'
 import { CMS } from './runtime'
 import { PREVIEW_FONT_STYLES } from './shared'
 import 'virtual:uno.css'
-import './preview.scss'
+import './preview.css'
 
 registerPreviewStyles()
 PREVIEW_FONT_STYLES.forEach(style => CMS.registerPreviewStyle(style))
@@ -35,6 +35,6 @@ function registerPreviewStyles(): void {
 if (import.meta.hot) {
   import.meta.hot.accept([
     'virtual:uno.css',
-    './preview.scss',
+    './preview.css',
   ], () => window.location.reload())
 }

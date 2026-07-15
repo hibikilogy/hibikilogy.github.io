@@ -9,6 +9,12 @@ import {
 } from 'unocss'
 
 export default defineConfig({
+  content: {
+    filesystem: [
+      'themes/hibikilogy/templates/**/*.html',
+      'content/**/*.md',
+    ],
+  },
   outputToCssLayers: {
     cssLayerName(layer) {
       // presetWind4 internal layers → base

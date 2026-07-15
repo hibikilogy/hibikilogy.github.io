@@ -12,6 +12,12 @@ const unoConfig = resolve(projectRoot, 'unocss.config.ts')
 export default defineConfig(({ command }) => ({
   root: staticRoot,
   publicDir: command === 'serve' ? themeStaticRoot : false,
+  css: {
+    transformer: 'lightningcss',
+    lightningcss: {
+      drafts: { customMedia: true },
+    },
+  },
   plugins: [
     UnoCSS({ configFile: unoConfig }),
     ...(command === 'serve'

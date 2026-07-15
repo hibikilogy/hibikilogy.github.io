@@ -3,13 +3,13 @@ title = "京吹学报 (Dev Preview)"
 description = "吹学著作集锦"
 default_language = "zh"
 theme = "hibikilogy"
-compile_sass = true
+compile_sass = false
 minify_html = true
 generate_feeds = true
 author = "京吹学报"
 generate_sitemap = true
 build_search_index = true
-hard_link_static = true
+hard_link_static = false
 ignored_content = [ "temp.*" ]
 taxonomies = [
   { name = "tags", feed = true, paginate_by = 12 },
@@ -68,7 +68,6 @@ skip_prefixes = [
   "http://next.hyouka.ml:3000/",
   "https://nga.178.com/",
 ]
-
 trailing_slashes = false
 
 [slugify]

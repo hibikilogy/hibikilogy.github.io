@@ -52,9 +52,6 @@ jobs:
       - name: Build CMS
         run: pnpm build:admin
 
-      - name: Build UnoCSS
-        run: pnpm build:unocss
-
       - name: Subset title font
         run: pnpm build:subset-titlefont
 
@@ -63,8 +60,7 @@ jobs:
 
       # --base-url 覆盖 config.toml 的生产域名，让预览站的 canonical / atom
       # feed / 导航 / __HIBIKILOGY_BASE_URL 等内部链接都指向 surge.sh 预览域名
-      # 而非生产站点（get_url 生成的 static 资源路径是根相对 /xxx，surge 部署
-      # 在域名根下，可正常加载）。域名必须与 preview.yml 的部署域名一致。
+      # 而非生产站点。域名必须与 preview.yml 的部署域名一致。
       - name: Build site
         uses: shalzz/zola-deploy-action@v0.22.1
         env:
@@ -74,6 +70,9 @@ jobs:
       # zola 在容器内以 root 构建，恢复 public/ 归属以便后续步骤写入
       - name: chown
         run: echo "$(whoami):$(id -gn)" | xargs -I {} sudo chown -R {} public
+
+      - name: Beasties critical CSS
+        run: pnpm run build:beasties
 
       - name: Rewrite image hosts
         run: pnpm build:rewrite-imgs

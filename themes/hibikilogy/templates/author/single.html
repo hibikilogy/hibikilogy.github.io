@@ -8,10 +8,10 @@
 {% endblock vars %}
 
 {% block critical_css %}
-{{ build::css(path="components/journal.css") }}
-{{ build::css(path="components/hero.css") }}
+{{ build::css(path="styles/components/journal.css") }}
+{{ build::css(path="styles/components/hero.css") }}
 {% if custom_author %}
-{{ build::css(path="layouts/author-profile.css") }}
+{{ build::css(path="styles/layouts/author-profile.css") }}
 {% endif %}
 {% endblock critical_css %}
 

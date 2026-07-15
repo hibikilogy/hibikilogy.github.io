@@ -1,0 +1,373 @@
+@layer base {
+  /* Colors: Base
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-c-white: #ffffff;
+    --joh-c-black: #000000;
+    --joh-c-primary: #2076df;
+    --joh-c-neutral: var(--joh-c-black);
+    --joh-c-neutral-inverse: var(--joh-c-white);
+  }
+
+  html.dark {
+    --joh-c-neutral: var(--joh-c-white);
+    --joh-c-neutral-inverse: var(--joh-c-black);
+  }
+
+  /* Colors: Palette
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-c-gray-1: #dddde3;
+    --joh-c-gray-2: #e4e4e9;
+    --joh-c-gray-3: #ebebef;
+    --joh-c-gray-soft: rgba(142, 150, 170, 0.14);
+
+    --joh-c-indigo-1: #2076df;
+    --joh-c-indigo-2: #00a0e9;
+    --joh-c-indigo-3: #5672cd;
+    --joh-c-indigo-soft: rgba(100, 108, 255, 0.14);
+
+    --joh-c-purple-1: #6f42c1;
+    --joh-c-purple-2: #7e4cc9;
+    --joh-c-purple-3: #8e5cd9;
+    --joh-c-purple-soft: rgba(159, 122, 234, 0.14);
+
+    --joh-c-green-1: #18794e;
+    --joh-c-green-2: #299764;
+    --joh-c-green-3: #30a46c;
+    --joh-c-green-soft: rgba(16, 185, 129, 0.14);
+
+    --joh-c-yellow-1: #915930;
+    --joh-c-yellow-2: #946300;
+    --joh-c-yellow-3: #9f6a00;
+    --joh-c-yellow-soft: rgba(234, 179, 8, 0.14);
+
+    --joh-c-red-1: #b8272c;
+    --joh-c-red-2: #d5393e;
+    --joh-c-red-3: #e0575b;
+    --joh-c-red-soft: rgba(244, 63, 94, 0.14);
+
+    --joh-c-sponsor: #db2777;
+  }
+
+  html.dark {
+    --joh-c-gray-1: #515c67;
+    --joh-c-gray-2: #414853;
+    --joh-c-gray-3: #32363f;
+    --joh-c-gray-soft: rgba(101, 117, 133, 0.16);
+
+    --joh-c-indigo-1: #a8b1ff;
+    --joh-c-indigo-2: #5c73e7;
+    --joh-c-indigo-3: #3e63dd;
+    --joh-c-indigo-soft: rgba(100, 108, 255, 0.16);
+
+    --joh-c-purple-1: #c8abfa;
+    --joh-c-purple-2: #a879e6;
+    --joh-c-purple-3: #8e5cd9;
+    --joh-c-purple-soft: rgba(159, 122, 234, 0.16);
+
+    --joh-c-green-1: #3dd68c;
+    --joh-c-green-2: #30a46c;
+    --joh-c-green-3: #298459;
+    --joh-c-green-soft: rgba(16, 185, 129, 0.16);
+
+    --joh-c-yellow-1: #f9b44e;
+    --joh-c-yellow-2: #da8b17;
+    --joh-c-yellow-3: #a46a0a;
+    --joh-c-yellow-soft: rgba(234, 179, 8, 0.16);
+
+    --joh-c-red-1: #f66f81;
+    --joh-c-red-2: #f14158;
+    --joh-c-red-3: #b62a3c;
+    --joh-c-red-soft: rgba(244, 63, 94, 0.16);
+  }
+
+  /* Colors: Background
+   *
+   * - `bg`: The bg color used for main screen.
+   * - `bg-alt`: The alternative bg color used in places such as "sidebar",
+   *   or "code block".
+   * - `bg-soft`: The bg color to slightly distinguish some components from
+   *   the page. Used for things like "carbon ads" or "table".
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-c-bg: #ffffff;
+    --joh-c-bg-alt: #f6f6f7;
+    --joh-c-bg-soft: #f6f6f7;
+  }
+
+  html.dark {
+    --joh-c-bg: #1b1b1f;
+    --joh-c-bg-alt: #161618;
+    --joh-c-bg-soft: #202127;
+  }
+
+  /* Colors: Borders
+   *
+   * - `divider`: separators within the same component (e.g. h2 heading).
+   * - `border`: borders on interactive components (e.g. button outline).
+   * - `gutter`: dividers between components in the page (e.g. header/page).
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-c-border: #c2c2c4;
+    --joh-c-divider: #e2e2e3;
+    --joh-c-gutter: #e2e2e3;
+  }
+
+  html.dark {
+    --joh-c-border: #3c3f44;
+    --joh-c-divider: #2e2e32;
+    --joh-c-gutter: #000000;
+  }
+
+  /* Colors: Text
+   *
+   * - `text-1`: primary text.
+   * - `text-2`: muted texts (inactive menu, info texts).
+   * - `text-3`: subtle texts (placeholders, caret icon).
+   * - `text-muted`: description / meta text (e.g. "999999").
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-c-text-1: rgba(34, 34, 34, 1);
+    --joh-c-text-2: rgba(34, 34, 34, 0.78);
+    --joh-c-text-3: rgba(34, 34, 34, 0.56);
+    --joh-c-text-muted: #999999;
+  }
+
+  html.dark {
+    --joh-c-text-1: rgba(255, 255, 245, 0.86);
+    --joh-c-text-2: rgba(235, 235, 245, 0.6);
+    --joh-c-text-3: rgba(235, 235, 245, 0.38);
+    --joh-c-text-muted: #8b8b8b;
+  }
+
+  /* Colors: Function
+   *
+   * - `default`: subtle indication without special meaning (menu hover bg).
+   * - `brand`: primary brand color (link text, brand button).
+   * - `tip` / `note`: useful info (defaults to brand).
+   * - `success`: success state.
+   * - `important`: emphasis.
+   * - `warning`: warning to users.
+   * - `danger` / `caution`: error or dangerous message.
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-c-default-1: var(--joh-c-gray-1);
+    --joh-c-default-2: var(--joh-c-gray-2);
+    --joh-c-default-3: var(--joh-c-gray-3);
+    --joh-c-default-soft: var(--joh-c-gray-soft);
+
+    --joh-c-brand-1: var(--joh-c-indigo-1);
+    --joh-c-brand-2: var(--joh-c-indigo-2);
+    --joh-c-brand-3: var(--joh-c-indigo-3);
+    --joh-c-brand-soft: var(--joh-c-indigo-soft);
+
+    /* DEPRECATED: Use `--joh-c-brand-1` instead. */
+    --joh-c-brand: var(--joh-c-brand-1);
+
+    --joh-c-tip-1: var(--joh-c-brand-1);
+    --joh-c-tip-2: var(--joh-c-brand-2);
+    --joh-c-tip-3: var(--joh-c-brand-3);
+    --joh-c-tip-soft: var(--joh-c-brand-soft);
+
+    --joh-c-note-1: var(--joh-c-brand-1);
+    --joh-c-note-2: var(--joh-c-brand-2);
+    --joh-c-note-3: var(--joh-c-brand-3);
+    --joh-c-note-soft: var(--joh-c-brand-soft);
+
+    --joh-c-success-1: var(--joh-c-green-1);
+    --joh-c-success-2: var(--joh-c-green-2);
+    --joh-c-success-3: var(--joh-c-green-3);
+    --joh-c-success-soft: var(--joh-c-green-soft);
+
+    --joh-c-important-1: var(--joh-c-purple-1);
+    --joh-c-important-2: var(--joh-c-purple-2);
+    --joh-c-important-3: var(--joh-c-purple-3);
+    --joh-c-important-soft: var(--joh-c-purple-soft);
+
+    --joh-c-warning-1: var(--joh-c-yellow-1);
+    --joh-c-warning-2: var(--joh-c-yellow-2);
+    --joh-c-warning-3: var(--joh-c-yellow-3);
+    --joh-c-warning-soft: var(--joh-c-yellow-soft);
+
+    --joh-c-danger-1: var(--joh-c-red-1);
+    --joh-c-danger-2: var(--joh-c-red-2);
+    --joh-c-danger-3: var(--joh-c-red-3);
+    --joh-c-danger-soft: var(--joh-c-red-soft);
+
+    --joh-c-caution-1: var(--joh-c-red-1);
+    --joh-c-caution-2: var(--joh-c-red-2);
+    --joh-c-caution-3: var(--joh-c-red-3);
+    --joh-c-caution-soft: var(--joh-c-red-soft);
+  }
+
+  /* Colors: Focus ring
+   *
+   * Ring color for `:focus-visible` outlines. Derived from `text-1` so it
+   * adapts to dark mode.
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-c-focus-ring: color-mix(in srgb, var(--joh-c-text-1) 12%, transparent);
+  }
+
+  html.dark {
+    --joh-c-focus-ring: color-mix(in srgb, var(--joh-c-text-1) 18%, transparent);
+  }
+
+  /* Colors: Mark
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-c-mark-bg: rgba(0, 191, 255, 0.37);
+  }
+
+  html.dark {
+    --joh-c-mark-bg: rgba(0, 191, 255, 0.24);
+  }
+
+  /* Typography
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-font-family-base:
+      'Source Han Sans SC VF', 'Source Han Serif SC VF', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+      'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --joh-font-family-serif: 'Source Han Serif CN VF', 'Times New Roman';
+    --joh-font-family-mono: ui-monospace, 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+    font-optical-sizing: auto;
+  }
+
+  :root:where(:lang(zh)) {
+    --joh-font-family-base:
+      'Source Han Sans SC VF', 'Source Han Serif SC VF', ui-sans-serif, system-ui, 'PingFang SC', 'Noto Sans CJK SC',
+      'Noto Sans SC', 'Heiti SC', 'Microsoft YaHei', 'DengXian', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+      'Segoe UI Symbol', 'Noto Color Emoji';
+  }
+
+  /* Shadows
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    --joh-shadow-2: 0 3px 12px rgba(0, 0, 0, 0.07), 0 1px 4px rgba(0, 0, 0, 0.07);
+    --joh-shadow-3: 0 12px 32px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.08);
+    --joh-shadow-4: 0 14px 44px rgba(0, 0, 0, 0.12), 0 3px 9px rgba(0, 0, 0, 0.12);
+    --joh-shadow-5: 0 18px 56px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.16);
+  }
+
+  /* Z-indexes
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-z-index-footer: 10;
+    --joh-z-index-header-hero: 15;
+    --joh-z-index-local-nav: 20;
+    --joh-z-index-nav: 30;
+    --joh-z-index-layout-top: 40;
+    --joh-z-index-backdrop: 50;
+    --joh-z-index-sidebar: 60;
+  }
+
+  @media (min-width: 960px) {
+    :root {
+      --joh-z-index-sidebar: 25;
+    }
+  }
+
+  /* Layouts
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-layout-max-width: 982px;
+  }
+
+  /* Icons
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-icon-svg-arrow-down: url('data:image/svg+xml,%0A%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20fill%3D%22none%22%20version%3D%221.1%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cg%3E%3Cg%20transform%3D%22matrix(0%2C-1%2C1%2C0%2C-10.5859375%2C27.914794921875)%22%3E%3Cpath%20d%3D%22M8.9573517109375%2C20.9574462109375L15.457628710937499%2C27.4573862109375C15.4711487109375%2C27.4708962109375%2C15.4849487109375%2C27.4839362109375%2C15.4990187109375%2C27.4965162109375C15.5130987109375%2C27.5124962109375%2C15.5277687109375%2C27.5281462109375%2C15.5430487109375%2C27.5434162109375C15.9335687109375%2C27.9339362109375%2C16.5667287109375%2C27.9339362109375%2C16.9572787109375%2C27.5433962109375L23.4572287109375%2C21.0430962109375C23.8477287109375%2C20.6525662109375%2C23.8477287109375%2C20.0194192109375%2C23.4572287109375%2C19.6289022109375C23.0667287109375%2C19.2383780109375%2C22.4335287109375%2C19.2383780109375%2C22.042928710937503%2C19.6289212109375L16.2504287109375%2C25.4217862109375L10.3715287109375%2C19.5431982109375C9.9809987109375%2C19.1526915109375%2C9.3478497109375%2C19.1526999109375%2C8.9573327109375%2C19.5432172109375C8.5668082109375%2C19.9337412109375%2C8.5668082109375%2C20.5669062109375%2C8.9573517109375%2C20.9574462109375Z%22%20fill-rule%3D%22evenodd%22%20fill%3D%22%23222222%22%20fill-opacity%3D%221%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+  }
+
+  /* Platform: search shell key modifier
+   * -------------------------------------------------------------------------- */
+  html {
+    --joh-search-shell-key-modifier: 'Ctrl';
+  }
+
+  html.mac {
+    --joh-search-shell-key-modifier: '\2318';
+  }
+
+  /* Component: Nav
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-nav-height: 64px;
+    --joh-nav-logo-height: 42px;
+    --joh-c-nav-overlay-bg: rgba(255, 255, 255, 0.95);
+  }
+
+  html.dark {
+    --joh-c-nav-overlay-bg: rgba(27, 27, 31, 0.95);
+  }
+
+  /* Component: Hero / Journal
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-c-hero-heading-bg: #bfbfbf;
+    --joh-c-hero-banner-bg: #222222;
+    --joh-c-journal-frontpage-bg: #222222;
+    --joh-c-hero-overlay: rgba(0, 0, 0, 0.1);
+
+    --joh-hero-gradient-overlay: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), transparent, rgba(0, 0, 0, 0.6));
+    --joh-hero-text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Component: Custom block
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-custom-block-font-size: 0.9375rem;
+    --joh-custom-block-line-height: 1.75;
+    --joh-custom-block-border-radius: 12px;
+    --joh-custom-block-border-width: 1px;
+
+    --joh-c-custom-block-bg: color-mix(in srgb, var(--joh-c-bg) 92%, var(--joh-c-text-1) 8%);
+    --joh-c-custom-block-code-bg: rgba(255, 255, 255, 0.5);
+
+    --joh-c-custom-block-tip-bg: color-mix(in srgb, var(--joh-c-bg) 88%, var(--joh-c-success-1) 12%);
+    --joh-c-custom-block-important-bg: color-mix(in srgb, var(--joh-c-bg) 88%, var(--joh-c-important-1) 12%);
+    --joh-c-custom-block-warning-bg: color-mix(in srgb, var(--joh-c-bg) 88%, var(--joh-c-warning-1) 12%);
+    --joh-c-custom-block-caution-bg: color-mix(in srgb, var(--joh-c-bg) 88%, var(--joh-c-caution-1) 12%);
+  }
+
+  /* Component: Code
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-code-line-height: 1.7;
+    --joh-code-font-size: 0.875em;
+
+    --joh-code-block-padding-top: 1.25rem;
+    --joh-code-block-padding-right: 1.5rem;
+    --joh-code-block-padding-bottom: 1.25rem;
+    --joh-code-block-padding-left: 1.5rem;
+    --joh-code-block-margin-block: 16px;
+    --joh-code-block-mobile-bleed: 24px;
+    --joh-code-block-mobile-item-radius: 8px;
+
+    --joh-code-lang-top: 2px;
+    --joh-code-lang-right: 8px;
+    --joh-code-lang-font-size: 12px;
+    --joh-code-lang-font-weight: 500;
+
+    --joh-code-line-number-width: 32px;
+  }
+
+  /* Component: Header anchor
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-header-anchor-symbol: '#';
+  }
+
+  /* Component: Scrollbar
+   * -------------------------------------------------------------------------- */
+  :root {
+    --joh-c-scrollbar-track-bg: rgb(0 0 0 / 10%);
+  }
+
+  html.dark {
+    --joh-c-scrollbar-track-bg: rgb(255 255 255 / 10%);
+  }
+}
