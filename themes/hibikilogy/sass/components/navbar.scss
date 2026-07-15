@@ -140,7 +140,7 @@
     &.open {
       position: fixed !important;
       top: 0 !important;
-      background: var(--joh-nav-screen-overlay-bg-color) !important;
+      background: var(--joh-c-nav-overlay-bg) !important;
     }
 
     // Prevent content shift when NavBar becomes fixed
@@ -148,7 +148,7 @@
       margin-top: var(--joh-nav-height);
     }
 
-    background-color: var(--joh-nav-bg-color);
+    background-color: var(--joh-c-bg);
 
     @media (min-width: config.$pad) {
       margin-top: 8px;
@@ -346,7 +346,7 @@
       @media (min-width: config.$tablet) {
         .SearchShell--compact {
           justify-content: space-between;
-          border: solid 2px var(--joh-nav-search-border-color);
+          border: solid 2px var(--joh-c-text-1);
           padding: 0 10px 0 12px;
           width: 205px;
           height: 35px;
@@ -404,7 +404,7 @@
         white-space: nowrap;
         font-size: 13px;
         font-weight: 500;
-        color: var(--joh-nav-search-muted-color);
+        color: var(--joh-c-text-2);
         opacity: 0.9;
         transition: all 0.25s;
       }
@@ -436,7 +436,7 @@
         .SearchShellLabel,
         .SearchShellInput {
           display: contents;
-          color: var(--joh-nav-search-muted-color);
+          color: var(--joh-c-text-2);
         }
       }
 
@@ -462,7 +462,7 @@
         width: auto;
         height: 22px;
         line-height: 22px;
-        color: var(--joh-nav-search-muted-color);
+        color: var(--joh-c-text-2);
         background-color: var(--joh-c-bg-alt);
         font-family: var(--joh-font-family-base);
         font-size: 12px;
@@ -488,7 +488,7 @@
         content: var(--joh-search-shell-key-modifier);
         font-size: 12px;
         letter-spacing: normal;
-        color: var(--joh-nav-search-muted-color);
+        color: var(--joh-c-text-2);
       }
 
       .SearchShellKeyModifier > * {
@@ -582,7 +582,7 @@
       left: 0;
       padding: 0 32px;
       width: 100%;
-      background-color: var(--joh-nav-screen-overlay-bg-color);
+      background-color: var(--joh-c-nav-overlay-bg);
       overflow-y: auto;
       transition: background-color 0.5s;
       pointer-events: auto;

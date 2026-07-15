@@ -10,7 +10,7 @@
       width: 100%;
       height: 500px;
       text-align: center;
-      background-color: var(--joh-hero-taxonomies-banner-bg);
+      background-color: var(--joh-c-hero-banner-bg);
     }
   }
 
@@ -46,7 +46,7 @@
   .author-profile-bio {
     font-size: 1rem;
     line-height: 30px;
-    color: #999;
+    color: var(--joh-c-text-muted);
     max-width: 36rem;
     margin-bottom: 1rem;
     padding: 0 1rem;
@@ -72,7 +72,7 @@
   }
 
   .author-profile-count {
-    color: #fff;
+    color: var(--joh-c-white);
     font-size: 1rem;
     line-height: 30px;
     white-space: nowrap;
@@ -81,7 +81,7 @@
   .author-profile-link {
     display: inline-flex;
     align-items: center;
-    color: #fff;
+    color: var(--joh-c-white);
     font-size: 1rem;
     line-height: 30px;
     text-decoration: none;
@@ -96,7 +96,7 @@
       height: 1.625em;
       margin-top: 0;
       vertical-align: middle;
-      color: #fff;
+      color: var(--joh-c-white);
     }
   }
 
@@ -104,7 +104,7 @@
     font-size: 14px;
     font-weight: 500;
     line-height: 16px;
-    color: #999;
+    color: var(--joh-c-text-muted);
     max-width: var(--joh-layout-max-width);
     width: 100%;
     padding-bottom: 8px;

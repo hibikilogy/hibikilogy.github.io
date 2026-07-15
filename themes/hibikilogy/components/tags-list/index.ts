@@ -83,7 +83,7 @@ export class TagsList extends LitElement {
       >
         <span>${item.name}</span>
         ${typeof count === 'number' && Number.isFinite(count) && count > 0
-          ? html`<span class="hidden text-[0.8rem] text-[var(--footer-directory-title-color)]">
+          ? html`<span class="hidden text-[0.8rem] text-[var(--joh-c-text-muted)]">
               ${String(count)}
             </span>`
           : nothing}

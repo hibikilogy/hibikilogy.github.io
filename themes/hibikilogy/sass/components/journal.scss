@@ -75,7 +75,7 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
-      background-color: var(--joh-journal-frontpage-bg);
+      background-color: var(--joh-c-journal-frontpage-bg);
       height: 212px;
 
       svg:first-child {
@@ -90,7 +90,7 @@
     }
 
     .Section {
-      border: $border-width solid var(--article-border-color);
+      border: $border-width solid var(--joh-c-neutral);
       background-color: var(--joh-c-bg);
       box-sizing: border-box;
       margin: calc(-1 * $border-width) 0 0;
@@ -111,7 +111,7 @@
     }
 
     .FrontPage.Section {
-      background-color: var(--joh-journal-frontpage-bg);
+      background-color: var(--joh-c-journal-frontpage-bg);
     }
 
     .Section.is-below-frontpage {
@@ -162,7 +162,7 @@
         font-size: 0.75rem;
         line-height: 1.25rem;
         margin-top: 6px;
-        color: var(--article-description-title-color);
+        color: var(--joh-c-text-muted);
         font-variation-settings: 'opsz' auto;
 
         .author-name {

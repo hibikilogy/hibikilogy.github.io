@@ -35,7 +35,7 @@ function renderTagLink(tag: SearchTagItem): HTMLAnchorElement {
 
   render(html`
     <span>${tag.name || ''}</span>
-    ${showCount ? html`<span class="hidden text-[0.8rem] text-[var(--footer-directory-title-color)]">${String(count)}</span>` : nothing}
+    ${showCount ? html`<span class="hidden text-[0.8rem] text-[var(--joh-c-text-muted)]">${String(count)}</span>` : nothing}
   `, link)
 
   return link

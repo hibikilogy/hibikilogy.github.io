@@ -21,7 +21,7 @@
         min-height: 52vh;
         max-height: 600px;
         overflow: hidden;
-        background-color: var(--joh-hero-heading-bg);
+        background-color: var(--joh-c-hero-heading-bg);
         color: var(--joh-c-white);
 
         img {
@@ -46,11 +46,11 @@
         }
 
         .post-heading-gradient-overlay {
-          background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), transparent, rgba(0, 0, 0, 0.6));
+          background: var(--joh-hero-gradient-overlay);
         }
 
         .post-heading-dark-overlay {
-          background-color: rgba(0, 0, 0, 0.1);
+          background-color: var(--joh-c-hero-overlay);
         }
 
         &.image-loaded {
@@ -68,9 +68,7 @@
           z-index: var(--joh-z-index-layout-top);
           width: 100%;
           height: min-content;
-          text-shadow:
-            0 2px 8px rgba(0, 0, 0, 0.25),
-            0 4px 15px rgba(0, 0, 0, 0.3);
+          text-shadow: var(--joh-hero-text-shadow);
         }
 
         .post-heading-info-container {
@@ -192,10 +190,10 @@
         align-items: center;
         width: 100%;
         min-height: 190px;
-        background-color: var(--joh-hero-taxonomies-banner-bg);
+        background-color: var(--joh-c-hero-banner-bg);
 
         &.has-bg {
-          background-image: var(--hero-bg);
+          background-image: var(--joh-hero-bg);
           background-position: center 0;
           background-size: cover;
           background-repeat: no-repeat;

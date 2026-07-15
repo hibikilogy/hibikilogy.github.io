@@ -4,8 +4,8 @@
       margin: 24px 0;
       border-radius: var(--joh-custom-block-border-radius);
       padding: 0.875rem 1rem 1rem;
-      background: var(--joh-custom-block-bg);
-      color: var(--joh-custom-block-text-color);
+      background: var(--joh-c-custom-block-bg);
+      color: var(--joh-c-text-2);
       font-size: var(--joh-custom-block-font-size);
       line-height: var(--joh-custom-block-line-height);
       transition:
@@ -20,7 +20,7 @@
       font-weight: 700;
 
       text-transform: uppercase;
-      color: var(--joh-custom-block-title-color);
+      color: var(--joh-c-custom-block-title, var(--joh-c-text-1));
       content: var(--joh-custom-block-title, '');
     }
 
@@ -38,35 +38,35 @@
 
     blockquote.markdown-alert-note {
       --joh-custom-block-title: 'Note';
-      --joh-custom-block-bg: var(--joh-custom-block-note-bg);
+      --joh-c-custom-block-bg: var(--joh-c-bg-alt);
     }
 
     blockquote.markdown-alert-tip {
       --joh-custom-block-title: 'Tip';
-      --joh-custom-block-bg: var(--joh-custom-block-tip-bg);
-      --joh-custom-block-title-color: var(--joh-custom-block-tip-title);
+      --joh-c-custom-block-bg: var(--joh-c-custom-block-tip-bg);
+      --joh-c-custom-block-title: var(--joh-c-success-1);
     }
 
     blockquote.markdown-alert-important {
       --joh-custom-block-title: 'Important';
-      --joh-custom-block-bg: var(--joh-custom-block-important-bg);
-      --joh-custom-block-title-color: var(--joh-custom-block-important-title);
+      --joh-c-custom-block-bg: var(--joh-c-custom-block-important-bg);
+      --joh-c-custom-block-title: var(--joh-c-important-1);
     }
 
     blockquote.markdown-alert-warning {
       --joh-custom-block-title: 'Warning';
-      --joh-custom-block-bg: var(--joh-custom-block-warning-bg);
-      --joh-custom-block-title-color: var(--joh-custom-block-warning-title);
+      --joh-c-custom-block-bg: var(--joh-c-custom-block-warning-bg);
+      --joh-c-custom-block-title: var(--joh-c-warning-1);
     }
 
     blockquote.markdown-alert-caution {
       --joh-custom-block-title: 'Caution';
-      --joh-custom-block-bg: var(--joh-custom-block-caution-bg);
-      --joh-custom-block-title-color: var(--joh-custom-block-caution-title);
+      --joh-c-custom-block-bg: var(--joh-c-custom-block-caution-bg);
+      --joh-c-custom-block-title: var(--joh-c-caution-1);
     }
 
     blockquote[class^='markdown-alert'] :not(pre) > code {
-      background: var(--joh-custom-block-code-bg);
+      background: var(--joh-c-custom-block-code-bg);
     }
   }
 }

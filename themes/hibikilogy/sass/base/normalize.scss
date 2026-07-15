@@ -20,16 +20,16 @@
   ::-webkit-scrollbar-track-piece {
     -webkit-border-radius: 6px;
     border-radius: 6px;
-    background: rgb(0 0 0 / 10%);
+    background: var(--joh-c-scrollbar-track-bg);
   }
 
   ::-webkit-scrollbar-thumb {
     -webkit-border-radius: 6px;
     border-radius: 6px;
-    background: var(--theme-color);
+    background: var(--joh-c-text-3);
 
     &:active {
-      background: var(--theme-color-light);
+      background: var(--joh-c-text-2);
     }
   }
 

@@ -2,9 +2,9 @@
 
 @layer components {
   #search {
-    --search-ui-border: var(--joh-c-neutral);
-    --search-ui-border-width: 2px;
-    --search-ui-font: var(--joh-font-family-base);
+    --joh-c-search-ui-border: var(--joh-c-neutral);
+    --joh-search-ui-border-width: 2px;
+    --joh-search-ui-font: var(--joh-font-family-base);
     --slide-visible-once-bottom-dur: 320ms;
     --slide-visible-once-bottom-y: 24px;
     --slide-visible-once-bottom-ease: cubic-bezier(0.33, 0, 0.13, 1);
@@ -30,7 +30,7 @@
       min-height: 64px;
       margin: 0 auto;
       gap: 0;
-      border: var(--search-ui-border-width) solid var(--search-ui-border);
+      border: var(--joh-search-ui-border-width) solid var(--joh-c-search-ui-border);
       border-radius: 8px;
       background-color: var(--joh-c-bg);
     }
@@ -57,7 +57,7 @@
       content: '';
       border: 1px solid var(--joh-c-neutral);
       opacity: 0;
-      transition: opacity 0.6s 0.1s var(--ease);
+      transition: opacity 0.6s 0.1s var(--ease-out);
     }
 
     .SearchShellSubmit:active::after {
@@ -93,7 +93,7 @@
       appearance: none;
       background-color: transparent;
       color: var(--joh-c-text-1);
-      font-family: var(--search-ui-font);
+      font-family: var(--joh-search-ui-font);
       font-size: 18px;
       font-weight: 700;
 
@@ -122,7 +122,7 @@
       min-height: 24px;
       margin: 20px 0;
       color: var(--joh-c-text-muted);
-      font-family: var(--search-ui-font);
+      font-family: var(--joh-search-ui-font);
       font-size: 1rem;
       font-weight: 700;
     }
@@ -226,7 +226,7 @@
 
       h3 {
         font-size: 0.9rem;
-        color: var(--footer-directory-title-color);
+        color: var(--joh-c-text-muted);
       }
     }
   }

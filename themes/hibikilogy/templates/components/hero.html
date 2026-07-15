@@ -44,7 +44,7 @@
     {% if bg -%}
     {%- set bg_url = data::resolve_url(path=bg) -%}
     {%- endif %}
-    <div class="taxonomies-banner{% if bg %} has-bg{% endif %}"{% if bg %} style="--hero-bg: url('{{ bg_url }}')"{% endif %}>
+    <div class="taxonomies-banner{% if bg %} has-bg{% endif %}"{% if bg %} style="--joh-hero-bg: url('{{ bg_url }}')"{% endif %}>
       <div class="taxonomies-meta">
         <h2 class="title">
           <span class="banner-title">{{ title }}</span>
