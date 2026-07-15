@@ -1,12 +1,13 @@
-import { createNavbar } from './navbar.ts'
-import { createSearchNavigation, removeTrailingSlash } from './navigation.ts'
+import { createNavbar } from './lib/navbar.ts'
+import { createSearchNavigation, removeTrailingSlash } from './lib/navigation.ts'
 import {
   disposePageModules,
   initializePageModules,
   listenForPaginationNavigation,
-} from './page-lifecycle.ts'
-import { createSwup } from './swup.ts'
-import { clearTransitionState, setTransitionState } from './transition-state.ts'
+} from './lib/page-lifecycle.ts'
+import { createSwup } from './lib/swup.ts'
+import { clearTransitionState, setTransitionState } from './lib/transition-state.ts'
+import 'virtual:uno.css'
 
 const swup = createSwup()
 const navigate = (url: string) => swup.navigate(url)

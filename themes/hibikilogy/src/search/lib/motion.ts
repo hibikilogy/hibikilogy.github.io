@@ -1,5 +1,5 @@
-import { parseCssTime, shouldSkipMotion, wait, waitForAutoAnimateFrame } from '../shared/animation.ts'
-import { setTextWithSwapAnimation } from '../ui/text-swap.ts'
+import { parseCssTime, shouldSkipMotion, wait, waitForAutoAnimateFrame } from '../../shared/animation.ts'
+import { setTextWithSwapAnimation } from '../../ui/text-swap.ts'
 
 export { setTextWithSwapAnimation }
 export type SearchJournalMotion = 'forward' | 'backward' | 'replace'

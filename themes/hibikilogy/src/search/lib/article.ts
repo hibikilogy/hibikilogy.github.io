@@ -2,7 +2,7 @@ import type { SearchArticleSnapshot } from './articles.ts'
 import type { SearchResultRecord } from './types.ts'
 import { html, nothing, render } from 'lit'
 import { HIBIKILOGY_TRANSLATIONS } from 'virtual:hibikilogy-config'
-import { formatZhPublishDate } from '../ui/utils.ts'
+import { formatZhPublishDate } from '../../ui/utils.ts'
 import { getArticleSnapshot } from './articles.ts'
 import { parseSearchQuery } from './query.ts'
 import {

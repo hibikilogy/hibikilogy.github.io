@@ -1,7 +1,7 @@
 import type { SearchJournalMotion } from './motion.ts'
 import type { SearchIndexBuildStatus, SearchResultRecord, SearchTimingPhase } from './types.ts'
-import { normalizePageNumber } from '../../components/site-pagination/utils.ts'
-import { focusCurrentSearchInput } from '../ui/utils.ts'
+import { normalizePageNumber } from '../../../components/site-pagination/utils.ts'
+import { focusCurrentSearchInput } from '../../ui/utils.ts'
 import {
   buildSearchArticle,
   getSearchHighlightTerms,

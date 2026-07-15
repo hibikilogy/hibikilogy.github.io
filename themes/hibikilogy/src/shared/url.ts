@@ -1,4 +1,4 @@
-import { getRuntimeConfig } from '../search/runtime-config.ts'
+import { getRuntimeConfig } from '../search/lib/runtime-config.ts'
 
 export function getDefaultOrigin(): string {
   const { baseUrl } = getRuntimeConfig()

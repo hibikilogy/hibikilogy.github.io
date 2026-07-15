@@ -1,5 +1,5 @@
 import type { SearchResultRecord, SearchTagIndexItem, SearchTagItem } from './types.ts'
-import { sortTagItems } from '../shared/tags.ts'
+import { sortTagItems } from '../../shared/tags.ts'
 import { searchTagIndexInlineId } from './config.ts'
 import { parseJsonIndex, readInlineJsonIndex } from './data.ts'
 import { normalizeSearchUrl } from './utils.ts'

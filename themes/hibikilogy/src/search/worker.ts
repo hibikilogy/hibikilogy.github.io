@@ -4,12 +4,12 @@ import type {
   SearchIndexBuildStatus,
   SearchWorkerRequest,
   SearchWorkerResponse,
-} from './types.ts'
-import { getDurationMs, nowMs } from './debug.ts'
-import { searchRecordsInEngine } from './engine.ts'
+} from './lib/types.ts'
+import { getDurationMs, nowMs } from './lib/debug.ts'
+import { searchRecordsInEngine } from './lib/engine.ts'
 import {
   buildSearchEngine,
-} from './index.ts'
+} from './lib/index.ts'
 
 let enginePromise: Promise<SearchEngine> | null = null
 const workerGlobal = globalThis as unknown as DedicatedWorkerGlobalScope

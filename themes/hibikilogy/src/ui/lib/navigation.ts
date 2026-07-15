@@ -1,7 +1,7 @@
-import { searchFocusIntentKey } from '../search/config.ts'
-import { preloadSearch } from '../search/index.ts'
+import { searchFocusIntentKey } from '../../search/lib/config.ts'
+import { preloadSearch } from '../../search/lib/index.ts'
+import { focusCurrentSearchInput } from '../utils.ts'
 import { isSearchUrl, searchPath } from './search-transition.ts'
-import { focusCurrentSearchInput } from './utils.ts'
 
 interface SearchNavigationOptions {
   isVisitInProgress: () => boolean

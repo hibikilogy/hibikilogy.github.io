@@ -1,4 +1,4 @@
-import { getDefaultOrigin } from '../shared/url.ts'
+import { getDefaultOrigin } from '../../shared/url.ts'
 
 const cjkPattern = /[\u3400-\u9FFF]+/gu
 
@@ -29,7 +29,7 @@ export function sanitizeSearchBody(value: string | null | undefined): string {
 }
 
 // Re-export shared URL utilities for backward compatibility
-export { getPathSlug, normalizeAssetUrl, normalizeSiteUrl } from '../shared/url.ts'
+export { getPathSlug, normalizeAssetUrl, normalizeSiteUrl } from '../../shared/url.ts'
 
 export function normalizeSearchUrl(value: string | null | undefined): string {
   if (!value)

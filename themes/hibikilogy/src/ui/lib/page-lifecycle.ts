@@ -1,8 +1,8 @@
-import { disposeSearchPage, initSearchPage } from '../search/page.ts'
-import { initializeAccordions } from './accordion.ts'
+import { disposeSearchPage, initSearchPage } from '../../search/lib/page.ts'
+import { initializeAccordions } from '../accordion.ts'
+import { disposeOutline, initOutline } from '../outline.ts'
+import { bootWaterFalls, disposeWaterFalls } from '../water-fall.ts'
 import { disposeArticlePage, initArticlePage } from './article-page.ts'
-import { disposeOutline, initOutline } from './outline.ts'
-import { bootWaterFalls, disposeWaterFalls } from './water-fall.ts'
 
 export function initializePageModules(): void {
   initializeAccordions()
