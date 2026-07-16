@@ -1,4 +1,3 @@
-import renderMathInElement from 'katex/dist/contrib/auto-render.mjs'
 import mediumZoom from 'medium-zoom'
 import Heti from './heti'
 
@@ -18,7 +17,7 @@ export function initArticlePage(): void {
   }
 
   activeArticle = article
-  renderArticleMath(article)
+  void renderArticleMath(article)
   bindArticleZoom(article)
   applyHetiSpacing(article)
 }
@@ -30,13 +29,17 @@ export function disposeArticlePage(): void {
   activeArticle = null
 }
 
-function renderArticleMath(article: HTMLElement): void {
+async function renderArticleMath(article: HTMLElement): Promise<void> {
+  if (!article.hasAttribute('data-katex'))
+    return
+
+  const { default: renderMathInElement } = await import('katex/dist/contrib/auto-render.mjs')
   if (activeArticle !== article || !document.contains(article))
     return
 
   renderMathInElement(article, {
     delimiters: [
-      { left: '$', right: '$', display: true },
+      { left: '$$', right: '$$', display: true },
       { left: '$', right: '$', display: false },
       { left: '\\(', right: '\\)', display: false },
       { left: '\\[', right: '\\]', display: true },

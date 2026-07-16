@@ -192,6 +192,12 @@ collections:
                   widget: boolean
                   default: true
                   hint: 是否在文章侧边栏显示目录
+                - name: katex
+                  label: 启用 KaTeX
+                  widget: boolean
+                  default: false
+                  required: false
+                  hint: 仅在正文包含数学公式时启用
                 - name: original
                   label: 原文链接
                   widget: string
@@ -234,6 +240,12 @@ collections:
                   label: 显示目录
                   widget: boolean
                   default: false
+                - name: katex
+                  label: 启用 KaTeX
+                  widget: boolean
+                  default: false
+                  required: false
+                  hint: 仅在正文包含数学公式时启用
                 - name: original
                   label: 原文链接
                   widget: string

@@ -5,6 +5,7 @@ in_search_index = false
 
 [extra]
 catalog = true
+katex = true
 +++
 
 # Markdown {#markdown-extensions}

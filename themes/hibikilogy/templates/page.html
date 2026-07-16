@@ -11,6 +11,7 @@
 {% set modified   = page.updated | default(value=page.date) %}
 {% set cover_url  = data::cover_url(page=page, default=config.extra.default_cover) | default(value="") %}
 {% set has_cover  = cover_url | length > 0 %}
+{% set katex_enabled = config.extra.katex and config.extra.katex.enabled and page.extra.katex | default(value=false) %}
 {% endblock vars %}
 
 {% block critical_css %}
@@ -42,7 +43,9 @@ post
 {% endblock meta %}
 
 {% block style %}
+{% if katex_enabled %}
 {{ build::katex_css() }}
+{% endif %}
 {% endblock %}
 
 {% block structured_data %}
@@ -57,7 +60,7 @@ post
 <div class="container">
   <div class="content">
     <section class="content-container">
-      <article>
+      <article{% if katex_enabled %} data-katex{% endif %}>
         {{ page.content | safe }}
       </article>
     </section>

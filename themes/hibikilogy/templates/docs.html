@@ -2,12 +2,18 @@
 {% import 'components/aside.html' as aside %}
 {% extends 'base.html' %}
 
+{% block vars %}
+{% set katex_enabled = config.extra.katex and config.extra.katex.enabled and page.extra.katex | default(value=false) %}
+{% endblock vars %}
+
 {% block class %}
 docs
 {% endblock %}
 
 {% block meta %}
+{% if katex_enabled %}
 {{ build::katex_css() }}
+{% endif %}
 {% endblock %}
 
 {% block critical_css %}
@@ -22,7 +28,7 @@ docs
 <div class="container">
   <div class="content">
     <section class="content-container">
-      <article>
+      <article{% if katex_enabled %} data-katex{% endif %}>
         {{ page.content | safe }}
       </article>
     </section>
