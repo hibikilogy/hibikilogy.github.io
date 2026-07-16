@@ -21,6 +21,8 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      CARGO_PROFILE_DEV_DEBUG: 0
     environment:
       name: Development
       url: ${{ steps.deploy.outputs.url }}
@@ -49,6 +51,8 @@ jobs:
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: site-build
 
       # static/js is gitignored, so frontend assets must be regenerated on every build
       - name: Build TypeScript (vite)

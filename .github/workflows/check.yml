@@ -101,4 +101,4 @@ jobs:
       # scripts/ 下的 Rust 脚本单元测试（convert_tests.rs 等通过 #[cfg(test)]
       # 挂在 html-img-host-rewrite bin 上，cargo test 会一并编译并执行）
       - name: Run cargo tests
-        run: cargo test
+        run: cargo test --locked
