@@ -62,9 +62,6 @@ jobs:
       - name: Build CMS
         run: pnpm build:admin
 
-      - name: Build UnoCSS
-        run: pnpm build:unocss
-
       - name: Subset title font
         run: pnpm build:subset-titlefont
 
@@ -83,6 +80,9 @@ jobs:
       # later runner steps (and the deploy action) can write to public/
       - name: chown
         run: echo "$(whoami):$(id -gn)" | xargs -I {} sudo chown -R {} public
+
+      - name: Beasties critical CSS
+        run: pnpm run build:beasties
 
       - name: Rewrite image hosts
         run: pnpm build:rewrite-imgs

@@ -71,6 +71,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # pnpm lint invokes zola check; install the same Zola version used by
+      # the build and deploy workflows.
+      - name: Setup Zola
+        uses: taiki-e/install-action@v2
+        with:
+          tool: zola@0.22.1
+
       # @see https://github.com/dtolnay/rust-toolchain
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@v1
