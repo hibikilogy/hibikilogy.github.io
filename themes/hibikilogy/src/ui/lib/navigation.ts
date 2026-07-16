@@ -64,6 +64,10 @@ export function createSearchNavigation({ isVisitInProgress, navigate }: SearchNa
 
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
       event.preventDefault()
+      if (isSearchPage()) {
+        leaveSearchPage()
+        return
+      }
       navigateToSearch({ focusIntent: 'keyboard' })
     }
   }
