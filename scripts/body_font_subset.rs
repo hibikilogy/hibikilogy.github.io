@@ -200,7 +200,7 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
         &options.font_family,
         &font_url,
         &uncovered_codepoints,
-        "block",
+        "swap",
         FontFaceDescriptors::VARIABLE,
     );
     fs::write(&css_path, css).with_context(|| format!("failed to write {}", css_path.display()))?;

@@ -110,9 +110,7 @@
 
 {% block stylesheets %}
 {% for stylesheet in stylesheets %}
-  <link rel="stylesheet" href="{{ get_url(path=stylesheet, cachebust=true) }}"
-    {%- if 'source-han' in stylesheet %} data-beasties-skip{% endif -%}
-  >
+  <link rel="stylesheet" href="{{ get_url(path=stylesheet, cachebust=true) }}">
 {% endfor %}
 {% endblock stylesheets %}
 
