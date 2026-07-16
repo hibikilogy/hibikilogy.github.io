@@ -10,6 +10,19 @@
 
 如果你有吹学文章想投稿，请参阅[我要投稿](https://hibikilogy.vercel.app/docs/contribute/)页面。
 
+#### 使用 Agent 辅助导入转载文章
+
+如果需要将已经发布在其他网站的文章转载到本项目，可以在本仓库中使用 [`article-import` Skill](./.agents/skills/article-import/SKILL.md) 完成整理和导入。请仅在确实取得正文及图片转载授权后使用，并在请求中明确说明授权情况，例如：
+
+```text
+使用 $article-import 导入这篇已取得全文及图片转载授权的文章：<原文 URL>
+```
+
+除原文 URL 外，也可以提供复制的网页正文、HTML、Markdown、纯文本或本地提取文件。Skill 会检查重复文章、整理 Markdown 与 Zola 元数据、规划图片本地化，并提供两种后续方式：
+
+- **本地导入**：写入仓库后检查 front matter、链接和图片路径，并执行本地构建验证；
+- **CMS 交接**：使用系统默认浏览器打开预填的 Sveltia CMS 页面，随后由用户在 CMS 中完成余下操作。
+
 ### 参与开发
 
 #### 环境准备
