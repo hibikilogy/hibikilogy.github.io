@@ -14,8 +14,9 @@ use std::path::{Path, PathBuf};
 use std::time::UNIX_EPOCH;
 use walkdir::WalkDir;
 
-const CACHE_VERSION: u32 = 3;
+const CACHE_VERSION: u32 = 4;
 const CACHE_FILE_NAME: &str = "lazy-image-metadata.json";
+const STATE_FILE_NAME: &str = "lazy-image-state.json";
 const SEARCH_ARTICLE_DATA_SCRIPT_ID: &str = "hibikilogy-search-articles-data";
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
@@ -68,6 +69,29 @@ struct MetadataCache {
     paths: BTreeMap<String, CachedPathRecord>,
     #[serde(default)]
     html_files: BTreeMap<String, CachedHtmlRecord>,
+}
+
+#[derive(Debug, Default, Deserialize)]
+struct RuntimeCache {
+    version: u32,
+    #[serde(default)]
+    paths: BTreeMap<String, CachedPathRecord>,
+    #[serde(default)]
+    html_files: BTreeMap<String, CachedHtmlRecord>,
+}
+
+#[derive(Serialize)]
+struct PersistedMetadataCache<'a> {
+    version: u32,
+    entries: &'a BTreeMap<String, CachedImageMetadata>,
+    unsupported_entries: &'a BTreeMap<String, CachedUnsupportedImage>,
+}
+
+#[derive(Serialize)]
+struct PersistedRuntimeCache<'a> {
+    version: u32,
+    paths: &'a BTreeMap<String, CachedPathRecord>,
+    html_files: &'a BTreeMap<String, CachedHtmlRecord>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -182,7 +206,8 @@ fn rewrite_image_tags_in_directory(
     }
 
     let mut stats = RewriteStats::default();
-    let mut cache = load_cache(cache_file)?;
+    let state_file = cache_file.with_file_name(STATE_FILE_NAME);
+    let mut cache = load_cache(cache_file, &state_file)?;
 
     for entry in WalkDir::new(directory).follow_links(false) {
         let entry = entry.context("failed to walk directory")?;
@@ -233,7 +258,7 @@ fn rewrite_image_tags_in_directory(
         stats.cache_misses += file_stats.cache_misses;
     }
 
-    save_cache(cache_file, &cache)?;
+    save_cache(cache_file, &state_file, &cache)?;
     Ok(stats)
 }
 
@@ -1000,22 +1025,36 @@ fn compute_image_metadata(bytes: &[u8]) -> Result<CachedImageMetadata> {
     })
 }
 
-fn load_cache(path: &Path) -> Result<MetadataCache> {
-    if !path.exists() {
-        return Ok(MetadataCache {
+fn load_cache(path: &Path, state_path: &Path) -> Result<MetadataCache> {
+    let mut cache = if !path.exists() {
+        MetadataCache {
             version: CACHE_VERSION,
             ..MetadataCache::default()
-        });
-    }
+        }
+    } else {
+        let json = fs::read_to_string(path)
+            .with_context(|| format!("failed to read cache {}", path.display()))?;
+        serde_json::from_str(&json)
+            .with_context(|| format!("failed to parse cache {}", path.display()))?
+    };
 
-    let json = fs::read_to_string(path)
-        .with_context(|| format!("failed to read cache {}", path.display()))?;
-    let mut cache: MetadataCache = serde_json::from_str(&json)
-        .with_context(|| format!("failed to parse cache {}", path.display()))?;
     if cache.version < CACHE_VERSION {
         cache.version = CACHE_VERSION;
+        cache.paths.clear();
         cache.html_files.clear();
     }
+
+    if state_path.exists() {
+        let json = fs::read_to_string(state_path)
+            .with_context(|| format!("failed to read state cache {}", state_path.display()))?;
+        let state: RuntimeCache = serde_json::from_str(&json)
+            .with_context(|| format!("failed to parse state cache {}", state_path.display()))?;
+        if state.version == CACHE_VERSION {
+            cache.paths = state.paths;
+            cache.html_files = state.html_files;
+        }
+    }
+
     Ok(cache)
 }
 
@@ -1034,7 +1073,7 @@ fn is_cached_html_fresh(
     })
 }
 
-fn save_cache(path: &Path, cache: &MetadataCache) -> Result<()> {
+fn save_cache(path: &Path, state_path: &Path, cache: &MetadataCache) -> Result<()> {
     if let Some(parent) = path.parent() {
         if !parent.as_os_str().is_empty() {
             fs::create_dir_all(parent).with_context(|| {
@@ -1043,8 +1082,31 @@ fn save_cache(path: &Path, cache: &MetadataCache) -> Result<()> {
         }
     }
 
-    let json = serde_json::to_string_pretty(cache).context("failed to serialize cache")?;
-    fs::write(path, json).with_context(|| format!("failed to write cache {}", path.display()))
+    let metadata = PersistedMetadataCache {
+        version: CACHE_VERSION,
+        entries: &cache.entries,
+        unsupported_entries: &cache.unsupported_entries,
+    };
+    write_json_if_changed(path, &metadata, "metadata cache")?;
+
+    let state = PersistedRuntimeCache {
+        version: CACHE_VERSION,
+        paths: &cache.paths,
+        html_files: &cache.html_files,
+    };
+    write_json_if_changed(state_path, &state, "state cache")
+}
+
+fn write_json_if_changed<T: Serialize>(path: &Path, value: &T, label: &str) -> Result<()> {
+    let mut json =
+        serde_json::to_vec_pretty(value).with_context(|| format!("failed to serialize {label}"))?;
+    json.push(b'\n');
+
+    if fs::read(path).is_ok_and(|current| current == json) {
+        return Ok(());
+    }
+
+    fs::write(path, json).with_context(|| format!("failed to write {label} {}", path.display()))
 }
 
 fn read_file_stat(path: &Path) -> Result<FileStat> {

@@ -1,8 +1,11 @@
-use super::{replace_url_with_count, resolve_host_rewrite_config, rewrite_image_tags_in_directory, Args};
+use super::{
+    replace_url_with_count, resolve_host_rewrite_config, rewrite_image_tags_in_directory, Args,
+};
 use image::{ImageBuffer, Rgba};
 use std::fs;
 use std::path::PathBuf;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::thread;
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 #[test]
 fn resolves_hosts_from_zola_config_and_allows_cli_override() {
@@ -158,6 +161,83 @@ fn skips_unchanged_html_files_after_processing() {
     assert_eq!(stats.metadata_injected, 0);
     assert_eq!(stats.cache_hits, 0);
     assert_eq!(stats.cache_misses, 0);
+}
+
+#[test]
+fn separates_reproducible_metadata_from_volatile_runtime_state() {
+    let fixture = TestFixture::new("split-cache-state");
+    fixture.write_png("public/imgs/example.png", 5, 4);
+    fixture.write_html(
+        "public/first.html",
+        r#"<lazy-image src="/imgs/example.png"></lazy-image>"#,
+    );
+
+    rewrite_image_tags_in_directory(
+        fixture.public_dir.as_path(),
+        "https://old.example.com",
+        "https://cdn.example.com",
+        fixture.cache_file.as_path(),
+    )
+    .unwrap();
+
+    let metadata = fs::read_to_string(&fixture.cache_file).unwrap();
+    assert!(metadata.ends_with('\n'));
+    let metadata_json: serde_json::Value = serde_json::from_str(&metadata).unwrap();
+    assert!(metadata_json.get("entries").is_some());
+    assert!(metadata_json.get("unsupported_entries").is_some());
+    assert!(metadata_json.get("paths").is_none());
+    assert!(metadata_json.get("html_files").is_none());
+
+    let state_file = fixture.cache_file.with_file_name("lazy-image-state.json");
+    let state: serde_json::Value =
+        serde_json::from_str(&fs::read_to_string(state_file).unwrap()).unwrap();
+    assert!(state.get("paths").is_some());
+    assert!(state.get("html_files").is_some());
+}
+
+#[test]
+fn does_not_rewrite_metadata_when_only_runtime_state_changes() {
+    let fixture = TestFixture::new("stable-metadata-cache");
+    fixture.write_png("public/imgs/example.png", 5, 4);
+    fixture.write_html(
+        "public/first.html",
+        r#"<lazy-image src="/imgs/example.png"></lazy-image>"#,
+    );
+
+    rewrite_image_tags_in_directory(
+        fixture.public_dir.as_path(),
+        "https://old.example.com",
+        "https://cdn.example.com",
+        fixture.cache_file.as_path(),
+    )
+    .unwrap();
+    let metadata_before = fs::read(&fixture.cache_file).unwrap();
+    let modified_before = fs::metadata(&fixture.cache_file)
+        .unwrap()
+        .modified()
+        .unwrap();
+
+    thread::sleep(Duration::from_millis(20));
+    fixture.write_html(
+        "public/second.html",
+        r#"<lazy-image src="/imgs/example.png"></lazy-image>"#,
+    );
+    rewrite_image_tags_in_directory(
+        fixture.public_dir.as_path(),
+        "https://old.example.com",
+        "https://cdn.example.com",
+        fixture.cache_file.as_path(),
+    )
+    .unwrap();
+
+    assert_eq!(fs::read(&fixture.cache_file).unwrap(), metadata_before);
+    assert_eq!(
+        fs::metadata(&fixture.cache_file)
+            .unwrap()
+            .modified()
+            .unwrap(),
+        modified_before
+    );
 }
 
 #[test]
