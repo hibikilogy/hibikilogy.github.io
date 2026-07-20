@@ -1,20 +1,40 @@
-import { disposeSearchPage, initSearchPage } from '../../search/lib/page.ts'
 import { initializeAccordions } from '../accordion.ts'
 import { disposeOutline, initOutline } from '../outline.ts'
 import { bootWaterFalls, disposeWaterFalls } from '../water-fall.ts'
 import { disposeArticlePage, initArticlePage } from './article-page.ts'
+
+type SearchPageModule = typeof import('../../search/lib/page.ts')
+
+let searchPageModule: SearchPageModule | null = null
+let searchPageLoading: Promise<SearchPageModule> | null = null
+
+function loadSearchPageModule(): Promise<SearchPageModule> | null {
+  if (!document.querySelector('#search'))
+    return null
+
+  if (!searchPageLoading) {
+    searchPageLoading = import('../../search/lib/page.ts').then((module) => {
+      searchPageModule = module
+      return module
+    })
+  }
+  return searchPageLoading
+}
 
 export function initializePageModules(): void {
   initializeAccordions()
   bindPaginationNavigation()
   initOutline()
   bootWaterFalls()
-  initSearchPage()
+  void loadSearchPageModule()?.then((module) => {
+    if (document.querySelector('#search'))
+      module.initSearchPage()
+  })
   void initArticlePage()
 }
 
 export function disposePageModules(): void {
-  disposeSearchPage()
+  searchPageModule?.disposeSearchPage()
   disposeArticlePage()
   disposeOutline()
   disposeWaterFalls()

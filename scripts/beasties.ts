@@ -32,6 +32,7 @@ let blockingLocalCssBytes = 0
 let blockingLocalCssUniqueBytes = 0
 let blockingExternalStylesheets = 0
 let blockingMissingStylesheets = 0
+let fontPreloadPages = 0
 
 for (const file of files) {
   const html = await readFile(file, 'utf-8')
@@ -47,15 +48,18 @@ for (const file of files) {
   totalGzipBefore += gzipSync(html).byteLength
   totalBrotliBefore += getBrotliSize(html)
   const result = await beasties.process(html)
-  totalAfter += Buffer.byteLength(result, 'utf-8')
-  totalGzipAfter += gzipSync(result).byteLength
-  totalBrotliAfter += getBrotliSize(result)
-  const addedCssBytes = Math.max(0, getInlineCssBytes(result) - getInlineCssBytes(html))
+  const finalHtml = await injectFontPreloads(result)
+  if (finalHtml !== result)
+    fontPreloadPages++
+  totalAfter += Buffer.byteLength(finalHtml, 'utf-8')
+  totalGzipAfter += gzipSync(finalHtml).byteLength
+  totalBrotliAfter += getBrotliSize(finalHtml)
+  const addedCssBytes = Math.max(0, getInlineCssBytes(finalHtml) - getInlineCssBytes(html))
   criticalCssBytes += addedCssBytes
   if (addedCssBytes > 0)
     pagesWithCriticalCss++
-  await recordStylesheetStats(result)
-  await writeFile(file, result)
+  await recordStylesheetStats(finalHtml)
+  await writeFile(file, finalHtml)
 }
 
 async function recordStylesheetStats(html: string): Promise<void> {
@@ -107,6 +111,7 @@ console.table({
   blockingLocalCssUnique: { value: formatBytes(blockingLocalCssUniqueBytes) },
   blockingExternalStylesheets: { value: blockingExternalStylesheets },
   blockingMissingStylesheets: { value: blockingMissingStylesheets },
+  fontPreloadPages: { value: fontPreloadPages },
 })
 
 function getProcessor(html: string): Beasties | null {
@@ -151,6 +156,75 @@ function getInlineCssBytes(html: string): number {
   for (const match of html.matchAll(/<style(?:\s[^>]*)?>([\s\S]*?)<\/style>/gi))
     bytes += Buffer.byteLength(match[1] ?? '', 'utf-8')
   return bytes
+}
+
+const FONT_PRELOAD_STYLESHEET_PATTERN = /source-han-serif-cn-vf(?:\.[^./?]+)?\.css/
+const stylesheetFontCache = new Map<string, Promise<string | null>>()
+
+async function injectFontPreloads(html: string): Promise<string> {
+  const stylesheetHrefs = new Set<string>()
+  for (const match of html.matchAll(/<link\b[^>]*>/gi)) {
+    const tag = match[0]
+    const rel = getAttribute(tag, 'rel')?.toLowerCase().split(/\s+/) ?? []
+    if (!rel.includes('stylesheet'))
+      continue
+    const href = getAttribute(tag, 'href')
+    if (href && FONT_PRELOAD_STYLESHEET_PATTERN.test(href))
+      stylesheetHrefs.add(href)
+  }
+  if (!stylesheetHrefs.size)
+    return html
+
+  const preloadHrefs = new Set<string>()
+  for (const href of stylesheetHrefs) {
+    const fontHref = await getStylesheetFontPreload(href)
+    if (fontHref && !html.includes(`href="${fontHref}"`))
+      preloadHrefs.add(fontHref)
+  }
+  if (!preloadHrefs.size)
+    return html
+
+  const tags = [...preloadHrefs]
+    .map(href => `<link rel="preload" as="font" href="${href}" type="font/woff2" crossorigin>`)
+    .join('')
+  const firstStylesheet = /<link\b(?=[^>]+\brel="stylesheet")[^>]+>/i.exec(html)
+  if (!firstStylesheet)
+    return html
+  const at = firstStylesheet.index
+  return `${html.slice(0, at)}${tags}${html.slice(at)}`
+}
+
+function getStylesheetFontPreload(href: string): Promise<string | null> {
+  const existing = stylesheetFontCache.get(href)
+  if (existing)
+    return existing
+  const pending = resolveStylesheetFontPreload(href)
+  stylesheetFontCache.set(href, pending)
+  return pending
+}
+
+async function resolveStylesheetFontPreload(href: string): Promise<string | null> {
+  const url = new URL(href, 'https://local.invalid')
+  const stylesOffset = url.pathname.indexOf('/styles/')
+  if (stylesOffset < 0)
+    return null
+
+  const relativePath = decodeURIComponent(url.pathname.slice(stylesOffset + 1))
+  const stylesheetPath = resolve(publicDir, relativePath)
+  const pathFromPublic = relative(publicDir, stylesheetPath)
+  if (pathFromPublic.startsWith('..') || isAbsolute(pathFromPublic))
+    return null
+
+  try {
+    const css = await readFile(stylesheetPath, 'utf-8')
+    const match = /url\((['"]?)(\.\.\/fonts\/[^'")]+?\.woff2)\1\)/.exec(css)
+    if (!match)
+      return null
+    return `${url.origin}/${match[2].slice('../'.length)}`
+  }
+  catch {
+    return null
+  }
 }
 
 function getStylesheetStats(html: string): { async: number, blockingHrefs: string[] } {

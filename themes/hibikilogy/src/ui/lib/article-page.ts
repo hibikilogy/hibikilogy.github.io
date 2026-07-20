@@ -1,6 +1,3 @@
-import mediumZoom from 'medium-zoom'
-import Heti from './heti'
-
 interface MediumZoomController {
   close: () => Promise<unknown>
   detach: (...selectors: Array<string | NodeListOf<Element> | Element[] | Element>) => MediumZoomController
@@ -17,9 +14,9 @@ export function initArticlePage(): void {
   }
 
   activeArticle = article
-  void renderArticleMath(article)
-  bindArticleZoom(article)
-  applyHetiSpacing(article)
+  void renderArticleMath(article).catch(() => {})
+  void bindArticleZoom(article).catch(() => {})
+  void applyHetiSpacing(article).catch(() => {})
 }
 
 export function disposeArticlePage(): void {
@@ -48,16 +45,25 @@ async function renderArticleMath(article: HTMLElement): Promise<void> {
   })
 }
 
-function bindArticleZoom(article: HTMLElement): void {
+async function bindArticleZoom(article: HTMLElement): Promise<void> {
+  const images = article.querySelectorAll(':where(img)')
+  if (!images.length)
+    return
+
+  const { default: mediumZoom } = await import('medium-zoom')
+  if (activeArticle !== article || !document.contains(article))
+    return
+
   void articleZoom?.close?.().catch(() => {})
   articleZoom?.detach?.()
-  articleZoom = mediumZoom(article.querySelectorAll(':where(img)')) as MediumZoomController
+  articleZoom = mediumZoom(images) as MediumZoomController
 }
 
-function applyHetiSpacing(article: HTMLElement): void {
+async function applyHetiSpacing(article: HTMLElement): Promise<void> {
   if (!document.querySelector('.outline-marker'))
     return
 
+  const { default: Heti } = await import('./heti')
   if (activeArticle !== article || !document.contains(article))
     return
 

@@ -39,6 +39,9 @@ post
 <meta name="twitter:image" content="{{ cover_url }}">
 <meta property="og:image:alt" content="{{ page.extra.cover_alt | default(value=page.title) }}">
 <meta name="twitter:image:alt" content="{{ page.extra.cover_alt | default(value=page.title) }}">
+{% if page.extra.cover %}
+<link rel="preload" as="image" href="{{ cover_url }}" fetchpriority="high">
+{% endif %}
 {% endif %}
 {% endblock meta %}
 

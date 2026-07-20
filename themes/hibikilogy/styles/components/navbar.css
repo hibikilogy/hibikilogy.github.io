@@ -406,7 +406,9 @@
         font-weight: 500;
         color: var(--joh-c-text-2);
         opacity: 0.9;
-        transition: all 0.25s;
+        transition:
+          opacity 0.25s ease,
+          color 0.25s ease;
       }
 
       .SearchShellLabel {
