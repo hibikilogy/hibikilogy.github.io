@@ -111,8 +111,10 @@
       background-color: var(--joh-c-journal-frontpage-bg);
     }
 
-    .Section.is-below-frontpage {
-      border-top: none;
+    @supports not (display: grid-lanes) {
+      .Section.is-below-frontpage {
+        border-top: none;
+      }
     }
 
     .Article {
@@ -203,6 +205,22 @@
         svg:nth-child(2) {
           display: none;
         }
+      }
+    }
+
+    @supports (display: grid-lanes) {
+      .Content & > .container,
+      .container {
+        display: grid-lanes !important;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 491px), 1fr));
+        grid-auto-flow: normal;
+        grid-auto-rows: auto;
+        opacity: 1;
+      }
+
+      .Section {
+        grid-row: auto;
+        width: auto;
       }
     }
 

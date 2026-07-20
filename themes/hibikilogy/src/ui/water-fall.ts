@@ -8,6 +8,10 @@ interface WaterFallInstance {
   setChildSelector: (selector: string) => void
 }
 
+function supportsGridLanes(): boolean {
+  return typeof CSS !== 'undefined' && CSS.supports('display', 'grid-lanes')
+}
+
 export type WaterFallTarget = string | Element | NodeListOf<Element> | Element[] | null | undefined
 
 function resolveContainers(container: WaterFallTarget): Element[] {
@@ -47,7 +51,11 @@ export function initWaterFall(container: WaterFallTarget = defaultContainerSelec
       return
     }
 
-    instances.set(journal, createWaterFall(journal as HTMLElement, child))
+    instances.set(journal, createWaterFall(
+      journal as HTMLElement,
+      child,
+      supportsGridLanes(),
+    ))
   })
 }
 
@@ -58,7 +66,11 @@ export function refreshWaterFalls(): Promise<void[]> {
   }))
 }
 
-function createWaterFall(journal: HTMLElement, childSelector: string): WaterFallInstance {
+function createWaterFall(
+  journal: HTMLElement,
+  childSelector: string,
+  nativeLayout = false,
+): WaterFallInstance {
   let animationFrame = 0
   let isDisposed = false
   let pendingResolve: (() => void) | null = null
@@ -231,6 +243,12 @@ function createWaterFall(journal: HTMLElement, childSelector: string): WaterFall
 
     observeDynamicContent(allArticles)
 
+    if (nativeLayout) {
+      journal.style.opacity = '1'
+      updateColumnClasses(allArticles)
+      return
+    }
+
     const styles = window.getComputedStyle(journal)
     const rowHeight = Number.parseFloat(styles.getPropertyValue('grid-auto-rows')) || 1
     const rowGap = Number.parseFloat(styles.getPropertyValue('row-gap')) || 0
@@ -284,6 +302,9 @@ let pageObserver: MutationObserver | null = null
 
 export function bootWaterFalls(): void {
   initWaterFall(document.querySelectorAll('.Journal > .container'))
+
+  if (supportsGridLanes())
+    return
 
   if (window.MutationObserver) {
     pageObserver?.disconnect()
