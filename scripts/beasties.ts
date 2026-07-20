@@ -34,6 +34,9 @@ let blockingExternalStylesheets = 0
 let blockingMissingStylesheets = 0
 let fontPreloadPages = 0
 
+const FONT_PRELOAD_STYLESHEET_PATTERN = /source-han-serif-cn-vf(?:\.[^./?]+)?\.css/
+const stylesheetFontCache = new Map<string, Promise<string | null>>()
+
 for (const file of files) {
   const html = await readFile(file, 'utf-8')
   const htmlBytes = Buffer.byteLength(html, 'utf-8')
@@ -157,9 +160,6 @@ function getInlineCssBytes(html: string): number {
     bytes += Buffer.byteLength(match[1] ?? '', 'utf-8')
   return bytes
 }
-
-const FONT_PRELOAD_STYLESHEET_PATTERN = /source-han-serif-cn-vf(?:\.[^./?]+)?\.css/
-const stylesheetFontCache = new Map<string, Promise<string | null>>()
 
 async function injectFontPreloads(html: string): Promise<string> {
   const stylesheetHrefs = new Set<string>()
