@@ -31,8 +31,8 @@
           data::post_title_transition_name(page=page) | trim %}
           <h1 class="post-heading-title {{ title_wrap_class }}">
             <span class="PostTitleTransition"
-              style="view-transition-name: {{ title_transition_name }}">
-              {{ page.title }}
+              data-post-title-key="{{ title_transition_name }}">
+              <span class="PostTitleTransitionText">{{ page.title }}</span>
             </span>
           </h1>
           <p class="post-heading-subtitle">{{ page.description }}</p>

@@ -28,8 +28,8 @@ export function wait(durationMs: number): Promise<void> {
   })
 }
 
-/** Promise-based requestAnimationFrame. */
-export function waitForAutoAnimateFrame(): Promise<void> {
+/** Wait until the browser starts the next rendering frame. */
+export function waitForAnimationFrame(): Promise<void> {
   return new Promise((resolve) => {
     requestAnimationFrame(() => resolve())
   })

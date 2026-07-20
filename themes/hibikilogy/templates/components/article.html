@@ -14,9 +14,9 @@
     <h2 class="article-title">
       <span
         class="PostTitleTransition"
-        style="view-transition-name: {{ title_transition_name }}"
+        data-post-title-key="{{ title_transition_name }}"
       >
-        {{ page.title }}
+        <span class="PostTitleTransitionText">{{ page.title }}</span>
       </span>
     </h2>
 

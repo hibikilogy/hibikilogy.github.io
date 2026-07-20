@@ -229,17 +229,7 @@
     }
   }
 
-  .PostTitleTransition {
-    display: inline-block;
-    width: fit-content;
-    max-width: 100%;
-  }
-
   @supports (view-transition-name: none) {
-    html[data-page-transition='active'] .Journal .PostTitleTransition {
-      view-transition-name: none !important;
-    }
-
     html[data-page-transition='active'] .Journal > .container {
       view-transition-name: journal-page-content;
       contain: layout;

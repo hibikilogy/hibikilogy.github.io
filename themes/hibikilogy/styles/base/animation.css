@@ -61,6 +61,91 @@
     transition: none;
   }
 
+  .PostTitleTransition {
+    position: relative;
+    display: inline-block;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .Hero .PostTitleTransition {
+    color: var(--joh-c-white);
+  }
+
+  .PostTitleTransitionOverlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  .PostTitleTransitionGlyph {
+    position: absolute;
+    display: block;
+  }
+
+  .PostTitleTransitionSvg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .PostTitleTransition.is-post-title-transition-active .PostTitleTransitionText {
+    visibility: hidden;
+  }
+
+  .PostTitleTransition.is-post-title-final-target .PostTitleTransitionText {
+    visibility: visible;
+  }
+
+  @keyframes post-title-glyph-old {
+    from {
+      opacity: 1;
+      filter: blur(0);
+    }
+
+    44.99% {
+      opacity: 1;
+    }
+
+    45%,
+    to {
+      opacity: 0;
+      filter: blur(var(--blur-small));
+    }
+  }
+
+  @keyframes post-title-glyph-new {
+    from {
+      opacity: 0;
+      filter: blur(var(--blur-medium)) drop-shadow(0 2px 8px rgb(0 0 0 / 0%)) drop-shadow(0 4px 15px rgb(0 0 0 / 0%));
+    }
+
+    45% {
+      opacity: 1;
+      filter: blur(0) drop-shadow(0 2px 8px rgb(0 0 0 / 0%)) drop-shadow(0 4px 15px rgb(0 0 0 / 0%));
+    }
+
+    85%,
+    to {
+      opacity: 1;
+      filter: blur(0) drop-shadow(0 2px 8px rgb(0 0 0 / 25%)) drop-shadow(0 4px 15px rgb(0 0 0 / 30%));
+    }
+  }
+
+  @keyframes post-title-final-enter {
+    0%,
+    82% {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .t-text-swap {
       transition: none !important;
@@ -70,6 +155,10 @@
     ::view-transition-new(root) {
       animation: none !important;
       mix-blend-mode: normal;
+    }
+
+    .PostTitleTransitionOverlay {
+      display: none;
     }
   }
 

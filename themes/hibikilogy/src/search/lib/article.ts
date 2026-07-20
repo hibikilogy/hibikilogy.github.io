@@ -59,8 +59,8 @@ function buildSearchArticleTemplate(
   return html`
     <a href=${props.href}>
       <h2 class="article-title">
-        <span class="PostTitleTransition" style="view-transition-name:${props.titleTransitionName}">
-          ${props.title}
+        <span class="PostTitleTransition" data-post-title-key=${props.titleTransitionName}>
+          <span class="PostTitleTransitionText">${props.title}</span>
         </span>
       </h2>
       ${props.subtitle ? html`<p class="article-subtitle">${props.subtitle}</p>` : nothing}

@@ -30,7 +30,7 @@
 {% endmacro %}
 
 {% macro post_title_transition_name(page) -%}
-{%- set id = page.slug | default(value=page.relative_path | default(value=page.path | default(value=page.permalink))) -%}
-{%- set name = "post-title-" ~ id -%}
-{{- name | replace(from="/", to="-") | replace(from=".", to="-") -}}
+{%- set pathname = page.path | trim_start_matches(pat="/") | trim_end_matches(pat="/") -%}
+{%- set id = pathname | replace(from="/", to="-") | replace(from=".", to="-") -%}
+{{- "post-title-" ~ id -}}
 {% endmacro %}

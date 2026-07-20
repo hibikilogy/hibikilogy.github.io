@@ -1,4 +1,4 @@
-import { enableAutoAnimate, shouldSkipMotion, waitForAutoAnimateFrame } from '../shared/animation.ts'
+import { enableAutoAnimate, shouldSkipMotion, waitForAnimationFrame } from '../shared/animation.ts'
 
 const activeTransitions = new WeakMap<Element, object>()
 
@@ -20,7 +20,7 @@ export async function replaceChildrenWithSlideVisibleOnceBottom(
   }
 
   if (element.children.length > 0) {
-    await waitForAutoAnimateFrame()
+    await waitForAnimationFrame()
     if (activeTransitions.get(element) !== token)
       return false
   }

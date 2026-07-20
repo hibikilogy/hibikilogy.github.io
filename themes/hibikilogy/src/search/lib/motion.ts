@@ -1,4 +1,4 @@
-import { parseCssTime, shouldSkipMotion, wait, waitForAutoAnimateFrame } from '../../shared/animation.ts'
+import { parseCssTime, shouldSkipMotion, wait, waitForAnimationFrame } from '../../shared/animation.ts'
 import { setTextWithSwapAnimation } from '../../ui/text-swap.ts'
 
 export { setTextWithSwapAnimation }
@@ -60,7 +60,7 @@ export async function transitionSearchJournalResults(
     return false
   }
 
-  await waitForAutoAnimateFrame()
+  await waitForAnimationFrame()
   if (activeTransitions.get(journal) !== token) {
     cleanupJournalMotion(journal, token)
     return false

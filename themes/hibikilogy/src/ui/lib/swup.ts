@@ -26,7 +26,7 @@ export function createSwup(): Swup {
 
   swup.use(new SwupHeadPlugin({
     persistAssets: true,
-    awaitAssets: false,
+    awaitAssets: true,
   }))
 
   swup.use(new SwupGaPlugin({ gaMeasurementId: gaId }))
