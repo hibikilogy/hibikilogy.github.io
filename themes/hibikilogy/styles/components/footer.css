@@ -87,10 +87,5 @@
       display: grid;
       grid-row-gap: 24px;
     }
-
-    #busuanzi_value_page_pv {
-      display: inline-block;
-      min-width: 4ch;
-    }
   }
 }

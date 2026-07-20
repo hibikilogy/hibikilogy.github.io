@@ -151,21 +151,15 @@
 
     p > img {
       display: block;
-      max-inline-size: 100%;
-      max-block-size: min(70vh, 42rem);
-      inline-size: auto;
+      inline-size: 100%;
       block-size: auto;
-      object-fit: contain;
       margin-inline: auto;
     }
 
     lazy-image::part(img) {
       display: block;
-      max-inline-size: 100%;
-      max-block-size: min(70vh, 42rem);
       inline-size: 100%;
       block-size: auto;
-      object-fit: contain;
       margin-inline: auto;
     }
 
