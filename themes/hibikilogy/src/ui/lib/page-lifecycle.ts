@@ -3,11 +3,12 @@ import { disposeOutline, initOutline } from '../outline.ts'
 import { bootWaterFalls, disposeWaterFalls } from '../water-fall.ts'
 import { disposeArticlePage, initArticlePage } from './article-page.ts'
 import type { HistoryAdapter, PageContext } from './page-context.ts'
+import type { SearchPageHandle } from '../../search/lib/page.ts'
 
 type SearchPageModule = typeof import('../../search/lib/page.ts')
 
-let searchPageModule: SearchPageModule | null = null
 let searchPageLoading: Promise<SearchPageModule> | null = null
+let activeSearchPage: SearchPageHandle | null = null
 
 /**
  * Dispose callbacks registered via the active {@link PageContext}.
@@ -20,12 +21,9 @@ function loadSearchPageModule(): Promise<SearchPageModule> | null {
   if (!document.querySelector('#search'))
     return null
 
-  if (!searchPageLoading) {
-    searchPageLoading = import('../../search/lib/page.ts').then((module) => {
-      searchPageModule = module
-      return module
-    })
-  }
+  if (!searchPageLoading)
+    searchPageLoading = import('../../search/lib/page.ts')
+
   return searchPageLoading
 }
 
@@ -49,17 +47,17 @@ export async function initializePageModules(ctx: PageContext): Promise<void> {
   void initArticlePage()
 
   const searchModule = await loadSearchPageModule()
-  if (!document.querySelector('#search'))
+  if (!searchModule || !document.querySelector('#search'))
     return
 
-  await searchModule?.initSearchPage({
-    restoreFromHistory: ctx.history.isPopstate,
-    history: ctx.history,
-  })
+  activeSearchPage?.dispose()
+  activeSearchPage = searchModule.createSearchPage(ctx)
+  await activeSearchPage.init()
 }
 
 export function disposePageModules(): void {
-  searchPageModule?.disposeSearchPage()
+  activeSearchPage?.dispose()
+  activeSearchPage = null
   disposeArticlePage()
   disposeOutline()
   disposeWaterFalls()
