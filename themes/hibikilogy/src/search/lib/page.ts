@@ -34,8 +34,16 @@ import {
   renderSearchRelatedTags,
   setSearchRelatedTags,
 } from './related-tags.ts'
+import {
+  createSearchSnapshotStore,
+  type SearchResultSnapshot,
+  type SearchSort,
+} from './snapshot-store.ts'
 
-type SearchSort = 'relevance' | 'title'
+interface SearchPageInitOptions {
+  restoreFromHistory?: boolean
+  replaceHistoryUrl?: (url: string) => void
+}
 
 const searchState: {
   records: SearchResultRecord[]
@@ -55,13 +63,15 @@ const indexPreload = createResettablePreloadTask(preloadSearch)
 let currentIndexStatus: SearchIndexBuildStatus = 'cache-read'
 let activeSearchPage: HTMLElement | null = null
 let cleanupSearchPage: (() => void) | null = null
+const snapshotStore = createSearchSnapshotStore()
+let replaceSearchHistoryUrl: ((url: string) => void) | null = null
 
 function triggerPreload(): void {
   const pendingPreload = indexPreload.current() || indexPreload.trigger()
   void pendingPreload.catch(() => {})
 }
 
-export function initSearchPage(): void {
+export async function initSearchPage(options: SearchPageInitOptions = {}): Promise<void> {
   const pageRoot = document.querySelector<HTMLElement>('#search')
   if (!pageRoot) {
     disposeSearchPage()
@@ -73,6 +83,7 @@ export function initSearchPage(): void {
 
   disposeSearchPage()
   activeSearchPage = pageRoot
+  replaceSearchHistoryUrl = options.replaceHistoryUrl || null
 
   const input = document.querySelector<HTMLInputElement>('#search-input')
   const form = document.querySelector<HTMLFormElement>('.SearchShell--page')
@@ -110,14 +121,14 @@ export function initSearchPage(): void {
     activeSearchPage = null
   }
 
-  searchState.currentTerm = ''
-  searchState.currentPage = 1
-  searchState.records = []
   const params = new URLSearchParams(window.location.search)
   const term = params.get('q')?.trim() || ''
   const pageNumber = normalizePageNumber(params.get('p'))
   const sort = normalizeSearchSort(params.get('sort'))
   const shouldFocusInput = consumeSearchFocusIntent() || !term
+  const snapshot = options.restoreFromHistory
+    ? snapshotStore.match(term, sort)
+    : null
 
   searchState.currentSort = sort
   if (sorting)
@@ -125,9 +136,18 @@ export function initSearchPage(): void {
 
   if (term && input) {
     input.value = term
-    void runSearch(term, pageNumber)
+    if (snapshot) {
+      await restoreSearchSnapshot(snapshot, pageNumber)
+    }
+    else {
+      resetSearchState()
+      searchState.currentSort = sort
+      void runSearch(term, pageNumber)
+    }
   }
   else {
+    resetSearchState()
+    searchState.currentSort = sort
     if (input)
       input.value = ''
     setSearchControlsVisible(0)
@@ -146,6 +166,7 @@ export function initSearchPage(): void {
 
 export function disposeSearchPage(): void {
   searchState.activeSearchId += 1
+  snapshotStore.clear()
   cleanupSearchPage?.()
 }
 
@@ -274,6 +295,33 @@ async function runSearch(term: string, page: number): Promise<void> {
   }
 }
 
+async function restoreSearchSnapshot(
+  snapshot: SearchResultSnapshot,
+  page: number,
+): Promise<void> {
+  const searchId = ++searchState.activeSearchId
+  const message = document.querySelector<HTMLElement>('#search-message')
+
+  searchState.currentTerm = snapshot.term
+  searchState.currentPage = page
+  searchState.currentSort = snapshot.sort
+  searchState.records = [...snapshot.records]
+  setSearchResultsBusy(true)
+
+  if (message) {
+    message.classList.remove('loading-dots')
+    message.textContent = getResultMessage(snapshot.term, snapshot.records.length)
+  }
+
+  try {
+    await renderSearchPage(page, searchId, 'replace', null, true)
+  }
+  finally {
+    if (!isSearchRequestStale(searchId))
+      setSearchResultsBusy(false)
+  }
+}
+
 async function clearSearchResults(immediate: boolean): Promise<void> {
   const clear = async (): Promise<void> => {
     document.querySelector<HTMLElement>('#search-results')?.replaceChildren()
@@ -312,6 +360,7 @@ async function renderSearchPage(
   searchId = searchState.activeSearchId,
   motionOverride: SearchJournalMotion | null = null,
   phases: SearchTimingPhase[] | null = null,
+  restoreImmediately = false,
 ): Promise<boolean | undefined> {
   const resultsContainer = document.querySelector<HTMLElement>('#search-results')
   const searchJournal = getSearchJournal()
@@ -342,7 +391,7 @@ async function renderSearchPage(
     return undefined
 
   const transitionStart = nowMs()
-  const didTransitionResults = await transitionSearchJournalResults(searchJournal, motion, async () => {
+  const updateResults = async (): Promise<void> => {
     const replaceStart = nowMs()
     resultsContainer?.replaceChildren(...articles)
     phases?.push({ label: 'replace result DOM', durationMs: getDurationMs(replaceStart) })
@@ -366,7 +415,10 @@ async function renderSearchPage(
       () => renderSearchRelatedTags(pageRecords, isStaleView),
       { pageRecords: pageRecords.length },
     )
-  })
+  }
+  const didTransitionResults = restoreImmediately
+    ? await updateResults().then(() => true)
+    : await transitionSearchJournalResults(searchJournal, motion, updateResults)
   phases?.push({
     label: 'result transition total',
     durationMs: getDurationMs(transitionStart),
@@ -375,6 +427,11 @@ async function renderSearchPage(
   if (!didTransitionResults || isStaleView())
     return false
 
+  snapshotStore.commit({
+    term: searchState.currentTerm,
+    sort: searchState.currentSort,
+    records: [...searchState.records],
+  })
   return true
 }
 
@@ -480,7 +537,17 @@ function getSearchPageHref(page: number): string {
 function updateSearchUrl(term: string, page: number): void {
   const url = new URL(window.location.href)
   setSearchParams(url, term, page)
-  window.history.replaceState(window.history.state, '', url)
+  const href = `${url.pathname}${url.search}${url.hash}`
+
+  if (replaceSearchHistoryUrl) {
+    replaceSearchHistoryUrl(href)
+    return
+  }
+
+  const state = window.history.state && typeof window.history.state === 'object'
+    ? { ...window.history.state, url: href }
+    : window.history.state
+  window.history.replaceState(state, '', href)
 }
 
 function setSearchParams(url: URL, term: string, page: number): void {
@@ -522,6 +589,12 @@ function setSearchResultsBusy(isBusy: boolean): void {
 
 function normalizeSearchSort(value: string | null | undefined): SearchSort {
   return value === 'title' ? 'title' : 'relevance'
+}
+
+function resetSearchState(): void {
+  searchState.currentTerm = ''
+  searchState.currentPage = 1
+  searchState.records = []
 }
 
 function getSearchJournal(): HTMLElement | null {
