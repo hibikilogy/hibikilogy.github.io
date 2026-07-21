@@ -105,14 +105,15 @@ function shouldAvoidSearchPreload(): boolean {
   )
 }
 
-export function removeTrailingSlash(): void {
+export function removeTrailingSlash(replace?: (url: string) => void): void {
   const { pathname, search, hash } = window.location
   if (pathname.length <= 1 || !pathname.endsWith('/'))
     return
 
-  window.history.replaceState(
-    window.history.state,
-    '',
-    pathname.replace(/\/+$/, '') + search + hash,
-  )
+  const normalized = pathname.replace(/\/+$/, '') + search + hash
+  if (replace) {
+    replace(normalized)
+    return
+  }
+  window.history.replaceState(window.history.state, '', normalized)
 }

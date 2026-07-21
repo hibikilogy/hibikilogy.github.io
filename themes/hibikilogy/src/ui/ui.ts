@@ -1,7 +1,10 @@
 import type { PostTitleTransitionPreparation } from './lib/post-title-transition.ts'
+import type { HistoryAdapter } from './lib/page-context.ts'
+import { Location, updateHistoryRecord } from 'swup'
 import { createNavbar } from './lib/navbar.ts'
 import { createSearchNavigation, removeTrailingSlash } from './lib/navigation.ts'
 import {
+  createPageContext,
   disposePageModules,
   initializePageModules,
   listenForPaginationNavigation,
@@ -21,6 +24,18 @@ const postTitlePreparations = new Map<number, PostTitleTransitionPreparation>()
 let activePostTitleVisitId: number | null = null
 const navigate = (url: string) => swup.navigate(url)
 
+function replaceHistoryUrl(url: string): void {
+  updateHistoryRecord(url)
+  swup.location = Location.fromUrl(url)
+}
+
+function createSwupHistoryAdapter(visit?: { history?: { popstate?: boolean } }): HistoryAdapter {
+  return {
+    replace: replaceHistoryUrl,
+    isPopstate: Boolean(visit?.history?.popstate),
+  }
+}
+
 const searchNavigation = createSearchNavigation({
   navigate,
   isVisitInProgress: () => swup.visit.to.url !== '' && !swup.visit.done,
@@ -32,11 +47,12 @@ const navbar = createNavbar({
   leaveSearchPage: searchNavigation.leaveSearchPage,
 })
 
-function initializePage(): void {
+async function initializePage(visit?: { history?: { popstate?: boolean } }): Promise<void> {
   navbar.mount()
-  initializePageModules()
-  removeTrailingSlash()
+  const history = createSwupHistoryAdapter(visit)
+  removeTrailingSlash(history.replace)
   renderPostTitleTransitionTarget()
+  await initializePageModules(createPageContext(history))
 }
 
 swup.hooks.on('visit:start', (visit) => {
@@ -73,7 +89,7 @@ swup.hooks.on('visit:abort', finishPostTitleVisit)
 
 window.navigateToSearch = searchNavigation.navigateToSearch
 listenForPaginationNavigation(navigate)
-initializePage()
+void initializePage()
 
 function finishPostTitleVisit(visit: { id: number }): void {
   const preparation = postTitlePreparations.get(visit.id)
