@@ -25,6 +25,7 @@ import {
   searchIndexStatusEventName,
   searchRecordsWithTiming,
 } from './index.ts'
+import { createSearchHistory, type SearchHistory } from './history.ts'
 import { resolveSearchLoadingMessage } from './loading-message.ts'
 import { transitionSearchJournalResults, updateSearchMessage } from './motion.ts'
 import { renderSearchPagination } from './pagination.ts'
@@ -39,10 +40,11 @@ import {
   type SearchResultSnapshot,
   type SearchSort,
 } from './snapshot-store.ts'
+import type { HistoryAdapter } from '../../ui/lib/page-context.ts'
 
 interface SearchPageInitOptions {
   restoreFromHistory?: boolean
-  replaceHistoryUrl?: (url: string) => void
+  history: HistoryAdapter
 }
 
 const searchState: {
@@ -64,14 +66,19 @@ let currentIndexStatus: SearchIndexBuildStatus = 'cache-read'
 let activeSearchPage: HTMLElement | null = null
 let cleanupSearchPage: (() => void) | null = null
 const snapshotStore = createSearchSnapshotStore()
-let replaceSearchHistoryUrl: ((url: string) => void) | null = null
+let searchHistory: SearchHistory = createSearchHistory(
+  // Default adapter falls back to window.history; replaced during init.
+  { replace: href => window.history.replaceState(window.history.state, '', href), isPopstate: false },
+  () => searchState.currentTerm,
+  () => searchState.currentSort,
+)
 
 function triggerPreload(): void {
   const pendingPreload = indexPreload.current() || indexPreload.trigger()
   void pendingPreload.catch(() => {})
 }
 
-export async function initSearchPage(options: SearchPageInitOptions = {}): Promise<void> {
+export async function initSearchPage(options: SearchPageInitOptions): Promise<void> {
   const pageRoot = document.querySelector<HTMLElement>('#search')
   if (!pageRoot) {
     disposeSearchPage()
@@ -83,7 +90,11 @@ export async function initSearchPage(options: SearchPageInitOptions = {}): Promi
 
   disposeSearchPage()
   activeSearchPage = pageRoot
-  replaceSearchHistoryUrl = options.replaceHistoryUrl || null
+  searchHistory = createSearchHistory(
+    options.history,
+    () => searchState.currentTerm,
+    () => searchState.currentSort,
+  )
 
   const input = document.querySelector<HTMLInputElement>('#search-input')
   const form = document.querySelector<HTMLFormElement>('.SearchShell--page')
@@ -220,7 +231,7 @@ async function runSearch(term: string, page: number): Promise<void> {
     )
     if (isSearchRequestStale(searchId))
       return
-    updateSearchUrl(term, page)
+    searchHistory.replace(term, page)
 
     if (!term) {
       await updateIdleSearchMessage(searchId)
@@ -402,12 +413,12 @@ async function renderSearchPage(
     renderSearchPagination({
       currentPage: searchState.currentPage,
       totalPages,
-      getHref: getSearchPageHref,
+      getHref: searchHistory.buildHref,
       onPageChange: (pageNumber) => {
         void renderInteractiveSearchPage(pageNumber)
       },
     })
-    updateSearchUrl(searchState.currentTerm, nextPage)
+    searchHistory.replace(searchState.currentTerm, nextPage)
     await measureOptionalSearchPhase(phases, 'waterfall layout', refreshSearchWaterfall)
     await measureOptionalSearchPhase(
       phases,
@@ -526,49 +537,6 @@ function getSearchFailureMessage(error: unknown): string {
 
   const message = error instanceof Error ? error.message : String(error || '')
   return message ? searchMessages.failedWithError(message) : searchMessages.failed
-}
-
-function getSearchPageHref(page: number): string {
-  const url = new URL(window.location.href)
-  setSearchParams(url, searchState.currentTerm, page)
-  return `${url.pathname}${url.search}${url.hash}`
-}
-
-function updateSearchUrl(term: string, page: number): void {
-  const url = new URL(window.location.href)
-  setSearchParams(url, term, page)
-  const href = `${url.pathname}${url.search}${url.hash}`
-
-  if (replaceSearchHistoryUrl) {
-    replaceSearchHistoryUrl(href)
-    return
-  }
-
-  const state = window.history.state && typeof window.history.state === 'object'
-    ? { ...window.history.state, url: href }
-    : window.history.state
-  window.history.replaceState(state, '', href)
-}
-
-function setSearchParams(url: URL, term: string, page: number): void {
-  if (term) {
-    url.searchParams.set('q', term)
-    if (page > 1) {
-      url.searchParams.set('p', String(page))
-    }
-    else {
-      url.searchParams.delete('p')
-    }
-    if (searchState.currentSort === 'title')
-      url.searchParams.set('sort', 'title')
-    else
-      url.searchParams.delete('sort')
-  }
-  else {
-    url.searchParams.delete('q')
-    url.searchParams.delete('p')
-    url.searchParams.delete('sort')
-  }
 }
 
 function setSearchControlsVisible(resultCount: number): void {

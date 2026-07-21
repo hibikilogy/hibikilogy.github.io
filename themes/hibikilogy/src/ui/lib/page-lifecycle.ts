@@ -54,7 +54,7 @@ export async function initializePageModules(ctx: PageContext): Promise<void> {
 
   await searchModule?.initSearchPage({
     restoreFromHistory: ctx.history.isPopstate,
-    replaceHistoryUrl: ctx.history.replace,
+    history: ctx.history,
   })
 }
 
