@@ -3,6 +3,7 @@ import { readFile, stat, writeFile } from 'node:fs/promises'
 import { isAbsolute, relative, resolve } from 'node:path'
 import { brotliCompressSync, gzipSync, constants as zlibConstants } from 'node:zlib'
 import Beasties from 'beasties'
+import { load, type CheerioAPI } from 'cheerio'
 
 const root = resolve(import.meta.dirname, '..')
 const publicDir = resolve(root, 'public')
@@ -36,10 +37,11 @@ for (const file of files) {
   const html = await readFile(file, 'utf-8')
   const htmlBytes = Buffer.byteLength(html, 'utf-8')
   totalBefore += htmlBytes
-  const beasties = getProcessor(html)
+  const $html = load(html)
+  const beasties = getProcessor($html)
   if (!beasties) {
     totalAfter += htmlBytes
-    await recordStylesheetStats(html)
+    await recordStylesheetStats($html)
     continue
   }
   processedPages++
@@ -49,16 +51,17 @@ for (const file of files) {
   totalAfter += Buffer.byteLength(result, 'utf-8')
   totalGzipAfter += gzipSync(result).byteLength
   totalBrotliAfter += getBrotliSize(result)
-  const addedCssBytes = Math.max(0, getInlineCssBytes(result) - getInlineCssBytes(html))
+  const $result = load(result)
+  const addedCssBytes = Math.max(0, getInlineCssBytes($result) - getInlineCssBytes($html))
   criticalCssBytes += addedCssBytes
   if (addedCssBytes > 0)
     pagesWithCriticalCss++
-  await recordStylesheetStats(result)
+  await recordStylesheetStats($result)
   await writeFile(file, result)
 }
 
-async function recordStylesheetStats(html: string): Promise<void> {
-  const stylesheetStats = getStylesheetStats(html)
+async function recordStylesheetStats($: CheerioAPI): Promise<void> {
+  const stylesheetStats = getStylesheetStats($)
   asyncStylesheets += stylesheetStats.async
   blockingStylesheets += stylesheetStats.blockingHrefs.length
   if (stylesheetStats.blockingHrefs.length > 0)
@@ -108,8 +111,8 @@ console.table({
   blockingMissingStylesheets: { value: blockingMissingStylesheets },
 })
 
-function getProcessor(html: string): Beasties | null {
-  const publicPath = getStylesheetPublicPath(html)
+function getProcessor($: CheerioAPI): Beasties | null {
+  const publicPath = getStylesheetPublicPath($)
   if (!publicPath)
     return null
 
@@ -131,61 +134,55 @@ function getProcessor(html: string): Beasties | null {
   return beasties
 }
 
-function getStylesheetPublicPath(html: string): string | null {
-  const stylesheetUrl = html.match(/https?:\/\/[^"'\s>]+\/styles\/[^"'\s>]+/i)?.[0]
+function getStylesheetPublicPath($: CheerioAPI): string | null {
+  const href = $('link[rel~="stylesheet"][href*="/styles/"]').first().attr('href')
 
-  if (!stylesheetUrl)
+  if (!href)
     return null
 
-  const url = new URL(stylesheetUrl)
+  const url = new URL(href)
   const stylesOffset = url.pathname.indexOf('/styles/')
   if (stylesOffset < 0)
-    throw new Error(`Could not derive the stylesheet public path from ${stylesheetUrl}`)
+    throw new Error(`Could not derive the stylesheet public path from ${href}`)
 
   return `${url.origin}${url.pathname.slice(0, stylesOffset + 1)}`
 }
 
-function getInlineCssBytes(html: string): number {
+function getInlineCssBytes($: CheerioAPI): number {
   let bytes = 0
-  for (const match of html.matchAll(/<style(?:\s[^>]*)?>([\s\S]*?)<\/style>/gi))
-    bytes += Buffer.byteLength(match[1] ?? '', 'utf-8')
+  $('style').each((_, el) => {
+    bytes += Buffer.byteLength($(el).html() ?? '', 'utf-8')
+  })
   return bytes
 }
 
-function getStylesheetStats(html: string): { async: number, blockingHrefs: string[] } {
-  const document = html.replace(/<noscript(?:\s[^>]*)?>[\s\S]*?<\/noscript>/gi, '')
+function getStylesheetStats($: CheerioAPI): { async: number, blockingHrefs: string[] } {
   const blockingHrefs: string[] = []
   let async = 0
 
-  for (const match of document.matchAll(/<link\b[^>]*>/gi)) {
-    const tag = match[0]
-    const rel = getAttribute(tag, 'rel')?.toLowerCase().split(/\s+/) ?? []
+  // Exclude stylesheets loaded inside <noscript> from blocking stats, without
+  // mutating the input document.
+  $('link[rel]').not('noscript link[rel]').each((_, el) => {
+    const $el = $(el)
+    const rel = ($el.attr('rel') ?? '').toLowerCase().split(/\s+/)
     if (!rel.includes('stylesheet'))
-      continue
+      return
 
-    const media = getAttribute(tag, 'media')?.trim().toLowerCase()
-    const onload = getAttribute(tag, 'onload')
-    if (media === 'print' && onload?.includes('.media=')) {
+    const media = ($el.attr('media') ?? '').trim().toLowerCase()
+    const onload = $el.attr('onload') ?? ''
+    if (media === 'print' && onload.includes('.media=')) {
       async++
-      continue
+      return
     }
     if (media === 'print')
-      continue
+      return
 
-    const href = getAttribute(tag, 'href')
+    const href = $el.attr('href')
     if (href)
       blockingHrefs.push(href)
-  }
+  })
 
   return { async, blockingHrefs }
-}
-
-function getAttribute(tag: string, name: string): string | null {
-  const match = tag.match(new RegExp(
-    `(?:^|\\s)${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`,
-    'i',
-  ))
-  return match?.[1] ?? match?.[2] ?? match?.[3] ?? null
 }
 
 function getLocalStylesheetSize(href: string): Promise<number | 'external' | 'missing'> {
