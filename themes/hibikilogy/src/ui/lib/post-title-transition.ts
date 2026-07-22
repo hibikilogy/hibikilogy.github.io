@@ -7,9 +7,11 @@ import {
   createTransitionNames,
   playScatterAnimation,
 } from './post-title-transition/motion.ts'
+import { isLowPerformanceMobileDevice } from './post-title-transition/performance.ts'
 import {
   clearRenderedTitleShadow,
   countTitleGlyphs,
+  discardRenderedTitleGlyphs,
   disposeRenderedTitle,
   findSourceTitle,
   findTitleByKey,
@@ -21,18 +23,6 @@ import {
 
 type TitleTransitionMode = 'pending' | 'shared' | 'scatter'
 
-interface ActiveTitleTransition {
-  owner: symbol
-  key: string
-  glyphNames: string[]
-  finalName: string
-  rendered: RenderedTitle[]
-  style: HTMLStyleElement
-  sourceText: string
-  sourceIsHero: boolean
-  mode: TitleTransitionMode
-}
-
 interface BeginTitleTransitionOptions {
   trigger?: Element
 }
@@ -43,13 +33,150 @@ export interface PostTitleTransitionPreparation {
   cancel: () => void
 }
 
+/**
+ * Encapsulates the resource ownership (rendered glyph overlay, injected
+ * `<style>`, view-transition name tokens) and mode progression for one
+ * title-transition lifecycle. Replaces ad-hoc module-level `let`s.
+ */
+class PostTitleTransitionSession {
+  readonly owner: symbol
+  readonly key: string
+  readonly glyphNames: string[]
+  readonly finalName: string
+  readonly style: HTMLStyleElement
+  readonly sourceText: string
+  readonly sourceIsHero: boolean
+  targetIsHero: boolean
+  mode: TitleTransitionMode
+  private readonly rendered: RenderedTitle[]
+
+  constructor(owner: symbol, key: string, glyphNames: string[], finalName: string, style: HTMLStyleElement, sourceText: string, sourceIsHero: boolean, rendered: RenderedTitle) {
+    this.owner = owner
+    this.key = key
+    this.glyphNames = glyphNames
+    this.finalName = finalName
+    this.style = style
+    this.sourceText = sourceText
+    this.sourceIsHero = sourceIsHero
+    this.targetIsHero = false
+    this.mode = 'pending'
+    this.rendered = [rendered]
+  }
+
+  static fromTrigger(owner: symbol, source: HTMLElement, sourceIsHero: boolean): PostTitleTransitionSession | null {
+    const key = source.dataset.postTitleKey
+    if (!key)
+      return null
+
+    const rendered = renderTitle(source, { preserveTextShadow: sourceIsHero })
+    if (!rendered || !rendered.glyphs.length)
+      return null
+
+    const { glyphNames, finalName } = createTransitionNames(key, rendered.glyphs.length)
+    rendered.glyphs.forEach((glyph, index) => {
+      glyph.style.setProperty('view-transition-name', glyphNames[index])
+    })
+
+    const style = document.createElement('style')
+    style.setAttribute(postTitleDom.styleAttribute, '')
+    document.head.append(style)
+    document.documentElement.setAttribute(postTitleDom.activeAttribute, 'active')
+
+    return new PostTitleTransitionSession(
+      owner,
+      key,
+      glyphNames,
+      finalName,
+      style,
+      getNormalizedTitleText(source),
+      sourceIsHero,
+      rendered,
+    )
+  }
+
+  resolveTarget(incomingDocument?: Document): void {
+    const target = incomingDocument
+      ? findTitleByKey(this.key, incomingDocument)
+      : null
+    const canShare = Boolean(
+      target
+      && getNormalizedTitleText(target) === this.sourceText
+      && countTitleGlyphs(target) === this.glyphNames.length,
+    )
+    this.targetIsHero = Boolean(canShare && target && isHeroTitle(target))
+
+    this.setMode(canShare || !this.sourceIsHero ? 'shared' : 'scatter')
+  }
+
+  renderTarget(): void {
+    if (this.mode !== 'shared')
+      return
+
+    const target = findTitleByKey(this.key)
+    if (!target || !target.isConnected)
+      return
+
+    const rendered = renderTitle(target, {
+      finalViewTransitionName: isHeroTitle(target) ? this.finalName : undefined,
+    })
+    if (!rendered || rendered.glyphs.length !== this.glyphNames.length) {
+      if (this.sourceIsHero)
+        this.setMode('scatter')
+      return
+    }
+
+    rendered.glyphs.forEach((glyph, index) => {
+      glyph.style.setProperty('view-transition-name', this.glyphNames[index])
+    })
+    this.rendered.push(rendered)
+  }
+
+  async playExitAnimation(): Promise<boolean> {
+    if (this.mode !== 'scatter' || !this.sourceIsHero)
+      return false
+
+    this.style.textContent = ''
+    await playScatterAnimation(this.rendered[0], this.key)
+    discardRenderedTitleGlyphs(this.rendered[0])
+    return activeSession === this
+  }
+
+  /** Tear down DOM inserts and clear the active slot if this session owns it. */
+  clear(owner?: symbol): void {
+    if (owner && this.owner !== owner)
+      return
+
+    document.documentElement.removeAttribute(postTitleDom.activeAttribute)
+    this.rendered.forEach(disposeRenderedTitle)
+    this.style.remove()
+    if (activeSession === this)
+      activeSession = null
+  }
+
+  private setMode(mode: Exclude<TitleTransitionMode, 'pending'>): void {
+    this.mode = mode
+    if (mode === 'shared') {
+      clearRenderedTitleShadow(this.rendered[0])
+      this.style.textContent = createSharedTransitionCss(
+        this.glyphNames,
+        this.finalName,
+        this.targetIsHero,
+      )
+      return
+    }
+
+    this.style.textContent = ''
+  }
+}
+
 interface PreparationOwner {
   token: symbol
   controller: AbortController
+  session: PostTitleTransitionSession | null
   cancelled: boolean
 }
 
-let activeTransition: ActiveTitleTransition | null = null
+let activeSession: PostTitleTransitionSession | null = null
 let activePreparation: PreparationOwner | null = null
 
 export function beginPostTitleTransition({
@@ -61,35 +188,33 @@ export function beginPostTitleTransition({
     return createInactivePreparation()
 
   const source = findSourceTitle(trigger)
-  const key = source?.dataset.postTitleKey
-  if (!source || !key)
+  if (!source || !source.dataset.postTitleKey)
     return createInactivePreparation()
 
   const sourceIsHero = isHeroTitle(source)
   const owner: PreparationOwner = {
-    token: Symbol(key),
+    token: Symbol(source.dataset.postTitleKey as string),
     controller: new AbortController(),
+    session: null,
     cancelled: false,
   }
   activePreparation = owner
 
-  const cancel = (): void => {
-    if (owner.cancelled)
-      return
-
-    owner.cancelled = true
-    owner.controller.abort()
-    if (activePreparation === owner)
-      activePreparation = null
-    clearPostTitleTransition(owner.token)
-  }
-
   const ready = preparePostTitleTransition({
-    key,
     owner,
     source,
     sourceIsHero,
   })
+
+  const cancel = (): void => {
+    if (owner.cancelled)
+      return
+    owner.cancelled = true
+    if (activePreparation === owner)
+      activePreparation = null
+    owner.controller.abort()
+    owner.session?.clear(owner.token)
+  }
 
   return {
     waitForTarget: sourceIsHero,
@@ -99,12 +224,10 @@ export function beginPostTitleTransition({
 }
 
 async function preparePostTitleTransition({
-  key,
   owner,
   source,
   sourceIsHero,
 }: {
-  key: string
   owner: PreparationOwner
   source: HTMLElement
   sourceIsHero: boolean
@@ -122,102 +245,32 @@ async function preparePostTitleTransition({
   if (!ownsPreparation(owner) || !source.isConnected)
     return false
 
-  const rendered = renderTitle(source, { preserveTextShadow: sourceIsHero })
-  if (!rendered?.glyphs.length)
+  const session = PostTitleTransitionSession.fromTrigger(owner.token, source, sourceIsHero)
+  if (!session)
     return false
-
-  const { glyphNames, finalName } = createTransitionNames(key, rendered.glyphs.length)
-  rendered.glyphs.forEach((glyph, index) => {
-    glyph.style.setProperty('view-transition-name', glyphNames[index])
-  })
-
-  const style = document.createElement('style')
-  style.setAttribute(postTitleDom.styleAttribute, '')
-  document.head.append(style)
-  document.documentElement.setAttribute(postTitleDom.activeAttribute, 'active')
-  activeTransition = {
-    owner: owner.token,
-    key,
-    glyphNames,
-    finalName,
-    rendered: [rendered],
-    style,
-    sourceText: getNormalizedTitleText(source),
-    sourceIsHero,
-    mode: 'pending',
+  if (!ownsPreparation(owner)) {
+    session.clear()
+    return false
   }
+  owner.session = session
+  activeSession = session
   return true
 }
 
 export function resolvePostTitleTransitionTarget(incomingDocument?: Document): void {
-  const transition = activeTransition
-  if (!transition)
-    return
-
-  const target = incomingDocument
-    ? findTitleByKey(transition.key, incomingDocument)
-    : null
-  const canShare = Boolean(
-    target
-    && getNormalizedTitleText(target) === transition.sourceText
-    && countTitleGlyphs(target) === transition.glyphNames.length,
-  )
-
-  setTransitionMode(
-    transition,
-    canShare || !transition.sourceIsHero ? 'shared' : 'scatter',
-  )
+  activeSession?.resolveTarget(incomingDocument)
 }
 
 export async function playPostTitleExitAnimation(): Promise<boolean> {
-  const transition = activeTransition
-  if (!transition || transition.mode !== 'scatter' || !transition.sourceIsHero)
-    return false
-
-  transition.style.textContent = ''
-  await playScatterAnimation(transition.rendered[0], transition.key)
-  return activeTransition === transition
+  return activeSession?.playExitAnimation() ?? false
 }
 
 export function renderPostTitleTransitionTarget(): void {
-  const transition = activeTransition
-  if (!transition || transition.mode !== 'shared')
-    return
-
-  const target = findTitleByKey(transition.key)
-  if (!target || !target.isConnected)
-    return
-
-  const rendered = renderTitle(target, {
-    finalViewTransitionName: isHeroTitle(target) ? transition.finalName : undefined,
-  })
-  if (!rendered || rendered.glyphs.length !== transition.glyphNames.length) {
-    if (transition.sourceIsHero)
-      setTransitionMode(transition, 'scatter')
-    return
-  }
-
-  rendered.glyphs.forEach((glyph, index) => {
-    glyph.style.setProperty('view-transition-name', transition.glyphNames[index])
-  })
-  transition.rendered.push(rendered)
+  activeSession?.renderTarget()
 }
 
 export function clearPostTitleTransition(owner?: symbol): void {
-  const transition = activeTransition
-  if (owner && transition?.owner !== owner)
-    return
-
-  document.documentElement.removeAttribute(postTitleDom.activeAttribute)
-
-  if (!transition) {
-    document.querySelector(`style[${postTitleDom.styleAttribute}]`)?.remove()
-    return
-  }
-
-  transition.rendered.forEach(disposeRenderedTitle)
-  transition.style.remove()
-  activeTransition = null
+  activeSession?.clear(owner)
 }
 
 function cancelActivePreparation(): void {
@@ -226,9 +279,9 @@ function cancelActivePreparation(): void {
     return
 
   preparation.cancelled = true
-  preparation.controller.abort()
   activePreparation = null
-  clearPostTitleTransition(preparation.token)
+  preparation.controller.abort()
+  preparation.session?.clear(preparation.token)
 }
 
 function createInactivePreparation(): PostTitleTransitionPreparation {
@@ -245,23 +298,6 @@ function ownsPreparation(owner: PreparationOwner): boolean {
     && activePreparation === owner
 }
 
-function setTransitionMode(
-  transition: ActiveTitleTransition,
-  mode: Exclude<TitleTransitionMode, 'pending'>,
-): void {
-  transition.mode = mode
-  if (mode === 'shared') {
-    clearRenderedTitleShadow(transition.rendered[0])
-    transition.style.textContent = createSharedTransitionCss(
-      transition.glyphNames,
-      transition.finalName,
-    )
-    return
-  }
-
-  transition.style.textContent = ''
-}
-
 function supportsPostTitleTransition(): boolean {
   const viewTransitionDocument = document as Document & {
     startViewTransition?: unknown
@@ -272,6 +308,7 @@ function supportsPostTitleTransition(): boolean {
     && typeof Intl.Segmenter === 'function'
     && typeof IntersectionObserver === 'function'
     && typeof Element.prototype.checkVisibility === 'function'
-    && !shouldSkipMotion(),
+    && !shouldSkipMotion()
+    && !isLowPerformanceMobileDevice(),
   )
 }

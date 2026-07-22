@@ -11,6 +11,13 @@ export const postTitleDom = {
   styleAttribute: 'data-post-title-transition-style',
 } as const
 
+/**
+ * Viewport width below which the device is considered "mobile" for title
+ * motion purposes (shorter scatter travel, stricter performance gating).
+ * Shared by scatter layout and the capability probe to avoid drift.
+ */
+export const compactViewportWidth = 720
+
 /** Number of consecutive frames sampled before accepting title geometry. */
 export const titleLayoutStabilityFrameLimit = 2
 
@@ -28,10 +35,8 @@ export const scatterTitleMotion = {
   glyphDuration: 220,
   maxStagger: 130,
   easing: 'cubic-bezier(0.72, 0, 1, 0.35)',
-  blurRadius: 1,
 
   // Compact viewports use a shorter travel distance to avoid edge clipping.
-  compactViewportWidth: 720,
   compactMaxDistance: 72,
   wideMaxDistance: 104,
   minDistance: 40,
@@ -47,6 +52,12 @@ export const scatterTitleMotion = {
   // Ordered and random delay weights intentionally sum to one.
   orderedDelayWeight: 0.55,
   randomDelayWeight: 0.45,
+} as const
+
+/** Conservative capability guard for detailed per-glyph motion on mobile. */
+export const titleMotionPerformance = {
+  lowCoreCount: 4,
+  lowMemoryGb: 4,
 } as const
 
 export const svgNamespace = 'http://www.w3.org/2000/svg'

@@ -1,5 +1,5 @@
 import type { GlyphPosition, RenderedTitle } from './renderer.ts'
-import { postTitleDom, scatterTitleMotion, sharedTitleMotion } from './config.ts'
+import { compactViewportWidth, postTitleDom, scatterTitleMotion, sharedTitleMotion } from './config.ts'
 import {
   createStableToken,
   deterministicIndexJitter,
@@ -38,7 +38,11 @@ export function createTransitionNames(key: string, glyphCount: number): Transiti
   }
 }
 
-export function createSharedTransitionCss(names: string[], finalName: string): string {
+export function createSharedTransitionCss(
+  names: string[],
+  finalName: string,
+  crossFadeToFinalTitle: boolean,
+): string {
   const delays = names.map((_, index) => {
     const orderedProgress = names.length > 1 ? index / (names.length - 1) : 0
     const randomProgress = deterministicIndexJitter(index)
@@ -50,6 +54,9 @@ export function createSharedTransitionCss(names: string[], finalName: string): s
   const totalDuration = sharedTitleMotion.glyphDuration + Math.max(...delays)
   const glyphStyles = names.map((name, index) => {
     const delay = delays[index]
+    const incomingAnimation = crossFadeToFinalTitle
+      ? 'post-title-glyph-new-to-final'
+      : 'post-title-glyph-new'
 
     return `
       html[${postTitleDom.activeAttribute}='active']::view-transition-group(${name}) {
@@ -64,7 +71,7 @@ export function createSharedTransitionCss(names: string[], finalName: string): s
       }
       html[${postTitleDom.activeAttribute}='active']::view-transition-new(${name}) {
         mix-blend-mode: normal;
-        animation: post-title-glyph-new ${sharedTitleMotion.glyphDuration}ms ${sharedTitleMotion.crossFadeEasing} ${delay}ms both;
+        animation: ${incomingAnimation} ${sharedTitleMotion.glyphDuration}ms ${sharedTitleMotion.crossFadeEasing} ${delay}ms both;
       }
     `
   }).join('')
@@ -91,12 +98,10 @@ export async function playScatterAnimation(
       {
         transform: 'translate(0, 0) scale(1)',
         opacity: 1,
-        filter: 'blur(0)',
       },
       {
         transform: `translate(${parameters[index].offsetX}px, ${parameters[index].offsetY}px) scale(${parameters[index].scale})`,
         opacity: 0,
-        filter: `blur(${scatterTitleMotion.blurRadius}px)`,
       },
     ],
     {
@@ -114,7 +119,7 @@ function createScatterParameters(
   positions: GlyphPosition[],
   key: string,
 ): ScatterParameters[] {
-  const maxDistance = window.innerWidth < scatterTitleMotion.compactViewportWidth
+  const maxDistance = window.innerWidth < compactViewportWidth
     ? scatterTitleMotion.compactMaxDistance
     : scatterTitleMotion.wideMaxDistance
   const canonicalAngle = Math.atan2(
