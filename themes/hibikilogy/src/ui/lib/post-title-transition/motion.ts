@@ -1,4 +1,5 @@
 import type { GlyphPosition, RenderedTitle } from './renderer.ts'
+import { animate } from 'motion/mini'
 import { compactViewportWidth, postTitleDom, scatterTitleMotion, sharedTitleMotion } from './config.ts'
 import {
   createStableToken,
@@ -93,26 +94,34 @@ export async function playScatterAnimation(
   key: string,
 ): Promise<void> {
   const parameters = createScatterParameters(rendered.positions, key)
-  const animations = rendered.glyphs.map((glyph, index) => glyph.animate(
-    [
-      {
-        transform: 'translate(0, 0) scale(1)',
-        opacity: 1,
-      },
-      {
-        transform: `translate(${parameters[index].offsetX}px, ${parameters[index].offsetY}px) scale(${parameters[index].scale})`,
-        opacity: 0,
-      },
-    ],
+  const msToSeconds = (ms: number): number => ms / 1000
+
+  const animations = rendered.glyphs.map((glyph, index) => animate(
+    glyph,
     {
-      duration: scatterTitleMotion.glyphDuration,
-      delay: parameters[index].delay,
-      easing: scatterTitleMotion.easing,
-      fill: 'both',
+      transform: [
+        'translate(0px, 0px) scale(1)',
+        `translate(${parameters[index].offsetX}px, ${parameters[index].offsetY}px) scale(${parameters[index].scale})`,
+      ],
+      opacity: [1, 0],
+    },
+    {
+      duration: msToSeconds(scatterTitleMotion.glyphDuration),
+      delay: msToSeconds(parameters[index].delay),
+      ease: scatterTitleMotion.easingControlPoints,
     },
   ))
 
-  await Promise.all(animations.map(animation => animation.finished.catch(() => undefined)))
+  await Promise.all(animations.map((animation, index) =>
+    Promise.resolve(animation)
+      .then(() => {
+        // Pin the animated end state, mirroring WAAPI `fill: 'both'`.
+        const { offsetX, offsetY, scale } = parameters[index]
+        rendered.glyphs[index].style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`
+        rendered.glyphs[index].style.opacity = '0'
+      })
+      .catch(() => undefined),
+  ))
 }
 
 function createScatterParameters(

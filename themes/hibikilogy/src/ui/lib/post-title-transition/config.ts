@@ -34,7 +34,10 @@ export const sharedTitleMotion = {
 export const scatterTitleMotion = {
   glyphDuration: 220,
   maxStagger: 130,
+  /** CSS `cubic-bezier(...)` for inline-style / legacy callers. */
   easing: 'cubic-bezier(0.72, 0, 1, 0.35)',
+  /** Same easings as numeric control points for Motion One's `ease` option. */
+  easingControlPoints: [0.72, 0, 1, 0.35] as const,
 
   // Compact viewports use a shorter travel distance to avoid edge clipping.
   compactMaxDistance: 72,
