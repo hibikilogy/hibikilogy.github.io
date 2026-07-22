@@ -241,9 +241,11 @@ fn collect_body_text_from_content(content_dir: &Path) -> Result<CollectedBodyTex
         let markdown = fs::read_to_string(entry.path())
             .with_context(|| format!("failed to read {}", entry.path().display()))?;
         collected.markdown_files += 1;
-        collected
-            .fragments
-            .push(extract_markdown_body(&markdown).to_string());
+        collected.fragments.push(
+            extract_markdown_body(&markdown)
+                .with_context(|| format!("failed to extract body from {}", entry.path().display()))?
+                .to_string(),
+        );
 
         if let Some(front_matter) = parse_toml_front_matter(&markdown).with_context(|| {
             format!(

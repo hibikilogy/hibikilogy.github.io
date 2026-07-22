@@ -1,6 +1,12 @@
 use anyhow::{anyhow, bail, Context, Result};
-use chrono::{Datelike, NaiveDate};
 use clap::Parser;
+use hibikilogy_tools::article_source::{
+    normalize_iso_date, parse_article_file_name, ArticleFileName as ParsedArticleFileName,
+};
+use hibikilogy_tools::content_routes;
+use hibikilogy_tools::managed_fs::{
+    ensure_directory_beneath, recover_atomic_file, reject_symlink_or_directory, write_atomic,
+};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
@@ -31,12 +37,6 @@ struct ActiveArticle {
     target_slug: String,
     digest: String,
     year_prefix: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct ParsedArticleFileName {
-    publish_date: String,
-    slug_tail: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -133,7 +133,7 @@ fn generate_short_links(
         .collect::<Vec<_>>();
 
     let short_root = site_root.join(SHORT_LINK_DIRECTORY);
-    ensure_managed_directory(&short_root)?;
+    ensure_directory_beneath(site_root, &short_root)?;
 
     write_redirect_pages(&short_root, &redirects)?;
     remove_redirect_directories(&short_root, &orphaned)?;
@@ -181,7 +181,8 @@ fn collect_active_articles(
     for entry in fs::read_dir(content_dir)
         .with_context(|| format!("failed to read {}", content_dir.display()))?
     {
-        let entry = entry.with_context(|| format!("failed to read an entry in {}", content_dir.display()))?;
+        let entry = entry
+            .with_context(|| format!("failed to read an entry in {}", content_dir.display()))?;
         let path = entry.path();
         let file_type = entry
             .file_type()
@@ -223,11 +224,19 @@ fn collect_active_articles(
         let parsed_file_name = parse_article_file_name(&file_name)?;
         let markdown = fs::read_to_string(&markdown_path)
             .with_context(|| format!("failed to read {}", markdown_path.display()))?;
-        let metadata =
-            resolve_article_metadata(&file_name, &markdown, &parsed_file_name, site_root, article_urls)?;
+        let metadata = resolve_article_metadata(
+            &file_name,
+            &markdown,
+            &parsed_file_name,
+            site_root,
+            article_urls,
+        )?;
 
         if !target_slugs.insert(metadata.target_slug.clone()) {
-            bail!("multiple articles resolve to the same slug: {}", metadata.target_slug);
+            bail!(
+                "multiple articles resolve to the same slug: {}",
+                metadata.target_slug
+            );
         }
 
         articles.push(ActiveArticle {
@@ -279,9 +288,7 @@ fn resolve_fallback_target_slug(
 
     let slugified = slugify_path_component(&parsed_file_name.slug_tail);
     ensure_target_page_exists(site_root, article_urls, &slugified).with_context(|| {
-        format!(
-            "missing built article target for {file_name} using fallback slug {slugified:?}",
-        )
+        format!("missing built article target for {file_name} using fallback slug {slugified:?}",)
     })?;
 
     Ok(slugified)
@@ -299,12 +306,7 @@ fn ensure_target_page_exists(
         bail!("{target_url} not found in search_index.zh.json");
     }
 
-    let target = site_root.join("articles").join(slug).join("index.html");
-    if target.is_file() {
-        Ok(())
-    } else {
-        bail!("{} does not exist", target.display())
-    }
+    content_routes::ensure_built_page_exists(site_root, &format!("articles/{slug}"))
 }
 
 fn load_article_urls(site_root: &Path) -> Result<BTreeSet<String>> {
@@ -326,12 +328,11 @@ fn load_article_urls(site_root: &Path) -> Result<BTreeSet<String>> {
 }
 
 fn parse_front_matter(markdown: &str) -> Result<FrontMatter> {
-    let Some(front_matter) = extract_toml_front_matter(markdown)? else {
-        return Ok(FrontMatter::default());
+    let parsed = content_routes::parse_page_front_matter(markdown)?;
+    let mut parsed = FrontMatter {
+        slug: parsed.slug,
+        date: parsed.date,
     };
-
-    let mut parsed: FrontMatter =
-        toml::from_str(front_matter).context("failed to parse TOML front matter")?;
 
     if let Some(slug) = parsed.slug.take() {
         validate_slug(&slug).context("invalid slug in TOML front matter")?;
@@ -343,73 +344,6 @@ fn parse_front_matter(markdown: &str) -> Result<FrontMatter> {
     }
 
     Ok(parsed)
-}
-
-fn extract_toml_front_matter(markdown: &str) -> Result<Option<&str>> {
-    let markdown = markdown.strip_prefix('\u{feff}').unwrap_or(markdown);
-    let Some(rest) = markdown
-        .strip_prefix("+++\r\n")
-        .or_else(|| markdown.strip_prefix("+++\n"))
-    else {
-        return Ok(None);
-    };
-
-    let mut offset = 0;
-    for segment in rest.split_inclusive('\n') {
-        let line = segment.trim_end_matches(&['\r', '\n'][..]);
-        if line == "+++" {
-            return Ok(Some(&rest[..offset]));
-        }
-        offset += segment.len();
-    }
-
-    bail!("unterminated TOML front matter")
-}
-
-fn parse_article_file_name(file_name: &str) -> Result<ParsedArticleFileName> {
-    let stem = Path::new(file_name)
-        .file_stem()
-        .and_then(|stem| stem.to_str())
-        .with_context(|| format!("failed to read file stem from {file_name}"))?;
-
-    let mut parts = stem.splitn(4, '-');
-    let (Some(year), Some(month), Some(day), Some(slug_tail)) =
-        (parts.next(), parts.next(), parts.next(), parts.next())
-    else {
-        bail!("{file_name} does not match YYYY-MM-DD-slug.md");
-    };
-
-    if slug_tail.is_empty() {
-        bail!("{file_name} does not contain a slug tail");
-    }
-
-    Ok(ParsedArticleFileName {
-        publish_date: normalize_iso_date(&format!("{year}-{month}-{day}"))
-            .with_context(|| format!("{file_name} contains an invalid calendar date"))?,
-        slug_tail: slug_tail.to_lowercase(),
-    })
-}
-
-fn normalize_iso_date(date: &str) -> Result<String> {
-    let strict_iso = date.len() == 10
-        && date.as_bytes().get(4) == Some(&b'-')
-        && date.as_bytes().get(7) == Some(&b'-')
-        && date
-            .bytes()
-            .enumerate()
-            .all(|(index, byte)| matches!(index, 4 | 7) || byte.is_ascii_digit());
-    if !strict_iso {
-        bail!("date must be YYYY-MM-DD: {date}");
-    }
-
-    let parsed = NaiveDate::parse_from_str(date, "%Y-%m-%d")
-        .with_context(|| format!("date must be YYYY-MM-DD: {date}"))?;
-
-    if parsed.year() <= 0 {
-        bail!("date year must be positive: {date}");
-    }
-
-    Ok(parsed.format("%Y-%m-%d").to_string())
 }
 
 fn short_year_prefix(date: &str) -> Result<String> {
@@ -433,18 +367,7 @@ fn validate_source_file_name(source_file: &str) -> Result<()> {
 }
 
 fn validate_slug(slug: &str) -> Result<()> {
-    let valid = !slug.is_empty()
-        && slug != "."
-        && slug != ".."
-        && slug
-            .chars()
-            .all(|character| character.is_alphanumeric() || matches!(character, '-' | '_' | '.' | '~'));
-
-    if !valid {
-        bail!("invalid article slug: {slug:?}");
-    }
-
-    Ok(())
+    content_routes::validate_slug(slug).map_err(|_| anyhow!("invalid article slug: {slug:?}"))
 }
 
 fn digest_source_file_name(source_file: &str) -> String {
@@ -464,22 +387,7 @@ fn hex_lower(bytes: &[u8]) -> String {
 }
 
 fn slugify_path_component(input: &str) -> String {
-    let mut output = String::new();
-    let mut pending_hyphen = false;
-
-    for character in input.chars().flat_map(char::to_lowercase) {
-        if character.is_alphanumeric() {
-            if pending_hyphen && !output.is_empty() {
-                output.push('-');
-            }
-            pending_hyphen = false;
-            output.push(character);
-        } else {
-            pending_hyphen = !output.is_empty();
-        }
-    }
-
-    output
+    content_routes::slugify_path_component(input)
 }
 
 fn assign_short_link_codes(
@@ -658,10 +566,12 @@ fn is_year_prefixed_hash(code: &str) -> bool {
 }
 
 fn is_reusable_code(code: &str) -> bool {
-    code.rsplit_once('-')
-        .map_or_else(|| is_year_prefixed_hash(code), |(base, suffix)| {
+    code.rsplit_once('-').map_or_else(
+        || is_year_prefixed_hash(code),
+        |(base, suffix)| {
             is_year_prefixed_hash(base) && suffix.parse::<usize>().is_ok_and(|number| number >= 2)
-        })
+        },
+    )
 }
 
 fn is_legacy_hash_code(code: &str) -> bool {
@@ -700,7 +610,7 @@ fn write_redirect_page(root: &Path, redirect: &RedirectRecord) -> Result<()> {
     validate_slug(&redirect.target_slug)?;
 
     let redirect_dir = root.join(&redirect.code);
-    ensure_managed_directory(&redirect_dir)?;
+    ensure_directory_beneath(root, &redirect_dir)?;
 
     let redirect_path = redirect_dir.join("index.html");
     reject_symlink_or_directory(&redirect_path)?;
@@ -713,10 +623,7 @@ fn write_redirect_page(root: &Path, redirect: &RedirectRecord) -> Result<()> {
 fn article_redirect_target(redirect: &RedirectRecord) -> String {
     let source_path = format!("/{SHORT_LINK_DIRECTORY}/{}/", redirect.code);
     let source_param = url_encode_query_value(&source_path);
-    format!(
-        "/articles/{}?from={}",
-        redirect.target_slug, source_param
-    )
+    format!("/articles/{}?from={}", redirect.target_slug, source_param)
 }
 
 fn url_encode_query_value(value: &str) -> String {
@@ -745,36 +652,6 @@ fn remove_redirect_directories(root: &Path, codes: &[String]) -> Result<()> {
     Ok(())
 }
 
-fn ensure_managed_directory(path: &Path) -> Result<()> {
-    match fs::symlink_metadata(path) {
-        Ok(metadata) if metadata.file_type().is_symlink() => {
-            bail!("refusing to use symlinked directory {}", path.display())
-        }
-        Ok(metadata) if !metadata.is_dir() => {
-            bail!("{} exists but is not a directory", path.display())
-        }
-        Ok(_) => Ok(()),
-        Err(error) if error.kind() == ErrorKind::NotFound => {
-            fs::create_dir_all(path).with_context(|| format!("failed to create {}", path.display()))
-        }
-        Err(error) => Err(error).with_context(|| format!("failed to inspect {}", path.display())),
-    }
-}
-
-fn reject_symlink_or_directory(path: &Path) -> Result<()> {
-    match fs::symlink_metadata(path) {
-        Ok(metadata) if metadata.file_type().is_symlink() => {
-            bail!("refusing to overwrite symlink {}", path.display())
-        }
-        Ok(metadata) if metadata.is_dir() => {
-            bail!("{} exists but is a directory", path.display())
-        }
-        Ok(_) => Ok(()),
-        Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
-        Err(error) => Err(error).with_context(|| format!("failed to inspect {}", path.display())),
-    }
-}
-
 fn remove_redirect_directory(root: &Path, code: &str) -> Result<()> {
     validate_code(code)?;
     let path = root.join(code);
@@ -783,9 +660,8 @@ fn remove_redirect_directory(root: &Path, code: &str) -> Result<()> {
         Ok(metadata) if metadata.file_type().is_symlink() => {
             bail!("refusing to remove symlinked redirect {}", path.display())
         }
-        Ok(metadata) if metadata.is_dir() => {
-            fs::remove_dir_all(&path).with_context(|| format!("failed to remove {}", path.display()))
-        }
+        Ok(metadata) if metadata.is_dir() => fs::remove_dir_all(&path)
+            .with_context(|| format!("failed to remove {}", path.display())),
         Ok(_) => bail!("{} exists but is not a directory", path.display()),
         Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
         Err(error) => Err(error).with_context(|| format!("failed to inspect {}", path.display())),
@@ -836,12 +712,13 @@ fn escape_html(value: &str, escape_quotes: bool) -> String {
 }
 
 fn load_manifest(path: &Path) -> Result<ShortLinkManifest> {
+    recover_atomic_file(path)?;
     if !path.exists() {
         return Ok(ShortLinkManifest::default());
     }
 
-    let json = fs::read_to_string(path)
-        .with_context(|| format!("failed to read {}", path.display()))?;
+    let json =
+        fs::read_to_string(path).with_context(|| format!("failed to read {}", path.display()))?;
     let manifest: ShortLinkManifest = serde_json::from_str(&json)
         .with_context(|| format!("failed to parse {}", path.display()))?;
 
@@ -854,17 +731,11 @@ fn load_manifest(path: &Path) -> Result<ShortLinkManifest> {
 fn save_manifest(path: &Path, manifest: &ShortLinkManifest) -> Result<()> {
     validate_manifest(manifest)?;
 
-    if let Some(parent) = path.parent() {
-        ensure_managed_directory(parent)?;
-    }
-
-    reject_symlink_or_directory(path)?;
-
     let mut json = serde_json::to_string_pretty(manifest)
         .context("failed to serialize short-link manifest")?;
     json.push('\n');
-
-    fs::write(path, json).with_context(|| format!("failed to write {}", path.display()))
+    write_atomic(path, json.as_bytes())
+        .with_context(|| format!("failed to write {}", path.display()))
 }
 
 #[cfg(test)]
@@ -1018,8 +889,12 @@ mod tests {
         let html = render_redirect_html("/articles/daxue?from=%2Fs%2F26abc%2F");
 
         assert!(html.contains(r#"<meta name="robots" content="noindex">"#));
-        assert!(html.contains(r#"<meta http-equiv="refresh" content="0; url=/articles/daxue?from=%2Fs%2F26abc%2F">"#));
-        assert!(html.contains(r#"<link rel="canonical" href="/articles/daxue?from=%2Fs%2F26abc%2F">"#));
+        assert!(html.contains(
+            r#"<meta http-equiv="refresh" content="0; url=/articles/daxue?from=%2Fs%2F26abc%2F">"#
+        ));
+        assert!(
+            html.contains(r#"<link rel="canonical" href="/articles/daxue?from=%2Fs%2F26abc%2F">"#)
+        );
         assert!(html.contains(r#"window.location.replace("/articles/daxue?from=%2Fs%2F26abc%2F")"#));
         assert!(html.contains(r#"<a href="/articles/daxue?from=%2Fs%2F26abc%2F">/articles/daxue?from=%2Fs%2F26abc%2F</a>"#));
     }

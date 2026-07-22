@@ -1,27 +1,26 @@
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 
-pub fn split_toml_front_matter(markdown: &str) -> Option<(&str, &str)> {
-    let rest = markdown
-        .strip_prefix("+++\n")
-        .or_else(|| markdown.strip_prefix("+++\r\n"))?;
-
-    let (front_matter, body) = if let Some(end) = rest.find("\n+++\n") {
-        (&rest[..end], &rest[end + 5..])
-    } else if let Some(end) = rest.find("\r\n+++\r\n") {
-        (&rest[..end], &rest[end + 7..])
-    } else if let Some(end) = rest.find("\n+++\r\n") {
-        (&rest[..end], &rest[end + 6..])
-    } else if let Some(end) = rest.find("\r\n+++\n") {
-        (&rest[..end], &rest[end + 6..])
-    } else {
-        return None;
+pub fn split_toml_front_matter(markdown: &str) -> Result<Option<(&str, &str)>> {
+    let markdown = markdown.strip_prefix('\u{feff}').unwrap_or(markdown);
+    let Some(rest) = markdown
+        .strip_prefix("+++\r\n")
+        .or_else(|| markdown.strip_prefix("+++\n"))
+    else {
+        return Ok(None);
     };
-
-    Some((front_matter, body))
+    let mut offset = 0;
+    for segment in rest.split_inclusive('\n') {
+        let line = segment.trim_end_matches(&['\r', '\n'][..]);
+        if line == "+++" {
+            return Ok(Some((&rest[..offset], &rest[offset + segment.len()..])));
+        }
+        offset += segment.len();
+    }
+    bail!("unterminated TOML front matter")
 }
 
 pub fn parse_toml_front_matter(markdown: &str) -> Result<Option<toml::Value>> {
-    let Some((front_matter, _)) = split_toml_front_matter(markdown) else {
+    let Some((front_matter, _)) = split_toml_front_matter(markdown)? else {
         return Ok(None);
     };
 
@@ -29,4 +28,8 @@ pub fn parse_toml_front_matter(markdown: &str) -> Result<Option<toml::Value>> {
         .parse::<toml::Value>()
         .context("failed to parse TOML front matter")?;
     Ok(Some(value))
+}
+
+pub fn extract_toml_front_matter(markdown: &str) -> Result<Option<&str>> {
+    Ok(split_toml_front_matter(markdown)?.map(|(front_matter, _)| front_matter))
 }

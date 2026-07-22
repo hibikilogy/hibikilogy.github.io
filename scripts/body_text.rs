@@ -1,12 +1,11 @@
 use anyhow::{Context, Result};
 
-#[path = "front_matter.rs"]
-mod front_matter;
+use hibikilogy_tools::front_matter;
 
-pub fn extract_markdown_body(markdown: &str) -> &str {
-    front_matter::split_toml_front_matter(markdown)
+pub fn extract_markdown_body(markdown: &str) -> Result<&str> {
+    Ok(front_matter::split_toml_front_matter(markdown)?
         .map(|(_, body)| body)
-        .unwrap_or(markdown)
+        .unwrap_or(markdown))
 }
 
 pub fn parse_toml_front_matter(markdown: &str) -> Result<Option<toml::Value>> {
