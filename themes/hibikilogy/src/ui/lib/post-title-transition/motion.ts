@@ -56,7 +56,7 @@ export function createSharedTransitionCss(
   const glyphStyles = names.map((name, index) => {
     const delay = delays[index]
     const incomingAnimation = crossFadeToFinalTitle
-      ? 'post-title-glyph-new-to-final'
+      ? 'post-title-glyph-fade-through'
       : 'post-title-glyph-new'
 
     return `

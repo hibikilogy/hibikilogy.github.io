@@ -38,6 +38,18 @@
     --text-swap-ease: var(--ease-out);
   }
 
+  :root {
+    /* Post-title glyph transition timing. These are referenced verbatim by
+       the inline CSS injected by post-title-transition/motion.ts; keeping them
+       here lets tooling and designers audit the motion in one place. Keyframe
+       percentages must remain literal — CSS variables can't drive them. */
+    --post-title-glyph-duration: 500ms;
+    --post-title-stagger-ordered: 180ms;
+    --post-title-stagger-random: 70ms;
+    --post-title-ease-movement: cubic-bezier(0.22, 1, 0.36, 1);
+    --post-title-ease-cross-fade: ease-in-out;
+  }
+
   .t-text-swap {
     display: inline-block;
     transform: translateY(0);
@@ -103,7 +115,6 @@
   @keyframes post-title-glyph-old {
     from {
       opacity: 1;
-      filter: blur(0);
     }
 
     44.99% {
@@ -113,31 +124,41 @@
     45%,
     to {
       opacity: 0;
-      filter: blur(var(--blur-small));
     }
   }
 
   @keyframes post-title-glyph-new {
     from {
       opacity: 0;
-      filter: blur(var(--blur-medium)) drop-shadow(0 2px 8px rgb(0 0 0 / 0%)) drop-shadow(0 4px 15px rgb(0 0 0 / 0%));
     }
 
     45% {
       opacity: 1;
-      filter: blur(0) drop-shadow(0 2px 8px rgb(0 0 0 / 0%)) drop-shadow(0 4px 15px rgb(0 0 0 / 0%));
     }
 
-    85%,
     to {
       opacity: 1;
-      filter: blur(0) drop-shadow(0 2px 8px rgb(0 0 0 / 25%)) drop-shadow(0 4px 15px rgb(0 0 0 / 30%));
+    }
+  }
+
+  @keyframes post-title-glyph-fade-through {
+    from {
+      opacity: 0;
+    }
+
+    45%,
+    72% {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
     }
   }
 
   @keyframes post-title-final-enter {
     0%,
-    82% {
+    70% {
       opacity: 0;
     }
 
