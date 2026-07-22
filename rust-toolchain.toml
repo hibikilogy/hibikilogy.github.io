@@ -1,0 +1,8 @@
+[toolchain]
+# Keep local development and every CI workflow on the same exact release.
+channel = "1.97.1"
+# Use minimal profile for faster toolchain installation — this project only
+# needs rustc, cargo, and rust-std (no docs, no extra tools).
+profile = "minimal"
+# Additional components for development and CI linting.
+components = ["rustfmt", "clippy"]

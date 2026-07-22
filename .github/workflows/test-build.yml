@@ -42,7 +42,7 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@v1
         with:
-          toolchain: stable
+          toolchain: 1.97.1
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
@@ -83,6 +83,9 @@ jobs:
 
       - name: Generate short links
         run: pnpm build:short-links
+
+      - name: Export Markdown routes
+        run: pnpm build:markdown -- --base-url https://hibikilogy-pr${{ github.event.number }}.surge.sh
 
       # 上传整个 public/ 目录作为产物，PREVIEW 工作流会下载并部署
       - name: Upload site artifact

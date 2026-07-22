@@ -49,6 +49,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      CARGO_PROFILE_DEV_DEBUG: 0
+      MARKDOWN_BASE_URL: https://ci.hibikilogy.invalid
 
     steps:
       - uses: actions/checkout@v7
@@ -82,7 +85,8 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@v1
         with:
-          toolchain: stable
+          toolchain: 1.97.1
+          components: rustfmt, clippy
 
       # @see https://github.com/Swatinem/rust-cache
       - name: Cache cargo
@@ -98,7 +102,21 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      # scripts/ 下的 Rust 脚本单元测试（convert_tests.rs 等通过 #[cfg(test)]
-      # 挂在 html-img-host-rewrite bin 上，cargo test 会一并编译并执行）
+      # Use one explicit base URL for both Zola and the Markdown exporter so
+      # canonical, alternate, and exported Page URLs are checked together.
+      - name: Build site for Markdown export
+        run: pnpm build:zola -- --base-url "${MARKDOWN_BASE_URL}"
+
+      - name: Export Markdown routes
+        run: pnpm build:markdown -- --base-url "${MARKDOWN_BASE_URL}"
+
+      - name: Check Rust formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run Rust Clippy
+        run: cargo clippy --locked --all-targets --all-features -- -D warnings
+
+      # all-features is required so tests attached to the font/image binaries
+      # are not skipped by their required-features declarations.
       - name: Run cargo tests
-        run: cargo test --locked
+        run: cargo test --locked --all-features
