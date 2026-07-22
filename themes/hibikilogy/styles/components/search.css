@@ -140,10 +140,16 @@
     }
 
     .SearchHighlight {
+      --joh-c-highlight: color-mix(in oklch, var(--joh-c-primary) 28%, transparent);
       padding: 0 0.08em;
-      border-radius: 0.12em;
-      background: color-mix(in srgb, var(--joh-c-primary) 24%, transparent);
+      border-radius: 0.18em;
+      background: var(--joh-c-highlight);
+      box-shadow:
+        -0.24em 0 0 0 var(--joh-c-highlight),
+        0.24em 0 0 0 var(--joh-c-highlight);
       color: inherit;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
     }
 
     .SearchJournal--drawer {
