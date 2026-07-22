@@ -11,6 +11,8 @@ docs
 {% endblock %}
 
 {% block meta %}
+{% set markdown_url = page.permalink | trim_end_matches(pat="/") %}
+<link rel="alternate" type="text/markdown" href="{{ markdown_url | safe }}.md" title="Markdown version">
 {% if katex_enabled %}
 {{ build::katex_css() }}
 {% endif %}

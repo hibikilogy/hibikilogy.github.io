@@ -23,6 +23,8 @@ post
 {% endblock %}
 
 {% block meta %}
+{% set markdown_url = page.permalink | trim_end_matches(pat="/") %}
+<link rel="alternate" type="text/markdown" href="{{ markdown_url | safe }}.md" title="Markdown version">
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="{{ page.date }}">
 <meta property="og:updated_time" content="{{ modified }}">
