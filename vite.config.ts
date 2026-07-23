@@ -2,6 +2,7 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import UnoCSS from 'unocss/vite'
 import { defineConfig } from 'vite'
+import { chunkCycleGuardPlugin } from './scripts/vite/chunkCycleGuard'
 import { globEntries } from './scripts/vite/entries'
 import { hibikilogyConfigPlugin } from './scripts/vite/hibikilogy-config'
 
@@ -60,7 +61,7 @@ export default defineConfig({
       },
       output: {
         entryFileNames: 'js/[name].js',
-        chunkFileNames: 'js/chunks/[name].js',
+        chunkFileNames: 'js/chunks/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
           const name = assetInfo.names[0] ?? ''
           if (/\.css$/.test(name)) {
@@ -87,6 +88,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    chunkCycleGuardPlugin(),
     UnoCSS({ mode: 'shadow-dom', inspector: false }),
     UnoCSS({ mode: 'global', configFile: resolve(__dirname, 'unocss.config.ts') }),
     hibikilogyConfigPlugin(__dirname),

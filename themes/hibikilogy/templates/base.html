@@ -130,7 +130,7 @@
   {% endblock search_config %}
 
   {{ build::script(path="js/components/index.js", module=true) }}
-  {{ build::script(path="js/ui.js", module=true) }}
+  {{ build::script(path="js/ui.js", cachebust=false, module=true) }}
 
   {% block analytics %}
   {% if config.extra.analytics.google and not config.mode == "serve" %}
