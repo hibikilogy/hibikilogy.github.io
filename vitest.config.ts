@@ -12,7 +12,10 @@ export default defineConfig({
   ],
   test: {
     environment: 'happy-dom',
-    include: ['themes/hibikilogy/src/**/*.test.ts'],
+    include: [
+      'themes/hibikilogy/src/**/*.test.ts',
+      'scripts/**/*.test.ts',
+    ],
     restoreMocks: true,
   },
 })

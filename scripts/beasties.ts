@@ -5,6 +5,7 @@ import { isAbsolute, relative, resolve } from 'node:path'
 import { brotliCompressSync, gzipSync, constants as zlibConstants } from 'node:zlib'
 import Beasties from 'beasties'
 import { load } from 'cheerio'
+import { deriveStylesheetPublicPath } from './beasties/stylesheetPublicPath.ts'
 
 const root = resolve(import.meta.dirname, '..')
 const publicDir = resolve(root, 'public')
@@ -114,7 +115,7 @@ console.table({
 
 function getProcessor($: CheerioAPI): Beasties | null {
   const publicPath = getStylesheetPublicPath($)
-  if (!publicPath)
+  if (publicPath === null)
     return null
 
   const existing = processors.get(publicPath)
@@ -136,17 +137,16 @@ function getProcessor($: CheerioAPI): Beasties | null {
 }
 
 function getStylesheetPublicPath($: CheerioAPI): string | null {
-  const href = $('link[rel~="stylesheet"][href*="/styles/"]').first().attr('href')
+  for (const element of $('link[rel~="stylesheet"][href]').toArray()) {
+    const href = $(element).attr('href')
+    if (!href)
+      continue
 
-  if (!href)
-    return null
-
-  const url = new URL(href)
-  const stylesOffset = url.pathname.indexOf('/styles/')
-  if (stylesOffset < 0)
-    throw new Error(`Could not derive the stylesheet public path from ${href}`)
-
-  return `${url.origin}${url.pathname.slice(0, stylesOffset + 1)}`
+    const publicPath = deriveStylesheetPublicPath(href)
+    if (publicPath !== null)
+      return publicPath
+  }
+  return null
 }
 
 function getInlineCssBytes($: CheerioAPI): number {
