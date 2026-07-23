@@ -1,4 +1,5 @@
-import { getRuntimeConfig } from '../search/lib/runtime-config.ts'
+import { getRuntimeConfig } from '../infrastructure/runtime-config/index.ts'
+import { catchError } from './result.ts'
 
 export function getDefaultOrigin(): string {
   const { baseUrl } = getRuntimeConfig()
@@ -9,13 +10,9 @@ export function getDefaultOrigin(): string {
   return (typeof location !== 'undefined' && location.origin) || 'http://localhost'
 }
 
-function safeParseUrl(raw: string, origin: string): URL | null {
-  try {
-    return new URL(raw, origin)
-  }
-  catch {
-    return null
-  }
+export function parseUrl(raw: string, origin: string): URL | null {
+  const [url] = catchError(() => new URL(raw, origin))
+  return url ?? null
 }
 
 /**
@@ -26,8 +23,8 @@ export function normalizeSiteUrl(value: string | null | undefined, origin = getD
   if (!value)
     return '#'
 
-  const url = safeParseUrl(String(value), origin)
-  if (!url || url.origin !== safeParseUrl(origin, origin)?.origin)
+  const url = parseUrl(String(value), origin)
+  if (!url || url.origin !== parseUrl(origin, origin)?.origin)
     return '#'
   return `${url.pathname}${url.search}${url.hash}`
 }
@@ -40,7 +37,7 @@ export function normalizeAssetUrl(value: string | null | undefined, origin = get
   if (!value)
     return ''
 
-  const url = safeParseUrl(String(value), origin)
+  const url = parseUrl(String(value), origin)
   return url ? url.toString() : ''
 }
 
@@ -56,12 +53,8 @@ export function getPathSlug(href: string): string {
   const segments = pathname.split('/').filter(Boolean)
   const slug = segments[segments.length - 1] || ''
 
-  try {
-    return decodeURIComponent(slug)
-  }
-  catch {
-    return slug
-  }
+  const [decoded] = catchError(() => decodeURIComponent(slug))
+  return decoded ?? slug
 }
 
 /**
@@ -69,7 +62,7 @@ export function getPathSlug(href: string): string {
  * Falls back to returning the raw value if parsing fails.
  */
 export function getPathname(url: string, origin: string): string {
-  const parsed = safeParseUrl(url, origin)
+  const parsed = parseUrl(url, origin)
   return parsed ? parsed.pathname : url
 }
 

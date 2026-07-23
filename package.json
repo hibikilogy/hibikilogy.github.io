@@ -23,6 +23,9 @@
     "test:rust": "cargo nextest run --locked --all-features && cargo test --locked --all-features --doc",
     "coverage:rust": "cargo llvm-cov nextest --locked --all-features --html",
     "verify:rust": "cargo fmt --all -- --check && cargo clippy --locked --all-targets --all-features -- -D warnings && pnpm test:rust",
+    "test:ts": "vitest run --environment happy-dom",
+    "lint:ts": "eslint --cache themes/hibikilogy/src themes/hibikilogy/components cms scripts vite.config.ts vite.admin.config.ts vitest.config.ts",
+    "verify:ts": "pnpm typecheck && pnpm test:ts && pnpm lint:ts && pnpm build:vite && pnpm build:admin",
     "build:subset-titlefont": "cargo run --locked --features font-tools --bin title-font-subset -- --content-dir content --font themes/hibikilogy/static/fonts/SourceHanSerifCN-VF.ttf --font-output-dir themes/hibikilogy/static/fonts --css-output-dir themes/hibikilogy/static/styles --css-file source-han-serif-cn-vf.css --font-family \"Source Han Serif CN VF\" --output-file source-han-serif-cn-vf.woff2",
     "build:subset-bodyfont": "cargo run --locked --features font-tools --bin body-font-subset -- --content-dir content --config config.toml --font themes/hibikilogy/static/fonts/SourceHanSansSC-VF.ttf --base-css themes/hibikilogy/static/styles/source-han-sans-sc-vf.css --font-output-dir themes/hibikilogy/static/fonts --css-output-dir themes/hibikilogy/static/styles --css-file source-han-sans-sc-vf.patch.css --font-family \"Source Han Sans SC VF\" --output-file source-han-sans-sc-vf.patch.woff2",
     "build:rewrite-imgs": "cargo run --locked --features image-tools --bin html-img-host-rewrite -- --config config.toml ./public",
@@ -42,15 +45,15 @@
     "@swup/head-plugin": "^2.3.1",
     "@swup/preload-plugin": "^3.2.11",
     "@swup/scroll-plugin": "^4.0.0",
+    "@vue/reactivity": "^3.5.40",
     "clsx": "^2.1.1",
+    "comlink": "^4.4.2",
     "fuse.js": "^7.4.2",
     "heti-findandreplacedomtext": "^0.5.0",
     "katex": "^0.17.0",
     "lit": "^3.2.1",
     "lodash-es": "^4.18.1",
     "medium-zoom": "1.1.0",
-    "motion": "^12.42.2",
-    "petite-vue": "^0.4.1",
     "swup": "^4.9.2",
     "tailwind-merge": "^3.6.0",
     "thumbhash": "^0.1.1"
@@ -69,12 +72,14 @@
     "eslint": "^10.3.0",
     "eslint-plugin-format": "^2.0.1",
     "eslint-plugin-react-refresh": "^0.5.3",
+    "happy-dom": "^20.11.0",
     "lightningcss": "^1.32.0",
     "smol-toml": "^1.7.0",
     "tinyglobby": "^0.2.17",
     "tsx": "^4.23.1",
     "typescript": "^6.0.0",
     "unocss": "^66.7.2",
-    "vite": "^8.0.0"
+    "vite": "^8.0.0",
+    "vitest": "^4.1.10"
   }
 }

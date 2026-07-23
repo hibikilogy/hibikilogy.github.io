@@ -1,9 +1,10 @@
-import type { RawSearchIndexEntry, SearchArticleMetadataIndex, SearchResultRecord, SearchTagIndexItem } from '../themes/hibikilogy/src/search/types.ts'
+import type { RawSearchIndexEntry, SearchArticleMetadataIndex, SearchResultRecord, SearchTagIndexItem } from '../themes/hibikilogy/src/features/search/types.ts'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import process from 'node:process'
 import { createServer } from 'vite'
+import { hibikilogyConfigPlugin } from './vite/hibikilogy-config.ts'
 
 interface SearchEngineModule {
   createSearchEngine: (records: unknown[]) => unknown
@@ -35,14 +36,18 @@ const queries = customQueries.length
 
 const server = await createServer({
   root,
-  configFile: resolve(root, 'vite.config.ts'),
+  configFile: false,
+  publicDir: false,
+  plugins: [hibikilogyConfigPlugin(root)],
+  resolve: { tsconfigPaths: true },
+  optimizeDeps: { noDiscovery: true },
   appType: 'custom',
   logLevel: 'error',
   server: { middlewareMode: true },
 })
 
 try {
-  const engineModule = await server.ssrLoadModule('/themes/hibikilogy/src/search/engine.ts') as SearchEngineModule
+  const engineModule = await server.ssrLoadModule('/themes/hibikilogy/src/features/search/core/engine.ts') as SearchEngineModule
   const rawIndex = JSON.parse(
     await readFile(resolve(root, 'public/search_index.zh.json'), 'utf8'),
   ) as RawSearchIndexEntry[]

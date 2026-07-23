@@ -57,7 +57,7 @@ export default antfu({
     },
   },
 }, {
-  files: ['themes/hibikilogy/src/ui/**/*.ts'],
+  files: ['themes/hibikilogy/src/**/*.ts'],
   rules: {
     'react/rules-of-hooks': 'off',
     'react/no-unnecessary-use-prefix': 'off',

@@ -24,6 +24,7 @@ export function installLcpWarning(): void {
         const hasDataSrc = element.hasAttribute('data-src') || element.hasAttribute('data-srcset')
 
         if (isLazy || hasDataSrc) {
+          // eslint-disable-next-line no-console
           console.warn(
             '[unlazy] LCP element is configured for lazy loading. '
             + 'Set `loading="eager"` to improve Largest Contentful Paint.',

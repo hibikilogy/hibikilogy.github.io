@@ -21,7 +21,6 @@ export function parseCssTime(value: string): number | null {
   return Number.isFinite(parsed) ? parsed : null
 }
 
-/** Promise-based setTimeout. */
 export function wait(durationMs: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, durationMs)

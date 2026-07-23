@@ -1,76 +1,70 @@
 import type {
   SearchBuildReport,
   SearchEngine,
+  SearchEngineBootstrapData,
+  SearchExecutionResult,
   SearchIndexBuildStatus,
-  SearchWorkerRequest,
-  SearchWorkerResponse,
-} from './lib/types.ts'
-import { getDurationMs, nowMs } from './lib/debug.ts'
-import { searchRecordsInEngine } from './lib/engine.ts'
-import {
-  buildSearchEngine,
-} from './lib/index.ts'
+  SearchWorkerApi,
+} from '../features/search/types.ts'
+import { expose } from 'comlink'
+import { searchRecordsInEngine } from '../features/search/core/engine.ts'
+import { getDurationMs, nowMs } from '../features/search/debug.ts'
+import { buildSearchEngine } from '../features/search/runtime/index.ts'
 
 let enginePromise: Promise<SearchEngine> | null = null
-const workerGlobal = globalThis as unknown as DedicatedWorkerGlobalScope
+let currentKey = ''
+let statusListener: ((status: SearchIndexBuildStatus) => void) | undefined
+let reportListener: ((report: SearchBuildReport) => void) | undefined
 
-workerGlobal.addEventListener('message', (event: { data: SearchWorkerRequest }) => {
-  const message = event.data as SearchWorkerRequest
-  void handleSearchWorkerRequest(message)
-})
-
-async function handleSearchWorkerRequest(message: SearchWorkerRequest): Promise<void> {
-  try {
-    const result = await runSearchWorkerRequest(message)
-    postSearchWorkerResponse({ id: message.id, ok: true, result })
-  }
-  catch (error) {
-    postSearchWorkerResponse({
-      id: message.id,
-      ok: false,
-      error: error instanceof Error ? error.message : String(error),
+const api: SearchWorkerApi = {
+  async initialize(bootstrap, onStatus, onReport) {
+    const nextKey = JSON.stringify({
+      indexUrl: bootstrap.indexUrl,
+      articleMetadata: bootstrap.articleMetadataIndex,
+      tags: bootstrap.tagIndex,
     })
-  }
+
+    statusListener = onStatus
+    reportListener = onReport
+    if (currentKey !== nextKey) {
+      currentKey = nextKey
+      enginePromise = null
+    }
+
+    await getEngine(bootstrap)
+  },
+  async count() {
+    return (await requireEngine()).records.length
+  },
+  async search(term: string): Promise<SearchExecutionResult> {
+    const engine = await requireEngine()
+    const start = nowMs()
+    return {
+      records: searchRecordsInEngine(engine, term),
+      engineDurationMs: getDurationMs(start),
+    }
+  },
 }
 
-async function runSearchWorkerRequest(message: SearchWorkerRequest): Promise<unknown> {
-  const engine = await getWorkerSearchEngine(message.bootstrap)
-
-  if (message.type === 'preload')
-    return undefined
-  if (message.type === 'count')
-    return engine.records.length
-  if (message.type === 'search')
-    return runTimedWorkerSearch(engine, message.term || '')
-
-  throw new Error(`Unknown search worker request: ${message.type}`)
-}
-
-function runTimedWorkerSearch(engine: SearchEngine, term: string) {
-  const start = nowMs()
-  const records = searchRecordsInEngine(engine, term)
-  return { records, engineDurationMs: getDurationMs(start) }
-}
-
-function getWorkerSearchEngine(bootstrap?: SearchWorkerRequest['bootstrap']): Promise<SearchEngine> {
+function getEngine(bootstrap: SearchEngineBootstrapData): Promise<SearchEngine> {
   if (!enginePromise) {
-    enginePromise = buildSearchEngine(bootstrap, {
-      onStatus: postSearchWorkerStatus,
-      onReport: postSearchWorkerBuildReport,
+    const pending = buildSearchEngine(bootstrap, {
+      onStatus: status => statusListener?.(status),
+      onReport: report => reportListener?.(report),
+    })
+    enginePromise = pending
+    void pending.catch(() => {
+      if (enginePromise === pending)
+        enginePromise = null
     })
   }
-
   return enginePromise
 }
 
-function postSearchWorkerStatus(status: SearchIndexBuildStatus): void {
-  workerGlobal.postMessage({ id: 0, status })
+function requireEngine(): Promise<SearchEngine> {
+  if (!enginePromise)
+    return Promise.reject(new Error('Search worker is not initialized'))
+  return enginePromise
 }
 
-function postSearchWorkerBuildReport(buildReport: SearchBuildReport): void {
-  workerGlobal.postMessage({ id: 0, buildReport })
-}
-
-function postSearchWorkerResponse(response: SearchWorkerResponse): void {
-  workerGlobal.postMessage(response)
-}
+expose(api)

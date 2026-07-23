@@ -1,5 +1,4 @@
 {% import 'components/article.html' as article %}
-{% import 'macros/build.html' as build %}
 
 {% macro search() %}
 <div class="Journal SearchJournal">
@@ -63,6 +62,4 @@
     {% endfor %}
   </div>
 </div>
-
-{{ build::script(path="js/water-fall.js", module=true) }}
 {% endmacro main %}

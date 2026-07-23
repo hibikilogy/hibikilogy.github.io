@@ -1,0 +1,116 @@
+import type { PostTitleTransitionPreparation } from '../ui/post-title-transition/index.ts'
+import type { PageContext } from './types.ts'
+import { createSwup } from '../infrastructure/swup/index.ts'
+import { pageDom } from '../shared/dom.ts'
+import {
+  clearTransitionState,
+  setTransitionState,
+} from '../ui/page-transition/index.ts'
+import {
+  beginPostTitleTransition,
+  playPostTitleExitAnimation,
+  renderPostTitleTransitionTarget,
+  resolvePostTitleTransitionTarget,
+} from '../ui/post-title-transition/index.ts'
+import { createAppContext } from './appContext.ts'
+import { mountPageModules } from './page-modules/index.ts'
+import { createPageContext } from './pageContext.ts'
+
+export function startApp(): void {
+  const swup = createSwup()
+  const app = createAppContext(swup)
+  const postTitlePreparations = new Map<number, PostTitleTransitionPreparation>()
+  let activePostTitleVisitId: number | null = null
+  let page: PageContext | null = null
+
+  function initializePage(): void {
+    page?.dispose()
+    page = null
+    normalizeTrailingSlash()
+
+    const root = document.querySelector<HTMLElement>(pageDom.app)
+    if (!root)
+      return
+
+    const nextPage = createPageContext(app, root)
+    page = nextPage
+    renderPostTitleTransitionTarget()
+    nextPage.run(() => mountPageModules(app, nextPage))
+  }
+
+  function normalizeTrailingSlash(): void {
+    const { pathname, search, hash } = window.location
+    if (pathname.length <= 1 || !pathname.endsWith('/'))
+      return
+
+    app.route.replace(pathname.replace(/\/+$/, '') + search + hash)
+  }
+
+  function finishPostTitleVisit(visit: { id: number }): void {
+    const preparation = postTitlePreparations.get(visit.id)
+    if (!preparation)
+      return
+
+    preparation.cancel()
+    postTitlePreparations.delete(visit.id)
+    if (activePostTitleVisitId !== visit.id)
+      return
+
+    activePostTitleVisitId = null
+    clearTransitionState()
+  }
+
+  swup.hooks.on('visit:start', (visit) => {
+    page?.layout.closeNavbar()
+    setTransitionState(visit.from.url, visit.to.url)
+
+    const preparation = beginPostTitleTransition({
+      trigger: visit.trigger.el,
+    })
+    postTitlePreparations.set(visit.id, preparation)
+    activePostTitleVisitId = visit.id
+    if (preparation.waitForTarget)
+      visit.animation.wait = true
+  })
+
+  swup.hooks.before('visit:transition', async (visit) => {
+    const preparation = postTitlePreparations.get(visit.id)
+    if (
+      !preparation
+      || !(await preparation.ready)
+      || postTitlePreparations.get(visit.id) !== preparation
+    ) {
+      return
+    }
+
+    resolvePostTitleTransitionTarget(visit.to.document)
+    await playPostTitleExitAnimation()
+  })
+
+  swup.hooks.before('content:replace', async (visit) => {
+    const preparation = postTitlePreparations.get(visit.id)
+    if (
+      !preparation
+      || !(await preparation.ready)
+      || postTitlePreparations.get(visit.id) !== preparation
+    ) {
+      return
+    }
+
+    resolvePostTitleTransitionTarget(visit.to.document)
+  })
+
+  swup.hooks.on('content:replace', initializePage)
+  swup.hooks.on('visit:end', finishPostTitleVisit)
+  swup.hooks.on('visit:abort', finishPostTitleVisit)
+
+  window.addEventListener('pagehide', (event) => {
+    if (event.persisted)
+      return
+
+    page?.dispose()
+    app.dispose()
+  }, { once: true })
+
+  initializePage()
+}

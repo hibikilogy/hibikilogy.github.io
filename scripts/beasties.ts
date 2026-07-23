@@ -1,9 +1,10 @@
+import type { CheerioAPI } from 'cheerio'
 import { Buffer } from 'node:buffer'
 import { readFile, stat, writeFile } from 'node:fs/promises'
 import { isAbsolute, relative, resolve } from 'node:path'
 import { brotliCompressSync, gzipSync, constants as zlibConstants } from 'node:zlib'
 import Beasties from 'beasties'
-import { load, type CheerioAPI } from 'cheerio'
+import { load } from 'cheerio'
 
 const root = resolve(import.meta.dirname, '..')
 const publicDir = resolve(root, 'public')

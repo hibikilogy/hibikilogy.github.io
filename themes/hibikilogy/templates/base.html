@@ -119,10 +119,12 @@
 
   {% block search_config %}
   {% if config.build_search_index %}
-  <script>
-    window.__HIBIKILOGY_BASE_URL = "{{ config.base_url  | safe }}";
-    window.__HIBIKILOGY_SEARCH_INDEX_URL = "{{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) | safe }}";
-    window.__HIBIKILOGY_SEARCH_WORKER_URL = "{{ get_url(path='js/search/worker.js', cachebust=true) | safe }}";
+  <script id="hibikilogy-runtime-config" type="application/json">
+  {
+    "baseUrl": {{ config.base_url | json_encode() | safe }},
+    "searchIndexUrl": {{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) | json_encode() | safe }},
+    "searchWorkerUrl": {{ get_url(path='js/search/worker.js', cachebust=true) | json_encode() | safe }}
+  }
   </script>
   {% endif %}
   {% endblock search_config %}

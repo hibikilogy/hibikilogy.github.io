@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "target": "es2023",
     "jsx": "react",
     "jsxFactory": "h",
@@ -8,6 +9,15 @@
     "experimentalDecorators": true,
     "module": "es2022",
     "moduleResolution": "bundler",
+    "paths": {
+      "*": ["./*"],
+      "shared/*": ["./themes/hibikilogy/src/shared/*"],
+      "app/*": ["./themes/hibikilogy/src/app/*"],
+      "ui/*": ["./themes/hibikilogy/src/ui/*"],
+      "features/*": ["./themes/hibikilogy/src/features/*"],
+      "infra/*": ["./themes/hibikilogy/src/infrastructure/*"],
+      "components/*": ["./themes/hibikilogy/components/*"]
+    },
     "resolveJsonModule": true,
     "types": ["vite/client", "react"],
     "allowImportingTsExtensions": true,
@@ -26,5 +36,5 @@
     "isolatedModules": true,
     "skipLibCheck": true
   },
-  "include": ["themes/hibikilogy/components/**/*.ts", "themes/hibikilogy/src/**/*.ts", "themes/hibikilogy/src/shim.d.ts", "cms/**/*.ts", "cms/**/*.tsx", "*.ts"]
+  "include": ["themes/hibikilogy/components/**/*.ts", "themes/hibikilogy/src/**/*.ts", "themes/hibikilogy/src/shim.d.ts", "cms/**/*.ts", "cms/**/*.tsx", "scripts/**/*.ts", "*.ts"]
 }

@@ -11,7 +11,7 @@
       current-page="{{ paginator.current_index }}"
       total-pages="{{ paginator.number_pagers }}"
       base-url="{{ paginator.base_url }}"
-      mode="link"
+      mode="event"
       {% if paginator.previous %}previous-url="{{ paginator.previous }}"{% endif %}
       {% if paginator.next %}next-url="{{ paginator.next }}"{% endif %}
     ></site-pagination>

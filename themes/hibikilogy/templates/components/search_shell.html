@@ -9,19 +9,17 @@
   placeholder="Search",
   title="Search",
   value="",
-  click_action="",
   extra_class=""
 ) %}
 <form
   class="SearchShell SearchShell--{% if compact %}compact{% else %}page{% endif %}{% if extra_class %} {{ extra_class }}{% endif %}"
   role="search"
   aria-label="{{ title }}"
-  @submit.prevent{% if click_action %}="{{ click_action }}"{% endif %}
   {% if transition_name %}
     data-search-transition-target="{{ transition_name }}"
   {% endif %}
-  {% if compact and readonly and click_action %}
-    @click="{{ click_action }}"
+  {% if compact and readonly %}
+    data-action="open-search"
   {% endif %}
 >
   <div class="SearchShellBody">

@@ -531,6 +531,7 @@ export class LazyImage extends LitElement {
     if (!this.isLocalDevelopmentRuntime())
       return
 
+    // eslint-disable-next-line no-console
     console.debug('[lazy-image]', stage, {
       src: this.src,
       srcset: this.srcset,
