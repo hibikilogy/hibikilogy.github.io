@@ -3,10 +3,13 @@ use clap::Parser;
 use hibikilogy_tools::article_source::{
     normalize_iso_date, parse_article_file_name, ArticleFileName as ParsedArticleFileName,
 };
+use hibikilogy_tools::content_files::sorted_markdown_files;
 use hibikilogy_tools::content_routes;
 use hibikilogy_tools::managed_fs::{
-    ensure_directory_beneath, recover_atomic_file, reject_symlink_or_directory, write_atomic,
+    ensure_directory_beneath, recover_atomic_file, reject_symlink_or_directory,
 };
+use hibikilogy_tools::managed_json;
+use hibikilogy_tools::url_encoding::encode_query_value;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
@@ -93,7 +96,7 @@ struct Assignment {
     reused: usize,
 }
 
-fn main() -> Result<()> {
+pub fn run() -> Result<()> {
     let args = Args::parse();
     let manifest_path = Path::new(MANIFEST_PATH);
     let report = generate_short_links(&args.content_dir, &args.site_root, manifest_path)?;
@@ -176,45 +179,19 @@ fn collect_active_articles(
     site_root: &Path,
     article_urls: &BTreeSet<String>,
 ) -> Result<Vec<ActiveArticle>> {
-    let mut markdown_files = Vec::new();
-
-    for entry in fs::read_dir(content_dir)
-        .with_context(|| format!("failed to read {}", content_dir.display()))?
-    {
-        let entry = entry
-            .with_context(|| format!("failed to read an entry in {}", content_dir.display()))?;
-        let path = entry.path();
-        let file_type = entry
-            .file_type()
-            .with_context(|| format!("failed to inspect {}", path.display()))?;
-
-        if file_type.is_symlink() {
-            if path.extension().and_then(|extension| extension.to_str()) == Some("md") {
-                bail!("article symlinks are not supported: {}", path.display());
-            }
-            continue;
-        }
-
-        if !file_type.is_file()
-            || path.extension().and_then(|extension| extension.to_str()) != Some("md")
-        {
-            continue;
-        }
-
-        let file_name = entry.file_name().into_string().map_err(|file_name| {
-            anyhow!(
-                "article filename in {} is not valid UTF-8: {:?}",
-                content_dir.display(),
-                file_name,
-            )
-        })?;
-
-        if file_name != "_index.md" {
-            markdown_files.push((file_name, path));
-        }
-    }
-
-    markdown_files.sort_unstable_by(|left, right| left.0.cmp(&right.0));
+    let markdown_files = sorted_markdown_files(content_dir, true)?
+        .into_iter()
+        .map(|path| {
+            let file_name = path
+                .file_name()
+                .and_then(|name| name.to_str())
+                .with_context(|| {
+                    format!("article filename is not valid UTF-8: {}", path.display())
+                })?
+                .to_string();
+            Ok((file_name, path))
+        })
+        .collect::<Result<Vec<_>>>()?;
 
     let mut articles = Vec::with_capacity(markdown_files.len());
     let mut target_slugs = BTreeSet::new();
@@ -622,26 +599,8 @@ fn write_redirect_page(root: &Path, redirect: &RedirectRecord) -> Result<()> {
 
 fn article_redirect_target(redirect: &RedirectRecord) -> String {
     let source_path = format!("/{SHORT_LINK_DIRECTORY}/{}/", redirect.code);
-    let source_param = url_encode_query_value(&source_path);
+    let source_param = encode_query_value(&source_path);
     format!("/articles/{}?from={}", redirect.target_slug, source_param)
-}
-
-fn url_encode_query_value(value: &str) -> String {
-    let mut encoded = String::with_capacity(value.len());
-
-    for byte in value.bytes() {
-        match byte {
-            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' => {
-                encoded.push(byte as char)
-            }
-            _ => {
-                use std::fmt::Write as _;
-                write!(&mut encoded, "%{byte:02X}").expect("writing to a String cannot fail");
-            }
-        }
-    }
-
-    encoded
 }
 
 fn remove_redirect_directories(root: &Path, codes: &[String]) -> Result<()> {
@@ -717,10 +676,7 @@ fn load_manifest(path: &Path) -> Result<ShortLinkManifest> {
         return Ok(ShortLinkManifest::default());
     }
 
-    let json =
-        fs::read_to_string(path).with_context(|| format!("failed to read {}", path.display()))?;
-    let manifest: ShortLinkManifest = serde_json::from_str(&json)
-        .with_context(|| format!("failed to parse {}", path.display()))?;
+    let manifest: ShortLinkManifest = managed_json::load(path)?;
 
     validate_manifest(&manifest)
         .with_context(|| format!("invalid short-link manifest {}", path.display()))?;
@@ -731,427 +687,9 @@ fn load_manifest(path: &Path) -> Result<ShortLinkManifest> {
 fn save_manifest(path: &Path, manifest: &ShortLinkManifest) -> Result<()> {
     validate_manifest(manifest)?;
 
-    let mut json = serde_json::to_string_pretty(manifest)
-        .context("failed to serialize short-link manifest")?;
-    json.push('\n');
-    write_atomic(path, json.as_bytes())
-        .with_context(|| format!("failed to write {}", path.display()))
+    managed_json::save_pretty(path, manifest)
 }
 
 #[cfg(test)]
-mod tests {
-    use super::{
-        assign_short_link_codes, digest_source_file_name, generate_short_links, orphaned_codes,
-        parse_article_file_name, parse_front_matter, render_redirect_html, validate_manifest,
-        ActiveArticle, ShortLinkManifest, ShortLinkRecord,
-    };
-    use std::collections::BTreeSet;
-    use std::fs;
-    use std::path::PathBuf;
-    use std::time::{SystemTime, UNIX_EPOCH};
-
-    #[test]
-    fn extracts_explicit_slug_from_zola_front_matter() {
-        let markdown = "+++\nslug = \"kitauji-power-play\"\ntitle = \"Title\"\n+++\nbody\n";
-        assert_eq!(
-            parse_front_matter(markdown).unwrap().slug.as_deref(),
-            Some("kitauji-power-play")
-        );
-    }
-
-    #[test]
-    fn does_not_treat_nested_slug_as_page_slug() {
-        let markdown = "+++\ntitle = \"Title\"\n[extra]\nslug = \"nested\"\ndate = \"2026-05-25\"\n+++\nbody\n";
-        assert_eq!(parse_front_matter(markdown).unwrap().slug, None);
-    }
-
-    #[test]
-    fn rejects_unterminated_front_matter() {
-        assert!(parse_front_matter("+++\nslug = \"daxue\"\n").is_err());
-    }
-
-    #[test]
-    fn falls_back_to_slug_tail_from_article_file_name() {
-        assert_eq!(
-            parse_article_file_name("2026-05-25-daxue.md")
-                .unwrap()
-                .slug_tail,
-            "daxue"
-        );
-    }
-
-    #[test]
-    fn validates_calendar_date_in_article_file_name() {
-        assert!(parse_article_file_name("2026-02-29-invalid.md").is_err());
-        assert!(parse_article_file_name("2024-02-29-valid.md").is_ok());
-        assert!(parse_article_file_name("1-05-25-invalid.md").is_err());
-    }
-
-    #[test]
-    fn new_codes_start_with_publish_year_prefix() {
-        let assignment = assign_short_link_codes(
-            &[article("2026-05-25-daxue.md", "daxue", "26")],
-            &manifest(Vec::new()),
-        )
-        .unwrap();
-
-        assert_eq!(assignment.records[0].code.len(), 5);
-        assert!(assignment.records[0].code.starts_with("26"));
-    }
-
-    #[test]
-    fn remints_legacy_code_for_known_source_file() {
-        let active = vec![article("2026-05-25-daxue.md", "daxue", "26")];
-        let existing = manifest(vec![record("2026-05-25-daxue.md", "daxue", "abcde")]);
-
-        let assignment = assign_short_link_codes(&active, &existing).unwrap();
-
-        assert_eq!(assignment.reused, 0);
-        assert_eq!(
-            assignment.records[0].code,
-            format!("26{}", &digest_source_file_name("2026-05-25-daxue.md")[..3])
-        );
-    }
-
-    #[test]
-    fn reuses_existing_code_after_source_file_rename() {
-        let active = vec![article("2026-05-25-renamed.md", "daxue", "26")];
-        let existing = manifest(vec![record("2026-05-25-daxue.md", "daxue", "26abc")]);
-
-        let assignment = assign_short_link_codes(&active, &existing).unwrap();
-
-        assert_eq!(assignment.reused, 1);
-        assert_eq!(assignment.records[0].code, "26abc");
-        assert_eq!(assignment.records[0].source_file, "2026-05-25-renamed.md");
-    }
-
-    #[test]
-    fn lengthens_hash_part_for_collision_without_moving_old_code() {
-        let active = vec![
-            ActiveArticle {
-                source_file: "2026-05-25-daxue.md".to_owned(),
-                target_slug: "daxue".to_owned(),
-                digest: "abcde11111111111111111111111111111111111111111111111111111111111"
-                    .to_owned(),
-                year_prefix: "26".to_owned(),
-            },
-            ActiveArticle {
-                source_file: "2026-05-26-daxue2.md".to_owned(),
-                target_slug: "daxue-2".to_owned(),
-                digest: "abcde22222222222222222222222222222222222222222222222222222222222"
-                    .to_owned(),
-                year_prefix: "26".to_owned(),
-            },
-        ];
-        let existing = ShortLinkManifest {
-            records: vec![ShortLinkRecord {
-                source_file: active[0].source_file.clone(),
-                target_slug: active[0].target_slug.clone(),
-                code: "26abc".to_owned(),
-                digest: active[0].digest.clone(),
-            }],
-            retired_codes: BTreeSet::new(),
-        };
-
-        let assignment = assign_short_link_codes(&active, &existing).unwrap();
-
-        assert_eq!(assignment.records[0].code, "26abc");
-        assert_eq!(assignment.records[1].code, "26abcd");
-    }
-
-    #[test]
-    fn rejects_unsafe_manifest_code() {
-        let manifest = ShortLinkManifest {
-            records: vec![ShortLinkRecord {
-                source_file: "2026-05-25-daxue.md".to_owned(),
-                target_slug: "daxue".to_owned(),
-                code: "../../outside".to_owned(),
-                digest: digest_source_file_name("2026-05-25-daxue.md"),
-            }],
-            retired_codes: BTreeSet::new(),
-        };
-
-        assert!(validate_manifest(&manifest).is_err());
-    }
-
-    #[test]
-    fn rejects_duplicate_manifest_codes() {
-        let manifest = manifest(vec![
-            record("2026-05-25-daxue.md", "daxue", "26abc"),
-            record("2026-05-26-other.md", "other", "26abc"),
-        ]);
-
-        assert!(validate_manifest(&manifest).is_err());
-    }
-
-    #[test]
-    fn renders_meta_refresh_and_js_redirect_html() {
-        let html = render_redirect_html("/articles/daxue?from=%2Fs%2F26abc%2F");
-
-        assert!(html.contains(r#"<meta name="robots" content="noindex">"#));
-        assert!(html.contains(
-            r#"<meta http-equiv="refresh" content="0; url=/articles/daxue?from=%2Fs%2F26abc%2F">"#
-        ));
-        assert!(
-            html.contains(r#"<link rel="canonical" href="/articles/daxue?from=%2Fs%2F26abc%2F">"#)
-        );
-        assert!(html.contains(r#"window.location.replace("/articles/daxue?from=%2Fs%2F26abc%2F")"#));
-        assert!(html.contains(r#"<a href="/articles/daxue?from=%2Fs%2F26abc%2F">/articles/daxue?from=%2Fs%2F26abc%2F</a>"#));
-    }
-
-    #[test]
-    fn reports_codes_missing_from_active_assignment() {
-        let managed = vec![
-            record("2026-05-25-daxue.md", "daxue", "26abc"),
-            record("2025-05-20-old.md", "old", "25fff"),
-        ];
-        let active = vec![record("2026-05-25-daxue.md", "daxue", "26abc")];
-
-        assert_eq!(orphaned_codes(&managed, &active), vec!["25fff"]);
-    }
-
-    #[test]
-    fn uses_front_matter_date_for_year_prefix() {
-        let fixture = TestFixture::new("frontmatter-year");
-        fixture.write(
-            "content/articles/2024-06-15-kaori.md",
-            "+++\nslug = \"kaori\"\ndate = \"2026-01-01\"\n+++\nbody\n",
-        );
-        fixture.write(
-            "public/search_index.zh.json",
-            r#"[{"url":"/articles/kaori/","title":"kaori"}]"#,
-        );
-        fixture.write("public/articles/kaori/index.html", "<html>kaori</html>");
-
-        generate_short_links(
-            &fixture.root.join("content/articles"),
-            &fixture.root.join("public"),
-            &fixture.root.join("static/_cache/short-links.json"),
-        )
-        .unwrap();
-
-        let manifest: ShortLinkManifest =
-            serde_json::from_str(&fixture.read("static/_cache/short-links.json")).unwrap();
-        assert!(manifest.records[0].code.starts_with("26"));
-    }
-
-    #[test]
-    fn generates_manifest_in_requested_cache_path_and_redirect_pages() {
-        let fixture = TestFixture::new("short-links");
-        fixture.write(
-            "content/articles/2026-05-25-daxue.md",
-            "+++\nslug = \"daxue\"\n+++\nbody\n",
-        );
-        fixture.write(
-            "public/search_index.zh.json",
-            r#"[{"url":"/articles/daxue/","title":"daxue"}]"#,
-        );
-        fixture.write("public/articles/daxue/index.html", "<html>daxue</html>");
-
-        let manifest_path = fixture.root.join("static/_cache/short-links.json");
-        let report = generate_short_links(
-            &fixture.root.join("content/articles"),
-            &fixture.root.join("public"),
-            &manifest_path,
-        )
-        .unwrap();
-
-        assert_eq!(report.total, 1);
-        assert_eq!(report.created, 1);
-        assert_eq!(report.reused, 0);
-        assert_eq!(report.removed, 0);
-
-        let manifest: ShortLinkManifest =
-            serde_json::from_str(&fixture.read("static/_cache/short-links.json")).unwrap();
-        assert_eq!(manifest.records.len(), 1);
-        assert_eq!(manifest.records[0].code.len(), 5);
-        assert!(manifest.records[0].code.starts_with("26"));
-
-        let redirect = fixture.read(&format!("public/s/{}/index.html", manifest.records[0].code));
-        assert!(redirect.contains("/articles/daxue?from=%2Fs%2F26"));
-    }
-
-    #[test]
-    fn removes_and_retires_orphaned_redirect_code() {
-        let fixture = TestFixture::new("orphan-cleanup");
-        fixture.write(
-            "content/articles/2026-05-25-daxue.md",
-            "+++\nslug = \"daxue\"\n+++\nbody\n",
-        );
-        fixture.write(
-            "public/search_index.zh.json",
-            r#"[{"url":"/articles/daxue/","title":"daxue"}]"#,
-        );
-        fixture.write("public/articles/daxue/index.html", "<html>daxue</html>");
-
-        let old_record = record("2025-05-20-old.md", "old", "25fff");
-        fixture.write(
-            "static/_cache/short-links.json",
-            &serde_json::to_string_pretty(&manifest(vec![old_record])).unwrap(),
-        );
-        fixture.write("public/s/25fff/index.html", "old redirect");
-
-        let report = generate_short_links(
-            &fixture.root.join("content/articles"),
-            &fixture.root.join("public"),
-            &fixture.root.join("static/_cache/short-links.json"),
-        )
-        .unwrap();
-
-        assert_eq!(report.removed, 1);
-        assert_eq!(report.reused, 0);
-        assert!(!fixture.root.join("public/s/25fff").exists());
-
-        let manifest: ShortLinkManifest =
-            serde_json::from_str(&fixture.read("static/_cache/short-links.json")).unwrap();
-        assert!(manifest.retired_codes.contains("25fff"));
-        assert!(manifest.records[0].code.starts_with("26"));
-    }
-
-    #[test]
-    fn lowercases_explicit_slug_from_front_matter() {
-        let markdown = "+++\nslug = \"Kitauji-Power-Play\"\ntitle = \"Title\"\n+++\nbody\n";
-        assert_eq!(
-            parse_front_matter(markdown).unwrap().slug.as_deref(),
-            Some("kitauji-power-play")
-        );
-    }
-
-    #[test]
-    fn lowercases_fallback_slug_from_article_file_name() {
-        assert_eq!(
-            parse_article_file_name("2026-05-25-Kaori.md")
-                .unwrap()
-                .slug_tail,
-            "kaori"
-        );
-        assert_eq!(
-            parse_article_file_name("2024-04-05-NozoMizore.md")
-                .unwrap()
-                .slug_tail,
-            "nozomizore"
-        );
-        assert_eq!(
-            parse_article_file_name("2019-03-27-Nozomi.md")
-                .unwrap()
-                .slug_tail,
-            "nozomi"
-        );
-    }
-
-    #[test]
-    fn ensures_redirect_url_is_lowercase_with_mixed_case_source() {
-        let fixture = TestFixture::new("lowercase-redirect");
-        fixture.write(
-            "content/articles/2024-06-15-Kaori.md",
-            "+++\ntitle = \"Title\"\n+++\nbody\n",
-        );
-        fixture.write(
-            "public/search_index.zh.json",
-            r#"[{"url":"/articles/kaori/","title":"kaori"}]"#,
-        );
-        fixture.write("public/articles/kaori/index.html", "<html>kaori</html>");
-
-        generate_short_links(
-            &fixture.root.join("content/articles"),
-            &fixture.root.join("public"),
-            &fixture.root.join("static/_cache/short-links.json"),
-        )
-        .unwrap();
-
-        let manifest: ShortLinkManifest =
-            serde_json::from_str(&fixture.read("static/_cache/short-links.json")).unwrap();
-        assert_eq!(manifest.records[0].target_slug, "kaori");
-
-        let redirect = fixture.read(&format!("public/s/{}/index.html", manifest.records[0].code));
-        assert!(redirect.contains("/articles/kaori?from=%2Fs%2F"));
-        assert!(!redirect.contains("/articles/Kaori"));
-    }
-
-    #[test]
-    fn slugifies_fallback_tail_when_raw_target_is_not_built() {
-        let fixture = TestFixture::new("slugified-fallback");
-        fixture.write(
-            "content/articles/2024-04-05-Omae’s16th.md",
-            "+++\ntitle = \"Title\"\n+++\nbody\n",
-        );
-        fixture.write(
-            "public/search_index.zh.json",
-            r#"[{"url":"/articles/omae-s16th/","title":"omae"}]"#,
-        );
-        fixture.write("public/articles/omae-s16th/index.html", "<html>omae</html>");
-
-        generate_short_links(
-            &fixture.root.join("content/articles"),
-            &fixture.root.join("public"),
-            &fixture.root.join("static/_cache/short-links.json"),
-        )
-        .unwrap();
-
-        let manifest: ShortLinkManifest =
-            serde_json::from_str(&fixture.read("static/_cache/short-links.json")).unwrap();
-        assert_eq!(manifest.records[0].target_slug, "omae-s16th");
-    }
-
-    fn article(source_file: &str, target_slug: &str, year_prefix: &str) -> ActiveArticle {
-        ActiveArticle {
-            source_file: source_file.to_owned(),
-            target_slug: target_slug.to_owned(),
-            digest: digest_source_file_name(source_file),
-            year_prefix: year_prefix.to_owned(),
-        }
-    }
-
-    fn record(source_file: &str, target_slug: &str, code: &str) -> ShortLinkRecord {
-        ShortLinkRecord {
-            source_file: source_file.to_owned(),
-            target_slug: target_slug.to_owned(),
-            code: code.to_owned(),
-            digest: digest_source_file_name(source_file),
-        }
-    }
-
-    fn manifest(records: Vec<ShortLinkRecord>) -> ShortLinkManifest {
-        ShortLinkManifest {
-            records,
-            retired_codes: BTreeSet::new(),
-        }
-    }
-
-    struct TestFixture {
-        root: PathBuf,
-    }
-
-    impl TestFixture {
-        fn new(label: &str) -> Self {
-            let unique = SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap()
-                .as_nanos();
-            let root = std::env::temp_dir().join(format!(
-                "hibikilogy-short-links-{label}-{}-{unique}",
-                std::process::id(),
-            ));
-            fs::create_dir_all(&root).unwrap();
-            Self { root }
-        }
-
-        fn write(&self, relative: &str, contents: &str) {
-            let path = self.root.join(relative);
-            if let Some(parent) = path.parent() {
-                fs::create_dir_all(parent).unwrap();
-            }
-            fs::write(path, contents).unwrap();
-        }
-
-        fn read(&self, relative: &str) -> String {
-            fs::read_to_string(self.root.join(relative)).unwrap()
-        }
-    }
-
-    impl Drop for TestFixture {
-        fn drop(&mut self) {
-            let _ = fs::remove_dir_all(&self.root);
-        }
-    }
-}
+#[path = "tests/mod.rs"]
+mod tests;

@@ -1,3 +1,5 @@
+//! CSS unicode-range parsing owned by the body-font subset tool.
+
 use anyhow::{anyhow, Context, Result};
 
 #[derive(Debug, Clone, PartialEq, Eq)]

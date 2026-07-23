@@ -1,3 +1,5 @@
+//! Text extraction rules owned by the body-font subset tool.
+
 use anyhow::{Context, Result};
 
 use hibikilogy_tools::front_matter;

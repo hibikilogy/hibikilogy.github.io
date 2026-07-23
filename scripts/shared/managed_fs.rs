@@ -1,3 +1,5 @@
+//! Guarded and atomic filesystem operations for generated artifacts.
+
 use anyhow::{bail, Context, Result};
 use std::fs;
 use std::io::{ErrorKind, Write};

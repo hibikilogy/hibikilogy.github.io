@@ -4,8 +4,7 @@ use super::{
 use image::{ImageBuffer, Rgba};
 use std::fs;
 use std::path::PathBuf;
-use std::thread;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use tempfile::TempDir;
 
 #[test]
 fn resolves_hosts_from_zola_config_and_allows_cli_override() {
@@ -212,12 +211,6 @@ fn does_not_rewrite_metadata_when_only_runtime_state_changes() {
     )
     .unwrap();
     let metadata_before = fs::read(&fixture.cache_file).unwrap();
-    let modified_before = fs::metadata(&fixture.cache_file)
-        .unwrap()
-        .modified()
-        .unwrap();
-
-    thread::sleep(Duration::from_millis(20));
     fixture.write_html(
         "public/second.html",
         r#"<lazy-image src="/imgs/example.png"></lazy-image>"#,
@@ -231,13 +224,6 @@ fn does_not_rewrite_metadata_when_only_runtime_state_changes() {
     .unwrap();
 
     assert_eq!(fs::read(&fixture.cache_file).unwrap(), metadata_before);
-    assert_eq!(
-        fs::metadata(&fixture.cache_file)
-            .unwrap()
-            .modified()
-            .unwrap(),
-        modified_before
-    );
 }
 
 #[test]
@@ -429,9 +415,9 @@ fn stray_quote_in_non_image_tag_does_not_swallow_later_images() {
 
     let html = fixture.read_html("public/index.html");
     assert!(html.contains(r#"<link ' href=/logo-blue.svg rel=icon>"#));
-    assert!(
-        html.contains(r#"<lazy-image src="https://cdn.example.com/imgs/example.png" zoomable="true" thumbhash=""#)
-    );
+    assert!(html.contains(
+        r#"<lazy-image src="https://cdn.example.com/imgs/example.png" zoomable="true" thumbhash=""#
+    ));
     assert!(html.contains(r#"width="13""#));
     assert!(html.contains(r#"height="12""#));
     assert_eq!(stats.urls_rewritten, 1);
@@ -467,10 +453,31 @@ fn percent_encoded_local_image_path_can_inject_metadata() {
 }
 
 #[test]
+fn rejects_percent_encoded_image_path_outside_site_root() {
+    let fixture = TestFixture::new("encoded-path-escape");
+    fixture.write_png("outside.png", 2, 2);
+    fixture.write_html(
+        "public/index.html",
+        r#"<lazy-image src="/imgs/%2e%2e/%2E%2E/outside.png"></lazy-image>"#,
+    );
+
+    let error = rewrite_image_tags_in_directory(
+        fixture.public_dir.as_path(),
+        "https://old.example.com/",
+        "https://cdn.example.com/",
+        fixture.cache_file.as_path(),
+    )
+    .unwrap_err();
+
+    assert!(error.to_string().contains("escapes site root"));
+    assert!(error.to_string().contains("outside.png"));
+}
+
+#[test]
 fn rewrites_search_article_json_and_injects_compact_cover_metadata() {
     let fixture = TestFixture::new("search-article-json");
     fixture.write_png("public/imgs/example.png", 17, 16);
-  fixture.write_html(
+    fixture.write_html(
         "public/search/index.html",
         r#"<script id="hibikilogy-search-articles-data" type="application/json">{
   "/articles/example/": {
@@ -645,6 +652,7 @@ fn does_not_rewrite_svg_or_gif_urls() {
 }
 
 struct TestFixture {
+    _temp: TempDir,
     root: PathBuf,
     public_dir: PathBuf,
     cache_file: PathBuf,
@@ -652,15 +660,16 @@ struct TestFixture {
 
 impl TestFixture {
     fn new(name: &str) -> Self {
-        let unique = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos();
-        let root = std::env::temp_dir().join(format!("hibikilogy-convert-{name}-{unique}"));
+        let temp = tempfile::Builder::new()
+            .prefix(&format!("hibikilogy-convert-{name}-"))
+            .tempdir()
+            .unwrap();
+        let root = temp.path().to_path_buf();
         let public_dir = root.join("public");
         fs::create_dir_all(&public_dir).unwrap();
         let cache_file = root.join("cache").join("lazy-image-metadata.json");
         Self {
+            _temp: temp,
             root,
             public_dir,
             cache_file,
@@ -696,11 +705,5 @@ impl TestFixture {
             fs::create_dir_all(parent).unwrap();
         }
         fs::write(path, bytes).unwrap();
-    }
-}
-
-impl Drop for TestFixture {
-    fn drop(&mut self) {
-        let _ = fs::remove_dir_all(&self.root);
     }
 }

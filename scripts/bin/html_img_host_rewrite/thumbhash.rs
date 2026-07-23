@@ -1,5 +1,7 @@
 ﻿use std::f32::consts::PI;
 
+// ThumbHash encoding owned by the HTML image rewrite tool.
+
 /// Encodes an RGBA image to a ThumbHash.
 ///
 /// RGB must not be premultiplied by alpha. The input width and height must be

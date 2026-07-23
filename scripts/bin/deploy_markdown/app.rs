@@ -1,6 +1,7 @@
 use anyhow::{bail, Context, Result};
 use clap::Parser;
 use hibikilogy_tools::article_source::parse_article_file_name;
+use hibikilogy_tools::content_files::sorted_markdown_files;
 use hibikilogy_tools::content_routes::{
     ensure_built_page_exists, normalize_route_path, parse_page_front_matter,
     slugify_path_component, validate_slug,
@@ -8,8 +9,10 @@ use hibikilogy_tools::content_routes::{
 #[cfg(test)]
 use hibikilogy_tools::managed_fs::atomic_sidecar_path as manifest_sidecar_path;
 use hibikilogy_tools::managed_fs::{
-    ensure_directory_beneath, recover_atomic_file, reject_symlink_or_directory, write_atomic,
+    ensure_directory_beneath, recover_atomic_file, reject_symlink_or_directory,
 };
+use hibikilogy_tools::managed_json;
+use hibikilogy_tools::url_encoding::encode_path;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::env;
@@ -100,7 +103,7 @@ struct ExportOptions<'a> {
     revision: &'a str,
 }
 
-fn main() -> Result<()> {
+pub fn run() -> Result<()> {
     let args = Args::parse();
     let repository_root = resolve_repository_root(args.repository_root.as_deref())?;
     let base_url = match args.base_url {
@@ -228,33 +231,7 @@ fn collect_sources(
     repository_root: &Path,
     site_root: &Path,
 ) -> Result<Vec<ExportSource>> {
-    let mut markdown_paths = Vec::new();
-    for entry in fs::read_dir(content_dir)
-        .with_context(|| format!("failed to read {}", content_dir.display()))?
-    {
-        let entry = entry
-            .with_context(|| format!("failed to read an entry in {}", content_dir.display()))?;
-        let path = entry.path();
-        let file_type = entry
-            .file_type()
-            .with_context(|| format!("failed to inspect {}", path.display()))?;
-
-        if file_type.is_symlink() {
-            if path.extension() == Some(OsStr::new("md")) {
-                bail!("Markdown symlinks are not supported: {}", path.display());
-            }
-            continue;
-        }
-        if file_type.is_file()
-            && path.extension() == Some(OsStr::new("md"))
-            && path.file_name() != Some(OsStr::new("_index.md"))
-        {
-            markdown_paths.push(path);
-        }
-    }
-    markdown_paths.sort_unstable();
-
-    markdown_paths
+    sorted_markdown_files(content_dir, true)?
         .into_iter()
         .map(|path| resolve_source(&path, kind, repository_root, site_root))
         .collect()
@@ -399,7 +376,7 @@ fn write_export(
         .with_context(|| format!("failed to read {}", source.source_path.display()))?;
     let source_url = format!(
         "https://github.com/{repository}/blob/{revision}/{}",
-        percent_encode_path(&source.source_relative),
+        encode_path(&source.source_relative),
     );
     let page_url = format!("{}/{}", base_url.trim_end_matches('/'), source.route);
     let annotated = annotate_markdown(&markdown, &source_url, &page_url);
@@ -507,7 +484,7 @@ fn is_generated_output_for_source(markdown: &str, source: &ExportSource, reposit
         return false;
     };
     validate_revision(revision).is_ok()
-        && encoded_path == percent_encode_path(&source.source_relative)
+        && encoded_path == encode_path(&source.source_relative)
         && (page_url.starts_with("https://") || page_url.starts_with("http://"))
         && page_url
             .trim_end_matches('/')
@@ -634,22 +611,6 @@ fn validate_revision(revision: &str) -> Result<()> {
     Ok(())
 }
 
-fn percent_encode_path(path: &str) -> String {
-    let mut encoded = String::with_capacity(path.len());
-    for byte in path.bytes() {
-        match byte {
-            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' | b'/' => {
-                encoded.push(byte as char)
-            }
-            _ => {
-                use std::fmt::Write as _;
-                write!(&mut encoded, "%{byte:02X}").expect("writing to a String cannot fail");
-            }
-        }
-    }
-    encoded
-}
-
 fn repository_relative_path(repository_root: &Path, path: &Path) -> Result<String> {
     let root = repository_root
         .canonicalize()
@@ -727,10 +688,7 @@ fn load_manifest(path: &Path) -> Result<MarkdownManifest> {
     if !path.exists() {
         return Ok(MarkdownManifest::default());
     }
-    let json =
-        fs::read_to_string(path).with_context(|| format!("failed to read {}", path.display()))?;
-    let manifest: MarkdownManifest = serde_json::from_str(&json)
-        .with_context(|| format!("failed to parse {}", path.display()))?;
+    let manifest: MarkdownManifest = managed_json::load(path)?;
     validate_manifest(&manifest)?;
     Ok(manifest)
 }
@@ -753,346 +711,9 @@ fn validate_manifest(manifest: &MarkdownManifest) -> Result<()> {
 
 fn save_manifest(path: &Path, manifest: &MarkdownManifest) -> Result<()> {
     validate_manifest(manifest)?;
-    let mut json =
-        serde_json::to_string_pretty(manifest).context("failed to serialize Markdown manifest")?;
-    json.push('\n');
-    write_atomic(path, json.as_bytes())
-        .with_context(|| format!("failed to write {}", path.display()))
+    managed_json::save_pretty(path, manifest)
 }
 
 #[cfg(test)]
-mod tests {
-    use super::{
-        annotate_markdown, export_markdown, repository_from_remote, repository_relative_path,
-        select_revision, ManifestRecord, MarkdownManifest,
-    };
-    use std::fs;
-    use std::path::PathBuf;
-    use std::process::Command;
-    use std::time::{SystemTime, UNIX_EPOCH};
-
-    const REVISION: &str = "0123456789abcdef0123456789abcdef01234567";
-
-    #[test]
-    fn inserts_comments_inside_front_matter_without_changing_body() {
-        let markdown = "+++\ntitle = \"标题\"\n+++\n\n正文\n";
-        let annotated = annotate_markdown(
-            markdown,
-            "https://github.com/owner/repo/blob/sha/content/page.md",
-            "https://example.com/docs/page",
-        );
-        assert!(annotated.starts_with("+++\n# Source: https://github.com/"));
-        assert!(annotated.contains("# Page: https://example.com/docs/page\ntitle = \"标题\""));
-        assert!(annotated.ends_with("+++\n\n正文\n"));
-    }
-
-    #[test]
-    fn generates_article_and_document_routes_with_effective_base_url() {
-        let fixture = Fixture::new("routes");
-        fixture.write(
-            "content/articles/2026-02-12-source-name.md",
-            "+++\nslug = \"canonical-name\"\n+++\n文章正文\n",
-        );
-        fixture.write(
-            "content/docs/guide.md",
-            "+++\ntitle = \"Guide\"\n+++\nDoc body\n",
-        );
-        fixture.write("public/articles/canonical-name/index.html", "article");
-        fixture.write("public/docs/guide/index.html", "doc");
-
-        let report = fixture.export("https://preview.example/").unwrap();
-
-        assert_eq!(report.written, 2);
-        let article = fixture.read("public/articles/canonical-name.md");
-        assert!(article.contains(&format!(
-            "# Source: https://github.com/owner/repo/blob/{REVISION}/content/articles/2026-02-12-source-name.md"
-        )));
-        assert!(article.contains("# Page: https://preview.example/articles/canonical-name"));
-        assert!(article.contains("content/articles/2026-02-12-source-name.md"));
-        assert!(article.ends_with("+++\n文章正文\n"));
-        assert!(fixture.root.join("public/docs/guide.md").is_file());
-    }
-
-    #[test]
-    fn slugifies_fallback_and_percent_encodes_source_url() {
-        let fixture = Fixture::new("slugify");
-        fixture.write(
-            "content/articles/2024-04-05-Omae’s16th.md",
-            "+++\ntitle = \"Title\"\n+++\nbody\n",
-        );
-        fixture.write("public/articles/omae-s16th/index.html", "article");
-
-        fixture.export("https://example.com").unwrap();
-        let output = fixture.read("public/articles/omae-s16th.md");
-        assert!(output.contains("Omae%E2%80%99s16th.md"));
-    }
-
-    #[test]
-    fn removes_only_orphaned_manifest_outputs() {
-        let fixture = Fixture::new("cleanup");
-        fixture.write(
-            "content/articles/2026-02-12-current.md",
-            "+++\nslug = \"current\"\n+++\nbody\n",
-        );
-        fixture.write("public/articles/current/index.html", "article");
-        fixture.write("public/articles/old.md", "old generated");
-        fixture.write("public/articles/manual.md", "manual");
-        let manifest = MarkdownManifest {
-            records: vec![ManifestRecord {
-                source_path: "content/articles/old.md".to_owned(),
-                route: "/articles/old".to_owned(),
-                output_path: "articles/old.md".to_owned(),
-            }],
-            pending_records: None,
-        };
-        fixture.write(
-            "static/_cache/deploy-markdown.json",
-            &serde_json::to_string(&manifest).unwrap(),
-        );
-
-        let report = fixture.export("https://example.com").unwrap();
-
-        assert_eq!(report.removed, 1);
-        assert!(!fixture.root.join("public/articles/old.md").exists());
-        assert!(fixture.root.join("public/articles/manual.md").is_file());
-    }
-
-    #[test]
-    fn refuses_to_overwrite_unmanaged_markdown_output() {
-        let fixture = Fixture::new("unmanaged-output");
-        fixture.write(
-            "content/articles/2026-02-12-current.md",
-            "+++\nslug = \"current\"\n+++\nbody\n",
-        );
-        fixture.write("public/articles/current/index.html", "article");
-        fixture.write("public/articles/current.md", "manual");
-
-        assert!(fixture.export("https://example.com").is_err());
-        assert_eq!(fixture.read("public/articles/current.md"), "manual");
-    }
-
-    #[test]
-    fn fails_when_built_target_is_missing() {
-        let fixture = Fixture::new("missing-target");
-        fixture.write(
-            "content/articles/2026-02-12-missing.md",
-            "+++\ntitle = \"Missing\"\n+++\nbody\n",
-        );
-        assert!(fixture.export("https://example.com").is_err());
-    }
-
-    #[test]
-    fn parses_supported_git_remotes() {
-        assert_eq!(
-            repository_from_remote("git@github.com:owner/repo.git").unwrap(),
-            "owner/repo"
-        );
-        assert_eq!(
-            repository_from_remote("https://github.com/owner/repo.git").unwrap(),
-            "owner/repo"
-        );
-    }
-
-    #[test]
-    fn reclaims_generated_output_when_manifest_was_removed() {
-        let fixture = Fixture::new("missing-manifest");
-        fixture.write(
-            "content/articles/2026-02-12-current.md",
-            "+++\nslug = \"current\"\n+++\nbody\n",
-        );
-        fixture.write("public/articles/current/index.html", "article");
-        fixture.export("https://example.com").unwrap();
-        fs::remove_file(fixture.manifest_path()).unwrap();
-
-        fixture.export("https://preview.example").unwrap();
-
-        let output = fixture.read("public/articles/current.md");
-        assert!(output.contains("# Page: https://preview.example/articles/current"));
-    }
-
-    #[test]
-    fn resumes_from_pending_manifest_records() {
-        let fixture = Fixture::new("pending-manifest");
-        fixture.write(
-            "content/articles/2026-02-12-current.md",
-            "+++\nslug = \"current\"\n+++\nbody\n",
-        );
-        fixture.write("public/articles/current/index.html", "article");
-        fixture.export("https://example.com").unwrap();
-        let final_manifest: MarkdownManifest =
-            serde_json::from_str(&fixture.read_manifest()).unwrap();
-        fixture.write_manifest(&MarkdownManifest {
-            records: Vec::new(),
-            pending_records: Some(final_manifest.records),
-        });
-
-        fixture.export("https://example.com").unwrap();
-
-        let recovered: MarkdownManifest = serde_json::from_str(&fixture.read_manifest()).unwrap();
-        assert!(recovered.pending_records.is_none());
-        assert_eq!(recovered.records.len(), 1);
-    }
-
-    #[test]
-    fn recovers_manifest_from_interrupted_replacement_backup() {
-        let fixture = Fixture::new("manifest-backup");
-        fixture.write(
-            "content/articles/2026-02-12-current.md",
-            "+++\nslug = \"current\"\n+++\nbody\n",
-        );
-        fixture.write("public/articles/current/index.html", "article");
-        fixture.export("https://example.com").unwrap();
-        let manifest = fixture.manifest_path();
-        fs::rename(&manifest, super::manifest_sidecar_path(&manifest, "bak")).unwrap();
-
-        fixture.export("https://example.com").unwrap();
-
-        assert!(fixture.manifest_path().is_file());
-    }
-
-    #[test]
-    fn selects_revision_without_using_branch_names() {
-        let head = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-        let github = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
-        let explicit = "cccccccccccccccccccccccccccccccccccccccc";
-        assert_eq!(
-            select_revision(Some(explicit), Some(github), head),
-            explicit
-        );
-        assert_eq!(select_revision(None, Some(github), head), github);
-        assert_eq!(select_revision(None, None, head), head);
-    }
-
-    #[test]
-    fn rejects_sources_outside_repository_root() {
-        let fixture = Fixture::new("outside-root");
-        let outside = fixture.root.parent().unwrap();
-        assert!(repository_relative_path(&fixture.root, outside).is_err());
-    }
-
-    #[test]
-    fn detects_modified_and_untracked_markdown_sources() {
-        let fixture = Fixture::new("dirty-sources");
-        fixture.write(
-            "content/articles/2026-02-12-current.md",
-            "+++\nslug = \"current\"\n+++\nbody\n",
-        );
-        let revision = fixture.initialize_git();
-        let roots = [
-            fixture.root.join("content/articles"),
-            fixture.root.join("content/docs"),
-        ];
-        let root_refs = roots.iter().map(PathBuf::as_path).collect::<Vec<_>>();
-        assert!(super::ensure_sources_match_revision(&fixture.root, &revision, &root_refs).is_ok());
-
-        fixture.write(
-            "content/articles/2026-02-12-current.md",
-            "+++\nslug = \"current\"\n+++\nchanged\n",
-        );
-        assert!(
-            super::ensure_sources_match_revision(&fixture.root, &revision, &root_refs).is_err()
-        );
-
-        fixture.write(
-            "content/articles/2026-02-12-current.md",
-            "+++\nslug = \"current\"\n+++\nbody\n",
-        );
-        fixture.write("content/docs/untracked.md", "untracked\n");
-        assert!(
-            super::ensure_sources_match_revision(&fixture.root, &revision, &root_refs).is_err()
-        );
-    }
-
-    struct Fixture {
-        root: PathBuf,
-    }
-
-    impl Fixture {
-        fn new(label: &str) -> Self {
-            let unique = SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap()
-                .as_nanos();
-            let root = std::env::temp_dir().join(format!(
-                "hibikilogy-deploy-markdown-{label}-{}-{unique}",
-                std::process::id(),
-            ));
-            fs::create_dir_all(root.join("content/articles")).unwrap();
-            fs::create_dir_all(root.join("content/docs")).unwrap();
-            fs::create_dir_all(root.join("public")).unwrap();
-            Self { root }
-        }
-
-        fn write(&self, relative: &str, contents: &str) {
-            let path = self.root.join(relative);
-            if let Some(parent) = path.parent() {
-                fs::create_dir_all(parent).unwrap();
-            }
-            fs::write(path, contents).unwrap();
-        }
-
-        fn read(&self, relative: &str) -> String {
-            fs::read_to_string(self.root.join(relative)).unwrap()
-        }
-
-        fn export(&self, base_url: &str) -> anyhow::Result<super::ExportReport> {
-            export_markdown(
-                &self.root.join("content/articles"),
-                &self.root.join("content/docs"),
-                super::ExportOptions {
-                    repository_root: &self.root,
-                    site_root: &self.root.join("public"),
-                    manifest_path: &self.manifest_path(),
-                    base_url,
-                    repository: "owner/repo",
-                    revision: REVISION,
-                },
-            )
-        }
-
-        fn manifest_path(&self) -> PathBuf {
-            self.root.join("static/_cache/deploy-markdown.json")
-        }
-
-        fn read_manifest(&self) -> String {
-            fs::read_to_string(self.manifest_path()).unwrap()
-        }
-
-        fn write_manifest(&self, manifest: &MarkdownManifest) {
-            self.write(
-                "static/_cache/deploy-markdown.json",
-                &serde_json::to_string(manifest).unwrap(),
-            );
-        }
-
-        fn initialize_git(&self) -> String {
-            for arguments in [
-                vec!["init"],
-                vec!["config", "user.email", "tests@example.com"],
-                vec!["config", "user.name", "Hibikilogy Tests"],
-                vec!["add", "content"],
-                vec!["commit", "-m", "test fixture"],
-            ] {
-                let output = Command::new("git")
-                    .current_dir(&self.root)
-                    .args(arguments)
-                    .output()
-                    .unwrap();
-                assert!(output.status.success());
-            }
-            let output = Command::new("git")
-                .current_dir(&self.root)
-                .args(["rev-parse", "HEAD"])
-                .output()
-                .unwrap();
-            assert!(output.status.success());
-            String::from_utf8(output.stdout).unwrap().trim().to_owned()
-        }
-    }
-
-    impl Drop for Fixture {
-        fn drop(&mut self) {
-            let _ = fs::remove_dir_all(&self.root);
-        }
-    }
-}
+#[path = "tests/mod.rs"]
+mod tests;

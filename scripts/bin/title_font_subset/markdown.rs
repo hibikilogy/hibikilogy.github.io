@@ -1,3 +1,5 @@
+//! Markdown title extraction owned by the title-font subset tool.
+
 use anyhow::Result;
 
 use hibikilogy_tools::front_matter;

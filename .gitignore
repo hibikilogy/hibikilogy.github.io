@@ -28,7 +28,7 @@ public/
 .claude
 .workbuddy
 .remember
-tests/
+/tests/
 tmp_*/
 __pycache__
 themes/hibikilogy/static/js

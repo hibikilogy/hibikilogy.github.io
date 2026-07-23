@@ -1,3 +1,5 @@
+//! Article source-file naming and publication-date parsing.
+
 use anyhow::{bail, Context, Result};
 use chrono::{Datelike, NaiveDate};
 use std::path::Path;

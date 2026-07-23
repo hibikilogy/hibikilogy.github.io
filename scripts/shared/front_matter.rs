@@ -1,3 +1,5 @@
+//! TOML front matter parsing shared by content tools.
+
 use anyhow::{bail, Context, Result};
 
 pub fn split_toml_front_matter(markdown: &str) -> Result<Option<(&str, &str)>> {

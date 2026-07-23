@@ -1,8 +1,10 @@
+//! Canonical content slug and built-route resolution.
+
 use anyhow::{bail, Context, Result};
 use serde::Deserialize;
 use std::path::{Component, Path, PathBuf};
 
-pub use crate::front_matter::extract_toml_front_matter;
+pub use super::front_matter::extract_toml_front_matter;
 
 #[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize)]
 pub struct PageFrontMatter {

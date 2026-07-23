@@ -1,3 +1,5 @@
+//! Codepoint filtering owned by the title-font subset tool.
+
 use std::collections::BTreeSet;
 
 const DEFAULT_RETAINED_RANGES: &[(u32, u32)] = &[(0x0020, 0x007E)];

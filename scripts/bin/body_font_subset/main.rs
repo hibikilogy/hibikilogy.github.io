@@ -5,21 +5,17 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
-#[path = "body_text.rs"]
-mod body_text;
-#[path = "css_coverage.rs"]
 mod css_coverage;
-#[path = "font_asset.rs"]
-mod font_asset;
+mod text;
 
-use body_text::{
+use css_coverage::{filter_uncovered_codepoints, write_comment_only_css, CssUnicodeRanges};
+use hibikilogy_tools::font::asset::{
+    font_url_for_css, hashed_output_file_name, publish_font_artifacts, subset_with_skera,
+    write_font_css, FontFaceDescriptors,
+};
+use text::{
     collect_all_toml_strings, collect_non_title_front_matter_strings, extract_markdown_body,
     parse_toml_document, parse_toml_front_matter,
-};
-use css_coverage::{filter_uncovered_codepoints, write_comment_only_css, CssUnicodeRanges};
-use font_asset::{
-    font_url_for_css, hashed_output_file_name, remove_old_font_outputs, subset_with_skera,
-    write_font_css, FontFaceDescriptors,
 };
 
 #[derive(Debug, Parser)]
@@ -159,18 +155,20 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
     let uncovered_codepoints =
         filter_uncovered_codepoints(extracted_codepoints.iter().copied(), &covered);
 
-    let cleanup = remove_old_font_outputs(&options.font_output_dir, &options.output_file, None)?;
     let css_path = options.css_output_dir.join(&options.css_file);
 
     if uncovered_codepoints.is_empty() {
-        fs::write(
+        let css = write_comment_only_css(
+            "body-font-subset",
+            "No supplemental body glyphs were required.",
+        );
+        let cleanup = publish_font_artifacts(
+            &options.font_output_dir,
+            &options.output_file,
+            None,
             &css_path,
-            write_comment_only_css(
-                "body-font-subset",
-                "No supplemental body glyphs were required.",
-            ),
-        )
-        .with_context(|| format!("failed to write {}", css_path.display()))?;
+            &css,
+        )?;
 
         return Ok(GenerateReport {
             markdown_files: collected.markdown_files,
@@ -191,9 +189,6 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
 
     let output_file = hashed_output_file_name(&options.output_file, &woff2);
     let output_path = options.font_output_dir.join(&output_file);
-    fs::write(&output_path, &woff2)
-        .with_context(|| format!("failed to write {}", output_path.display()))?;
-
     let font_url = font_url_for_css(&options.css_output_dir, &output_path)?;
     let css = write_font_css(
         "body-font-subset",
@@ -203,7 +198,13 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
         "swap",
         FontFaceDescriptors::VARIABLE,
     );
-    fs::write(&css_path, css).with_context(|| format!("failed to write {}", css_path.display()))?;
+    let cleanup = publish_font_artifacts(
+        &options.font_output_dir,
+        &options.output_file,
+        Some((&output_file, &woff2)),
+        &css_path,
+        &css,
+    )?;
 
     Ok(GenerateReport {
         markdown_files: collected.markdown_files,

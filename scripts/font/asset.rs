@@ -1,3 +1,6 @@
+//! Font subsetting and generated font-asset publication shared by font tools.
+
+use crate::managed_fs::write_atomic;
 use anyhow::{anyhow, Context, Result};
 use skera::{subset_font, Plan, SubsetFlags};
 use std::fs;
@@ -115,6 +118,27 @@ pub fn remove_old_font_outputs(
     report.removed.sort();
     report.skipped.sort();
     Ok(report)
+}
+
+pub fn publish_font_artifacts(
+    font_output_dir: &Path,
+    template_file: &str,
+    font: Option<(&str, &[u8])>,
+    css_path: &Path,
+    css: &str,
+) -> Result<CleanupReport> {
+    let keep_file = if let Some((file_name, bytes)) = font {
+        let output_path = font_output_dir.join(file_name);
+        write_atomic(&output_path, bytes)
+            .with_context(|| format!("failed to publish {}", output_path.display()))?;
+        Some(file_name)
+    } else {
+        None
+    };
+
+    write_atomic(css_path, css.as_bytes())
+        .with_context(|| format!("failed to publish {}", css_path.display()))?;
+    remove_old_font_outputs(font_output_dir, template_file, keep_file)
 }
 
 pub fn write_font_css(
