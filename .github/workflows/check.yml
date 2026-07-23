@@ -132,7 +132,7 @@ jobs:
       # all-features is required so tests attached to the font/image binaries
       # are not skipped by their required-features declarations.
       - name: Run Rust tests
-        run: cargo nextest run --locked --all-features --profile ci
+        run: cargo nextest run --locked --all-features --config-file nextest.toml --profile ci
 
       # cargo-nextest does not execute doctests.
       - name: Run Rust doctests

@@ -57,7 +57,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       - name: Generate Rust coverage
-        run: cargo llvm-cov nextest --locked --all-features --profile ci --lcov --output-path target/lcov.info
+        run: cargo llvm-cov nextest --locked --all-features --config-file nextest.toml --profile ci --lcov --output-path target/lcov.info
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v7
