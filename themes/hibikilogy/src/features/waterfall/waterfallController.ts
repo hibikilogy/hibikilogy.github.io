@@ -228,7 +228,11 @@ export function createWaterfallController(
   if (document.fonts)
     void document.fonts.ready.then(scheduleLayout)
 
-  void scheduleLayout()
+  // Run the first layout synchronously so scroll restoration (which the
+  // scroll plugin defers by one frame) measures the laid-out document.
+  catchError(() => {
+    applyLayout()
+  })
 
   return {
     dispose() {

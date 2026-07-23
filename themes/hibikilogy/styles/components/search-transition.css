@@ -44,10 +44,6 @@
     transform: translateY(calc(4vh * var(--search-overlay-direction, 1)));
   }
 
-  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'].is-animating.is-rendering main.Content {
-    transform: translateY(calc(-4vh * var(--search-overlay-direction, 1)));
-  }
-
   html[data-search-overlay='active'].is-rendering main.Content,
   html[data-search-overlay='active']:not(.is-changing) main.Content {
     transform: translateY(0);
