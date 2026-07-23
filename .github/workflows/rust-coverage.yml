@@ -1,0 +1,68 @@
+name: Rust coverage
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - Refactor/zola
+    paths:
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'rust-toolchain.toml'
+      - '.config/nextest.toml'
+      - 'scripts/**'
+      - '.github/workflows/rust-coverage.yml'
+  pull_request:
+    branches: [next, main, dev]
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'rust-toolchain.toml'
+      - '.config/nextest.toml'
+      - 'scripts/**'
+      - '.github/workflows/rust-coverage.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rust-coverage-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_PROFILE_DEV_DEBUG: 0
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: 1.97.1
+          components: llvm-tools-preview
+
+      - name: Setup Rust test tools
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-llvm-cov@0.8.7,nextest@0.9.140
+          fallback: none
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Generate Rust coverage
+        run: cargo llvm-cov nextest --locked --all-features --profile ci --lcov --output-path target/lcov.info
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v7
+        with:
+          name: rust-lcov
+          path: target/lcov.info
+          if-no-files-found: error
+          retention-days: 14

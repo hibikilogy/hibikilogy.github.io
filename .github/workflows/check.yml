@@ -92,6 +92,12 @@ jobs:
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
 
+      - name: Setup cargo-nextest
+        uses: taiki-e/install-action@v2
+        with:
+          tool: nextest@0.9.140
+          fallback: none
+
       # pnpm lint 会先生成模板引用的 Vite CSS，再运行 zola check
       - name: Zola Check
         run: pnpm lint
@@ -118,5 +124,9 @@ jobs:
 
       # all-features is required so tests attached to the font/image binaries
       # are not skipped by their required-features declarations.
-      - name: Run cargo tests
-        run: cargo test --locked --all-features
+      - name: Run Rust tests
+        run: cargo nextest run --locked --all-features --profile ci
+
+      # cargo-nextest does not execute doctests.
+      - name: Run Rust doctests
+        run: cargo test --locked --all-features --doc
