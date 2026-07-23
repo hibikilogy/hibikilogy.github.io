@@ -4,6 +4,3 @@ export {
   mountAccordions,
 } from './article/index.ts'
 export { disposeOutline, initOutline } from './outline/index.ts'
-export {
-  formatZhPublishDate,
-} from './utils.ts'

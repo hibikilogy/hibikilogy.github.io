@@ -1,5 +1,5 @@
 import type { SearchPaginationOptions } from './types.ts'
-import { searchDom } from './dom.ts'
+import { searchDom } from '../searchDom.ts'
 
 export function renderSearchPagination(options: SearchPaginationOptions, root: ParentNode): void {
   const pagination = root.querySelector<HTMLElement>(searchDom.pagination)

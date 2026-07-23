@@ -1,8 +1,8 @@
 import type { RouteModel } from 'app/hooks/index.ts'
 import type { SearchService } from '../types.ts'
-import { useEventListener } from 'app/hooks/index.ts'
+import { useEventListener } from 'shared/hooks/index.ts'
 import { searchFocusIntentKey } from '../config.ts'
-import { focusSearchInput, searchDom } from '../page/dom.ts'
+import { focusSearchInput, searchDom } from '../searchDom.ts'
 
 function isEditableTarget(target: EventTarget | null): boolean {
   return target instanceof HTMLElement && (

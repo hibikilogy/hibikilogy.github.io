@@ -1,9 +1,9 @@
 import type { SearchResultRecord } from '../types.ts'
 import { html, nothing } from 'lit'
-import { formatZhPublishDate } from 'ui/index.ts'
 import { HIBIKILOGY_TRANSLATIONS } from 'virtual:hibikilogy-config'
 import { parseSearchQuery } from '../core/query.ts'
 import { createExcerpt, getPathSlug, normalizeSiteUrl } from '../utils.ts'
+import { formatPublishDate } from './formatPublishDate.ts'
 
 export function renderSearchArticle(
   result: SearchResultRecord,
@@ -89,7 +89,7 @@ function renderMeta(result: SearchResultRecord) {
       ${publishDate
         ? html`
           <time class="article-publish-date" datetime=${publishDate}>
-            ${formatZhPublishDate(publishDate)}
+            ${formatPublishDate(publishDate)}
           </time>
         `
         : nothing}

@@ -1,9 +1,9 @@
 import type { AppContext, PageContext } from 'app/index.ts'
 import { onScopeDispose, watch } from '@vue/reactivity'
-import { useEventListener } from 'app/hooks/index.ts'
+import { useEventListener } from 'shared/hooks/index.ts'
 import { searchFocusIntentKey } from '../config.ts'
 import { useSearch } from '../hooks/useSearch.ts'
-import { focusSearchInput, searchDom } from './dom.ts'
+import { focusSearchInput, searchDom } from '../searchDom.ts'
 import { createSearchView } from './searchView.ts'
 import { createSearchSnapshotStore } from './snapshotStore.ts'
 

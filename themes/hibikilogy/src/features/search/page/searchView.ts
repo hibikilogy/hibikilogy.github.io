@@ -3,8 +3,8 @@ import type { SearchJournalMotion } from './motion.ts'
 import type { SearchView } from './types.ts'
 import { html, nothing, render } from 'lit'
 import { searchMessages } from '../config.ts'
+import { searchDom } from '../searchDom.ts'
 import { getSearchHighlightTerms, renderSearchArticle } from './articleView.ts'
-import { searchDom } from './dom.ts'
 import { resolveSearchLoadingMessage } from './loadingMessage.ts'
 import {
   transitionSearchJournalResults,

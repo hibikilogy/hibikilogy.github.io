@@ -1,5 +1,5 @@
 import type { RouteModel } from './types.ts'
-import { useEventListener } from './useEventListener.ts'
+import { useEventListener } from '../../shared/hooks/index.ts'
 
 export function usePaginationNavigation(route: RouteModel): void {
   useEventListener(document, 'page-change', (event) => {

@@ -1,7 +1,7 @@
 import type { LayoutModel, RouteModel } from './types.ts'
 import { computed, onScopeDispose, readonly, ref, watch } from '@vue/reactivity'
+import { useEventListener } from '../../shared/hooks/index.ts'
 import { navbarDom, syncNavbarView } from '../../ui/navbar/index.ts'
-import { useEventListener } from './useEventListener.ts'
 
 export function useLayout(root: ParentNode, route: RouteModel): LayoutModel {
   const navbarOpen = ref(false)

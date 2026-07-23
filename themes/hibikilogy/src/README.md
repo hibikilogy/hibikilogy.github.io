@@ -90,7 +90,7 @@ event -> action -> owning hook/service -> state -> computed ViewModel -> render
 | 页面 | `shared/dom.ts#pageDom` |
 | Navbar | `ui/navbar/config.ts#navbarDom` |
 | Outline | `ui/outline/config.ts#outlineDom` |
-| Search | `features/search/page/dom.ts#searchDom` |
+| Search | `features/search/searchDom.ts#searchDom` |
 
 单文件 selector 保持局部。DOM contract 变更同时检查模板、CSS、TS、fixture 和 Shadow DOM。内部意图使用 `data-action`；Web Component 可使用具名 `CustomEvent`，由所属 Feature 消费。
 

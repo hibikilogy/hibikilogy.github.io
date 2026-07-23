@@ -1,5 +1,5 @@
 import type { SearchTagItem } from '../types.ts'
-import { searchDom } from './dom.ts'
+import { searchDom } from '../searchDom.ts'
 
 interface SearchTagsListElement extends HTMLElement {
   setItems?: (items: SearchTagItem[]) => void
