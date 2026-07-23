@@ -1,8 +1,10 @@
-import { waitForAnimationFrame } from '../../shared/animation.ts'
+import { wait, waitForAnimationFrame } from '../../shared/animation.ts'
 import {
   postTitleDom,
   svgNamespace,
+  titleFontWaitLimit,
   titleLayoutStabilityFrameLimit,
+  titleLayoutWarmDuration,
 } from './config.ts'
 import { roundCoordinate } from './utils.ts'
 
@@ -24,6 +26,14 @@ interface RenderTitleOptions {
   finalViewTransitionName?: string
   preserveTextShadow?: boolean
 }
+
+interface StableTitleLayout {
+  rect: DOMRect
+  timestamp: number
+}
+
+const stableTitleLayouts = new WeakMap<HTMLElement, StableTitleLayout>()
+const pendingTitleLayouts = new WeakMap<HTMLElement, Promise<void>>()
 
 export function findSourceTitle(trigger?: Element): HTMLElement | null {
   const triggeredTitle = trigger?.matches(postTitleDom.titleSelector)
@@ -62,7 +72,43 @@ export function countTitleGlyphs(element: Element): number {
   return getVisibleGraphemes(text).length
 }
 
+export function getTitleTextNode(element: Element): Text | null {
+  const textElement = getTitleTextElement(element)
+  if (!textElement)
+    return null
+
+  return [...textElement.childNodes].find(
+    (node): node is Text => node instanceof Text && Boolean(node.data.trim()),
+  ) || null
+}
+
 export async function waitForStableTitleLayout(element: HTMLElement): Promise<void> {
+  const currentRect = element.getBoundingClientRect()
+  const stable = stableTitleLayouts.get(element)
+  if (
+    stable
+    && Date.now() - stable.timestamp <= titleLayoutWarmDuration
+    && haveEqualGeometry(stable.rect, currentRect)
+  ) {
+    return
+  }
+
+  const pending = pendingTitleLayouts.get(element)
+  if (pending)
+    return pending
+
+  const preparation = stabilizeTitleLayout(element)
+  pendingTitleLayouts.set(element, preparation)
+  try {
+    await preparation
+  }
+  finally {
+    if (pendingTitleLayouts.get(element) === preparation)
+      pendingTitleLayouts.delete(element)
+  }
+}
+
+async function stabilizeTitleLayout(element: HTMLElement): Promise<void> {
   const textElement = getTitleTextElement(element)
   const text = textElement?.textContent
   if (!textElement || !text)
@@ -70,16 +116,31 @@ export async function waitForStableTitleLayout(element: HTMLElement): Promise<vo
 
   const computed = window.getComputedStyle(textElement)
   const font = `${computed.fontStyle} ${computed.fontWeight} ${computed.fontSize} ${computed.fontFamily}`
-  await document.fonts.load(font, text).catch(() => [])
+  if (!document.fonts.check(font, text)) {
+    await Promise.race([
+      document.fonts.load(font, text).catch(() => []),
+      wait(titleFontWaitLimit),
+    ])
+  }
 
   let previousRect = textElement.getBoundingClientRect()
   for (let frame = 0; frame < titleLayoutStabilityFrameLimit; frame++) {
     await waitForAnimationFrame()
     const currentRect = textElement.getBoundingClientRect()
-    if (haveEqualGeometry(previousRect, currentRect))
+    if (haveEqualGeometry(previousRect, currentRect)) {
+      stableTitleLayouts.set(element, {
+        rect: element.getBoundingClientRect(),
+        timestamp: Date.now(),
+      })
       return
+    }
     previousRect = currentRect
   }
+
+  stableTitleLayouts.set(element, {
+    rect: element.getBoundingClientRect(),
+    timestamp: Date.now(),
+  })
 }
 
 export function renderTitle(
@@ -87,8 +148,8 @@ export function renderTitle(
   options: RenderTitleOptions = {},
 ): RenderedTitle | null {
   const textElement = getTitleTextElement(element)
-  const textNode = textElement?.firstChild
-  if (!textElement || !(textNode instanceof Text) || !textNode.data)
+  const textNode = getTitleTextNode(element)
+  if (!textElement || !textNode)
     return null
 
   const elementRect = element.getBoundingClientRect()

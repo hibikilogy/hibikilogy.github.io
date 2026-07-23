@@ -21,6 +21,12 @@ export const compactViewportWidth = 720
 /** Number of consecutive frames sampled before accepting title geometry. */
 export const titleLayoutStabilityFrameLimit = 2
 
+/** Keep navigation responsive when a webfont request is slow or unavailable. */
+export const titleFontWaitLimit = 120
+
+/** Reuse a recently verified layout after pointer/focus intent. */
+export const titleLayoutWarmDuration = 2_000
+
 /** Timing for the shared title-to-title transition. */
 export const sharedTitleMotion = {
   glyphDuration: 500,

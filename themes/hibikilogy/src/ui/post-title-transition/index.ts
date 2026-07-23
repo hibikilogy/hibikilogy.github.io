@@ -1,6 +1,7 @@
 export {
   beginPostTitleTransition,
   playPostTitleExitAnimation,
+  preloadPostTitleTransition,
   renderPostTitleTransitionTarget,
   resolvePostTitleTransitionTarget,
 } from './postTitleTransition.ts'

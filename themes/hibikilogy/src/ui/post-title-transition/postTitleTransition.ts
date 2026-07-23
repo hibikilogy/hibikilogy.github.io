@@ -219,6 +219,15 @@ export function beginPostTitleTransition({
   }
 }
 
+export function preloadPostTitleTransition(trigger?: Element): void {
+  if (!supportsPostTitleTransition())
+    return
+
+  const source = findSourceTitle(trigger)
+  if (source)
+    void waitForStableTitleLayout(source)
+}
+
 async function preparePostTitleTransition({
   owner,
   source,

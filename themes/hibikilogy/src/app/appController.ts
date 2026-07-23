@@ -9,6 +9,7 @@ import {
 import {
   beginPostTitleTransition,
   playPostTitleExitAnimation,
+  preloadPostTitleTransition,
   renderPostTitleTransitionTarget,
   resolvePostTitleTransitionTarget,
 } from '../ui/post-title-transition/index.ts'
@@ -22,6 +23,12 @@ export function startApp(): void {
   const postTitlePreparations = new Map<number, PostTitleTransitionPreparation>()
   let activePostTitleVisitId: number | null = null
   let page: PageContext | null = null
+
+  const preloadTitle = (event: Event): void => {
+    preloadPostTitleTransition(event.target as Element | undefined)
+  }
+  document.addEventListener('pointerover', preloadTitle, { passive: true })
+  document.addEventListener('focusin', preloadTitle)
 
   function initializePage(): void {
     page?.dispose()
@@ -109,6 +116,8 @@ export function startApp(): void {
       return
 
     page?.dispose()
+    document.removeEventListener('pointerover', preloadTitle)
+    document.removeEventListener('focusin', preloadTitle)
     app.dispose()
   }, { once: true })
 
