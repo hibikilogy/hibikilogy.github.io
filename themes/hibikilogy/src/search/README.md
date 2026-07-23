@@ -1,78 +1,102 @@
 # 搜索架构、流程与行为契约
 
-搜索是完全运行在浏览器内的本地能力。Zola 在构建阶段生成文章正文索引和页面元数据；浏览器负责加载、规范化、缓存并建立 Fuse.js 索引；查询通常在 Web Worker 中执行，不依赖远程搜索服务。
+搜索是浏览器内的本地能力。Zola 生成正文索引和页面展示元数据，客户端优先在 Web Worker 中建立 Fuse.js 索引并执行查询；Worker 不可用或运行失败时，才动态加载主线程 fallback。
 
-## 设计边界
+## 依赖方向
 
-- Zola 只生产搜索数据，不参与运行时查询。
-- 搜索引擎只负责解析查询、召回、过滤和排序权重，不操作 DOM。
-- 搜索页面只负责编排状态、URL、渲染和交互，不了解 Fuse.js 索引细节。
-- Worker 是首选执行环境；Worker 不可用或首次调用失败时，客户端自动降级到主线程实现。
-- IndexedDB 只缓存可重建的索引数据，不保存查询历史或用户输入。
+```text
+app/useRoute
+  → features/search/hooks/useSearch
+  → SearchService
+  → Worker (Comlink)
+  → core
+
+useSearch
+  → computed ViewModel
+  → page/searchView
+  → Lit render
+```
+
+生产代码位于 `themes/hibikilogy/src/features/search/`：
+
+```text
+search/
+├─ core/       纯查询、规范化、结果合并和标签聚合
+├─ hooks/      URL 驱动的搜索状态与全局搜索入口交互
+├─ page/       搜索页 DOM adapter、Lit 模板、分页和动效
+├─ runtime/    Worker/主线程客户端、缓存和索引生命周期
+├─ index.ts    公开入口
+├─ searchPage.ts
+├─ config.ts
+├─ debug.ts
+├─ types.ts
+└─ utils.ts
+```
+
+边界约束：
+
+- `core` 不依赖 DOM、Vue Reactivity、Worker、IndexedDB 或 Swup。
+- `useSearch` 是搜索页面状态的唯一写入者。
+- renderer 只消费 readonly state/computed ViewModel，不修改 URL、快照或业务状态。
+- SearchService 不依赖 `@vue/reactivity`。
+- 搜索模块不导入 Waterfall，也不发出手动刷新命令。
+- 模块外部只通过 `features/search/index.ts` 使用搜索能力。
 
 ## 数据来源
-
-搜索引擎启动时合并三类数据：
 
 | 数据 | 生成位置 | 用途 |
 | --- | --- | --- |
 | `search_index.zh.json` | Zola `build_search_index` | 标题、描述、正文、路径和日期 |
-| `hibikilogy-search-articles-data` | `templates/search-articles.html` | 副标题、封面、作者和发布日期等展示元数据 |
-| `hibikilogy-search-tags-data` | `templates/search-tags.html` | 标签字段检索和当前结果页的相关标签 |
+| `hibikilogy-search-articles-data` | `templates/search-articles.html` | 副标题、封面、作者和发布日期 |
+| `hibikilogy-search-tags-data` | `templates/search-tags.html` | 标签检索与当前页相关标签 |
 
-正文只保存在规范化记录和正文精确匹配路径中，不进入常用 Fuse 索引，从而降低索引体积和普通查询耗时。
+索引 URL 和 Worker URL 来自 `hibikilogy-runtime-config` JSON 节点。旧的 `window.__HIBIKILOGY_*` 配置和 `window.navigateToSearch` 已删除。
 
-## 模块职责
+展示元数据在引擎边界合并进 `SearchResultRecord`。页面不再为每篇文章异步查询元数据，也不会二次扫描结果 DOM。
 
-| 模块 | 单一职责 |
-| --- | --- |
-| `page.ts` | 搜索页生命周期、请求竞态、URL、排序分页和渲染编排 |
-| `index.ts` | Worker 客户端、预加载、主线程降级和引擎生命周期 |
-| `worker.ts` | 接收 preload/count/search 消息并返回状态、结果和引擎耗时 |
-| `engine.ts` | 记录规范化、Fuse 索引构建、候选召回和严格语义过滤 |
-| `query.ts` | 查询分词以及短语、字段、AND、OR、NOT 语法解析 |
-| `body-match.ts` | 不进入 Fuse 索引的正文精确匹配和命中摘要 |
-| `cache.ts` | IndexedDB 读写和内容寻址缓存 |
-| `article.ts` | 将搜索结果转换为文章卡片 DOM，并只高亮摘要 |
-| `pagination.ts` | 搜索分页组件的状态和事件绑定 |
-| `related-tags.ts` | 根据当前可见页结果计算并渲染相关标签 |
-| `motion.ts` | 结果、消息和翻页过渡 |
-| `debug.ts` | 索引构建及运行时阶段性能报告 |
+## 单向数据流
 
-## 初始化与索引流程
+```text
+搜索操作
+  → route.replace(SearchLocation)
+  → useRoute.current
+  → useSearch 监听 q/p/sort
+  → Snapshot 恢复或 SearchService.search
+  → SearchPageState
+  → computed results/tags/pagination
+  → 单次 Lit render
+```
 
-1. 用户聚焦或悬停导航搜索入口时触发预加载；节省流量模式和 2G 网络会跳过非必要预加载。
-2. `index.ts` 优先建立 Worker 客户端，并在发送消息前登记 pending request，避免快速响应造成竞态。
-3. Worker 读取 Zola 索引和页面内联元数据，生成与内容版本绑定的缓存键。
-4. `cache.ts` 查询 IndexedDB；命中时恢复记录和两个序列化 Fuse 索引。
-5. 未命中时依次规范化记录、建立默认索引和扩展字段索引，再用单个事务清理旧条目并写入当前版本。
-6. Worker 失败时终止并拒绝未完成请求，随后由同一套引擎实现切换到主线程；失败的客户端或引擎 Promise 会被重置，允许后续重试。
+规则：
 
-缓存是内容寻址的派生数据。部署新内容后缓存键变化，旧索引不会被误用；缓存写入只保留当前完整语料版本，避免历史版本持续累积。
+- `q`、`p`、`sort` 是查询状态的持久化权威来源。
+- loading/result/error 不写入 URL。
+- 同一搜索词的排序和翻页只重新计算 ViewModel，不重复查询引擎。
+- 每个请求都有递增 request id；旧请求完成后不能覆盖新状态。
+- Snapshot 只提交成功响应，并使用完整 SearchLocation 作为 key。
+- 相关标签只从当前可见页的结果派生。
+- 页面 scope 销毁时 watcher、DOM listener 和 service subscription 一并清理。
 
-## 查询与渲染流程
+## Worker 与 fallback
 
-1. `page.ts` 从 `q`、`p`、`sort` 恢复页面状态，并为每次搜索、排序或翻页递增 view id。
-2. 非空查询立即清空旧结果，设置 `aria-busy="true"`，等待正在进行的索引初始化。
-3. `query.ts` 将输入解析成正向、否定和字段子句。单个安全普通词允许拼写容错；短语、字段和布尔组合保持严格语义。
-4. `engine.ts` 从默认或扩展 Fuse 索引召回候选；多个正向条件先合并各自候选，再执行严格 AND/OR/NOT 过滤，避免跨字段命中漏召回。
-5. 普通两字符以上查询和显式 `body:` 查询会补充正文精确扫描；正文命中只返回上下文摘要，不把完整正文传给页面。
-6. 结果去重并保留相关度排名，Worker 同时返回纯引擎耗时，页面据此区分执行时间与消息传输开销。
-7. 页面按相关度或标题排序、截取当前页、并行创建文章 DOM，然后一次性替换结果容器。
-8. 当前 view id 仍有效时才更新分页、URL、瀑布流和当前页相关标签；过期异步结果会被丢弃。
-9. `finally` 统一恢复 `aria-busy="false"`，避免异常或竞态让界面永久停留在忙碌状态。
+`SearchService` 通过 Comlink 调用 `src/search/worker.ts`。Worker 初始化或请求失败时：
 
-默认每页数量来自 `config.extra.search_page_size`。只有结果超过一页时才显示排序和分页区域。
+1. 终止失败 Worker；
+2. 只创建一个共享 fallback Promise，避免并发失败重复建立索引；
+3. 动态导入 `mainThreadClient.ts`；
+4. 使用同一套纯 core 和 IndexedDB 缓存继续查询。
+
+Vite 将搜索页面、纯搜索 core 和 Fuse 引擎分成独立 chunk。首屏 `ui.js` 不静态加载 Fuse 或搜索引擎；进入搜索页只加载页面层，Worker 正常时主线程仍不会加载 Fuse。
 
 ## URL 参数
 
-| 参数 | 值 | 默认值 | 行为 |
-| --- | --- | --- | --- |
-| `q` | 非空查询字符串 | 空 | 执行搜索；空值进入待搜索状态 |
-| `p` | 大于等于 1 的整数 | `1` | 结果页码；越界时收敛到有效页 |
-| `sort` | `title` | `relevance` | `title` 按标题升序；缺失或非法值按相关度排序 |
+| 参数 | 值 | 默认值 |
+| --- | --- | --- |
+| `q` | 非空查询字符串 | 空 |
+| `p` | 大于等于 1 的整数 | `1` |
+| `sort` | `title` | `relevance` |
 
-只有非默认状态会写入 URL：第一页不写 `p`，相关度排序不写 `sort`。清空查询时同时删除 `q`、`p` 和 `sort`。
+第一页不写 `p`，相关度排序不写 `sort`。清空查询时同时删除三个参数。
 
 示例：`/search?q=北宇治&p=2&sort=title`。
 
@@ -80,43 +104,29 @@
 
 | 形式 | 示例 | 语义 |
 | --- | --- | --- |
-| 普通词 | `北宇治` | 单个普通词允许模糊匹配 |
-| 多个词 | `北宇治 久美子` | 默认 `AND`，所有条件都要匹配 |
-| 短语 | `"北宇治吹奏乐部"` | 严格短语匹配，不启用拼写容错 |
-| 或 | `京吹 OR 北宇治` | 任一正向条件匹配 |
-| 排除 | `京吹 NOT 久美子` 或 `京吹 -久美子` | 排除匹配指定条件的结果 |
-| 字段 | `title:京吹` | 仅查询指定字段，字段查询为严格匹配 |
+| 普通词 | `北宇治` | 单词允许模糊匹配 |
+| 多词 | `北宇治 久美子` | 默认 AND |
+| 短语 | `"北宇治吹奏乐部"` | 严格短语 |
+| 或 | `京吹 OR 北宇治` | 任一条件匹配 |
+| 排除 | `京吹 NOT 久美子` | 排除指定条件 |
+| 字段 | `title:京吹` | 严格字段查询 |
 
-可用字段及别名：
+字段包括 `title`、`author`、`tag`、`body`、`description`、`slug` 及对应中文别名。未知字段按普通查询词处理。
 
-- `title`、`标题`
-- `author`、`作者`
-- `tag`、`tags`、`标签`
-- `body`、`正文`
-- `description`、`desc`、`摘要`
-- `slug`
+## 展示与可访问性
 
-未知字段名（如 `series:京吹`）按普通查询词处理，避免无声丢失用户输入。`AND` 可省略；操作符使用大写形式以保持文档和界面行为一致。
-
-## 展示契约
-
-- 查询命中只在结果摘要中高亮，标题不高亮，以免破坏标题排版和视图过渡。
-- 否定条件不参与高亮；最多使用 6 个去重后的正向条件。
-- 新查询期间不保留旧结果；索引初始化完成后的本地查询足够快，保留旧内容反而会造成状态歧义。
-- 排序和翻页保留当前查询，并同步到 URL。
+- 标题不高亮，避免破坏排版和标题视图过渡；摘要最多高亮 6 个正向条件。
+- 搜索结果由一次 Lit render 提交。
 - 排序和分页只在结果超过一页时显示。
-- 相关标签只根据当前可见页的结果计算。
-- 搜索结果容器在查询、排序和翻页期间通过 `aria-busy` 暴露忙碌状态。
+- `aria-busy` 反映加载状态，消息区域使用 `aria-live`。
+- WaterfallController 监听结果容器增删和尺寸变化，搜索 renderer 无需协调布局。
 
-## 错误与隐私
+## 验证
 
-- 普通用户只看到稳定的通用失败文案；具体异常仅在调试模式输出。
-- 性能报告不记录原始查询，只记录查询长度、模式、子句数量、结果数和阶段耗时。
-- 未知字段（如 `series:京吹`）会作为普通查询词处理，不会静默丢弃输入。
+- `pnpm typecheck`
+- `pnpm test:ts`
+- `pnpm lint:ts`
+- `pnpm build:vite`
+- `pnpm benchmark:search`
 
-## 性能与诊断
-
-- 先运行 `zola build` 生成 `public/search_index.zh.json` 和搜索页内联元数据。
-- `pnpm benchmark:search`：使用当前构建产物和真实索引输出构建耗时、查询 P50/P95 与结果数。
-- `pnpm benchmark:search -- --iterations=50 --top=5 北宇治`：指定迭代次数、展示前 5 个标题并只测试给定查询。
-- 在浏览器 `localStorage` 中将 `hibikilogy:search-debug` 设为 `true` 后，控制台会输出索引构建和查询阶段耗时；报告只记录查询形态和长度，不记录原始查询文本。
+Vitest 覆盖 SearchLocation、Snapshot、过期请求、当前页标签和 Waterfall 帧合并/销毁行为。
