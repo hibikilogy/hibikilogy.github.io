@@ -29,6 +29,7 @@ describe('useLayout', () => {
       isNavigating: ref(false),
       isSearchPage: computed(() => current.value.pathname === '/search'),
       navigationKind: ref('initial'),
+      preload: vi.fn(),
       navigate: vi.fn(),
       replace: vi.fn(),
       back: vi.fn(),

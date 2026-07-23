@@ -3,6 +3,7 @@ import type { SearchService } from '../types.ts'
 import { useEventListener } from 'shared/hooks/index.ts'
 import { searchFocusIntentKey } from '../config.ts'
 import { focusSearchInput, searchDom } from '../searchDom.ts'
+import { preloadSearchPage } from '../searchPage.ts'
 
 function isEditableTarget(target: EventTarget | null): boolean {
   return target instanceof HTMLElement && (
@@ -12,14 +13,33 @@ function isEditableTarget(target: EventTarget | null): boolean {
 }
 
 export function useSearchNavigation(route: RouteModel, service: SearchService): void {
+  function preloadSearch(): void {
+    route.preload('/search')
+    void Promise.all([
+      preloadSearchPage(),
+      service.preload(),
+    ]).catch(() => {})
+  }
+
   function openSearch(focusIntent = 'pointer'): void {
     if (route.isSearchPage.value) {
       focusSearchInput()
       return
     }
+    preloadSearch()
     sessionStorage.setItem(searchFocusIntentKey, focusIntent)
     route.navigate('/search')
   }
+
+  useEventListener(document, 'pointerover', (event) => {
+    if ((event.target as Element | null)?.closest(searchDom.openTrigger))
+      preloadSearch()
+  })
+
+  useEventListener(document, 'focusin', (event) => {
+    if ((event.target as Element | null)?.closest(searchDom.openTrigger))
+      preloadSearch()
+  })
 
   useEventListener(document, 'click', (event) => {
     const trigger = (event.target as Element | null)?.closest(searchDom.openTrigger)

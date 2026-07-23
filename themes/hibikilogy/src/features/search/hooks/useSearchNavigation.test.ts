@@ -1,0 +1,68 @@
+import type { RouteModel } from 'app/hooks/index.ts'
+import type { SearchService } from '../types.ts'
+import { computed, effectScope, ref, shallowRef } from '@vue/reactivity'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { preloadSearchPage } from '../searchPage.ts'
+import { useSearchNavigation } from './useSearchNavigation.ts'
+
+vi.mock('../searchPage.ts', () => ({
+  preloadSearchPage: vi.fn(() => Promise.resolve()),
+}))
+
+describe('useSearchNavigation', () => {
+  afterEach(() => {
+    document.body.replaceChildren()
+    sessionStorage.clear()
+  })
+
+  it('preloads the page module, route and search service on pointer intent', async () => {
+    const trigger = document.createElement('form')
+    trigger.dataset.action = 'open-search'
+    document.body.append(trigger)
+
+    const route = createRoute()
+    const service = createService()
+    const scope = effectScope()
+    scope.run(() => useSearchNavigation(route, service))
+
+    trigger.dispatchEvent(new Event('pointerover', { bubbles: true }))
+    await Promise.resolve()
+
+    expect(route.preload).toHaveBeenCalledWith('/search')
+    expect(preloadSearchPage).toHaveBeenCalledOnce()
+    expect(service.preload).toHaveBeenCalledOnce()
+
+    scope.stop()
+  })
+})
+
+function createRoute(): RouteModel {
+  const current = shallowRef({
+    href: 'https://example.test/',
+    pathname: '/',
+    search: '',
+    hash: '',
+  })
+
+  return {
+    current,
+    isNavigating: ref(false),
+    isSearchPage: computed(() => false),
+    navigationKind: ref('initial'),
+    preload: vi.fn(),
+    navigate: vi.fn(),
+    replace: vi.fn(),
+    back: vi.fn(),
+  }
+}
+
+function createService(): SearchService {
+  return {
+    preload: vi.fn(() => Promise.resolve()),
+    count: vi.fn(() => Promise.resolve(0)),
+    search: vi.fn(() => Promise.resolve({ records: [], engineDurationMs: 0 })),
+    getStatus: vi.fn(() => 'ready' as const),
+    subscribeStatus: vi.fn(() => () => {}),
+    dispose: vi.fn(),
+  }
+}

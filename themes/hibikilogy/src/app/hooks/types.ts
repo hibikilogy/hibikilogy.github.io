@@ -14,6 +14,7 @@ export interface RouteModel {
   readonly isNavigating: Readonly<Ref<boolean>>
   readonly isSearchPage: Readonly<ComputedRef<boolean>>
   readonly navigationKind: Readonly<Ref<NavigationKind>>
+  preload: (url: string) => void
   navigate: (url: string) => void
   replace: (url: string) => void
   back: (fallback?: string) => void

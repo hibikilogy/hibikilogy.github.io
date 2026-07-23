@@ -75,6 +75,7 @@ function createRoute(): RouteModel {
     navigationKind,
     isNavigating: ref(false),
     isSearchPage: computed(() => true),
+    preload: vi.fn(),
     navigate: vi.fn(),
     replace: (href) => {
       navigationKind.value = 'replace'

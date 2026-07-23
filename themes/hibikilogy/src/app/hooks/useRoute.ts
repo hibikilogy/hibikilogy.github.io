@@ -55,6 +55,10 @@ export function useRoute(swup: Swup): RouteModel {
     void swup.navigate(url)
   }
 
+  function preload(url: string): void {
+    void swup.preload?.(url, { priority: true })
+  }
+
   function replace(url: string): void {
     updateHistoryRecord(url)
     swup.location = Location.fromUrl(url)
@@ -75,6 +79,7 @@ export function useRoute(swup: Swup): RouteModel {
     isNavigating: readonly(isNavigating),
     isSearchPage,
     navigationKind: readonly(navigationKind),
+    preload,
     navigate,
     replace,
     back,
