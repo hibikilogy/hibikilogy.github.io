@@ -35,7 +35,8 @@
     "lint:eslint:fix": "eslint --cache --fix .",
     "lint:zh": "npx zhlint content/**/*.md",
     "lint:eslint": "eslint --cache .",
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "simple-git-hooks"
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.9.0",
@@ -74,6 +75,9 @@
     "eslint-plugin-react-refresh": "^0.5.3",
     "happy-dom": "^20.11.0",
     "lightningcss": "^1.32.0",
+    "lint-staged": "^16.2.7",
+    "picocolors": "^1.1.1",
+    "simple-git-hooks": "^2.13.1",
     "smol-toml": "^1.7.0",
     "tinyglobby": "^0.2.17",
     "tsx": "^4.23.1",
@@ -81,5 +85,17 @@
     "unocss": "^66.7.2",
     "vite": "^8.0.0",
     "vitest": "^4.1.10"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged",
+    "commit-msg": "pnpm tsx scripts/verify-commit.ts"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,css,scss,json,md}": [
+      "eslint --cache --fix"
+    ],
+    "*.rs": [
+      "cargo fmt --"
+    ]
   }
 }
