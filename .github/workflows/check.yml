@@ -108,6 +108,13 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      # Zola templates reference the generated font subset stylesheets.
+      - name: Build title font subset
+        run: pnpm build:subset-titlefont
+
+      - name: Build body font subset
+        run: pnpm build:subset-bodyfont
+
       # Use one explicit base URL for both Zola and the Markdown exporter so
       # canonical, alternate, and exported Page URLs are checked together.
       - name: Build site for Markdown export
