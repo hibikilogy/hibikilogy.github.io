@@ -18,7 +18,16 @@
 {% endmacro %}
 
 {% macro config_link(link) -%}
-{{- link | replace(from='$BASE_URL', to=config.base_url) -}}
+{%- if link is starting_with("$BASE_URL") -%}
+{%- set path = link | trim_start_matches(pat="$BASE_URL") | trim_start_matches(pat="/") -%}
+{%- if path -%}
+{{- config.base_url | trim_end_matches(pat="/") -}}/{{- path -}}
+{%- else -%}
+{{- config.base_url -}}
+{%- endif -%}
+{%- else -%}
+{{- link -}}
+{%- endif -%}
 {%- endmacro %}
 
 {% macro resolve_url(path="") -%}
