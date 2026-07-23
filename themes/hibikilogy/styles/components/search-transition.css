@@ -1,0 +1,85 @@
+@layer pages {
+  body::before {
+    content: '';
+    position: fixed;
+    top: calc(var(--joh-nav-height) + var(--joh-layout-top-height, 0px));
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(0, calc(-100% * var(--search-overlay-direction, 1)), 0);
+    background: var(--joh-c-bg);
+    box-shadow: var(--joh-shadow-1);
+    will-change: transform;
+  }
+
+  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'] {
+    --search-overlay-direction: -1;
+  }
+
+  html[data-search-overlay='active'] body::before {
+    opacity: 1;
+  }
+
+  html[data-search-overlay='active'].is-changing body::before {
+    transition: transform 420ms cubic-bezier(0.33, 0, 0.13, 1);
+  }
+
+  html[data-search-overlay='active'].is-animating body::before {
+    transform: translate3d(0, 0, 0);
+  }
+
+  html[data-search-overlay='active'].is-rendering body::before {
+    transform: translate3d(0, calc(100% * var(--search-overlay-direction, 1)), 0);
+  }
+
+  html[data-search-overlay='active'].is-changing main.Content {
+    transition: transform 420ms cubic-bezier(0.33, 0, 0.13, 1);
+    will-change: transform;
+  }
+
+  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'].is-animating.is-leaving main.Content {
+    transform: translateY(calc(4vh * var(--search-overlay-direction, 1)));
+  }
+
+  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'].is-animating.is-rendering main.Content {
+    transform: translateY(calc(-4vh * var(--search-overlay-direction, 1)));
+  }
+
+  html[data-search-overlay='active'].is-rendering main.Content,
+  html[data-search-overlay='active']:not(.is-changing) main.Content {
+    transform: translateY(0);
+  }
+
+  html[data-search-overlay='active'][data-search-transition-scope='enter-search'] .Footer {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(4px);
+  }
+
+  html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-changing .Footer {
+    transition:
+      opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 500ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform, filter;
+  }
+
+  html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-rendering .Footer {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html[data-search-overlay='active'] body::before,
+    html[data-search-overlay='active'] main.Content,
+    html[data-search-overlay='active'] .Footer {
+      transition: none;
+      animation: none;
+      transform: none;
+    }
+  }
+}

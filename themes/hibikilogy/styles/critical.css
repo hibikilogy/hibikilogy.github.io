@@ -7,6 +7,7 @@
 @import './base/animation.css';
 @import './layouts/layout.css';
 @import './components/navbar.css';
+@import './components/search-transition.css';
 @import './components/footer.css';
 @import './components/aside.css';
 @import './components/external-link.css';
