@@ -11,7 +11,8 @@ on:
       - 'Cargo.lock'
       - 'rust-toolchain.toml'
       - 'nextest.toml'
-      - 'scripts/**'
+      - 'scripts/**/*.rs'
+      - 'scripts/**/Cargo.toml'
       - '.github/workflows/rust-coverage.yml'
   pull_request:
     branches: [next, main, dev]
@@ -21,7 +22,8 @@ on:
       - 'Cargo.lock'
       - 'rust-toolchain.toml'
       - 'nextest.toml'
-      - 'scripts/**'
+      - 'scripts/**/*.rs'
+      - 'scripts/**/Cargo.toml'
       - '.github/workflows/rust-coverage.yml'
   workflow_dispatch:
 
@@ -59,10 +61,77 @@ jobs:
       - name: Generate Rust coverage
         run: cargo llvm-cov nextest --locked --all-features --config-file nextest.toml --profile ci --lcov --output-path target/lcov.info
 
-      - name: Upload coverage report
+      - name: Upload LCOV report
+        id: upload-lcov
         uses: actions/upload-artifact@v7
         with:
           name: rust-lcov
           path: target/lcov.info
           if-no-files-found: error
           retention-days: 14
+
+      - name: Generate HTML report
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq lcov
+          genhtml target/lcov.info -o target/coverage-html --title "Rust Coverage Report" --legend
+
+      - name: Upload HTML report
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: rust-coverage-html
+          path: target/coverage-html/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Parse coverage summary
+        id: coverage
+        run: |
+          cat > /tmp/parse-lcov.py << 'PYEOF'
+          total_lines = 0
+          hit_lines = 0
+          total_functions = 0
+          hit_functions = 0
+
+          with open("target/lcov.info") as f:
+              for line in f:
+                  line = line.strip()
+                  if line.startswith("LF:"):
+                      total_lines += int(line.split(":")[1])
+                  elif line.startswith("LH:"):
+                      hit_lines += int(line.split(":")[1])
+                  elif line.startswith("FNF:"):
+                      total_functions += int(line.split(":")[1])
+                  elif line.startswith("FNH:"):
+                      hit_functions += int(line.split(":")[1])
+
+          line_cov = (hit_lines / total_lines * 100) if total_lines > 0 else 0
+          func_cov = (hit_functions / total_functions * 100) if total_functions > 0 else 0
+
+          print(f"line_cov={line_cov:.1f}")
+          print(f"func_cov={func_cov:.1f}")
+          print(f"total_lines={total_lines}")
+          print(f"hit_lines={hit_lines}")
+          print(f"total_functions={total_functions}")
+          print(f"hit_functions={hit_functions}")
+          PYEOF
+          python3 /tmp/parse-lcov.py >> "$GITHUB_OUTPUT"
+
+      - name: Write job summary
+        if: ${{ success() }}
+        run: |
+          {
+            echo "## Rust Coverage Report"
+            echo
+            echo "| Metric | Covered | Total | Coverage |"
+            echo "|--------|---------|-------|----------|"
+            echo "| Lines | ${{ steps.coverage.outputs.hit_lines }} | ${{ steps.coverage.outputs.total_lines }} | **${{ steps.coverage.outputs.line_cov }}%** |"
+            echo "| Functions | ${{ steps.coverage.outputs.hit_functions }} | ${{ steps.coverage.outputs.total_functions }} | **${{ steps.coverage.outputs.func_cov }}%** |"
+            echo
+            echo "**Artifacts**"
+            echo
+            echo "- [LCOV report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) — raw coverage data"
+            echo "- [HTML report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) — open in browser"
+            echo
+            echo "> Go to the **Artifacts** section at the bottom of this run page to download."
+          } >> "$GITHUB_STEP_SUMMARY"
