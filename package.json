@@ -17,7 +17,7 @@
     "dev:vite": "vite build --watch",
     "dev:admin": "vite --config vite.admin.config.ts",
     "dev:cms": "node -e \"const{watch,cpSync,existsSync,mkdirSync}=require('fs'),{join}=require('path');watch('static',{recursive:true},(_,f)=>{if(!f)return;const s=join('static',f),d=join('public',f);try{existsSync(s)&&(mkdirSync(join(d,'..'),{recursive:true}),cpSync(s,d,{recursive:true}))}catch{}})\"",
-    "preview": "vite preview --outDir ./public",
+    "preview": "pnpm dlx http-server ./public -a 127.0.0.1 -p 4173 -c-1",
     "benchmark:search": "node scripts/benchmark-search.ts",
     "typecheck": "tsc --noEmit",
     "test:rust": "cargo nextest run --locked --all-features && cargo test --locked --all-features --doc",
