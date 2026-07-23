@@ -114,7 +114,7 @@ pnpm test:rust
 ```
 
 `pnpm test:rust` 使用 `cargo-nextest` 并行执行完整 feature 集合。仓库通过
-`.config/nextest.toml` 固定最低版本，并在 CI 中关闭 fail-fast，确保一次运行能看到全部失败。
+`nextest.toml` 固定最低版本，并在 CI 中关闭 fail-fast，确保一次运行能看到全部失败。
 不为失败测试自动重试，避免把真实的不稳定测试伪装成通过。nextest 不执行 doctest，
 所以该命令随后还会单独运行 `cargo test --doc`。
 

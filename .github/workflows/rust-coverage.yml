@@ -10,7 +10,7 @@ on:
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'rust-toolchain.toml'
-      - '.config/nextest.toml'
+      - 'nextest.toml'
       - 'scripts/**'
       - '.github/workflows/rust-coverage.yml'
   pull_request:
@@ -20,7 +20,7 @@ on:
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'rust-toolchain.toml'
-      - '.config/nextest.toml'
+      - 'nextest.toml'
       - 'scripts/**'
       - '.github/workflows/rust-coverage.yml'
   workflow_dispatch:
