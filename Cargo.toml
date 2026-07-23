@@ -12,9 +12,9 @@ path = "scripts/bin/title_font_subset/main.rs"
 required-features = [ "font-tools" ]
 
 [[bin]]
-name = "html-img-host-rewrite"
-path = "scripts/bin/html_img_host_rewrite/main.rs"
-required-features = [ "image-tools" ]
+name = "site-artifact-rewrite"
+path = "scripts/bin/site_artifact_rewrite/main.rs"
+required-features = [ "artifact-rewrite" ]
 
 [[bin]]
 name = "article-short-links"
@@ -34,7 +34,7 @@ name = "cli_smoke"
 path = "scripts/integration/cli_smoke.rs"
 required-features = [
   "font-tools",
-  "image-tools"
+  "artifact-rewrite"
 ]
 
 [features]
@@ -45,10 +45,12 @@ font-tools = [
   "dep:woofwoof",
   "dep:write-fonts"
 ]
-image-tools = [
+artifact-rewrite = [
   "dep:base64",
+  "dep:globset",
   "dep:image",
   "dep:lol_html",
+  "dep:url",
   "dep:walkdir"
 ]
 
@@ -56,6 +58,7 @@ image-tools = [
 anyhow = "1"
 base64 = { version = "0.22", optional = true }
 clap = { version = "4", features = [ "derive" ] }
+globset = { version = "0.4", optional = true }
 image = { version = "0.25", optional = true, default-features = false, features = [
   "bmp",
   "gif",
@@ -73,6 +76,7 @@ sha2 = "0.10"
 skera = { version = "0.3", optional = true }
 chrono = { version = "0.4", default-features = false, features = [ "std" ] }
 toml = "0.8"
+url = { version = "2", optional = true }
 walkdir = { version = "2", optional = true }
 woofwoof = { version = "1", optional = true }
 write-fonts = { version = "0.49", optional = true }

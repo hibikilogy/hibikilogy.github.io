@@ -83,8 +83,8 @@ jobs:
       - name: Beasties critical CSS
         run: pnpm run build:beasties
 
-      - name: Rewrite image hosts
-        run: pnpm build:rewrite-imgs
+      - name: Rewrite site artifacts
+        run: pnpm build:rewrite-artifacts
 
       - name: Generate short links
         run: pnpm build:short-links

@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | `title-font-subset` | `bin/title_font_subset/main.rs` | 收集文章标题用字，生成标题字体子集和对应 CSS。 |
 | `body-font-subset` | `bin/body_font_subset/main.rs` | 收集正文和配置中的用字，生成正文字体补丁和对应 CSS。 |
-| `html-img-host-rewrite` | `bin/html_img_host_rewrite/` | 重写构建后 HTML 中的图片地址，并补充尺寸、比例和 ThumbHash 等元数据。 |
+| `site-artifact-rewrite` | `bin/site_artifact_rewrite/` | 按 `artifact-rewrite.toml` 改写构建产物中的 URL、图片元数据、属性和标签。 |
 | `article-short-links` | `bin/article_short_links/` | 根据文章 canonical 路由生成 `/s/<code>/` 短链接和持久化 manifest。 |
 | `deploy-markdown` | `bin/deploy_markdown/` | 把文章、文档源 Markdown 导出到对应的 `.md` 路由，并写入来源和页面地址。 |
 
@@ -17,12 +17,23 @@
 ```bash
 pnpm build:subset-titlefont
 pnpm build:subset-bodyfont
-pnpm build:rewrite-imgs
+pnpm build:rewrite-artifacts
 pnpm build:short-links
 pnpm build:markdown
 ```
 
 `pnpm build:all` 会按正确顺序运行完整构建流程。
+
+## 产物改写规则
+
+`artifact-rewrite.toml` 只描述想要的结果：文件范围、元素、URL 映射、资源来源、metadata、
+普通属性和目标标签。Rust 工具会先校验整份配置，再读取或写入 `public/`。
+
+- `!glob` 排除文件，路径相对 `public/` 并统一使用 `/`。
+- URL 改写独立先执行；本地图片不存在时，metadata、`set` 和标签替换会跳过。
+- metadata 只补缺失值，`set` 覆盖已有值。
+- JSON source 带 `select` 时读取 HTML 内嵌 JSON，不带时读取完整 JSON 文件。
+- `--check` 只校验配置和真实文件匹配，不改写产物。
 
 ## 代码结构
 
@@ -44,9 +55,9 @@ pnpm build:markdown
 
 - 标题字体：`bin/title_font_subset/`。
 - 正文字体：`bin/body_font_subset/`。
-- 图片：`bin/html_img_host_rewrite/`，包括该工具独占的 `thumbhash.rs`。
+- 产物改写：`bin/site_artifact_rewrite/`，包括配置校验、HTML/JSON 执行器、URL 处理、图片元数据和缓存。
 - 大型工具放在 `bin/<tool>/`；有独立编排层时，`main.rs` 只负责启动，`app.rs` 负责流程。
-- 图片改写：`html.rs` 使用 `lol_html` 处理生成后的 HTML，`images.rs`、`urls.rs`、`cache.rs` 分别负责图片元数据、URL 和缓存。
+- 产物改写：`config.rs` 把紧凑 TOML 编译成已校验规则；`html.rs` 和 `json.rs` 执行效果；`images.rs`、`urls.rs`、`cache.rs` 处理图片、URL 和缓存。
 - 工具单元测试：放在对应的 `bin/<tool>/tests/`。
 - CLI 冒烟测试：`integration/cli_smoke.rs`。
 
@@ -61,7 +72,7 @@ pnpm build:markdown
 默认 feature 保持轻量，短链接和 Markdown 导出不需要编译字体、图片依赖。
 
 - `font-tools`：标题和正文字体工具。
-- `image-tools`：HTML 图片改写工具。
+- `artifact-rewrite`：部署产物改写工具。
 
 测试临时目录统一使用 `tempfile`，不要自行拼接 PID 和时间戳，也不要手写 `Drop` 清理。
 
@@ -69,7 +80,7 @@ pnpm build:markdown
 
 ```bash
 cargo run --locked --features font-tools --bin title-font-subset -- --help
-cargo run --locked --features image-tools --bin html-img-host-rewrite -- --help
+cargo run --locked --features artifact-rewrite --bin site-artifact-rewrite -- --help
 ```
 
 优先使用已有的 `pnpm` 命令，它们已经带上正确参数。

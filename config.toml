@@ -132,10 +132,6 @@ katex.auto_render = true
 katex.css_cdn = "https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css"
 katex.css_integrity = "sha384-vlBdW0r3AcZO/HboRPznQNowvexd3fY8qHOWkBi5q7KGgqJ+F48+DceybYmrVbmB"
 
-[extra.image_host_rewrite]
-old_host = "https://hibikilogy.vercel.app/"
-new_host = "https://hibikilogy.interknot.site/"
-
 [extra.favicon]
 apple_touch_icon = "/apple-touch-icon-precomposed.png"
 small_icon = "/favicon.ico"

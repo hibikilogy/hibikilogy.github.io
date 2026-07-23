@@ -1,6 +1,6 @@
 ﻿use std::f32::consts::PI;
 
-// ThumbHash encoding owned by the HTML image rewrite tool.
+// ThumbHash encoding owned by the artifact rewrite tool.
 
 /// Encodes an RGBA image to a ThumbHash.
 ///

@@ -5,7 +5,7 @@ fn every_rust_tool_exposes_help() {
     for executable in [
         env!("CARGO_BIN_EXE_article-short-links"),
         env!("CARGO_BIN_EXE_deploy-markdown"),
-        env!("CARGO_BIN_EXE_html-img-host-rewrite"),
+        env!("CARGO_BIN_EXE_site-artifact-rewrite"),
         env!("CARGO_BIN_EXE_title-font-subset"),
         env!("CARGO_BIN_EXE_body-font-subset"),
     ] {
