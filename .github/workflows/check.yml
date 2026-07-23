@@ -111,10 +111,10 @@ jobs:
       # Use one explicit base URL for both Zola and the Markdown exporter so
       # canonical, alternate, and exported Page URLs are checked together.
       - name: Build site for Markdown export
-        run: pnpm build:zola -- --base-url "${MARKDOWN_BASE_URL}"
+        run: zola build --base-url "${MARKDOWN_BASE_URL}"
 
       - name: Export Markdown routes
-        run: pnpm build:markdown -- --base-url "${MARKDOWN_BASE_URL}"
+        run: cargo run --locked --bin deploy-markdown -- --config config.toml --base-url "${MARKDOWN_BASE_URL}"
 
       - name: Check Rust formatting
         run: cargo fmt --all -- --check
