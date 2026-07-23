@@ -56,6 +56,7 @@
 
     .Content & > .container,
     .container {
+      position: relative;
       max-width: none;
       grid-template-columns: repeat(auto-fit, min(100%, 491px));
       gap: 0;
@@ -65,6 +66,35 @@
       counter-reset: count;
       grid-auto-flow: dense;
       opacity: 0;
+    }
+
+    .container::before,
+    .container::after {
+      content: '';
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      width: 2px;
+      height: calc(100% - 2px);
+      background: var(--joh-c-neutral);
+      pointer-events: none;
+    }
+
+    .container::before {
+      left: 2px;
+    }
+
+    .container::after {
+      display: none;
+      right: 2px;
+    }
+
+    .container[data-right-taller]::before {
+      display: none;
+    }
+
+    .container[data-right-taller]::after {
+      display: block;
     }
 
     .FrontPage {
@@ -87,34 +117,21 @@
     }
 
     .Section {
-      border: 2px solid var(--joh-c-neutral);
       background-color: var(--joh-c-bg);
       box-sizing: border-box;
+      border: 2px solid var(--joh-c-neutral);
+      border-left: 0;
       margin: -2px 0 0;
       width: 491px;
     }
 
-    .container.is-waterfall-right-border-owner > .Section.is-waterfall-left-column {
-      border-right-width: 0;
-    }
-
-    .container.is-waterfall-left-border-owner > .Section.is-waterfall-right-column {
-      border-left-width: 0;
-    }
-
-    .container.is-waterfall-left-border-owner > .Section.is-waterfall-left-column,
-    .container.is-waterfall-right-border-owner > .Section.is-waterfall-right-column {
-      border-right-width: 2px;
+    .container[data-right-taller] > .Section {
+      border-right: 0;
+      border-left: 2px solid var(--joh-c-neutral);
     }
 
     .FrontPage.Section {
       background-color: var(--joh-c-journal-frontpage-bg);
-    }
-
-    @supports not (display: grid-lanes) {
-      .Section.is-below-frontpage {
-        border-top: none;
-      }
     }
 
     .Article {
@@ -177,10 +194,6 @@
       }
     }
 
-    .Section:last-child {
-      margin-bottom: 0;
-    }
-
     @media (max-width: 1150px) {
       .container {
         display: block !important;
@@ -188,9 +201,6 @@
       }
 
       .Section {
-        border-left-width: 2px;
-        border-right-width: 2px;
-        margin: -2px 0 0;
         width: 100%;
       }
 

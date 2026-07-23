@@ -2,11 +2,6 @@ import type { WaterfallController } from './types.ts'
 import { catchError } from '../../shared/result.ts'
 
 const defaultChildSelector = ':scope > .Section, :scope > .FrontPage'
-const belowFrontpageClass = 'is-below-frontpage'
-const leftColumnClass = 'is-waterfall-left-column'
-const rightColumnClass = 'is-waterfall-right-column'
-const leftBorderClass = 'is-waterfall-left-border-owner'
-const rightBorderClass = 'is-waterfall-right-border-owner'
 
 function supportsGridLanes(): boolean {
   return typeof CSS !== 'undefined' && CSS.supports('display', 'grid-lanes')
@@ -105,22 +100,20 @@ export function createWaterfallController(
     lastItems = items
 
     if (!items.length) {
-      resetLayoutClasses(items)
+      resetLayout(items)
       journal.style.opacity = '1'
       return
     }
 
     if (!isWaterfallLayout(items)) {
-      resetLayoutClasses(items)
+      resetLayout(items)
       journal.style.opacity = '1'
       return
     }
 
-    resetBorderOwner()
-
     if (nativeLayout) {
+      updateSeamOwner(items)
       journal.style.opacity = '1'
-      updateColumnClasses(items)
       return
     }
 
@@ -135,8 +128,7 @@ export function createWaterfallController(
       item.style.gridRow = `span ${rowSpan}`
     })
     journal.style.display = 'grid'
-    updateColumnClasses(items)
-    updateFrontPageNeighbor(items)
+    updateSeamOwner(items)
     journal.style.opacity = '1'
   }
 
@@ -145,76 +137,31 @@ export function createWaterfallController(
     return Boolean(article && journal.clientWidth >= article.offsetWidth * 2)
   }
 
-  function resetLayoutClasses(items: HTMLElement[]): void {
+  // The taller column owns the middle seam so the space below the shorter
+  // column stays unframed.
+  function updateSeamOwner(items: HTMLElement[]): void {
+    const columns = new Map<number, number>()
     items.forEach((item) => {
-      item.classList.remove(
-        belowFrontpageClass,
-        leftColumnClass,
-        rightColumnClass,
-      )
+      const left = Math.round(item.offsetLeft)
+      const bottom = Math.round(item.offsetTop + item.offsetHeight)
+      columns.set(left, Math.max(columns.get(left) ?? 0, bottom))
+    })
+    if (columns.size < 2) {
+      journal.removeAttribute('data-right-taller')
+      return
+    }
+
+    const edges = [...columns.keys()].sort((a, b) => a - b)
+    const leftBottom = columns.get(edges[0]) ?? 0
+    const rightBottom = columns.get(edges[edges.length - 1]) ?? 0
+    journal.toggleAttribute('data-right-taller', rightBottom > leftBottom)
+  }
+
+  function resetLayout(items: HTMLElement[]): void {
+    items.forEach((item) => {
       item.style.removeProperty('grid-row')
     })
-    resetBorderOwner()
-  }
-
-  function resetBorderOwner(): void {
-    journal.classList.remove(leftBorderClass, rightBorderClass)
-  }
-
-  function updateColumnClasses(items: HTMLElement[]): void {
-    if (!items.length) {
-      resetBorderOwner()
-      return
-    }
-
-    resetBorderOwner()
-    const offsets = items.map(item => Math.round(item.offsetLeft))
-    const minOffsetLeft = Math.min(...offsets)
-    const maxOffsetLeft = Math.max(...offsets)
-
-    if (minOffsetLeft === maxOffsetLeft) {
-      items.forEach((item) => {
-        item.classList.remove(leftColumnClass, rightColumnClass)
-      })
-      return
-    }
-
-    items.forEach((item) => {
-      const offsetLeft = Math.round(item.offsetLeft)
-      item.classList.toggle(leftColumnClass, offsetLeft <= minOffsetLeft)
-      item.classList.toggle(rightColumnClass, offsetLeft >= maxOffsetLeft)
-    })
-
-    let leftColumnBottom = Number.NEGATIVE_INFINITY
-    let rightColumnBottom = Number.NEGATIVE_INFINITY
-    items.forEach((item) => {
-      const bottom = Math.round(item.offsetTop + item.offsetHeight)
-      if (item.classList.contains(leftColumnClass))
-        leftColumnBottom = Math.max(leftColumnBottom, bottom)
-      if (item.classList.contains(rightColumnClass))
-        rightColumnBottom = Math.max(rightColumnBottom, bottom)
-    })
-
-    const leftOwnsMiddleBorder = leftColumnBottom > rightColumnBottom
-    journal.classList.toggle(leftBorderClass, leftOwnsMiddleBorder)
-    journal.classList.toggle(rightBorderClass, !leftOwnsMiddleBorder)
-  }
-
-  function updateFrontPageNeighbor(items: HTMLElement[]): void {
-    const frontPage = items.find(item => item.classList.contains('FrontPage'))
-    if (!frontPage)
-      return
-
-    const bottom = Math.round(frontPage.offsetTop + frontPage.offsetHeight)
-    const left = Math.round(frontPage.offsetLeft)
-    items.forEach(item => item.classList.remove(belowFrontpageClass))
-
-    const neighbor = items.find(item => (
-      item.classList.contains('Article')
-      && Math.round(item.offsetTop) >= bottom
-      && Math.round(item.offsetLeft) === left
-    ))
-    neighbor?.classList.add(belowFrontpageClass)
+    journal.removeAttribute('data-right-taller')
   }
 
   window.addEventListener('resize', scheduleLayout)
