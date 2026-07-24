@@ -5,6 +5,7 @@ import { defineConfig } from 'vite'
 import { chunkCycleGuardPlugin } from './scripts/vite/chunkCycleGuard'
 import { globEntries } from './scripts/vite/entries'
 import { hibikilogyConfigPlugin } from './scripts/vite/hibikilogy-config'
+import { syncBuildOutputPlugin } from './scripts/vite/syncBuildOutput'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const themedir = (p: string) => resolve(__dirname, 'themes/hibikilogy', p)
@@ -42,8 +43,8 @@ export default defineConfig({
     devSourcemap: true,
   },
   build: {
-    outDir: 'themes/hibikilogy/static',
-    emptyOutDir: false,
+    outDir: 'dist',
+    emptyOutDir: true,
     target: 'es2021',
     sourcemap: true,
     minify: true,
@@ -89,6 +90,9 @@ export default defineConfig({
   },
   plugins: [
     chunkCycleGuardPlugin(),
+    syncBuildOutputPlugin({
+      destination: themedir('static'),
+    }),
     UnoCSS({ mode: 'shadow-dom', inspector: false }),
     UnoCSS({ mode: 'global', configFile: resolve(__dirname, 'unocss.config.ts') }),
     hibikilogyConfigPlugin(__dirname),

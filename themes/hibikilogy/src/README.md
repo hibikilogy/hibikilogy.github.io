@@ -159,6 +159,8 @@ Hash 链接使用原生滚动并绕过 Swup。无滚动 hash 同步由 Route/His
 
 ## 验证
 
+主 Vite 构建先清空并写入根目录 `dist/`，再按 bundle 清单同步到主题 `static/`。不要直接修改 `dist/` 或 `static/js/` 中的生成文件。
+
 ```bash
 pnpm verify:ts       # typecheck、测试、TS lint、Vite、Admin
 pnpm lint            # Vite + zola check
