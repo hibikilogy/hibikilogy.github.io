@@ -10,7 +10,7 @@
 | `body-font-subset` | 收集正文用字，生成正文字体子集和 CSS。 |
 | `site-artifact-rewrite` | 按 `artifact-rewrite.toml` 改写 `public/` 中的 URL、图片属性等。 |
 | `article-short-links` | 为每篇文章生成 `/s/<code>/` 短链接。 |
-| `deploy-markdown` | 把文章/文档 Markdown 源文件导出到对应的 `.md` 路由。 |
+| `deploy-markdown` | 把文章/文档导出到对应的 `.md` 路由，并把 Zola 内部链接改成可访问的相对链接。 |
 
 通过 pnpm 调用：
 

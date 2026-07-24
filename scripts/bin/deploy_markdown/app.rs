@@ -1,3 +1,4 @@
+use crate::links::rewrite_zola_links;
 use anyhow::{bail, Context, Result};
 use clap::Parser;
 use hibikilogy_tools::article_source::parse_article_file_name;
@@ -68,6 +69,7 @@ impl ContentKind {
 struct ExportSource {
     source_path: PathBuf,
     source_relative: String,
+    content_path: String,
     route: String,
     output_relative: String,
 }
@@ -177,6 +179,11 @@ fn export_markdown(
     sources.sort_unstable_by(|left, right| left.output_relative.cmp(&right.output_relative));
     validate_unique_outputs(&sources)?;
     validate_output_ownership(site_root, &sources, &existing_manifest, repository)?;
+    let routes = build_source_route_map(&sources)?;
+    let rendered = sources
+        .iter()
+        .map(|source| render_export(source, base_url, repository, revision, &routes))
+        .collect::<Result<Vec<_>>>()?;
 
     let records = sources
         .iter()
@@ -206,8 +213,8 @@ fn export_markdown(
         },
     )?;
 
-    for source in &sources {
-        write_export(source, site_root, base_url, repository, revision)?;
+    for (source, markdown) in sources.iter().zip(rendered) {
+        write_export(source, site_root, &markdown)?;
     }
     for output in &orphaned {
         remove_managed_output(site_root, output)?;
@@ -233,12 +240,13 @@ fn collect_sources(
 ) -> Result<Vec<ExportSource>> {
     sorted_markdown_files(content_dir, true)?
         .into_iter()
-        .map(|path| resolve_source(&path, kind, repository_root, site_root))
+        .map(|path| resolve_source(&path, content_dir, kind, repository_root, site_root))
         .collect()
 }
 
 fn resolve_source(
     path: &Path,
+    content_dir: &Path,
     kind: ContentKind,
     repository_root: &Path,
     site_root: &Path,
@@ -281,9 +289,37 @@ fn resolve_source(
     Ok(ExportSource {
         source_path: path.to_path_buf(),
         source_relative: repository_relative_path(repository_root, path)?,
+        content_path: content_relative_path(content_dir, path, kind)?,
         route,
         output_relative,
     })
+}
+
+fn content_relative_path(content_dir: &Path, path: &Path, kind: ContentKind) -> Result<String> {
+    let relative = path.strip_prefix(content_dir).with_context(|| {
+        format!(
+            "{} is outside content directory {}",
+            path.display(),
+            content_dir.display()
+        )
+    })?;
+    let mut parts = vec![kind.section().to_owned()];
+    for component in relative.components() {
+        match component {
+            Component::Normal(part) => parts.push(
+                part.to_str()
+                    .with_context(|| {
+                        format!("content path is not valid UTF-8: {}", relative.display())
+                    })?
+                    .to_owned(),
+            ),
+            _ => bail!("invalid content-relative path: {}", relative.display()),
+        }
+    }
+    if parts.len() == 1 {
+        bail!("content-relative path must not be empty");
+    }
+    Ok(parts.join("/"))
 }
 
 fn fallback_slug(file_name: &str, stem: &str, kind: ContentKind) -> Result<String> {
@@ -323,6 +359,23 @@ fn validate_unique_outputs(sources: &[ExportSource]) -> Result<()> {
         }
     }
     Ok(())
+}
+
+fn build_source_route_map(sources: &[ExportSource]) -> Result<BTreeMap<String, String>> {
+    let mut routes = BTreeMap::new();
+    for source in sources {
+        if let Some(existing) =
+            routes.insert(source.content_path.clone(), source.output_relative.clone())
+        {
+            bail!(
+                "multiple Markdown sources use Zola content path {}: {} and {}",
+                source.content_path,
+                existing,
+                source.output_relative,
+            );
+        }
+    }
+    Ok(routes)
 }
 
 fn validate_output_ownership(
@@ -365,28 +418,39 @@ fn validate_output_ownership(
     Ok(())
 }
 
-fn write_export(
+fn render_export(
     source: &ExportSource,
-    site_root: &Path,
     base_url: &str,
     repository: &str,
     revision: &str,
-) -> Result<()> {
+    routes: &BTreeMap<String, String>,
+) -> Result<String> {
     let markdown = fs::read_to_string(&source.source_path)
         .with_context(|| format!("failed to read {}", source.source_path.display()))?;
+    let markdown =
+        rewrite_zola_links(&markdown, &source.output_relative, routes).with_context(|| {
+            format!(
+                "failed to rewrite links in {}",
+                source.source_path.display()
+            )
+        })?;
     let source_url = format!(
         "https://github.com/{repository}/blob/{revision}/{}",
         encode_path(&source.source_relative),
     );
     let page_url = format!("{}/{}", base_url.trim_end_matches('/'), source.route);
     let annotated = annotate_markdown(&markdown, &source_url, &page_url);
+    Ok(annotated)
+}
+
+fn write_export(source: &ExportSource, site_root: &Path, markdown: &str) -> Result<()> {
     let output_path = site_root.join(path_from_slash(&source.output_relative));
 
     if let Some(parent) = output_path.parent() {
         ensure_directory_beneath(site_root, parent)?;
     }
     reject_symlink_or_directory(&output_path)?;
-    fs::write(&output_path, annotated)
+    fs::write(&output_path, markdown)
         .with_context(|| format!("failed to write {}", output_path.display()))
 }
 

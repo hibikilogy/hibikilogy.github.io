@@ -50,6 +50,64 @@ fn generates_article_and_document_routes_with_effective_base_url() {
 }
 
 #[test]
+fn rewrites_zola_links_to_canonical_relative_markdown_routes() {
+    let fixture = Fixture::new("links");
+    fixture.write(
+        "content/articles/2026-02-12-target-source.md",
+        "+++\nslug = \"canonical-target\"\n+++\nTarget\n",
+    );
+    fixture.write(
+        "content/docs/join-us.md",
+        "+++\nslug = \"getting-started\"\n+++\nJoin\n",
+    );
+    fixture.write(
+        "content/docs/guide.md",
+        "+++\ntitle = \"Guide\"\nabstract = \"[Join](@/docs/join-us.md)\"\n+++\n\
+         [Article](@/articles/2026-02-12-target-source.md?plain=1#part)\n\
+         [Join](@/docs/join-us.md#hello)\n\n\
+         [Reference][target]\n\n\
+         [target]: @/articles/2026-02-12-target-source.md#reference\n\n\
+         ```md\n\
+         [Example](@/docs/join-us.md)\n\
+         [target]: @/articles/2026-02-12-target-source.md#reference\n\
+         ```\n\n\
+         `[Inline](@/docs/join-us.md)`\n",
+    );
+    fixture.write("public/articles/canonical-target/index.html", "article");
+    fixture.write("public/docs/getting-started/index.html", "join");
+    fixture.write("public/docs/guide/index.html", "guide");
+
+    fixture.export("https://example.com").unwrap();
+
+    let guide = fixture.read("public/docs/guide.md");
+    assert!(guide.contains("abstract = \"[Join](getting-started.md)\""));
+    assert!(guide.contains("[Article](../articles/canonical-target.md?plain=1#part)"));
+    assert!(guide.contains("[Join](getting-started.md#hello)"));
+    assert!(guide.contains("[target]: ../articles/canonical-target.md#reference"));
+    assert!(guide.contains(
+        "```md\n[Example](@/docs/join-us.md)\n\
+         [target]: @/articles/2026-02-12-target-source.md#reference\n```"
+    ));
+    assert!(guide.contains("`[Inline](@/docs/join-us.md)`"));
+}
+
+#[test]
+fn rejects_unknown_zola_markdown_targets_before_writing_outputs() {
+    let fixture = Fixture::new("unknown-link");
+    fixture.write(
+        "content/docs/guide.md",
+        "+++\ntitle = \"Guide\"\n+++\n[Missing](@/docs/missing.md)\n",
+    );
+    fixture.write("public/docs/guide/index.html", "guide");
+
+    let error = fixture.export("https://example.com").unwrap_err();
+
+    assert!(error.to_string().contains("failed to rewrite links in"));
+    assert!(!fixture.root.join("public/docs/guide.md").exists());
+    assert!(!fixture.manifest_path().exists());
+}
+
+#[test]
 fn slugifies_fallback_and_percent_encodes_source_url() {
     let fixture = Fixture::new("slugify");
     fixture.write(
