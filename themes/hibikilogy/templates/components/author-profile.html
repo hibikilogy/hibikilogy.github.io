@@ -4,7 +4,7 @@
     <div class="author-profile-banner">
       {% if custom_page.avatar %}
       <img class="author-avatar"
-           src="{{ custom_page.avatar | safe }}"
+           src="{{ custom_page.avatar }}"
            alt="{{ term.name }}"
            loading="eager"
            width="180" height="180" />
@@ -20,13 +20,13 @@
         <span class="author-profile-count">
           {{ term.page_count }}{{ tr::t(key="related_articles_suffix", default="篇文章") }}
         </span>
-        {% if custom_page.link %}
+        {% if custom_page.link and (custom_page.link is starting_with("https://") or custom_page.link is starting_with("http://") or custom_page.link is starting_with("/")) %}
           {% set domain = custom_page.link
              | trim_start_matches(pat="https://")
              | trim_start_matches(pat="http://")
              | split(pat="/") | first %}
         <a class="author-profile-link"
-           href="{{ custom_page.link | safe }}"
+           href="{{ custom_page.link }}"
            target="_blank"
            rel="noopener noreferrer">{{ domain }}<span class="i-custom-link inline-block w-[1.25em] h-[1.25em] align-[-0.125em] ml-[0.25em]"></span></a>
         {% endif %}

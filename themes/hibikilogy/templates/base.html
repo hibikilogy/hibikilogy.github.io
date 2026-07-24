@@ -121,9 +121,9 @@
   {% if config.build_search_index %}
   <script id="hibikilogy-runtime-config" type="application/json">
   {
-    "baseUrl": {{ config.base_url | json_encode() | safe }},
-    "searchIndexUrl": {{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) | json_encode() | safe }},
-    "searchWorkerUrl": {{ get_url(path='js/search/worker.js', cachebust=true) | json_encode() | safe }}
+    "baseUrl": {{ config.base_url | json_encode() | replace(from="<", to="\u003c") | safe }},
+    "searchIndexUrl": {{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) | json_encode() | replace(from="<", to="\u003c") | safe }},
+    "searchWorkerUrl": {{ get_url(path='js/search/worker.js', cachebust=true) | json_encode() | replace(from="<", to="\u003c") | safe }}
   }
   </script>
   {% endif %}
