@@ -17,6 +17,16 @@ function isSearchPath(pathname: string): boolean {
   return pathname.replace(/\/+$/, '') === '/search'
 }
 
+// swup tags its history records with `{ source: 'swup', index }`; the index
+// starts at 1 for the session's entry page and increments on every in-app
+// push. An index above 1 therefore proves a prior same-site page exists in
+// this session — unlike the raw history entry count, which also includes
+// entries from other origins.
+function hasSameSiteHistory(): boolean {
+  const state = window.history.state as { source?: unknown, index?: unknown } | null
+  return state?.source === 'swup' && typeof state.index === 'number' && state.index > 1
+}
+
 export function useRoute(swup: Swup): RouteModel {
   const current = shallowRef(readLocation())
   const isNavigating = ref(false)
@@ -67,7 +77,7 @@ export function useRoute(swup: Swup): RouteModel {
   }
 
   function back(fallback = '/'): void {
-    if (window.history.length > 1) {
+    if (hasSameSiteHistory()) {
       window.history.back()
       return
     }
