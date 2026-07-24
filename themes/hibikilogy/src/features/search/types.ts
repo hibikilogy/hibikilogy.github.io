@@ -180,6 +180,8 @@ export type SearchIndexBuildStatus
 
 export interface SearchEngineBootstrapData {
   indexUrl: string
+  articlesDataUrl: string
+  tagsDataUrl: string
   debug?: boolean
   articleMetadataIndex?: SearchArticleMetadataIndex
   tagIndex?: SearchTagIndexItem[]

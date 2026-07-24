@@ -123,7 +123,9 @@
   {
     "baseUrl": {{ config.base_url | json_encode() | safe }},
     "searchIndexUrl": {{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) | json_encode() | safe }},
-    "searchWorkerUrl": {{ get_url(path='js/search/worker.js', cachebust=true) | json_encode() | safe }}
+    "searchWorkerUrl": {{ get_url(path='js/search/worker.js', cachebust=true) | json_encode() | safe }},
+    "searchArticlesDataUrl": {{ get_url(path='search-articles/') | json_encode() | safe }},
+    "searchTagsDataUrl": {{ get_url(path='search-tags/') | json_encode() | safe }}
   }
   </script>
   {% endif %}

@@ -17,6 +17,8 @@ export function getSearchBootstrap(
 ): SearchEngineBootstrapData {
   return {
     indexUrl: config.searchIndexUrl,
+    articlesDataUrl: config.searchArticlesDataUrl,
+    tagsDataUrl: config.searchTagsDataUrl,
     debug: isSearchDebugEnabled(),
     articleMetadataIndex: readInlineJsonIndex<SearchArticleMetadataIndex>(
       searchArticleIndexInlineId,

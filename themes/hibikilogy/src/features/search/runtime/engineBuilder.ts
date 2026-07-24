@@ -1,12 +1,15 @@
 import type {
   RawSearchIndexEntry,
+  SearchArticleMetadataIndex,
   SearchBuildReport,
   SearchEngine,
   SearchEngineBootstrapData,
   SearchEngineCacheEntry,
   SearchEngineCacheStorage,
+  SearchTagIndexItem,
   SearchTimingPhase,
 } from '../types.ts'
+import { catchAsyncError } from 'shared/result.ts'
 import { createSearchEngine, normalizeSearchRecords } from '../core/engine.ts'
 import {
   getDurationMs,
@@ -33,16 +36,36 @@ export async function buildSearchEngine(
 ): Promise<SearchEngine> {
   const indexUrl = bootstrap.indexUrl
   const debug = getSearchDebugFlag(bootstrap)
-  const cacheKey = createSearchCacheKey(indexUrl, {
-    articleMetadataIndex: bootstrap.articleMetadataIndex,
-    tagIndex: bootstrap.tagIndex,
-  })
   const phases: SearchTimingPhase[] = []
   const onStatus = options.onStatus || (() => {})
   const onReport = options.onReport || (() => {})
   const cacheStorage = options.cacheStorage === undefined
     ? getIndexedDbSearchCacheStorage()
     : options.cacheStorage
+
+  onStatus('fetch')
+  const fetchStart = nowMs()
+  const [rawIndex, articleMetadata, tagIndex] = await Promise.all([
+    fetchJsonIndex<RawSearchIndexEntry[]>(indexUrl),
+    resolveArticleMetadataIndex(bootstrap),
+    resolveSearchTagIndex(bootstrap),
+  ])
+  phases.push({
+    label: 'fetch and parse raw index',
+    durationMs: getDurationMs(fetchStart),
+    metadata: {
+      rawEntries: rawIndex.length,
+      articleMetadataEntries: Object.keys(articleMetadata).length,
+      tagEntries: tagIndex.length,
+    },
+  })
+
+  // The key hashes the resolved metadata, so it must be computed after the
+  // fetch: inline metadata and URL-loaded metadata share one cache entry.
+  const cacheKey = createSearchCacheKey(indexUrl, {
+    articleMetadataIndex: articleMetadata,
+    tagIndex,
+  })
 
   onStatus('cache-read')
   const cachedEntry = await readSearchEngineCache(cacheStorage, cacheKey, phases)
@@ -89,23 +112,6 @@ export async function buildSearchEngine(
     }
   }
 
-  onStatus('fetch')
-  const fetchStart = nowMs()
-  const [rawIndex, articleMetadata, tagIndex] = await Promise.all([
-    fetchJsonIndex<RawSearchIndexEntry[]>(indexUrl),
-    Promise.resolve(bootstrap.articleMetadataIndex || {}),
-    Promise.resolve(bootstrap.tagIndex || []),
-  ])
-  phases.push({
-    label: 'fetch and parse raw index',
-    durationMs: getDurationMs(fetchStart),
-    metadata: {
-      rawEntries: rawIndex.length,
-      articleMetadataEntries: Object.keys(articleMetadata).length,
-      tagEntries: tagIndex.length,
-    },
-  })
-
   onStatus('normalize')
   const normalizeStart = nowMs()
   const records = normalizeSearchRecords(rawIndex, articleMetadata, tagIndex)
@@ -150,6 +156,30 @@ export async function buildSearchEngine(
   })
   onStatus('ready')
   return engine
+}
+
+async function resolveArticleMetadataIndex(
+  bootstrap: SearchEngineBootstrapData,
+): Promise<SearchArticleMetadataIndex> {
+  if (bootstrap.articleMetadataIndex)
+    return bootstrap.articleMetadataIndex
+
+  const [metadata] = await catchAsyncError(
+    () => fetchJsonIndex<SearchArticleMetadataIndex>(bootstrap.articlesDataUrl),
+  )
+  return metadata || {}
+}
+
+async function resolveSearchTagIndex(
+  bootstrap: SearchEngineBootstrapData,
+): Promise<SearchTagIndexItem[]> {
+  if (bootstrap.tagIndex)
+    return bootstrap.tagIndex
+
+  const [tags] = await catchAsyncError(
+    () => fetchJsonIndex<SearchTagIndexItem[]>(bootstrap.tagsDataUrl),
+  )
+  return tags || []
 }
 
 function reportSearchEngineBuild(

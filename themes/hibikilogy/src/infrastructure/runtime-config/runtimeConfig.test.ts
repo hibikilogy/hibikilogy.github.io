@@ -11,6 +11,8 @@ describe('getRuntimeConfig', () => {
       baseUrl: 'http://localhost',
       searchIndexUrl: 'search_index.zh.json',
       searchWorkerUrl: '/js/search/worker.js',
+      searchArticlesDataUrl: 'search-articles/',
+      searchTagsDataUrl: 'search-tags/',
     })
   })
 
@@ -19,12 +21,16 @@ describe('getRuntimeConfig', () => {
       baseUrl: 'https://example.com',
       searchIndexUrl: '/index.json',
       searchWorkerUrl: '/worker.js',
+      searchArticlesDataUrl: '/articles-data/',
+      searchTagsDataUrl: '/tags-data/',
     }))
 
     expect(getRuntimeConfig(root)).toEqual({
       baseUrl: 'https://example.com',
       searchIndexUrl: '/index.json',
       searchWorkerUrl: '/worker.js',
+      searchArticlesDataUrl: '/articles-data/',
+      searchTagsDataUrl: '/tags-data/',
     })
   })
 
@@ -33,6 +39,8 @@ describe('getRuntimeConfig', () => {
       baseUrl: 'http://localhost',
       searchIndexUrl: 'search_index.zh.json',
       searchWorkerUrl: '/js/search/worker.js',
+      searchArticlesDataUrl: 'search-articles/',
+      searchTagsDataUrl: 'search-tags/',
     })
   })
 })
