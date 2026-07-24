@@ -44,17 +44,15 @@ export async function buildSearchEngine(
     : options.cacheStorage
 
   onStatus('fetch')
-  const fetchStart = nowMs()
-  const [rawIndex, articleMetadata, tagIndex] = await Promise.all([
-    fetchJsonIndex<RawSearchIndexEntry[]>(indexUrl),
+  const metadataStart = nowMs()
+  const [articleMetadata, tagIndex] = await Promise.all([
     resolveArticleMetadataIndex(bootstrap),
     resolveSearchTagIndex(bootstrap),
   ])
   phases.push({
-    label: 'fetch and parse raw index',
-    durationMs: getDurationMs(fetchStart),
+    label: 'resolve search metadata',
+    durationMs: getDurationMs(metadataStart),
     metadata: {
-      rawEntries: rawIndex.length,
       articleMetadataEntries: Object.keys(articleMetadata).length,
       tagEntries: tagIndex.length,
     },
@@ -111,6 +109,17 @@ export async function buildSearchEngine(
       })
     }
   }
+
+  onStatus('fetch')
+  const fetchStart = nowMs()
+  const rawIndex = await fetchJsonIndex<RawSearchIndexEntry[]>(indexUrl)
+  phases.push({
+    label: 'fetch and parse raw index',
+    durationMs: getDurationMs(fetchStart),
+    metadata: {
+      rawEntries: rawIndex.length,
+    },
+  })
 
   onStatus('normalize')
   const normalizeStart = nowMs()

@@ -4,6 +4,8 @@ import type {
   SearchArticleMetadataIndex,
   SearchBuildReport,
   SearchEngineBootstrapData,
+  SearchEngineCacheEntry,
+  SearchEngineCacheStorage,
   SearchTagIndexItem,
 } from '../types.ts'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -89,14 +91,39 @@ describe('buildSearchEngine metadata resolution', () => {
     expect(engine.records).toHaveLength(1)
     expect(report.cacheKey).toBe(createSearchCacheKey(urls.indexUrl, {}))
   })
+
+  it('restores the cached engine without fetching the raw index', async () => {
+    const firstUrls = createUrls('shared')
+    const secondUrls = createUrls('shared')
+    const fetchMock = stubFetch({
+      [firstUrls.indexUrl]: rawIndex,
+      [firstUrls.articlesDataUrl]: articleMetadata,
+      [firstUrls.tagsDataUrl]: tagIndex,
+      [secondUrls.articlesDataUrl]: articleMetadata,
+      [secondUrls.tagsDataUrl]: tagIndex,
+    })
+    const cacheStorage = createMemoryCacheStorage()
+
+    const initial = await buildAndReport(createBootstrap(firstUrls), cacheStorage)
+    expect(initial.report.cacheStatus).toBe('miss')
+
+    const restored = await buildAndReport(createBootstrap(secondUrls), cacheStorage)
+
+    expect(restored.report.cacheHit).toBe(true)
+    expect(restored.report.cacheStatus).toBe('hit')
+    expect(restored.report.cacheKey).toBe(initial.report.cacheKey)
+    expect(restored.engine.records).toHaveLength(1)
+    expect(fetchMock).not.toHaveBeenCalledWith(secondUrls.indexUrl)
+  })
 })
 
 let urlSerial = 0
 
-function createUrls() {
+function createUrls(indexVersion?: string) {
   urlSerial += 1
+  const version = indexVersion || `v${urlSerial}`
   return {
-    indexUrl: `/search_index.zh.json?test=${urlSerial}`,
+    indexUrl: `/search_index.zh.json?h=${version}&test=${urlSerial}`,
     articlesDataUrl: `/search-articles/?test=${urlSerial}`,
     tagsDataUrl: `/search-tags/?test=${urlSerial}`,
   }
@@ -109,13 +136,26 @@ function createBootstrap(
   return { ...urls, ...overrides }
 }
 
-async function buildAndReport(bootstrap: SearchEngineBootstrapData) {
+async function buildAndReport(
+  bootstrap: SearchEngineBootstrapData,
+  cacheStorage: SearchEngineCacheStorage | null = null,
+) {
   const reports: SearchBuildReport[] = []
   const engine = await buildSearchEngine(bootstrap, {
-    cacheStorage: null,
+    cacheStorage,
     onReport: report => reports.push(report),
   })
   return { engine, report: reports[reports.length - 1] }
+}
+
+function createMemoryCacheStorage(): SearchEngineCacheStorage {
+  let entry: SearchEngineCacheEntry | null = null
+  return {
+    read: async () => entry,
+    write: async (next) => {
+      entry = next
+    },
+  }
 }
 
 function stubFetch(responses: Record<string, unknown>) {
