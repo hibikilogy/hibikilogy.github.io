@@ -108,6 +108,9 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Vitest
+        run: pnpm test:ts
+
       # Zola templates reference the generated font subset stylesheets.
       - name: Build title font subset
         run: pnpm build:subset-titlefont
