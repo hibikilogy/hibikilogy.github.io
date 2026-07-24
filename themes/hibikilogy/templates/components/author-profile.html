@@ -20,7 +20,7 @@
         <span class="author-profile-count">
           {{ term.page_count }}{{ tr::t(key="related_articles_suffix", default="篇文章") }}
         </span>
-        {% if custom_page.link and (custom_page.link is starting_with("https://") or custom_page.link is starting_with("http://") or custom_page.link is starting_with("/")) %}
+        {% if custom_page.link %}
           {% set domain = custom_page.link
              | trim_start_matches(pat="https://")
              | trim_start_matches(pat="http://")

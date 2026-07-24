@@ -35,11 +35,11 @@ author{% if custom_author %} has-custom-profile{% endif %}
   {
     "@context": "https://schema.org",
     "@type": "Person",
-    "name": {{ term.name | json_encode | replace(from="<", to="\u003c") | safe }},
+    "name": {{ term.name | json_encode | safe }},
     "url": "{{ current_url | trim_end_matches(pat='/') | safe }}"{% if custom_author and custom_author.avatar %},
-    "image": {{ custom_author.avatar | json_encode | replace(from="<", to="\u003c") | safe }}{% endif %}{% if custom_author and custom_author.bio %},
-    "description": {{ custom_author.bio | json_encode | replace(from="<", to="\u003c") | safe }}{% endif %}{% if custom_author and custom_author.link %},
-    "sameAs": {{ custom_author.link | json_encode | replace(from="<", to="\u003c") | safe }}{% endif %}
+    "image": {{ custom_author.avatar | json_encode | safe }}{% endif %}{% if custom_author and custom_author.bio %},
+    "description": {{ custom_author.bio | json_encode | safe }}{% endif %}{% if custom_author and custom_author.link %},
+    "sameAs": {{ custom_author.link | json_encode | safe }}{% endif %}
   }
 </script>
 {%- endblock structured_data %}

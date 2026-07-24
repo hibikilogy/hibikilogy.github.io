@@ -51,25 +51,25 @@
     "@context": "https://schema.org",
     "@type": "Article",
     "@id": "{{ current_url | trim_end_matches(pat='/') | safe }}",
-    "headline": {{ page.title | json_encode | replace(from="<", to="\u003c") | safe }},
-    "description": {% if page.description %}{{ page.description | json_encode | replace(from="<", to="\u003c") | safe }}{% elif page.extra.abstract %}{{ page.extra.abstract | json_encode | replace(from="<", to="\u003c") | safe }}{% else %}""{% endif %},
+    "headline": {{ page.title | json_encode | safe }},
+    "description": {% if page.description %}{{ page.description | json_encode | safe }}{% elif page.extra.abstract %}{{ page.extra.abstract | json_encode | safe }}{% else %}""{% endif %},
     "url": "{{ current_url | trim_end_matches(pat='/') | safe }}",
     "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ current_url | trim_end_matches(pat='/') | safe }}" },
     "datePublished": "{{ page.date }}T00:00:00+08:00",
     "dateModified": "{{ modified }}T00:00:00+08:00",
     "inLanguage": "{{ lang }}",
     "wordCount": {{ page.word_count }}{% if has_cover or has_author or has_tags %},{% endif %}{% if has_cover %}
-    "image": {{ cv | json_encode | replace(from="<", to="\u003c") | safe }},
-    "thumbnailUrl": {{ cv | json_encode | replace(from="<", to="\u003c") | safe }}{% if has_author or has_tags %},{% endif %}{% endif %}{% if has_author %}
-    "author": [{% for author_name in authors %}{% if not loop.first %}, {% endif %}{ "@type": "Person", "name": {{ author_name | json_encode | replace(from="<", to="\u003c") | safe }}, "url": "{{ get_taxonomy_url(kind='author', name=author_name) | trim_end_matches(pat='/') | safe }}" }{% endfor %}]{% if has_tags %},{% endif %}{% endif %}{% if has_tags %}
-    "keywords": [{% for tag in tags %}{% if not loop.first %}, {% endif %}{{ tag | json_encode | replace(from="<", to="\u003c") | safe }}{% endfor %}]{% endif %}{% if has_cover or has_author or has_tags %},
+    "image": {{ cv | json_encode | safe }},
+    "thumbnailUrl": {{ cv | json_encode | safe }}{% if has_author or has_tags %},{% endif %}{% endif %}{% if has_author %}
+    "author": [{% for author_name in authors %}{% if not loop.first %}, {% endif %}{ "@type": "Person", "name": {{ author_name | json_encode | safe }}, "url": "{{ get_taxonomy_url(kind='author', name=author_name) | trim_end_matches(pat='/') | safe }}" }{% endfor %}]{% if has_tags %},{% endif %}{% endif %}{% if has_tags %}
+    "keywords": [{% for tag in tags %}{% if not loop.first %}, {% endif %}{{ tag | json_encode | safe }}{% endfor %}]{% endif %}{% if has_cover or has_author or has_tags %},
     {% endif %}"publisher": {
       "@type": "Organization",
       "name": "{{ config.title }}",
       "url": "{{ config.base_url | trim_end_matches(pat="/") | safe }}",
       "logo": { "@type": "ImageObject", "url": "{{ get_url(path=config.extra.navbar_logo) }}" }
     }{% if page.extra.original %},
-    "isBasedOn": {{ page.extra.original | json_encode | replace(from="<", to="\u003c") | safe }}{% endif %}
+    "isBasedOn": {{ page.extra.original | json_encode | safe }}{% endif %}
   }
 </script>
 {% endmacro %}
