@@ -27,8 +27,6 @@ describe('outlineController', () => {
     window.history.replaceState(null, '', '/articles/foo/#%')
 
     expect(() => initOutline({ replaceHash: vi.fn() })).not.toThrow()
-
-    // Outline listeners and cleanup are registered despite the bad hash
     expect(() => disposeOutline()).not.toThrow()
   })
 
