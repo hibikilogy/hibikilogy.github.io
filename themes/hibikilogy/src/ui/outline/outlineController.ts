@@ -1,5 +1,6 @@
 import type { HeaderItem, OutlineOptions } from './types.ts'
 import { throttle } from 'lodash-es'
+import { catchError } from '../../shared/result.ts'
 import { outlineDom } from './config.ts'
 
 const resolvedHeaders: Array<Pick<HeaderItem, 'element' | 'link'>> = []
@@ -78,6 +79,16 @@ function appendToParentOrRoot(
   tree.push(current)
 }
 
+function findOutlineLink(hash: string): Element | null {
+  // location.hash may contain malformed percent escapes (e.g. `#%`), and the
+  // interpolated selector may still be invalid — treat both as "no active link"
+  const [decodedHash] = catchError(() => decodeURIComponent(hash))
+  const [link] = catchError(() =>
+    document.querySelector(`${outlineDom.link}[href$="${decodedHash ?? hash}"]`),
+  )
+  return link ?? null
+}
+
 interface ActiveAnchorController {
   beginNavigation: (hash: string) => void
   dispose: () => void
@@ -148,9 +159,7 @@ function useActiveAnchor(marker: HTMLElement, options: OutlineOptions): ActiveAn
   function activateLink(hash: string | null): void {
     previousActiveLink?.classList.remove('active')
 
-    previousActiveLink = hash == null
-      ? null
-      : document.querySelector(`${outlineDom.link}[href$="${decodeURIComponent(hash)}"]`)
+    previousActiveLink = hash == null ? null : findOutlineLink(hash)
 
     if (previousActiveLink instanceof HTMLElement) {
       previousActiveLink.classList.add('active')
@@ -215,7 +224,8 @@ export function initOutline(options: OutlineOptions): void {
   }
 
   // Scroll to heading if page was loaded with a hash
-  const hash = decodeURIComponent(location.hash)
+  const [decodedLocationHash] = catchError(() => decodeURIComponent(location.hash))
+  const hash = decodedLocationHash ?? location.hash
   if (hash) {
     currentActiveHash = hash
     const heading = resolvedHeaders.find(h => h.link === hash)?.element

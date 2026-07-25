@@ -17,6 +17,18 @@ import { createAppContext } from './appContext.ts'
 import { mountPageModules } from './page-modules/index.ts'
 import { createPageContext } from './pageContext.ts'
 
+// Runs cleanup on the final page unload. Not a once-listener: bfcache
+// round-trips fire persisted `pagehide` events first, and a once-listener
+// would be consumed by one of those before the real unload happens.
+export function onFinalPageHide(cleanup: () => void): void {
+  window.addEventListener('pagehide', (event) => {
+    if (event.persisted)
+      return
+
+    cleanup()
+  })
+}
+
 export function startApp(): void {
   const swup = createSwup()
   const app = createAppContext(swup)
@@ -111,15 +123,12 @@ export function startApp(): void {
   swup.hooks.on('visit:end', finishPostTitleVisit)
   swup.hooks.on('visit:abort', finishPostTitleVisit)
 
-  window.addEventListener('pagehide', (event) => {
-    if (event.persisted)
-      return
-
+  onFinalPageHide(() => {
     page?.dispose()
     document.removeEventListener('pointerover', preloadTitle)
     document.removeEventListener('focusin', preloadTitle)
     app.dispose()
-  }, { once: true })
+  })
 
   initializePage()
 }
