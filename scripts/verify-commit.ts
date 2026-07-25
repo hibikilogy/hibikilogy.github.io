@@ -1,9 +1,13 @@
+import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
-import path from 'node:path'
 import process from 'node:process'
 import pc from 'picocolors'
 
-const msgPath = path.resolve('.git/COMMIT_EDITMSG')
+// Prefer the message path git passes as $1 (forwarded by the hook); fall
+// back to asking git, which resolves correctly in linked worktrees where
+// `.git` is a gitdir file, not a directory.
+const msgPath = process.argv[2]
+  || execSync('git rev-parse --git-path COMMIT_EDITMSG', { encoding: 'utf-8' }).trim()
 const msg = readFileSync(msgPath, 'utf-8').trim()
 
 const commitRE
