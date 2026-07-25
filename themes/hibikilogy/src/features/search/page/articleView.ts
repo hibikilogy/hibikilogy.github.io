@@ -48,7 +48,11 @@ export function renderSearchArticle(
 }
 
 export function getSearchHighlightTerms(searchTerm: string): string[] {
-  const terms = parseSearchQuery(searchTerm).clauses.filter(clause => clause.type !== 'not').map(clause => clause.value.trim()).filter(Boolean)
+  const terms = parseSearchQuery(searchTerm).clauses.filter(clause => clause.type !== 'not').filter(clause => (
+    clause.type === 'term'
+    || clause.field === 'body'
+    || clause.field === 'description'
+  )).map(clause => clause.value.trim()).filter(Boolean)
 
   return [...new Set(terms)]
     .sort((left, right) => right.length - left.length)
