@@ -20,8 +20,8 @@ const api: SearchWorkerApi = {
   async initialize(bootstrap, onStatus, onReport) {
     const nextKey = JSON.stringify({
       indexUrl: bootstrap.indexUrl,
-      articleMetadata: bootstrap.articleMetadataIndex,
-      tags: bootstrap.tagIndex,
+      articlesDataUrl: bootstrap.articlesDataUrl,
+      tagsDataUrl: bootstrap.tagsDataUrl,
     })
 
     statusListener = onStatus

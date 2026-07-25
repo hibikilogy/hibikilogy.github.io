@@ -6,6 +6,8 @@ const defaults: RuntimeConfig = {
   baseUrl: 'http://localhost',
   searchIndexUrl: 'search_index.zh.json',
   searchWorkerUrl: '/js/search/worker.js',
+  searchArticlesDataUrl: 'search-articles/',
+  searchTagsDataUrl: 'search-tags/',
 }
 
 let cached: RuntimeConfig | null = null
@@ -29,6 +31,8 @@ export function getRuntimeConfig(
       baseUrl: value.baseUrl || defaults.baseUrl,
       searchIndexUrl: value.searchIndexUrl || defaults.searchIndexUrl,
       searchWorkerUrl: value.searchWorkerUrl || defaults.searchWorkerUrl,
+      searchArticlesDataUrl: value.searchArticlesDataUrl || defaults.searchArticlesDataUrl,
+      searchTagsDataUrl: value.searchTagsDataUrl || defaults.searchTagsDataUrl,
     }
   })
   cached = config ?? defaults
