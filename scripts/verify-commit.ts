@@ -1,9 +1,13 @@
+import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
-import path from 'node:path'
 import process from 'node:process'
 import pc from 'picocolors'
 
-const msgPath = path.resolve('.git/COMMIT_EDITMSG')
+// Git passes the message file path as $1, but simple-git-hooks does not
+// forward arguments, so fall back to asking git (works in linked worktrees
+// where `.git` is a gitdir file, unlike a hardcoded `.git/COMMIT_EDITMSG`).
+const msgPath = process.argv[2]
+  || execSync('git rev-parse --git-path COMMIT_EDITMSG', { encoding: 'utf-8' }).trim()
 const msg = readFileSync(msgPath, 'utf-8').trim()
 
 const commitRE
