@@ -2,11 +2,11 @@
 [
 {%- for tag in tags.items %}
   {
-    "name": {{ tag.name | json_encode | safe }},
-    "href": {{ get_taxonomy_url(kind="tags", name=tag.name) | trim_end_matches(pat="/") | json_encode | safe }},
+    "name": {{ tag.name | json_encode | replace(from="<", to="\u003c") | safe }},
+    "href": {{ get_taxonomy_url(kind="tags", name=tag.name) | trim_end_matches(pat="/") | json_encode | replace(from="<", to="\u003c") | safe }},
     "pages": [
       {%- for page in tag.pages %}
-      {{ page.permalink | json_encode | safe }}{% if not loop.last %},{% endif %}
+      {{ page.permalink | json_encode | replace(from="<", to="\u003c") | safe }}{% if not loop.last %},{% endif %}
       {%- endfor %}
     ]
   }{% if not loop.last %},{% endif %}
