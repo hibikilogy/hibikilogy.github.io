@@ -3,16 +3,23 @@
 @layer components {
   .NavBar {
     --searchbox-width: 48px;
+    --navbar-hidden-translate: -100%;
     z-index: var(--joh-z-index-nav);
     width: 100%;
-    position: relative;
+    position: sticky;
+    inset-block-start: 0;
     height: var(--joh-nav-height);
     white-space: nowrap;
-    transition: background-color 0.5s;
+    translate: 0;
+    will-change: translate;
+    transition:
+      background-color 0.5s,
+      translate var(--duration-fast) var(--ease-standard);
 
     background-color: var(--joh-c-bg);
 
     @media (--pad) {
+      --navbar-hidden-translate: calc(-100% - 8px);
       margin-top: 8px;
     }
 
@@ -365,9 +372,56 @@
         margin-left: 0;
       }
     }
-    /* NavBarSocialLink */
     .NavBarSocialLink {
       cursor: default;
+    }
+  }
+
+  .NavBar.scrolling-down:not(.open):not(:focus-within) {
+    translate: 0 var(--navbar-hidden-translate);
+    pointer-events: none;
+  }
+
+  .Layout:has(> .NavBar.scrolling-down:not(.open):not(:focus-within)) {
+    --joh-sticky-nav-offset: 0px;
+  }
+
+  .NavBar:focus-within {
+    translate: 0;
+    pointer-events: auto;
+  }
+
+  @supports (container-type: scroll-state) {
+    html {
+      container-name: page-scroll;
+      container-type: scroll-state;
+    }
+
+    @container page-scroll scroll-state((scrolled: block-end) and (scrollable: block-start)) {
+      .NavBar {
+        --joh-scroll-direction: block-end;
+      }
+
+      .NavBar:not(.open):not(:focus-within) {
+        translate: 0 var(--navbar-hidden-translate);
+        pointer-events: none;
+      }
+
+      .Layout:has(> .NavBar:not(.open):not(:focus-within)) {
+        --joh-sticky-nav-offset: 0px;
+      }
+    }
+
+    @container page-scroll scroll-state(scrolled: block-start) {
+      .NavBar {
+        --joh-scroll-direction: block-start;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .NavBar {
+      transition-property: background-color;
     }
   }
 }
