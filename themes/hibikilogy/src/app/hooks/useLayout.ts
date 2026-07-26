@@ -57,12 +57,6 @@ export function useLayout(root: ParentNode, route: RouteModel): LayoutModel {
     }
   })
 
-  // Recompute the open navscreen's viewport-derived motion rate.
-  useEventListener(window, 'resize', () => {
-    if (navbarOpen.value)
-      syncView()
-  })
-
   root.querySelectorAll<HTMLSelectElement>(navbarDom.sorting).forEach((select) => {
     useEventListener(select, 'change', () => route.navigate(`/${select.value}`))
   })

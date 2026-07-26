@@ -49,9 +49,9 @@
           border-radius: 2px;
           background-color: var(--joh-c-text-2);
           transition:
-            translate 120ms ease-out 120ms,
-            rotate 120ms ease-in,
-            scale 120ms ease-out 120ms,
+            translate 120ms var(--ease-out) 120ms,
+            rotate 120ms var(--ease-morph),
+            scale 120ms var(--ease-out) 120ms,
             background-color 0.25s;
         }
 
@@ -62,9 +62,9 @@
 
       &.open .container > span {
         transition:
-          translate 120ms ease-in,
-          rotate 120ms ease-out 120ms,
-          scale 120ms ease-in,
+          translate 120ms var(--ease-morph),
+          rotate 120ms var(--ease-out) 120ms,
+          scale 120ms var(--ease-morph),
           background-color 0.25s;
       }
 
@@ -111,9 +111,9 @@
       pointer-events: auto;
       opacity: 0;
       transition:
-        display var(--navscreen-rate, var(--duration-fast)) var(--ease-standard),
-        opacity var(--navscreen-rate, var(--duration-fast)) var(--ease-standard),
-        transform var(--navscreen-rate, var(--duration-fast)) var(--ease-standard);
+        display var(--duration-reveal) var(--ease-out),
+        opacity var(--duration-reveal) var(--ease-out),
+        transform var(--duration-reveal) var(--ease-out);
       transition-behavior: allow-discrete;
 
       @starting-style {
@@ -123,19 +123,13 @@
 
       .NavScreenMenu > *,
       .NavScreenClose {
-        /* Front-loaded close: delay 0 for all items; the stagger lives in
-           the per-item duration. */
-        --navscreen-item-close-dur: min(
-          160ms + (var(--navscreen-item-total, 1) - var(--navscreen-item-index, 0)) * var(--stagger-step),
-          var(--duration-reveal)
-        );
         opacity: 0;
         transform: translateY(-8px);
-        filter: blur(4px);
+        filter: blur(var(--blur-small));
         transition:
-          opacity var(--navscreen-item-close-dur) var(--ease-standard),
-          transform var(--navscreen-item-close-dur) var(--ease-standard),
-          filter var(--navscreen-item-close-dur) var(--ease-standard);
+          opacity 160ms var(--ease-out),
+          transform 160ms var(--ease-out),
+          filter 160ms var(--ease-out);
       }
 
       &.open .NavScreenMenu > *,
@@ -143,15 +137,15 @@
         opacity: 1;
         transform: translateY(0);
         filter: blur(0px);
-        transition-duration: var(--duration-reveal);
-        transition-delay: calc(200ms + var(--navscreen-item-index, 0) * var(--stagger-step));
+        transition-duration: 200ms;
+        transition-delay: calc(40ms + var(--navscreen-item-index, 0) * var(--duration-stagger));
 
         /* Lets the entry cascade transition (not snap) when the panel flips
            display: none → flex in the same frame. */
         @starting-style {
           opacity: 0;
           transform: translateY(-8px);
-          filter: blur(4px);
+          filter: blur(var(--blur-small));
         }
       }
 

@@ -9,29 +9,29 @@
     visibility: hidden;
     backdrop-filter: blur(0px) saturate(100%);
     transition:
-      opacity 320ms var(--ease-standard) 80ms,
-      visibility 320ms var(--ease-standard) 80ms,
-      backdrop-filter 100ms var(--ease-standard);
+      opacity var(--duration-reveal) var(--ease-out),
+      visibility var(--duration-reveal) var(--ease-out),
+      backdrop-filter 160ms var(--ease-out);
   }
 
   html.navscreen-open body::after {
     opacity: 1;
     visibility: visible;
-    backdrop-filter: blur(20px) saturate(180%);
-    transition-duration: 320ms;
+    backdrop-filter: blur(12px) saturate(160%);
+    transition-duration: var(--duration-reveal), var(--duration-reveal), 160ms;
   }
 
   html[data-search-overlay='active'] body::after {
     opacity: 1;
     visibility: visible;
-    backdrop-filter: blur(20px) saturate(180%);
-    transition-duration: var(--duration-slide);
+    backdrop-filter: blur(8px) saturate(140%);
+    transition-duration: 160ms;
     transition-delay: 0ms;
   }
 
   html[data-search-overlay='active'].is-rendering body::after {
     backdrop-filter: blur(0px) saturate(100%);
-    transition-duration: 140ms;
+    transition-duration: 120ms;
   }
 
   @media (prefers-reduced-motion: reduce) {

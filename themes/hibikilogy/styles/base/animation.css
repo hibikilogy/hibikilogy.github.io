@@ -7,9 +7,8 @@
     --duration-medium: 350ms; /* panel close */
     --duration-slow: 400ms; /* panel open, skeleton reveal */
     --duration-very-slow: 500ms; /* emphasis, badge appear, text reveal */
-    --duration-slide: 700ms; /* search overlay wipe, search-box morph */
+    --duration-search-transition: 500ms; /* search overlay wipe, search-box morph */
     --duration-reveal: 240ms; /* item-level enter/exit (navscreen cascade, hamburger morph) */
-    --stagger-step: 20ms; /* per-item cascade offset (navscreen open/close) */
 
     --distance-micro: 4px; /* text swap */
     --distance-small: 6px; /* error shake (small segment) */
@@ -18,9 +17,10 @@
     --distance-large: 30px; /* check badge appear */
 
     --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1); /* modal/dropdown/panel, page slide, resize */
-    --ease-standard: cubic-bezier(0.33, 0, 0.13, 1); /* search/navscreen choreography (canonical curve) */
-    --ease-in-out: ease-in-out; /* icon swap, text swap, text reveal */
-    --ease-out: ease-out; /* tooltip open / close */
+    --ease-standard: cubic-bezier(0.33, 0, 0.13, 1); /* page and result choreography */
+    --ease-morph: cubic-bezier(0.77, 0, 0.175, 1); /* shared-element geometry, icon swap */
+    --ease-search-settle: cubic-bezier(0.16, 1, 0.3, 1); /* fast search wipe, soft landing */
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* UI enter / exit */
     --ease-linear: linear; /* shimmer, skeleton pulse, spinner */
     --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1); /* badge pop open */
     --ease-bounce-strong: cubic-bezier(0.34, 3.85, 0.64, 1); /* bouncy hover-out */

@@ -1,15 +1,7 @@
 import type { NavbarViewState } from './types.ts'
-import { shouldSkipMotion } from '../../shared/animation.ts'
 import { navbarDom } from './config.ts'
 
-const NAVSCREEN_RATE_MIN_MS = 240
-const NAVSCREEN_RATE_MAX_MS = 480
-
-function navscreenRateMs(): number {
-  return Math.min(Math.max(window.innerHeight / 2, NAVSCREEN_RATE_MIN_MS), NAVSCREEN_RATE_MAX_MS)
-}
-
-function syncNavScreenMotion(screen: HTMLElement): void {
+function syncNavScreenItems(screen: HTMLElement): void {
   const menu = screen.querySelector<HTMLElement>('.NavScreenMenu')
   const items = menu ? Array.from(menu.children) : []
   items.forEach((item, index) => {
@@ -20,11 +12,6 @@ function syncNavScreenMotion(screen: HTMLElement): void {
   screen.querySelector<HTMLElement>(navbarDom.close)
     ?.style
     .setProperty('--navscreen-item-index', String(items.length))
-  screen.style.setProperty('--navscreen-item-total', String(items.length))
-  // The search-page footer flourish consumes the total as well.
-  document.documentElement.style.setProperty('--navscreen-item-total', String(items.length))
-  if (!shouldSkipMotion())
-    screen.style.setProperty('--navscreen-rate', `${navscreenRateMs()}ms`)
 }
 
 function syncNavScreenScrollLock(open: boolean): void {
@@ -44,6 +31,7 @@ export function syncNavbarView(root: ParentNode, state: NavbarViewState): void {
   const navbar = root.querySelector<HTMLElement>(navbarDom.root)
   const hamburger = root.querySelector<HTMLButtonElement>(navbarDom.hamburger)
   const screen = root.querySelector<HTMLElement>(navbarDom.screen)
+  const close = screen?.querySelector<HTMLButtonElement>(navbarDom.close)
 
   navbar?.classList.toggle('open', state.open)
   navbar?.classList.toggle('top', state.top)
@@ -54,12 +42,11 @@ export function syncNavbarView(root: ParentNode, state: NavbarViewState): void {
   hamburger?.setAttribute('aria-expanded', String(state.open))
   screen?.classList.toggle('open', state.open)
   screen?.classList.toggle('top', state.top)
-  screen?.querySelector<HTMLElement>(navbarDom.close)
-    ?.classList
-    .toggle('open', state.open)
+  close?.classList.toggle('open', state.open)
+  close?.setAttribute('aria-expanded', String(state.open))
 
   if (screen && state.open)
-    syncNavScreenMotion(screen)
+    syncNavScreenItems(screen)
   syncNavScreenScrollLock(state.open)
   document.documentElement.classList.toggle('navscreen-open', state.open)
 }

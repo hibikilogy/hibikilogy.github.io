@@ -26,7 +26,7 @@
   }
 
   html[data-search-overlay='active'].is-changing body::before {
-    transition: transform var(--duration-slide) var(--ease-standard);
+    transition: transform var(--duration-search-transition) var(--ease-search-settle);
   }
 
   html[data-search-overlay='active'].is-animating body::before {
@@ -38,7 +38,7 @@
   }
 
   html[data-search-overlay='active'].is-changing main.Content {
-    transition: transform var(--duration-slide) var(--ease-standard);
+    transition: transform var(--duration-search-transition) var(--ease-search-settle);
     will-change: transform;
   }
 
@@ -54,15 +54,14 @@
   html[data-search-overlay='active'][data-search-transition-scope='enter-search'] .Footer {
     opacity: 0;
     transform: translateY(20px);
-    filter: blur(4px);
+    filter: blur(var(--blur-small));
   }
 
   html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-changing .Footer {
     transition:
-      opacity var(--duration-very-slow) var(--ease-smooth-out),
-      transform var(--duration-very-slow) var(--ease-smooth-out),
-      filter var(--duration-very-slow) var(--ease-smooth-out);
-    transition-delay: calc(200ms + var(--navscreen-item-total, 3) * var(--stagger-step));
+      opacity 400ms var(--ease-search-settle) 100ms,
+      transform 400ms var(--ease-search-settle) 100ms,
+      filter 400ms var(--ease-search-settle) 100ms;
     will-change: opacity, transform, filter;
   }
 
@@ -77,10 +76,7 @@
       opacity: 1;
     }
 
-    55% {
-      opacity: 0;
-    }
-
+    35%,
     to {
       opacity: 0;
     }
@@ -91,14 +87,7 @@
       opacity: 0;
     }
 
-    30% {
-      opacity: 0;
-    }
-
-    80% {
-      opacity: 1;
-    }
-
+    55%,
     to {
       opacity: 1;
     }
@@ -109,10 +98,7 @@
       opacity: 1;
     }
 
-    55% {
-      opacity: 0;
-    }
-
+    35%,
     to {
       opacity: 0;
     }
@@ -123,10 +109,7 @@
       opacity: 0;
     }
 
-    30% {
-      opacity: 0;
-    }
-
+    55%,
     to {
       opacity: 1;
     }
@@ -173,52 +156,56 @@
     }
 
     html[data-search-transition='active']::view-transition-group(site-search-trigger) {
-      animation-duration: var(--duration-slide);
-      animation-timing-function: var(--ease-standard);
-      z-index: 20;
+      animation-duration: var(--duration-search-transition);
+      animation-timing-function: var(--ease-search-settle);
+      z-index: 30;
     }
 
     html[data-search-transition='active']::view-transition-group(navbar-social-slot) {
-      animation-duration: 320ms;
-      animation-timing-function: var(--ease-standard);
+      animation-duration: var(--duration-search-transition);
+      animation-timing-function: var(--ease-search-settle);
       z-index: 19;
     }
 
     html[data-search-transition='active']::view-transition-group(navbar-hamburger) {
       animation-duration: var(--duration-reveal);
-      animation-timing-function: var(--ease-standard);
-      z-index: 21;
+      animation-timing-function: var(--ease-search-settle);
+      z-index: 31;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='enter-search']::view-transition-old(
         site-search-trigger
       ) {
-      animation: search-trigger-expand-out var(--duration-slide) var(--ease-standard) both;
+      animation: search-trigger-expand-out var(--duration-search-transition) var(--ease-search-settle) both;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='enter-search']::view-transition-new(
         site-search-trigger
       ) {
-      animation: search-trigger-settle-in var(--duration-slide) var(--ease-standard) both;
+      animation: search-trigger-settle-in var(--duration-search-transition) var(--ease-search-settle) both;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
         site-search-trigger
       ) {
-      animation: search-trigger-collapse-out var(--duration-slide) var(--ease-standard) both;
+      animation: search-trigger-collapse-out var(--duration-search-transition) var(--ease-search-settle) both;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-new(
         site-search-trigger
       ) {
-      animation: search-trigger-return-in var(--duration-slide) var(--ease-standard) both;
+      animation: search-trigger-return-in var(--duration-search-transition) var(--ease-search-settle) both;
     }
 
     @media (prefers-reduced-motion: reduce) {
-      html[data-search-transition='active']::view-transition-group(site-search-trigger),
-      html[data-search-transition='active']::view-transition-old(site-search-trigger),
-      html[data-search-transition='active']::view-transition-new(site-search-trigger) {
+      html[data-search-transition='active']::view-transition-group(site-search-trigger) {
         animation: none;
+      }
+
+      html[data-search-transition='active'][data-search-transition-scope]::view-transition-old(site-search-trigger),
+      html[data-search-transition='active'][data-search-transition-scope]::view-transition-new(site-search-trigger) {
+        animation-duration: 120ms;
+        animation-timing-function: var(--ease-out);
       }
     }
   }
