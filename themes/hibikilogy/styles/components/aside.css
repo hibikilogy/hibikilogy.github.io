@@ -6,14 +6,13 @@
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    margin-left: 32px;
 
     .aside-container {
       position: sticky;
       top: calc(var(--joh-sticky-nav-offset) + 32px);
       width: 224px;
-      height: max(0px, calc(100vh - var(--joh-sticky-nav-offset) - 32px - var(--joh-outline-bottom-inset, 0px)));
-      height: max(0px, calc(100dvh - var(--joh-sticky-nav-offset) - 32px - var(--joh-outline-bottom-inset, 0px)));
+      height: max(0px, calc(100vh - var(--joh-sticky-nav-offset) - 32px));
+      height: max(0px, calc(100dvh - var(--joh-sticky-nav-offset) - 32px));
       padding-top: 16px;
       overflow-x: hidden;
       overflow-y: auto;

@@ -70,6 +70,9 @@ post
       </article>
     </section>
   </div>
-  {{ aside::main(page=page) }}
 </div>
+{% endblock %}
+
+{% block aside %}
+{{ aside::main(page=page) }}
 {% endblock %}

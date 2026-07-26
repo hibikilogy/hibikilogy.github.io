@@ -11,6 +11,7 @@
 {%- block vars %}{% endblock vars -%}
 
 {% set base_url_clean = config.base_url | trim_end_matches(pat="/") %}
+{% set has_aside = page is defined and page.toc and page.extra.toc | default(value=true) != false %}
 
 {% set stylesheets = config.extra.stylesheets | default(value=[
       "styles/uno.css",
@@ -207,22 +208,29 @@
       {% block header %}
       {% endblock %}
 
-      <main class="Content {% if page.toc and page.extra.toc | default(value=true) != false %}has-aside{% endif %}">
-        {% block content %}
-        {% endblock %}
+      <div class="PageFrame{% if has_aside %} has-aside{% endif %}">
+        <div class="PageMain">
+          <main class="Content{% if has_aside %} has-aside{% endif %}">
+            {% block content %}
+            {% endblock %}
 
-        {% block pagination %}
-        {{ pagination::main() }}
-        {% endblock %}
-      </main>
+            {% block pagination %}
+            {{ pagination::main() }}
+            {% endblock %}
+          </main>
 
-      {% block footer %}
-      {% if slot is defined %}
-      {% block slot %}{% endblock %}
-      {% else %}
-      {{ footer::main() }}
-      {% endif %}
-      {% endblock %}
+          {% block footer %}
+          {% if slot is defined %}
+          {% block slot %}{% endblock %}
+          {% else %}
+          {{ footer::main() }}
+          {% endif %}
+          {% endblock %}
+        </div>
+
+        {% block aside %}
+        {% endblock %}
+      </div>
     </div>
   </div>
 

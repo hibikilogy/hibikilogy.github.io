@@ -8,14 +8,18 @@
     min-height: 100vh;
   }
 
+  .PageFrame,
+  .PageMain {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
   .Content {
     flex: 1;
     width: 100%;
     min-height: calc(100svh - var(--joh-nav-height));
-
-    &:not(.has-aside) > .container > .Aside {
-      display: none;
-    }
 
     .container {
       margin: 0 auto;
@@ -33,19 +37,20 @@
     @media (--tablet) {
       padding: 0 32px;
     }
+  }
 
-    @media (--laptop) {
-      & .container {
-        display: flex;
-        justify-content: center;
-      }
+  @media (--laptop) {
+    .PageFrame.has-aside {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 224px;
+      column-gap: 32px;
+      margin: 0 auto;
+      padding: 0 32px;
+      width: 100%;
+      max-width: calc(var(--joh-layout-max-width) + 64px);
 
-      & .content {
-        flex: 1;
-      }
-
-      & .Aside {
-        display: block;
+      > .PageMain > .Content {
+        padding-inline: 0;
       }
     }
   }

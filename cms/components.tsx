@@ -15,13 +15,17 @@ export function PreviewPage({ hero, body, hasAside = false }: PreviewPageProps) 
       <div className="Layout">
         {hero}
         {body && (
-          <main className={`Content${hasAside ? ' has-aside' : ''}`}>
-            <div className="container">
-              <div className="content">
-                <section className="content-container">{body}</section>
-              </div>
+          <div className="PageFrame">
+            <div className="PageMain">
+              <main className={`Content${hasAside ? ' has-aside' : ''}`}>
+                <div className="container">
+                  <div className="content">
+                    <section className="content-container">{body}</section>
+                  </div>
+                </div>
+              </main>
             </div>
-          </main>
+          </div>
         )}
       </div>
     </div>

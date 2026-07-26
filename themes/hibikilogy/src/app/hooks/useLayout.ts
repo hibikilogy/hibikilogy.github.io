@@ -3,14 +3,12 @@ import { onScopeDispose, readonly, ref, watch } from '@vue/reactivity'
 import { useEventListener } from '../../shared/hooks/index.ts'
 import { navbarDom, syncNavbarView } from '../../ui/navbar/index.ts'
 import { useNavbarScroll } from './useNavbarScroll.ts'
-import { useOutlineScroll } from './useOutlineScroll.ts'
 import { useScroll } from './useScroll.ts'
 
 export function useLayout(root: ParentNode, route: RouteModel): LayoutModel {
   const navbarOpen = ref(false)
   const scroll = useScroll(window, { directionTolerance: 6 })
   const { scrollingDown, postHeroPassed } = useNavbarScroll(root, scroll)
-  useOutlineScroll(root, scroll)
 
   const syncView = (): void => {
     syncNavbarView(root, {
