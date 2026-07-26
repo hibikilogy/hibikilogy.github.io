@@ -10,13 +10,15 @@
 
     .aside-container {
       position: sticky;
-      top: 32px;
+      top: calc(var(--joh-sticky-nav-offset) + 32px);
       width: 224px;
-      height: 100vh;
+      height: max(0px, calc(100vh - var(--joh-sticky-nav-offset) - 32px - var(--joh-outline-bottom-inset, 0px)));
+      height: max(0px, calc(100dvh - var(--joh-sticky-nav-offset) - 32px - var(--joh-outline-bottom-inset, 0px)));
       padding-top: 16px;
       overflow-x: hidden;
       overflow-y: auto;
       scrollbar-width: none;
+      transition: top var(--duration-fast) var(--ease-standard);
     }
 
     .aside-container::-webkit-scrollbar {
