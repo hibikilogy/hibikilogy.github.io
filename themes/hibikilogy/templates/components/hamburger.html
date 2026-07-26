@@ -1,0 +1,10 @@
+{% macro main(extra_class="", label="mobile navigation") %}
+<button type="button" class="NavBarHamburger hamburger{% if extra_class %} {{ extra_class }}{% endif %}"
+  aria-label="{{ label }}" aria-expanded="false" aria-controls="NavScreen">
+  <span class="container">
+    <span class="top"></span>
+    <span class="middle"></span>
+    <span class="bottom"></span>
+  </span>
+</button>
+{% endmacro main %}

@@ -1,17 +1,11 @@
 {% import 'components/nav-screen.html' as navScreen %}
 {% import 'components/search_shell.html' as search_shell %}
+{% import 'components/hamburger.html' as hamburger %}
 {% macro main() %}
 <header class="NavBar top">
   <div class="wrapper">
     <div class="container">
-      <button type="button" class="NavBarHamburger hamburger" aria-label="mobile navigation" aria-expanded="false"
-        aria-controls="NavScreen">
-        <span class="container">
-          <span class="top"></span>
-          <span class="middle"></span>
-          <span class="bottom"></span>
-        </span>
-      </button>
+      {{ hamburger::main() }}
       {{ navScreen::main() }}
       <div class="title">
         <div class="NavBarTitle">
