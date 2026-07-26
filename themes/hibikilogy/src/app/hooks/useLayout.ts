@@ -40,10 +40,27 @@ export function useLayout(root: ParentNode, route: RouteModel): LayoutModel {
   const navScreen = root.querySelector<HTMLElement>(navbarDom.screen)
   if (navScreen) {
     useEventListener(navScreen, 'click', (event) => {
-      if ((event.target as Element | null)?.closest(navbarDom.link))
+      const target = event.target as Element | null
+      if (target?.closest(navbarDom.link) || target?.closest(navbarDom.close))
         navbarOpen.value = false
     })
   }
+
+  useEventListener(document, 'keydown', (event) => {
+    if (event.defaultPrevented || event.isComposing || event.altKey)
+      return
+
+    if (event.key === 'Escape' && navbarOpen.value) {
+      event.preventDefault()
+      navbarOpen.value = false
+    }
+  })
+
+  // Refresh the velocity-proportional panel rate while the navscreen is open.
+  useEventListener(window, 'resize', () => {
+    if (navbarOpen.value)
+      syncView()
+  })
 
   root.querySelectorAll<HTMLSelectElement>(navbarDom.sorting).forEach((select) => {
     useEventListener(select, 'change', () => route.navigate(`/${select.value}`))

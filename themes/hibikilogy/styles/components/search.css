@@ -5,13 +5,10 @@
     --joh-c-search-ui-border: var(--joh-c-neutral);
     --joh-search-ui-border-width: 2px;
     --joh-search-ui-font: var(--joh-font-family-base);
-    --slide-visible-once-bottom-dur: 320ms;
-    --slide-visible-once-bottom-y: 24px;
-    --slide-visible-once-bottom-ease: cubic-bezier(0.33, 0, 0.13, 1);
     --search-journal-drawer-dur: 260ms;
     --search-journal-drawer-x: 44px;
     --search-journal-drawer-y: 24px;
-    --search-journal-drawer-ease: cubic-bezier(0.33, 0, 0.13, 1);
+    --search-journal-drawer-ease: var(--ease-standard);
 
     margin-top: 2rem;
 
@@ -191,25 +188,6 @@
       transition: none;
     }
 
-    .slideVisibleOnceBottom {
-      opacity: 1;
-      transform: translateY(0);
-      transition:
-        opacity var(--slide-visible-once-bottom-dur) var(--slide-visible-once-bottom-ease),
-        transform var(--slide-visible-once-bottom-dur) var(--slide-visible-once-bottom-ease);
-      will-change: opacity, transform;
-    }
-
-    .slideVisibleOnceBottom.is-exit,
-    .slideVisibleOnceBottom.is-enter-start {
-      opacity: 0;
-      transform: translateY(var(--slide-visible-once-bottom-y));
-    }
-
-    .slideVisibleOnceBottom.is-enter-start {
-      transition: none;
-    }
-
     .SearchPagination {
       site-pagination[hidden] {
         display: none;
@@ -238,7 +216,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    #search .slideVisibleOnceBottom,
     #search .SearchJournal--drawer {
       transition: none;
     }

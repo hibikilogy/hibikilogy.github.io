@@ -247,31 +247,31 @@
 
     html[data-page-transition='active']::view-transition-group(journal-page-content) {
       animation-duration: 320ms;
-      animation-timing-function: cubic-bezier(0.33, 0, 0.13, 1);
+      animation-timing-function: var(--ease-standard);
     }
 
     html[data-page-transition='active'][data-page-transition-direction='forward']::view-transition-old(
         journal-page-content
       ) {
-      animation: journal-page-forward-old 320ms cubic-bezier(0.33, 0, 0.13, 1) both;
+      animation: journal-page-forward-old 320ms var(--ease-standard) both;
     }
 
     html[data-page-transition='active'][data-page-transition-direction='forward']::view-transition-new(
         journal-page-content
       ) {
-      animation: journal-page-forward-new 320ms cubic-bezier(0.33, 0, 0.13, 1) both;
+      animation: journal-page-forward-new 320ms var(--ease-standard) both;
     }
 
     html[data-page-transition='active'][data-page-transition-direction='backward']::view-transition-old(
         journal-page-content
       ) {
-      animation: journal-page-backward-old 320ms cubic-bezier(0.33, 0, 0.13, 1) both;
+      animation: journal-page-backward-old 320ms var(--ease-standard) both;
     }
 
     html[data-page-transition='active'][data-page-transition-direction='backward']::view-transition-new(
         journal-page-content
       ) {
-      animation: journal-page-backward-new 320ms cubic-bezier(0.33, 0, 0.13, 1) both;
+      animation: journal-page-backward-new 320ms var(--ease-standard) both;
     }
   }
 }

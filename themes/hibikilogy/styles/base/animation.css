@@ -7,6 +7,9 @@
     --duration-medium: 350ms; /* panel close */
     --duration-slow: 400ms; /* panel open, skeleton reveal */
     --duration-very-slow: 500ms; /* emphasis, badge appear, text reveal */
+    --duration-slide: 700ms; /* search overlay wipe, search-box morph */
+    --duration-reveal: 240ms; /* item-level enter/exit (navscreen cascade, hamburger morph) */
+    --stagger-step: 20ms; /* per-item cascade offset (navscreen open/close) */
 
     --distance-micro: 4px; /* text swap */
     --distance-small: 6px; /* error shake (small segment) */
@@ -15,6 +18,7 @@
     --distance-large: 30px; /* check badge appear */
 
     --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1); /* modal/dropdown/panel, page slide, resize */
+    --ease-standard: cubic-bezier(0.33, 0, 0.13, 1); /* search/navscreen choreography (canonical curve) */
     --ease-in-out: ease-in-out; /* icon swap, text swap, text reveal */
     --ease-out: ease-out; /* tooltip open / close */
     --ease-linear: linear; /* shimmer, skeleton pulse, spinner */

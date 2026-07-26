@@ -6,7 +6,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 1;
+    z-index: 25;
     opacity: 0;
     pointer-events: none;
     transform: translate3d(0, calc(-100% * var(--search-overlay-direction, 1)), 0);
@@ -24,7 +24,7 @@
   }
 
   html[data-search-overlay='active'].is-changing body::before {
-    transition: transform 420ms cubic-bezier(0.33, 0, 0.13, 1);
+    transition: transform var(--duration-slide) var(--ease-standard);
   }
 
   html[data-search-overlay='active'].is-animating body::before {
@@ -36,7 +36,7 @@
   }
 
   html[data-search-overlay='active'].is-changing main.Content {
-    transition: transform 420ms cubic-bezier(0.33, 0, 0.13, 1);
+    transition: transform var(--duration-slide) var(--ease-standard);
     will-change: transform;
   }
 
@@ -57,9 +57,10 @@
 
   html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-changing .Footer {
     transition:
-      opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 500ms cubic-bezier(0.22, 1, 0.36, 1),
-      filter 500ms cubic-bezier(0.22, 1, 0.36, 1);
+      opacity var(--duration-very-slow) var(--ease-smooth-out),
+      transform var(--duration-very-slow) var(--ease-smooth-out),
+      filter var(--duration-very-slow) var(--ease-smooth-out);
+    transition-delay: calc(200ms + var(--navscreen-item-total, 3) * var(--stagger-step));
     will-change: opacity, transform, filter;
   }
 

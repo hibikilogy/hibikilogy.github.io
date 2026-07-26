@@ -297,11 +297,7 @@
   :root {
     --joh-nav-height: 64px;
     --joh-nav-logo-height: 42px;
-    --joh-c-nav-overlay-bg: rgba(255, 255, 255, 0.95);
-  }
-
-  html.dark {
-    --joh-c-nav-overlay-bg: rgba(27, 27, 31, 0.95);
+    --joh-c-nav-overlay-bg: var(--joh-c-bg);
   }
 
   /* Component: Hero / Journal

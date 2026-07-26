@@ -41,6 +41,13 @@ export function shouldSkipMotion(): boolean {
 
 const autoAnimatedElements = new WeakSet<Element>()
 
+function resolveStandardEasing(): string {
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue('--ease-standard')
+    .trim()
+  return value || 'cubic-bezier(0.33, 0, 0.13, 1)'
+}
+
 /**
  * Enable @formkit/auto-animate on an element.
  * Safe to call multiple times — subsequent calls are no-ops for the same element.
@@ -51,7 +58,7 @@ export function enableAutoAnimate(element: Element): void {
 
   autoAnimate(element, {
     duration: 220,
-    easing: 'cubic-bezier(0.33, 0, 0.13, 1)',
+    easing: resolveStandardEasing(),
   })
   autoAnimatedElements.add(element)
 }
