@@ -1,3 +1,5 @@
+@import '../lib/media.css';
+
 @layer pages {
   body::before {
     content: '';
@@ -68,6 +70,157 @@
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
+  }
+
+  @keyframes search-trigger-expand-out {
+    from {
+      opacity: 1;
+    }
+
+    55% {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes search-trigger-settle-in {
+    from {
+      opacity: 0;
+    }
+
+    30% {
+      opacity: 0;
+    }
+
+    80% {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes search-trigger-collapse-out {
+    from {
+      opacity: 1;
+    }
+
+    55% {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes search-trigger-return-in {
+    from {
+      opacity: 0;
+    }
+
+    30% {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @supports (view-transition-name: none) {
+    @media (--tablet) {
+      html[data-search-transition='active'] .NavBarSocialLink {
+        view-transition-name: navbar-social-slot;
+      }
+    }
+
+    @media (--max-tablet) {
+      html[data-search-transition='active'] .NavBarHamburger {
+        view-transition-name: navbar-hamburger;
+      }
+    }
+
+    html[data-search-transition='active']
+      body:not(.search)
+      .NavBarSearch
+      .SearchShell--compact[data-search-transition-target='site-search-trigger'] {
+      view-transition-name: site-search-trigger;
+    }
+
+    html[data-search-transition='active']
+      body.search
+      #search
+      .SearchShell--page[data-search-transition-target='site-search-trigger'] {
+      view-transition-name: site-search-trigger;
+    }
+
+    @media (--max-tablet) {
+      html[data-search-transition='active'] .NavBarSearch .SearchShell--compact,
+      html[data-search-transition='active'] #search .SearchShell--page {
+        view-transition-name: none !important;
+      }
+    }
+
+    html[data-search-transition='active']::view-transition-group(root),
+    html[data-search-transition='active']::view-transition-old(root),
+    html[data-search-transition='active']::view-transition-new(root) {
+      animation: none;
+    }
+
+    html[data-search-transition='active']::view-transition-group(site-search-trigger) {
+      animation-duration: var(--duration-slide);
+      animation-timing-function: var(--ease-standard);
+      z-index: 20;
+    }
+
+    html[data-search-transition='active']::view-transition-group(navbar-social-slot) {
+      animation-duration: 320ms;
+      animation-timing-function: var(--ease-standard);
+      z-index: 19;
+    }
+
+    html[data-search-transition='active']::view-transition-group(navbar-hamburger) {
+      animation-duration: var(--duration-reveal);
+      animation-timing-function: var(--ease-standard);
+      z-index: 21;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='enter-search']::view-transition-old(
+        site-search-trigger
+      ) {
+      animation: search-trigger-expand-out var(--duration-slide) var(--ease-standard) both;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='enter-search']::view-transition-new(
+        site-search-trigger
+      ) {
+      animation: search-trigger-settle-in var(--duration-slide) var(--ease-standard) both;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
+        site-search-trigger
+      ) {
+      animation: search-trigger-collapse-out var(--duration-slide) var(--ease-standard) both;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-new(
+        site-search-trigger
+      ) {
+      animation: search-trigger-return-in var(--duration-slide) var(--ease-standard) both;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html[data-search-transition='active']::view-transition-group(site-search-trigger),
+      html[data-search-transition='active']::view-transition-old(site-search-trigger),
+      html[data-search-transition='active']::view-transition-new(site-search-trigger) {
+        animation: none;
+      }
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

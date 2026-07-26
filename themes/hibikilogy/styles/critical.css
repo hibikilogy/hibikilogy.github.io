@@ -7,6 +7,7 @@
 @import './base/animation.css';
 @import './layouts/layout.css';
 @import './components/navbar.css';
+@import './components/navscreen.css';
 @import './components/curtain.css';
 @import './components/search-transition.css';
 @import './components/footer.css';
