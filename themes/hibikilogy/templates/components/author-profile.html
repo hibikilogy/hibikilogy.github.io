@@ -7,16 +7,18 @@
            src="{{ custom_page.avatar }}"
            alt="{{ term.name }}"
            loading="eager"
+           data-page-enter-item
+           style="--page-enter-stage: 0"
            width="180" height="180" />
       {% endif %}
-      <h2 class="author-profile-name">
+      <h2 class="author-profile-name" data-page-enter-item style="--page-enter-stage: 1">
         <span class="author-profile-label">{{ tr::t(key="author_title") }}</span>
         {{ term.name }}
       </h2>
       {% if custom_page.bio %}
-      <p class="author-profile-bio">{{ custom_page.bio }}</p>
+      <p class="author-profile-bio" data-page-enter-item style="--page-enter-stage: 2">{{ custom_page.bio }}</p>
       {% endif %}
-      <div class="author-profile-meta">
+      <div class="author-profile-meta" data-page-enter-item style="--page-enter-stage: 3">
         <span class="author-profile-count">
           {{ term.page_count }}{{ tr::t(key="related_articles_suffix", default="篇文章") }}
         </span>

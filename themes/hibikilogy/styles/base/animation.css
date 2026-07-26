@@ -36,10 +36,95 @@
   }
 
   :root {
+    --page-enter-duration: 460ms;
+    --page-enter-stagger: 82ms;
     --text-swap-dur: var(--duration-quick);
     --text-swap-translate-y: var(--distance-base);
     --text-swap-blur: var(--blur-small);
     --text-swap-ease: var(--ease-out);
+  }
+
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translate3d(0, var(--distance-medium), 0);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html[data-page-enter] [data-page-enter-item]:not([data-page-enter-await-layout]),
+    html[data-page-enter] [data-page-enter-item][data-page-enter-await-layout][data-layout-ready],
+    html[data-page-enter] [data-page-enter-content] > *:nth-child(-n + 20) {
+      animation: page-enter var(--page-enter-duration) var(--ease-smooth-out) both;
+      animation-delay: calc(var(--page-enter-stage, 0) * var(--page-enter-stagger));
+    }
+
+    /* CSS counters cannot produce numeric custom properties, so cap the staggered range. */
+    [data-page-enter-content] > *:nth-child(1) {
+      --page-enter-stage: 1;
+    }
+    [data-page-enter-content] > *:nth-child(2) {
+      --page-enter-stage: 2;
+    }
+    [data-page-enter-content] > *:nth-child(3) {
+      --page-enter-stage: 3;
+    }
+    [data-page-enter-content] > *:nth-child(4) {
+      --page-enter-stage: 4;
+    }
+    [data-page-enter-content] > *:nth-child(5) {
+      --page-enter-stage: 5;
+    }
+    [data-page-enter-content] > *:nth-child(6) {
+      --page-enter-stage: 6;
+    }
+    [data-page-enter-content] > *:nth-child(7) {
+      --page-enter-stage: 7;
+    }
+    [data-page-enter-content] > *:nth-child(8) {
+      --page-enter-stage: 8;
+    }
+    [data-page-enter-content] > *:nth-child(9) {
+      --page-enter-stage: 9;
+    }
+    [data-page-enter-content] > *:nth-child(10) {
+      --page-enter-stage: 10;
+    }
+    [data-page-enter-content] > *:nth-child(11) {
+      --page-enter-stage: 11;
+    }
+    [data-page-enter-content] > *:nth-child(12) {
+      --page-enter-stage: 12;
+    }
+    [data-page-enter-content] > *:nth-child(13) {
+      --page-enter-stage: 13;
+    }
+    [data-page-enter-content] > *:nth-child(14) {
+      --page-enter-stage: 14;
+    }
+    [data-page-enter-content] > *:nth-child(15) {
+      --page-enter-stage: 15;
+    }
+    [data-page-enter-content] > *:nth-child(16) {
+      --page-enter-stage: 16;
+    }
+    [data-page-enter-content] > *:nth-child(17) {
+      --page-enter-stage: 17;
+    }
+    [data-page-enter-content] > *:nth-child(18) {
+      --page-enter-stage: 18;
+    }
+    [data-page-enter-content] > *:nth-child(19) {
+      --page-enter-stage: 19;
+    }
+    [data-page-enter-content] > *:nth-child(20) {
+      --page-enter-stage: 20;
+    }
   }
 
   .t-text-swap {

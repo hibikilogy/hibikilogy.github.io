@@ -101,19 +101,19 @@ export function createWaterfallController(
 
     if (!items.length) {
       resetLayout(items)
-      journal.style.opacity = '1'
+      markLayoutReady()
       return
     }
 
     if (!isWaterfallLayout(items)) {
       resetLayout(items)
-      journal.style.opacity = '1'
+      markLayoutReady()
       return
     }
 
     if (nativeLayout) {
       updateSeamOwner(items)
-      journal.style.opacity = '1'
+      markLayoutReady()
       return
     }
 
@@ -129,7 +129,12 @@ export function createWaterfallController(
     })
     journal.style.display = 'grid'
     updateSeamOwner(items)
+    markLayoutReady()
+  }
+
+  function markLayoutReady(): void {
     journal.style.opacity = '1'
+    journal.setAttribute('data-layout-ready', '')
   }
 
   function isWaterfallLayout(items: HTMLElement[]): boolean {

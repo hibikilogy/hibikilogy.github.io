@@ -2,7 +2,15 @@
 
 {% macro search() %}
 <div class="Journal SearchJournal">
-  <div id="search-results" class="container" aria-busy="false" aria-describedby="search-message"></div>
+  <div
+    id="search-results"
+    class="container"
+    aria-busy="false"
+    aria-describedby="search-message"
+    data-page-enter-item
+    data-page-enter-await-layout
+    style="--page-enter-stage: 1"
+  ></div>
 </div>
 {% endmacro search %}
 
@@ -16,7 +24,12 @@
 {% endif %}
 
 <div class="Journal">
-  <div class="container">
+  <div
+    class="container"
+    data-page-enter-item
+    data-page-enter-await-layout
+    style="--page-enter-stage: 1"
+  >
     {% if show_frontpage %}
       <a class="FrontPage Section" aria-label="Logo" href="/">
         {% if config.extra.journal_logo %}

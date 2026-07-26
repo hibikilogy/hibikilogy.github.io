@@ -65,7 +65,7 @@ post
 <div class="container">
   <div class="content">
     <section class="content-container">
-      <article{% if katex_enabled %} data-katex{% endif %}>
+      <article data-page-enter-content{% if katex_enabled %} data-katex{% endif %}>
         {{ page.content | safe }}
       </article>
     </section>

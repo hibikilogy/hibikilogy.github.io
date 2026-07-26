@@ -29,6 +29,14 @@ export function onFinalPageHide(cleanup: () => void): void {
   })
 }
 
+export function stopPageEnter(root: HTMLElement = document.documentElement): void {
+  root.removeAttribute('data-page-enter')
+}
+
+export function startPageEnter(root: HTMLElement = document.documentElement): void {
+  root.dataset.pageEnter = 'navigation'
+}
+
 export function startApp(): void {
   const swup = createSwup()
   const app = createAppContext(swup)
@@ -80,6 +88,7 @@ export function startApp(): void {
   }
 
   swup.hooks.on('visit:start', (visit) => {
+    stopPageEnter()
     page?.layout.closeNavbar()
     setTransitionState(visit.from.url, visit.to.url)
 
@@ -119,7 +128,10 @@ export function startApp(): void {
     resolvePostTitleTransitionTarget(visit.to.document)
   })
 
-  swup.hooks.on('content:replace', initializePage)
+  swup.hooks.on('content:replace', () => {
+    startPageEnter()
+    initializePage()
+  })
   swup.hooks.on('visit:end', finishPostTitleVisit)
   swup.hooks.on('visit:abort', finishPostTitleVisit)
 

@@ -27,7 +27,7 @@ tags
 
 {% if sorted_terms %}
   <section class="section tags-list-page">
-    <div class="container">
+    <div class="container" data-page-enter-content>
       {% set cat_order = config.extra.tag_category_order %}
       {% set default_category = config.extra.tag_category_default %}
       {% for cat in cat_order %}
@@ -47,7 +47,7 @@ tags
   </section>
 {% else %}
   <section class="section tags-list-page">
-    <div class="container">
+    <div class="container" data-page-enter-content>
       {% for tag in sorted_terms %}
       {{ self::tag_link(tag=tag) }}
       {% endfor %}

@@ -2,7 +2,7 @@
 
 {% macro main(page) %}
 {% if page.toc and page.extra.toc | default(value=true) != false %}
-<div class="Aside">
+<div class="Aside" data-page-enter-item style="--page-enter-stage: 2">
   <div class="aside-container">
     {{ toc::main(page=page) }}
   </div>

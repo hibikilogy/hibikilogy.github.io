@@ -22,7 +22,7 @@ author
 {% set sorted_terms = terms | sort(attribute="pages") | reverse %}
 
 <section class="section authors-list-page">
-  <div class="container">
+  <div class="container" data-page-enter-content>
     {% for author in sorted_terms %}
     <a class="author-list-item" href="{{ get_taxonomy_url(kind='author', name=author.name) | trim_end_matches(pat='/') }}" target="_blank"
       title="{{ author.name }}">

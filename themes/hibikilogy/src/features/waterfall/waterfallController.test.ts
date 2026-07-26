@@ -37,6 +37,7 @@ describe('waterfall controller', () => {
     frames.shift()?.(0)
     expect(item.style.gridRow).toBe('span 10')
     expect(journal.style.opacity).toBe('1')
+    expect(journal.hasAttribute('data-layout-ready')).toBe(true)
 
     const replacement = document.createElement('article')
     replacement.className = 'Section Article'
