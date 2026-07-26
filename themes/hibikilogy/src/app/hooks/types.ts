@@ -27,6 +27,19 @@ export interface LayoutModel {
   closeNavbar: () => void
 }
 
+export interface ScrollModel {
+  readonly x: Readonly<Ref<number>>
+  readonly y: Readonly<Ref<number>>
+  readonly atTop: Readonly<ComputedRef<boolean>>
+  readonly directions: Readonly<{
+    left: boolean
+    right: boolean
+    top: boolean
+    bottom: boolean
+  }>
+  measure: () => void
+}
+
 export type PageKind = 'search' | 'article' | 'journal' | 'default'
 
 export interface PageData {

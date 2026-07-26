@@ -5,7 +5,9 @@ import { useLayout } from './useLayout.ts'
 
 describe('useLayout', () => {
   afterEach(() => {
+    Object.defineProperty(window, 'scrollY', { configurable: true, value: 0 })
     document.body.replaceChildren()
+    vi.unstubAllGlobals()
   })
 
   it('synchronizes the navbar when the page scope mounts', () => {

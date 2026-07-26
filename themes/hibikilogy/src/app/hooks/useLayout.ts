@@ -1,30 +1,33 @@
 import type { LayoutModel, RouteModel } from './types.ts'
-import { computed, onScopeDispose, readonly, ref, watch } from '@vue/reactivity'
+import { onScopeDispose, readonly, ref, watch } from '@vue/reactivity'
 import { useEventListener } from '../../shared/hooks/index.ts'
 import { navbarDom, syncNavbarView } from '../../ui/navbar/index.ts'
+import { useNavbarScroll } from './useNavbarScroll.ts'
+import { useOutlineScroll } from './useOutlineScroll.ts'
+import { useScroll } from './useScroll.ts'
 
 export function useLayout(root: ParentNode, route: RouteModel): LayoutModel {
   const navbarOpen = ref(false)
-  const scrollY = ref(window.scrollY || document.documentElement.scrollTop)
-  const atTop = computed(() => scrollY.value === 0)
+  const scroll = useScroll(window, { directionTolerance: 6 })
+  const { scrollingDown, postHeroPassed } = useNavbarScroll(root, scroll)
+  useOutlineScroll(root, scroll)
 
   const syncView = (): void => {
     syncNavbarView(root, {
       open: navbarOpen.value,
-      top: atTop.value,
+      top: scroll.atTop.value,
       searchPage: route.isSearchPage.value,
+      scrollingDown: scrollingDown.value,
+      postHeroPassed: postHeroPassed.value,
     })
   }
   syncView()
   const stopViewSync = watch(
-    [navbarOpen, atTop, route.isSearchPage],
+    [navbarOpen, scroll.atTop, route.isSearchPage, scrollingDown, postHeroPassed],
     syncView,
   )
 
   onScopeDispose(stopViewSync)
-  useEventListener(window, 'scroll', () => {
-    scrollY.value = window.scrollY || document.documentElement.scrollTop
-  }, { passive: true })
 
   const hamburger = root.querySelector<HTMLButtonElement>(navbarDom.hamburger)
   if (hamburger) {
@@ -56,7 +59,7 @@ export function useLayout(root: ParentNode, route: RouteModel): LayoutModel {
     }
   })
 
-  // Refresh the velocity-proportional panel rate while the navscreen is open.
+  // Recompute the open navscreen's viewport-derived motion rate.
   useEventListener(window, 'resize', () => {
     if (navbarOpen.value)
       syncView()
@@ -68,7 +71,7 @@ export function useLayout(root: ParentNode, route: RouteModel): LayoutModel {
 
   return {
     navbarOpen: readonly(navbarOpen),
-    atTop,
+    atTop: scroll.atTop,
     toggleNavbar: () => {
       navbarOpen.value = !navbarOpen.value
     },

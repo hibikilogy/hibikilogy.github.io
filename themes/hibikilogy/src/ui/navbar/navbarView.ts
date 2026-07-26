@@ -47,6 +47,8 @@ export function syncNavbarView(root: ParentNode, state: NavbarViewState): void {
 
   navbar?.classList.toggle('open', state.open)
   navbar?.classList.toggle('top', state.top)
+  navbar?.classList.toggle('scrolling-down', state.scrollingDown)
+  navbar?.classList.toggle('post-hero-passed', state.postHeroPassed)
   hamburger?.classList.toggle('open', state.open || state.searchPage)
   hamburger?.classList.toggle('top', state.top)
   hamburger?.setAttribute('aria-expanded', String(state.open))
