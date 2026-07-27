@@ -1,0 +1,89 @@
+name: SHORT_LINKS
+
+on:
+  push:
+    branches:
+      - Refactor/zola
+    paths:
+      - 'content/articles/**'
+  pull_request:
+    branches:
+      - Refactor/zola
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'content/articles/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: short-links-${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: >
+      github.event_name == 'push' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Create repository-scoped GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.SHORT_LINKS_APP_CLIENT_ID }}
+          private-key: ${{ secrets.SHORT_LINKS_APP_PRIVATE_KEY }}
+          permission-contents: write
+
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: 1.97.1
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: short-links
+
+      - name: Synchronize and push short-link aliases
+        env:
+          TARGET_BRANCH: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          for attempt in 1 2 3; do
+            cargo run --locked --bin article-short-links -- \
+              --content-dir content/articles \
+              --reservations scripts/data/short-link-reservations.json
+
+            if [[ -z "$(git status --porcelain -- content/articles scripts/data/short-link-reservations.json)" ]]; then
+              echo "Short-link aliases are already in sync."
+              exit 0
+            fi
+
+            git add -- content/articles scripts/data/short-link-reservations.json
+            git commit -m "chore(content): sync short links"
+
+            if git push origin "HEAD:${TARGET_BRANCH}"; then
+              exit 0
+            fi
+
+            if [[ "$attempt" == "3" ]]; then
+              echo "Failed to push short-link aliases after ${attempt} attempts." >&2
+              exit 1
+            fi
+
+            git fetch origin "${TARGET_BRANCH}"
+            git reset --hard "origin/${TARGET_BRANCH}"
+          done
