@@ -210,6 +210,55 @@
     }
   }
 
+  @media (--max-tablet) {
+    html[data-search-overlay='active'] body::before {
+      transform: none;
+    }
+
+    html[data-search-overlay='active'].is-changing body::before {
+      transition: opacity var(--duration-search-transition) var(--ease-search-settle);
+    }
+
+    html[data-search-overlay='active'].is-changing main.Content {
+      transition: none;
+    }
+
+    html[data-search-overlay='active'][data-search-overlay-scope='leave-search'].is-animating.is-leaving main.Content {
+      transform: none;
+    }
+
+    /* 进入搜索：旧页 icon 淡出 */
+    html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-animating
+      body:not(.search)
+      .NavBar
+      .NavBarSearch {
+      animation: search-icon-fade-out var(--duration-reveal) var(--ease-out) both;
+    }
+
+    /* 离开搜索：新页 icon 淡入 */
+    html[data-search-overlay='active'][data-search-transition-scope='leave-search'].is-rendering
+      body:not(.search)
+      .NavBar
+      .NavBarSearch {
+      animation: search-icon-fade-in var(--duration-reveal) var(--ease-out) both;
+    }
+  }
+
+  @keyframes search-icon-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes search-icon-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html[data-search-overlay='active'] body::before,
     html[data-search-overlay='active'] main.Content,

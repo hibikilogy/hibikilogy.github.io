@@ -52,8 +52,9 @@
 
       .NavBarSearch {
         display: flex;
-        visibility: hidden;
+        opacity: 0;
         pointer-events: none;
+        transition: none;
       }
 
       .NavBar .NavBarSearch .SearchShell--compact {

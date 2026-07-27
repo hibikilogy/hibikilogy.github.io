@@ -215,6 +215,20 @@
     }
   }
 
+  @media (--max-tablet) {
+    html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-rendering
+      #search
+      .SearchShell--page {
+      animation: pop-up var(--duration-slow) var(--ease-out) both;
+    }
+
+    html[data-search-overlay='active'][data-search-transition-scope='leave-search'].is-animating.is-leaving
+      #search
+      .SearchShell--page {
+      animation: pop-down var(--duration-fast) var(--ease-out) both;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     #search .SearchJournal--drawer {
       transition: none;

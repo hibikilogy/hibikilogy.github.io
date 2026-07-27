@@ -59,6 +59,30 @@
     }
   }
 
+  @keyframes pop-up {
+    from {
+      opacity: 0;
+      transform: translateY(var(--distance-medium));
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pop-down {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(var(--distance-medium));
+    }
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     html[data-page-enter] [data-page-enter-item]:not([data-page-enter-await-layout]),
     html[data-page-enter] [data-page-enter-item][data-page-enter-await-layout][data-layout-ready],
