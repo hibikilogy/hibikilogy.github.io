@@ -34,14 +34,11 @@ on:
       - '.github/dependabot.yml'
       - '.github/_typos.toml'
       - 'vercel.json'
-  # 手动触发
   workflow_dispatch:
 
-# 校验类工作流只读，按最小权限原则
 permissions:
   contents: read
 
-# 同一 PR / 分支的新运行取消旧的，避免 lint 排队堆积
 concurrency:
   group: check-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -56,47 +53,15 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          # fetch all commits to get last updated time or other git log info
           fetch-depth: 0
 
-      # install pnpm before setup-node so the node cache (pnpm) can be enabled
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        # pnpm version is read from package.json `packageManager` (pnpm@10.32.1)
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Setup CI tools
+        uses: ./.github/actions/setup-tools
         with:
-          # node.js version is pinned by the repo (.nvmrc)
-          node-version-file: '.nvmrc'
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      # pnpm lint invokes zola check; install the same Zola version used by
-      # the build and deploy workflows.
-      - name: Setup Zola
-        uses: taiki-e/install-action@v2
-        with:
-          tool: zola@0.22.1
-
-      # @see https://github.com/dtolnay/rust-toolchain
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@v1
-        with:
-          toolchain: 1.97.1
-          components: rustfmt, clippy
-
-      # @see https://github.com/Swatinem/rust-cache
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
-
-      - name: Setup cargo-nextest
-        uses: taiki-e/install-action@v2
-        with:
-          tool: nextest@0.9.140
-          fallback: none
+          node: 'true'
+          rust: 'true'
+          zola: 'true'
+          nextest: 'true'
 
       # pnpm lint 会先生成模板引用的 Vite CSS，再运行 zola check
       - name: Zola Check
@@ -111,15 +76,12 @@ jobs:
       - name: Vitest
         run: pnpm test:ts
 
-      # Zola templates reference the generated font subset stylesheets.
       - name: Build title font subset
         run: pnpm build:subset-titlefont
 
       - name: Build body font subset
         run: pnpm build:subset-bodyfont
 
-      # Use one explicit base URL for both Zola and the Markdown exporter so
-      # canonical, alternate, and exported Page URLs are checked together.
       - name: Build site for Markdown export
         run: zola build --base-url "${MARKDOWN_BASE_URL}"
 
@@ -132,11 +94,8 @@ jobs:
       - name: Run Rust Clippy
         run: cargo clippy --locked --all-targets --all-features -- -D warnings
 
-      # all-features is required so tests attached to the font/image binaries
-      # are not skipped by their required-features declarations.
       - name: Run Rust tests
         run: cargo nextest run --locked --all-features --config-file nextest.toml --profile ci
 
-      # cargo-nextest does not execute doctests.
       - name: Run Rust doctests
         run: cargo test --locked --all-features --doc

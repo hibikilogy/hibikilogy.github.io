@@ -1,8 +1,5 @@
 name: PREVIEW
 
-# 在 TEST_BUILD 完成后由 workflow_run 事件触发，下载其上传的产物并部署到
-# surge.sh 生成预览链接，随后在 PR 上更新预览状态评论。
-# workflow_run 运行在默认分支上下文，可访问仓库 secret（SURGE_LOGIN / SURGE_TOKEN）。
 on:
   workflow_run:
     workflows: ['TEST_BUILD']
@@ -41,7 +38,6 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # surge 只认 SURGE_LOGIN + SURGE_TOKEN 环境变量（--token 非有效参数）
       - name: Deploy to Surge
         id: deploy
         env:
@@ -132,7 +128,6 @@ jobs:
               });
             }
 
-      # 在 GitHub Deployments 中记录一次 Preview 部署；best-effort，失败不影响整体结果
       - name: Create deployment
         if: ${{ success() }}
         continue-on-error: true

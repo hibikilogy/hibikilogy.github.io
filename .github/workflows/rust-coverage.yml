@@ -43,20 +43,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@v1
+      - name: Setup CI tools
+        uses: ./.github/actions/setup-tools
         with:
-          toolchain: 1.97.1
-          components: llvm-tools-preview
-
-      - name: Setup Rust test tools
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-llvm-cov@0.8.7,nextest@0.9.140
-          fallback: none
-
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
+          rust: 'true'
+          nextest: 'true'
+          llvm-cov: 'true'
 
       - name: Generate Rust coverage
         run: cargo llvm-cov nextest --locked --all-features --config-file nextest.toml --profile ci --lcov --output-path target/lcov.info

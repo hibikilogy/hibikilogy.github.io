@@ -3,12 +3,12 @@ name: SHORT_LINKS
 on:
   push:
     branches:
-      - Refactor/zola
+      - main
     paths:
       - 'content/articles/**'
   pull_request:
     branches:
-      - Refactor/zola
+      - main
     types: [opened, synchronize, reopened]
     paths:
       - 'content/articles/**'
@@ -43,15 +43,11 @@ jobs:
           fetch-depth: 0
           token: ${{ steps.app-token.outputs.token }}
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@v1
+      - name: Setup CI tools
+        uses: ./.github/actions/setup-tools
         with:
-          toolchain: 1.97.1
-
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
-        with:
-          shared-key: short-links
+          rust: 'true'
+          cache-shared-key: short-links
 
       - name: Synchronize and push short-link aliases
         env:

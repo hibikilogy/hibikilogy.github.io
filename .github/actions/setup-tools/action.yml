@@ -1,0 +1,77 @@
+name: Setup CI Tools
+description: Install project toolchain and dependencies for CI
+
+inputs:
+  node:
+    description: 'Setup Node.js and pnpm'
+    default: 'false'
+  rust:
+    description: 'Install Rust toolchain'
+    default: 'false'
+  zola:
+    description: 'Install Zola'
+    default: 'false'
+  nextest:
+    description: 'Install cargo-nextest'
+    default: 'false'
+  llvm-cov:
+    description: 'Install cargo-llvm-cov'
+    default: 'false'
+  cache-shared-key:
+    description: 'Shared Rust cache key'
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Setup pnpm
+      if: inputs.node == 'true'
+      uses: pnpm/action-setup@v6
+
+    - name: Setup Node.js
+      if: inputs.node == 'true'
+      uses: actions/setup-node@v6
+      with:
+        node-version-file: '.nvmrc'
+        cache: pnpm
+
+    - name: Install dependencies
+      if: inputs.node == 'true'
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
+    - name: Cache Rust artifacts (shared)
+      if: inputs.rust == 'true' && inputs.cache-shared-key != ''
+      uses: Swatinem/rust-cache@v2
+      with:
+        shared-key: ${{ inputs.cache-shared-key }}
+
+    - name: Cache Rust artifacts
+      if: inputs.rust == 'true' && inputs.cache-shared-key == ''
+      uses: Swatinem/rust-cache@v2
+
+    - name: Setup Rust toolchain
+      if: inputs.rust == 'true'
+      shell: bash
+      run: rustup show
+
+    - name: Install Zola
+      if: inputs.zola == 'true'
+      uses: taiki-e/install-action@v2
+      with:
+        tool: zola@0.22.1
+        fallback: none
+
+    - name: Install cargo-nextest
+      if: inputs.nextest == 'true'
+      uses: taiki-e/install-action@v2
+      with:
+        tool: nextest
+        fallback: none
+
+    - name: Install cargo-llvm-cov
+      if: inputs.llvm-cov == 'true'
+      uses: taiki-e/install-action@v2
+      with:
+        tool: cargo-llvm-cov
+        fallback: none
