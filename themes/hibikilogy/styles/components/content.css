@@ -69,8 +69,8 @@
       opacity: 0;
       text-decoration: none;
       transition:
-        color 0.25s,
-        opacity 0.25s;
+        color var(--duration-fast),
+        opacity var(--duration-fast);
     }
 
     li::marker {
@@ -120,7 +120,7 @@
       margin: 16px 0;
 
       padding-left: 16px;
-      transition: border-color 0.5s;
+      transition: border-color var(--duration-very-slow);
       color: var(--joh-c-text-2);
       border-left: 1px solid var(--joh-c-divider);
     }
@@ -128,7 +128,7 @@
     blockquote > p {
       margin: 0;
       font-size: 16px;
-      transition: color 0.5s;
+      transition: color var(--duration-very-slow);
     }
 
     a {
@@ -136,8 +136,8 @@
       color: var(--joh-c-brand-1);
       text-underline-offset: 2px;
       transition:
-        color 0.25s,
-        opacity 0.25s;
+        color var(--duration-fast),
+        opacity var(--duration-fast);
 
       &:hover {
         text-decoration: underline;
@@ -205,7 +205,7 @@
       width: 100%;
       background-color: var(--joh-c-bg);
       border-top: 1px solid var(--joh-c-divider);
-      transition: background-color 0.5s;
+      transition: background-color var(--duration-very-slow);
     }
 
     tr:nth-child(2n) {

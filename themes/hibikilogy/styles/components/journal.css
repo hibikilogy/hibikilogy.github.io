@@ -246,32 +246,32 @@
     }
 
     html[data-page-transition='active']::view-transition-group(journal-page-content) {
-      animation-duration: 320ms;
+      animation-duration: var(--duration-page-flip);
       animation-timing-function: var(--ease-standard);
     }
 
     html[data-page-transition='active'][data-page-transition-direction='forward']::view-transition-old(
         journal-page-content
       ) {
-      animation: journal-page-forward-old 320ms var(--ease-standard) both;
+      animation: journal-page-forward-old var(--duration-page-flip) var(--ease-standard) both;
     }
 
     html[data-page-transition='active'][data-page-transition-direction='forward']::view-transition-new(
         journal-page-content
       ) {
-      animation: journal-page-forward-new 320ms var(--ease-standard) both;
+      animation: journal-page-forward-new var(--duration-page-flip) var(--ease-standard) both;
     }
 
     html[data-page-transition='active'][data-page-transition-direction='backward']::view-transition-old(
         journal-page-content
       ) {
-      animation: journal-page-backward-old 320ms var(--ease-standard) both;
+      animation: journal-page-backward-old var(--duration-page-flip) var(--ease-standard) both;
     }
 
     html[data-page-transition='active'][data-page-transition-direction='backward']::view-transition-new(
         journal-page-content
       ) {
-      animation: journal-page-backward-new 320ms var(--ease-standard) both;
+      animation: journal-page-backward-new var(--duration-page-flip) var(--ease-standard) both;
     }
   }
 }

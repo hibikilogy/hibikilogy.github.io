@@ -68,8 +68,8 @@
             mask-size: 100% 100%;
             rotate: 90deg;
             transition:
-              color 0.25s,
-              rotate 0.25s;
+              color var(--duration-fast),
+              rotate var(--duration-fast);
           }
 
           &:open::picker-icon {
@@ -77,6 +77,7 @@
           }
 
           option {
+            --option-ease: cubic-bezier(0, 0, 0.2, 1);
             white-space: normal;
             padding-block: 0.375rem;
             padding-inline: 0.75rem;
@@ -84,8 +85,8 @@
             color: var(--joh-c-text-1);
             background-color: var(--joh-c-bg);
             transition-property: color, background-color;
-            transition-duration: 0.2s;
-            transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+            transition-duration: var(--duration-quick);
+            transition-timing-function: var(--option-ease);
 
             &:hover,
             &:focus {
@@ -115,7 +116,7 @@
         line-height: 1;
         pointer-events: none;
         transform: translateY(-50%);
-        transition: color 0.25s;
+        transition: color var(--duration-fast);
       }
 
       &:hover,

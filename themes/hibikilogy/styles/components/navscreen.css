@@ -49,10 +49,10 @@
           border-radius: 2px;
           background-color: var(--joh-c-text-2);
           transition:
-            translate 120ms var(--ease-out) 120ms,
-            rotate 120ms var(--ease-morph),
-            scale 120ms var(--ease-out) 120ms,
-            background-color 0.25s;
+            translate var(--duration-hamburger-morph) var(--ease-out) var(--duration-hamburger-morph),
+            rotate var(--duration-hamburger-morph) var(--ease-morph),
+            scale var(--duration-hamburger-morph) var(--ease-out) var(--duration-hamburger-morph),
+            background-color var(--duration-fast);
         }
 
         & > span:nth-child(2) {
@@ -62,10 +62,10 @@
 
       &.open .container > span {
         transition:
-          translate 120ms var(--ease-morph),
-          rotate 120ms var(--ease-out) 120ms,
-          scale 120ms var(--ease-morph),
-          background-color 0.25s;
+          translate var(--duration-hamburger-morph) var(--ease-morph),
+          rotate var(--duration-hamburger-morph) var(--ease-out) var(--duration-hamburger-morph),
+          scale var(--duration-hamburger-morph) var(--ease-morph),
+          background-color var(--duration-fast);
       }
 
       /* Btn Active Animation */
@@ -90,6 +90,11 @@
     }
 
     .NavScreen {
+      /* Local animation tokens — tune navscreen timing here */
+      --navscreen-item-exit-dur: 240ms;
+      --navscreen-item-enter-dur: 280ms;
+      --navscreen-stagger-base: 60ms;
+
       /* Keep the sidebar z-index while closed: allow-discrete keeps the
          panel displayed during the closing transition. */
       z-index: var(--joh-z-index-sidebar);
@@ -127,9 +132,9 @@
         transform: translateY(-8px);
         filter: blur(var(--blur-small));
         transition:
-          opacity 160ms var(--ease-out),
-          transform 160ms var(--ease-out),
-          filter 160ms var(--ease-out);
+          opacity var(--navscreen-item-exit-dur) var(--ease-out),
+          transform var(--navscreen-item-exit-dur) var(--ease-out),
+          filter var(--navscreen-item-exit-dur) var(--ease-out);
       }
 
       &.open .NavScreenMenu > *,
@@ -137,8 +142,10 @@
         opacity: 1;
         transform: translateY(0);
         filter: blur(0px);
-        transition-duration: 200ms;
-        transition-delay: calc(40ms + var(--navscreen-item-index, 0) * var(--duration-stagger));
+        transition-duration: var(--navscreen-item-enter-dur);
+        transition-delay: calc(
+          var(--navscreen-stagger-base) + var(--navscreen-item-index, 0) * var(--duration-stagger)
+        );
 
         /* Lets the entry cascade transition (not snap) when the panel flips
            display: none → flex in the same frame. */
@@ -167,8 +174,8 @@
           font-weight: 500;
           color: var(--joh-c-text-1);
           transition:
-            border-color 0.25s,
-            color 0.25s;
+            border-color var(--duration-fast),
+            color var(--duration-fast);
         }
 
         .NavScreenMenuGroupLink {
@@ -178,7 +185,7 @@
           font-size: 14px;
           font-weight: 400;
           color: var(--joh-c-text-1);
-          transition: color 0.25s;
+          transition: color var(--duration-fast);
         }
       }
 
@@ -200,7 +207,7 @@
       .NavBarSocialLink,
       .NavBarHamburger:not(.NavScreenClose) {
         transition:
-          color 0.25s,
+          color var(--duration-fast),
           opacity var(--duration-reveal) var(--ease-standard),
           visibility var(--duration-reveal) var(--ease-standard);
       }

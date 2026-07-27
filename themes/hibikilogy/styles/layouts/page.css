@@ -47,7 +47,7 @@
 
     .NavBarTitle .logo {
       filter: brightness(0) invert(1);
-      transition: filter 0.5s ease;
+      transition: filter var(--duration-very-slow) var(--ease-out);
     }
 
     .NavBarHamburger .container > span {

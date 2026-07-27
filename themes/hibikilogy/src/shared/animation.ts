@@ -21,6 +21,44 @@ export function parseCssTime(value: string): number | null {
   return Number.isFinite(parsed) ? parsed : null
 }
 
+/** Registry of animation-duration CSS custom properties consumed from JS. */
+export const DURATION_VARS = {
+  fast: '--duration-fast',
+  verySlow: '--duration-very-slow',
+  reveal: '--duration-reveal',
+  hamburgerMorph: '--duration-hamburger-morph',
+  pageFlip: '--duration-page-flip',
+  mediumZoom: '--duration-medium-zoom',
+  searchJournalDrawer: '--search-journal-drawer-dur',
+  textSwap: '--text-swap-dur',
+} as const
+
+export type DurationVarName = keyof typeof DURATION_VARS
+
+/**
+ * Resolve a registered animation-duration CSS custom property from :root
+ * and return its value in milliseconds.
+ *
+ * Logs a console warning when the CSS variable is missing or unparseable
+ * so misconfiguration is surfaced during development.
+ */
+export function resolveDurationMs(name: DurationVarName): number {
+  const varName = DURATION_VARS[name]
+  const raw = getComputedStyle(document.documentElement)
+    .getPropertyValue(varName)
+    .trim()
+  const ms = parseCssTime(raw)
+  if (ms != null && ms > 0)
+    return ms
+
+  console.warn(
+    `[animation] CSS variable "${varName}" resolved to "${raw || '(empty)'}" — `
+    + `expected a valid time value (e.g. "300ms" or "0.5s"). `
+    + `Falling back to 0ms (instant).`,
+  )
+  return 0
+}
+
 export function wait(durationMs: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, durationMs)
@@ -57,7 +95,7 @@ export function enableAutoAnimate(element: Element): void {
     return
 
   autoAnimate(element, {
-    duration: 220,
+    duration: resolveDurationMs('fast'),
     easing: resolveStandardEasing(),
   })
   autoAnimatedElements.add(element)

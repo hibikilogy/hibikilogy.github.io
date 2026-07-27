@@ -9,8 +9,8 @@
       font-size: var(--joh-custom-block-font-size);
       line-height: var(--joh-custom-block-line-height);
       transition:
-        background-color 0.25s,
-        color 0.25s;
+        background-color var(--duration-fast),
+        color var(--duration-fast);
     }
 
     blockquote[class^='markdown-alert']::before {

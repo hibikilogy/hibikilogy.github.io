@@ -30,8 +30,8 @@
       color: var(--joh-c-text-2);
       transform: rotate(-90deg);
       transition:
-        transform 0.25s ease,
-        color 0.25s ease;
+        transform var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out);
     }
 
     .joh-collapsible[open] .joh-collapsible__icon {

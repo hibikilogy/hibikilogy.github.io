@@ -1,7 +1,8 @@
+import { resolveDurationMs } from '../../src/shared/animation'
+
 const openHandlers = new WeakMap<HTMLImageElement, EventListener>()
 const attachedImages = new Set<HTMLImageElement>()
 const originalVisibility = new WeakMap<HTMLImageElement, string>()
-const ANIMATION_MS = 220
 const VIEWPORT_PADDING = 24
 
 interface ZoomSession {
@@ -180,7 +181,7 @@ function closeSession(session: ZoomSession): void {
   session.cleanupTimer = window.setTimeout(() => {
     if (activeSession === session)
       destroySession(session)
-  }, ANIMATION_MS)
+  }, resolveDurationMs('mediumZoom'))
 }
 
 function destroySession(session: ZoomSession): void {
@@ -234,7 +235,7 @@ function applyOverlayStyle(overlay: HTMLDivElement): void {
     inset: '0',
     opacity: '0',
     background: 'rgba(255, 255, 255, 0.88)',
-    transition: `opacity ${ANIMATION_MS}ms ease`,
+    transition: `opacity ${resolveDurationMs('mediumZoom')}ms ease`,
     cursor: 'zoom-out',
     zIndex: '999',
   })
@@ -250,7 +251,7 @@ function applyZoomedImageStyle(image: HTMLImageElement, rect: DOMRect): void {
     margin: '0',
     opacity: '1',
     transform: 'none',
-    transition: `top ${ANIMATION_MS}ms ease, left ${ANIMATION_MS}ms ease, width ${ANIMATION_MS}ms ease, height ${ANIMATION_MS}ms ease, opacity ${ANIMATION_MS}ms ease`,
+    transition: `top ${resolveDurationMs('mediumZoom')}ms ease, left ${resolveDurationMs('mediumZoom')}ms ease, width ${resolveDurationMs('mediumZoom')}ms ease, height ${resolveDurationMs('mediumZoom')}ms ease, opacity ${resolveDurationMs('mediumZoom')}ms ease`,
     cursor: 'zoom-out',
     zIndex: '1000',
     objectFit: 'contain',

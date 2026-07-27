@@ -13,7 +13,7 @@
     translate: 0;
     will-change: translate;
     transition:
-      background-color 0.5s,
+      background-color var(--duration-very-slow),
       translate var(--duration-fast) var(--ease-standard);
 
     background-color: var(--joh-c-bg);
@@ -44,7 +44,7 @@
     .title {
       flex-shrink: 0;
       height: calc(var(--joh-nav-height) - 1px);
-      transition: background-color 0.5s;
+      transition: background-color var(--duration-very-slow);
     }
 
     .content {
@@ -56,7 +56,7 @@
       justify-content: flex-end;
       align-items: center;
       height: var(--joh-nav-height);
-      transition: background-color 0.5s;
+      transition: background-color var(--duration-very-slow);
     }
 
     @media (--pad) {
@@ -65,21 +65,6 @@
         background-color: transparent;
       }
     }
-
-    /* .divider {
-       width: 100%;
-       height: 1px;
-     }
-
-     .divider-line {
-       width: 100%;
-       height: 1px;
-       transition: background-color 0.5s;
-     }
-
-     &:not(.home) .divider-line {
-       background-color: var(--joh-c-gutter);
-     } */
 
     @media (--pad) {
       .divider-line {
@@ -109,7 +94,7 @@
       font-size: 14px;
       font-weight: 400;
       color: var(--joh-c-text-1);
-      transition: color 0.25s;
+      transition: color var(--duration-fast);
     }
 
     /* Navbar Title */
@@ -121,7 +106,7 @@
       font-size: 20px;
       font-weight: 700;
       color: var(--joh-c-text-1);
-      transition: opacity 0.25s;
+      transition: opacity var(--duration-fast);
 
       @media (--max-tablet) {
         display: none;
@@ -183,9 +168,9 @@
         background: transparent;
         color: var(--joh-c-text-1);
         transition:
-          border-color 0.25s,
-          background-color 0.25s,
-          color 0.25s;
+          border-color var(--duration-fast),
+          background-color var(--duration-fast),
+          color var(--duration-fast);
       }
 
       .SearchShell--compact:hover {
@@ -276,8 +261,8 @@
         color: var(--joh-c-text-2);
         opacity: 0.9;
         transition:
-          opacity 0.25s ease,
-          color 0.25s ease;
+          opacity var(--duration-fast) var(--ease-out),
+          color var(--duration-fast) var(--ease-out);
       }
 
       .SearchShellLabel {
@@ -339,8 +324,8 @@
         font-size: 12px;
         font-weight: 500;
         transition:
-          color 0.5s,
-          border-color 0.5s;
+          color var(--duration-very-slow),
+          border-color var(--duration-very-slow);
       }
 
       .SearchShellKey + .SearchShellKey {

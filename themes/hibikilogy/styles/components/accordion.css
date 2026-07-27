@@ -41,8 +41,8 @@
       height: 1.125rem;
       color: var(--joh-c-text-2);
       transition:
-        transform 0.25s ease,
-        color 0.25s ease;
+        transform var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out);
     }
 
     .joh-accordion__item[open] .joh-accordion__icon {

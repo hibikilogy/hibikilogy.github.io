@@ -2,6 +2,7 @@ import type { LazyImageSource } from './types'
 import { css, html, LitElement, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
+import { resolveDurationMs } from '../../src/shared/animation'
 import { cn } from '../utils'
 import {
   DEFAULT_IMAGE_PLACEHOLDER,
@@ -441,7 +442,7 @@ export class LazyImage extends LitElement {
     this.placeholderHideTimeout = window.setTimeout(() => {
       this.placeholderHideTimeout = undefined
       this.showPlaceholder = false
-    }, 220)
+    }, resolveDurationMs('mediumZoom'))
   }
 
   private clearPlaceholderHideTimeout(): void {
