@@ -2,7 +2,7 @@
 title = "《京吹日报》4月22日头版消息：黄前久美子在黄檗调研（译）"
 date = "2024-05-01"
 
-aliases = ["/2024/05/01/EuphoDaily/"]
+aliases = ["/2024/05/01/EuphoDaily/", "/s/24827/"]
 [taxonomies]
 tags = ["黄前久美子", "义井沙里", "黄前十七年", "改编", "bilibili"]
 author = ["芙蓉城里尽朝晖"]

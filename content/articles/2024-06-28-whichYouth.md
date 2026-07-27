@@ -2,7 +2,7 @@
 title = "“京吹事件”：你所讴歌的，是哪一种青春？"
 date = "2024-06-28"
 
-aliases = ["/2024/06/28/whichYouth/"]
+aliases = ["/2024/06/28/whichYouth/", "/s/24290/"]
 [taxonomies]
 tags = ["黄前久美子", "黑江真由", "武田绫乃", "黄前十七年", "理论天地"]
 author = ["兰鹤"]

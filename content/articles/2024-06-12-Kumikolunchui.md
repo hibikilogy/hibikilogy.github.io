@@ -2,7 +2,7 @@
 title = "久美子论吹"
 date = "2024-06-12"
 
-aliases = ["/2024/06/12/Kumikolunchui/"]
+aliases = ["/2024/06/12/Kumikolunchui/", "/s/24226/"]
 [taxonomies]
 tags = [ "黄前久美子", "黄前十七年", "文言", "bilibili",]
 author = [ "芙蓉城里尽朝晖",]

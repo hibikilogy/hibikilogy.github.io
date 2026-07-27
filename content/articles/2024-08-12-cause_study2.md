@@ -2,7 +2,7 @@
 title = "久三年吹奏部相关问题成因初探（下）"
 date = "2024-08-12"
 
-aliases = ["/2024/08/12/cause_study2/"]
+aliases = ["/2024/08/12/cause_study2/", "/s/24857/"]
 [taxonomies]
 tags = [ "黄前久美子", "高坂丽奈", "冢本秀一", "老师", "黄前十七年"]
 author = [ "陶建国"]

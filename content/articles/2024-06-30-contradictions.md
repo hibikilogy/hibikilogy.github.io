@@ -2,7 +2,7 @@
 title = "再论“京吹事件”：群体解剖学的考察"
 date = "2024-06-30"
 
-aliases = ["/2024/06/30/contradictions/"]
+aliases = ["/2024/06/30/contradictions/", "/s/24570/"]
 [taxonomies]
 tags = ["黄前十七年", "理论天地"]
 author = ["兰鹤"]

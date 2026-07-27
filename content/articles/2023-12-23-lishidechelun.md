@@ -2,7 +2,7 @@
 title = "历史的车轮——北宇治吹奏部三代领导人比较"
 date = "2023-12-23"
 
-aliases = ["/2023/12/23/lishidechelun/"]
+aliases = ["/2023/12/23/lishidechelun/", "/s/23746/"]
 [taxonomies]
 tags = ["简书", "田中明日香", "吉川优子", "黄前久美子", "黄前十五年", "黄前十六年", "黄前十七年"]
 author = ["阿虚电话"]

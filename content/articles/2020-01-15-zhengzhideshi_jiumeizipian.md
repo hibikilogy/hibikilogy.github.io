@@ -1,7 +1,7 @@
 +++
 title = "《北宇治高中吹奏部历代政治得失》久美子篇"
 date = "2020-01-15"
-aliases = ["/2020/01/15/zhengzhideshi_jiumeizipian/"]
+aliases = ["/2020/01/15/zhengzhideshi_jiumeizipian/", "/s/20681/"]
 description = "黄前久美子成为吹奏部长的历史必然性"
 
 [taxonomies]

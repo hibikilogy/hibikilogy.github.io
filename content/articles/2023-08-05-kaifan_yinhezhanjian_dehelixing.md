@@ -2,7 +2,7 @@
 title = "以一名管乐团成员的身份浅析高坂丽奈同志开翻“银河战舰”的合理性"
 date = "2023-08-05"
 
-aliases = ["/2023/08/05/kaifan_yinhezhanjian_dehelixing/"]
+aliases = ["/2023/08/05/kaifan_yinhezhanjian_dehelixing/", "/s/23627/"]
 slug = "reina-galaxy-reason"
 [taxonomies]
 tags = ["bilibili", "合奏比赛", "黄前十六年", "高坂丽奈"]

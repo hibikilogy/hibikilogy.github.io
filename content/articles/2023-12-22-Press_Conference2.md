@@ -1,7 +1,7 @@
 +++
 title = "领队高坂丽奈答校内外记者问"
 date = "2023-12-22"
-aliases = ["/2023/12/22/Press_Conference2/"]
+aliases = ["/2023/12/22/Press_Conference2/", "/s/23333/"]
 description = "黄前十七年北高祭记者会_北宇治高校网直播（节选）"
 
 [taxonomies]

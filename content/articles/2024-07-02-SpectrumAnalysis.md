@@ -2,7 +2,7 @@
 title = "基于频谱分析的久三年全国赛上低音号选拔评价"
 date = "2024-07-02"
 
-aliases = ["/2024/07/02/SpectrumAnalysis/"]
+aliases = ["/2024/07/02/SpectrumAnalysis/", "/s/24937/"]
 [taxonomies]
 tags = [ "黑江真由", "黄前久美子", "高坂丽奈", "黄前十七年"]
 author = [ "春川落"]

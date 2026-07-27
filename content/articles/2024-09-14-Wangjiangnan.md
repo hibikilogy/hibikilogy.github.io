@@ -2,7 +2,7 @@
 title = "望江南·北宇治作"
 date = "2024-09-14"
 
-aliases = ["/2024/09/14/Wangjiangnan/"]
+aliases = ["/2024/09/14/Wangjiangnan/", "/s/24012/"]
 [taxonomies]
 tags = [ "黄前久美子", "高坂丽奈", "黄前十七年", "文言"]
 author = [ "山中幽士"]

@@ -2,7 +2,7 @@
 title = "武田绫乃到底懂不懂京吹？——久一年中期报告"
 date = "2021-02-06"
 
-aliases = ["/2021/02/06/jiuyinianzhongqibaogao/"]
+aliases = ["/2021/02/06/jiuyinianzhongqibaogao/", "/s/21470/"]
 [taxonomies]
 tags = ["bilibili", "武田绫乃", "武田懂京吹吗", "黄前十五年"]
 author = ["当代闲人"]

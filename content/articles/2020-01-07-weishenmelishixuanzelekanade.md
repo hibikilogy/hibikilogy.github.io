@@ -2,7 +2,7 @@
 title = "为什么历史选择了久石奏"
 date = "2020-01-07"
 
-aliases = ["/2020/01/07/weishenmelishixuanzelekanade/"]
+aliases = ["/2020/01/07/weishenmelishixuanzelekanade/", "/s/20830/"]
 [taxonomies]
 tags = ["贴吧", "久石奏", "黄前久美子", "田中明日香", "吉川优子", "北山泰瑠", "黄前十六年", "黄前十八年"]
 author = ["呓儒之殇"]

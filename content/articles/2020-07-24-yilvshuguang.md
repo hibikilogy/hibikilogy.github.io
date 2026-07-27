@@ -2,7 +2,7 @@
 title = "黄前十六年：北宇治风雨飘摇中的一缕曙光"
 date = "2020-07-24"
 
-aliases = ["/2020/07/24/yilvshuguang/"]
+aliases = ["/2020/07/24/yilvshuguang/", "/s/20246/"]
 [taxonomies]
 tags = ["bilibili", "黄前十六年", "黄前久美子", "伞木希美", "小日向梦", "釜屋燕", "加藤叶月", "冢本秀一"]
 author = ["梓川楓かえで"]

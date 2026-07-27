@@ -2,7 +2,7 @@
 title = "关于久三年选拔模式及全国大赛上低音号独奏选拔模式的讨论"
 date = "2024-12-15"
 
-aliases = ["/2024/12/15/audition_Pattern/"]
+aliases = ["/2024/12/15/audition_Pattern/", "/s/24592/"]
 [taxonomies]
 tags = [ "黄前久美子", "黑江真由", "高坂丽奈", "老师", "黄前十五年", "黄前十七年", "bilibili"]
 author = [ "戴耳机的小宅"]

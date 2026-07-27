@@ -1,7 +1,7 @@
 +++
 title = "黑江真由：矛盾之集结，真实之呈现"
 date = "2024-10-20"
-aliases = ["/2024/10/20/contradictions&reality/"]
+aliases = ["/2024/10/20/contradictions&reality/", "/s/24501/"]
 description = "——解析黑江真由于北宇治的矛盾和真实感之体现"
 
 [taxonomies]

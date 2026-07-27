@@ -2,7 +2,7 @@
 title = "黑江真由的塑造——剧本垮塌的始和终"
 date = "2024-07-02"
 
-aliases = ["/2024/07/02/collapsedScript/"]
+aliases = ["/2024/07/02/collapsedScript/", "/s/24837/"]
 [taxonomies]
 tags = [ "黑江真由", "黄前久美子", "高坂丽奈", "老师", "武田绫乃", "黄前十七年"]
 author = [ "裴根"]

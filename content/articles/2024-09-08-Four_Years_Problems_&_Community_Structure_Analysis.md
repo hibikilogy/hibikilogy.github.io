@@ -2,7 +2,7 @@
 title = "久〇年至久三年间北宇治高中吹奏乐部问题与社团结构分析"
 date = "2024-09-08"
 
-aliases = ["/2024/09/08/Four_Years_Problems_&_Community_Structure_Analysis/"]
+aliases = ["/2024/09/08/Four_Years_Problems_&_Community_Structure_Analysis/", "/s/24123/"]
 slug = "four-years-analysis"
 [taxonomies]
 tags = [ "伞木希美", "老师", "田中明日香", "小笠原晴香", "中世古香织", "吉川优子", "中川夏纪", "黄前久美子", "高坂丽奈", "冢本秀一", "黄前十四年", "黄前十五年", "黄前十六年", "黄前十七年"]

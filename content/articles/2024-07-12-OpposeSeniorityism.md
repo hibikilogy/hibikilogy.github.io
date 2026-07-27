@@ -1,7 +1,7 @@
 +++
 title = "旗帜鲜明地反对“资历主义”"
 date = "2024-07-12"
-aliases = ["/2024/07/12/OpposeSeniorityism/"]
+aliases = ["/2024/07/12/OpposeSeniorityism/", "/s/24032/"]
 description = "——黄前十七年的政治实践"
 
 [taxonomies]

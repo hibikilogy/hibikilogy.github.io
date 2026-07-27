@@ -2,7 +2,7 @@
 title = "《京吹群像志》卷二十四•松本美知惠列传"
 date = "2020-07-07"
 
-aliases = ["/2020/07/07/songbenmeizhihuiliezhuan/"]
+aliases = ["/2020/07/07/songbenmeizhihuiliezhuan/", "/s/20579/"]
 [taxonomies]
 tags = ["bilibili", "老师", "文言", "京吹群像志"]
 author = ["梓川楓かえで"]

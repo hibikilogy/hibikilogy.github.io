@@ -2,7 +2,7 @@
 title = "武田绫乃到底懂不懂京吹？——开题报告：从实证的角度入手"
 date = "2020-11-17"
 
-aliases = ["/2020/11/17/congshizhengdejiaodurushou/"]
+aliases = ["/2020/11/17/congshizhengdejiaodurushou/", "/s/20133/"]
 [taxonomies]
 tags = ["bilibili", "武田绫乃", "武田懂京吹吗"]
 author = ["当代闲人"]

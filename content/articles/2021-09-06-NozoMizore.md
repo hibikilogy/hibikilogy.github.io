@@ -2,7 +2,7 @@
 title = "希美与铠冢"
 date = "2021-09-06"
 
-aliases = ["/2021/09/06/NozoMizore/"]
+aliases = ["/2021/09/06/NozoMizore/", "/s/21758/"]
 [taxonomies]
 tags = ["bilibili", "伞木希美", "铠冢霙", "黄前十四年", "黄前十五年", "黄前十六年"]
 author = ["bilibili_uid_180170130"]

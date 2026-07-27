@@ -2,7 +2,7 @@
 title = "吹响吧！上低音号 吹奏部福音"
 date = "2020-01-17"
 
-aliases = ["/2020/01/17/chuizoubufuyin/"]
+aliases = ["/2020/01/17/chuizoubufuyin/", "/s/20946/"]
 [taxonomies]
 tags = ["bilibili", "黄前久美子", "黄前十五年"]
 author = ["LL教皇"]

@@ -1,7 +1,7 @@
 +++
 title = "狂澜如何不倾，大厦如何不倒？北宇治问鼎全国的奥秘为何？（上）"
 date = "2024-04-25"
-aliases = ["/2024/04/25/kuanglanbuqing1/"]
+aliases = ["/2024/04/25/kuanglanbuqing1/", "/s/24775/"]
 description = "——一种从整体论出发的分析尝试"
 
 [taxonomies]

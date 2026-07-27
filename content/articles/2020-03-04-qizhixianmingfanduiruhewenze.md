@@ -1,7 +1,7 @@
 +++
 title = "旗帜鲜明反对《如何问责》中的部分观点"
 date = "2020-03-04"
-aliases = ["/2020/03/04/qizhixianmingfanduiruhewenze/"]
+aliases = ["/2020/03/04/qizhixianmingfanduiruhewenze/", "/s/20015/"]
 description = "伞木希美之我见"
 
 [taxonomies]

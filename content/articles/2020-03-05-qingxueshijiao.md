@@ -2,7 +2,7 @@
 title = "摒弃吹学史观，用青学的视角来解构《利兹与青鸟》"
 date = "2020-03-05"
 
-aliases = ["/2020/03/05/qingxueshijiao/"]
+aliases = ["/2020/03/05/qingxueshijiao/", "/s/20627/"]
 [taxonomies]
 tags = ["NGA"]
 author = ["CureEtoile"]

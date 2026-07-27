@@ -1,7 +1,7 @@
 +++
 title = "火刑架上的高坂丽奈"
 date = "2024-06-24"
-aliases = ["/2024/06/24/on_the_fire/"]
+aliases = ["/2024/06/24/on_the_fire/", "/s/24753/"]
 description = "——商榷高坂所谓的“罪名”"
 
 [taxonomies]

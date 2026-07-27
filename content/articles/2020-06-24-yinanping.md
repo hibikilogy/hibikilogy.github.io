@@ -1,7 +1,7 @@
 +++
 title = "努力的尽头也没有奇迹"
 date = "2020-06-24"
-aliases = ["/2020/06/24/yinanping/"]
+aliases = ["/2020/06/24/yinanping/", "/s/20905/"]
 description = "伞木希美意难平"
 
 [taxonomies]

@@ -2,7 +2,7 @@
 title = "黄伯不克黑江于北宇治"
 date = "2024-07-01"
 
-aliases = ["/2024/07/01/Huangbobuke/"]
+aliases = ["/2024/07/01/Huangbobuke/", "/s/24354/"]
 [taxonomies]
 tags = ["黄前久美子", "黑江真由", "黄前十七年", "文言", "改编", "贴吧"]
 author = ["我也是伞厨"]

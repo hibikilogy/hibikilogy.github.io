@@ -1,7 +1,7 @@
 +++
 title = "久三年全国赛上低音号选拔结果分析"
 date = "2024-06-23"
-aliases = ["/2024/06/23/AuditionAnalysis/"]
+aliases = ["/2024/06/23/AuditionAnalysis/", "/s/24336/"]
 description = "——兼答“为什么历史选择了剑崎梨梨花？”"
 
 [taxonomies]

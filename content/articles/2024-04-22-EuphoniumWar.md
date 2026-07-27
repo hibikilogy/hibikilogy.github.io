@@ -2,7 +2,7 @@
 title = "历史上的“悠风号战争”：“部长失格事件”在现实音乐史上的投影"
 date = "2024-04-22"
 
-aliases = ["/2024/04/22/EuphoniumWar/"]
+aliases = ["/2024/04/22/EuphoniumWar/", "/s/24439/"]
 [taxonomies]
 tags = ["黄前久美子", "高坂丽奈", "老师", "黑江真由", "bilibili", "黄前十七年"]
 author = ["K622"]

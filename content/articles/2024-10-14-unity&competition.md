@@ -2,7 +2,7 @@
 title = "结合北宇治吹奏部相关情况，谈课后社团中的“团结与竞争”"
 date = "2024-10-14"
 
-aliases = ["/2024/10/14/unity&competition/"]
+aliases = ["/2024/10/14/unity&competition/", "/s/24243/"]
 [taxonomies]
 tags = [ "吉川优子", "黄前久美子", "高坂丽奈", "黄前十六年", "黄前十七年"]
 author = [ "陶建国"]

@@ -162,7 +162,7 @@ collections:
             label: 旧链接
             widget: list
             required: false
-            hint: 留空即可，发布后 CMS 会自动生成日期路径别名
+            hint: 旧路径可在此维护；/s/ 短链接由仓库同步脚本和 CI 自动管理
 
           - name: extra
             label: 摘要以及封面图和原文链接配置

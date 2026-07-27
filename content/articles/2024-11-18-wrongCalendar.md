@@ -2,7 +2,7 @@
 title = "一张错误的作画——部长失格时间考与关西赛时间勘误刍议"
 date = "2024-11-18"
 
-aliases = ["/2024/11/18/wrongCalendar/"]
+aliases = ["/2024/11/18/wrongCalendar/", "/s/24162/"]
 [taxonomies]
 tags = [ "黄前久美子", "高坂丽奈", "黄前十七年", "NGA", "驳文"]
 author = [ "Καντακουζηνός"]

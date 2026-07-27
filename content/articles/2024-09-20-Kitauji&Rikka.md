@@ -1,7 +1,7 @@
 +++
 title = "浅论“一赛一选拔”等相关制度在立华与北宇治实施效果差异"
 date = "2024-09-20"
-aliases = ["/2024/09/20/Kitauji&Rikka/"]
+aliases = ["/2024/09/20/Kitauji&Rikka/", "/s/24011/"]
 description = "——兼谈老牌吹奏强校与后发吹奏强校如何选择正确的发展道路"
 
 [taxonomies]

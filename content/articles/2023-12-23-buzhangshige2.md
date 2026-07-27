@@ -1,7 +1,7 @@
 +++
 title = "北宇治大事件分析——“部长失格”（下）"
 date = "2023-12-23"
-aliases = ["/2023/12/23/buzhangshige2/"]
+aliases = ["/2023/12/23/buzhangshige2/", "/s/23129/"]
 description = "だったら、部長失格やな"
 
 [taxonomies]

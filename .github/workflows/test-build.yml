@@ -4,12 +4,16 @@ name: TEST_BUILD
 # 通过 workflow_run 事件拉取产物并部署到 surge.sh 生成预览链接。
 on:
   pull_request:
-    branches: [next, main, dev]
+    branches: [next, main, dev, Refactor/zola]
     types: [opened, synchronize, reopened]
 
 permissions:
   actions: write
   contents: read
+
+concurrency:
+  group: test-build-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -80,9 +84,6 @@ jobs:
 
       - name: Rewrite site artifacts
         run: pnpm build:rewrite-artifacts
-
-      - name: Generate short links
-        run: pnpm build:short-links
 
       - name: Export Markdown routes
         run: cargo run --locked --bin deploy-markdown -- --config config.toml --base-url https://hibikilogy-pr${{ github.event.number }}.surge.sh

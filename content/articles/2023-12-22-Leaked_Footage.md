@@ -2,7 +2,7 @@
 title = "电视动画《吹响！上低音号3》偷跑片段抢先看！"
 date = "2023-12-22"
 
-aliases = ["/2023/12/22/Leaked_Footage/"]
+aliases = ["/2023/12/22/Leaked_Footage/", "/s/23453/"]
 [taxonomies]
 tags = [ "黄前久美子", "冢本秀一", "久石奏", "剑崎梨梨花", "义井沙里", "黄前十七年", "改编", "bilibili",]
 author = [ "芙蓉城里尽朝晖",]

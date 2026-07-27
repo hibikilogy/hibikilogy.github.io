@@ -2,7 +2,7 @@
 title = "“久三难题”之“部长失格”与“领队僭越”"
 date = "2024-09-17"
 
-aliases = ["/2024/09/17/KumikoIIIproblem/"]
+aliases = ["/2024/09/17/KumikoIIIproblem/", "/s/24840/"]
 [taxonomies]
 tags = [ "黄前久美子", "高坂丽奈", "冢本秀一", "黄前十七年"]
 author = [ "阿奈"]

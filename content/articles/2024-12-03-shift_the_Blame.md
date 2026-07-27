@@ -1,7 +1,7 @@
 +++
 title = "久三年上低音号选拔结果解读"
 date = "2024-12-03"
-aliases = ["/2024/12/03/shift_the_Blame/"]
+aliases = ["/2024/12/03/shift_the_Blame/", "/s/24165/"]
 description = "——泷升甩锅说"
 
 [taxonomies]

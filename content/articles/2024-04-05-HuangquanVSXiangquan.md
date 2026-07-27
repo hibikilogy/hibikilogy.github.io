@@ -2,7 +2,7 @@
 title = "从“部长失格事件”看北宇治吹奏部皇权与相权之争"
 date = "2024-04-05"
 
-aliases = ["/2024/04/05/HuangquanVSXiangquan/"]
+aliases = ["/2024/04/05/HuangquanVSXiangquan/", "/s/24000/"]
 [taxonomies]
 tags = ["bilibili", "黄前久美子", "高坂丽奈", "黑江真由", "久石奏", "老师", "黄前十七年"]
 author = ["南阎浮提往事"]

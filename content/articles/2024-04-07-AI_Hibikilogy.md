@@ -2,7 +2,7 @@
 title = "下一种吹学即将奏响——AI吹学初探"
 date = "2024-04-07"
 
-aliases = ["/2024/04/07/AI_Hibikilogy/"]
+aliases = ["/2024/04/07/AI_Hibikilogy/", "/s/24321/"]
 [taxonomies]
 tags = ["bilibili", "理论天地", "伞木希美", "剑崎梨梨花", "久石奏", "铠冢霙", "黄前十八年"]
 author = ["当代闲人"]

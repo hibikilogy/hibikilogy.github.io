@@ -9,7 +9,7 @@
 | `title-font-subset` | 收集文章标题用字，生成标题字体子集和 CSS。 |
 | `body-font-subset` | 收集正文用字，生成正文字体子集和 CSS。 |
 | `site-artifact-rewrite` | 按 `artifact-rewrite.toml` 改写 `public/` 中的 URL、图片属性等。 |
-| `article-short-links` | 为每篇文章生成 `/s/<code>/` 短链接。 |
+| `article-short-links` | 为已发布文章分配 `/s/YYNNN/`，并同步到 Zola `aliases`。 |
 | `deploy-markdown` | 把文章/文档导出到对应的 `.md` 路由，并把 Zola 内部链接改成可访问的相对链接。 |
 
 通过 pnpm 调用：
@@ -19,7 +19,8 @@ pnpm build:all              # 按顺序跑全部
 pnpm build:subset-titlefont # 标题字体
 pnpm build:subset-bodyfont  # 正文字体
 pnpm build:rewrite-artifacts
-pnpm build:short-links
+pnpm sync:short-links       # 写入缺失的短链接 alias 和永久预留台账
+pnpm check:short-links      # 只校验，不修改文件
 pnpm build:markdown
 ```
 
@@ -56,6 +57,8 @@ cargo run --locked --features artifact-rewrite --bin site-artifact-rewrite -- --
 - 错误用 `anyhow::Result`，加 `.context()` 说明失败时在做什么。
 - CLI 用 `clap`，`--help` 要让人看得懂。
 - 路由、slug、front matter 解析逻辑只在一处实现，重复则抽到 `shared/`。
+- 短链接的跳转页由 Zola `aliases` 生成；Rust 工具只维护文章元数据，不读取或修改 `public/`。
+- 短码格式为 `YYNNN`。同一年内以文件名 SHA-256 对 1000 取模，碰撞时顺序探测；`scripts/data/short-link-reservations.json` 中的号码永久不复用。
 - 写文件前检查目标不是符号链接/目录/别人的文件。manifest 用原子写入，清理时只删自己记录的内容。
 - 输出要可复现：排序稳定，版本标记用 commit SHA 不用分支名。
 - 新增路径/清理逻辑时至少覆盖正常、冲突和异常情况，测试放 `#[cfg(test)] mod tests` 或 `tests/` 目录。
@@ -74,8 +77,9 @@ cargo run --locked --features artifact-rewrite --bin site-artifact-rewrite -- --
 
    `pnpm test:rust` 用 nextest 并行跑全部 feature（CI 不开 fail-fast，一次看全所有失败）。之后单独跑 `cargo test --doc`（nextest 不执行 doctest）。
 
-3. 涉及产物的改动还要跑对应的 `pnpm build:*`，跨工具改动跑 `pnpm build:all`。
-4. 抽检几个页面的关键文件、manifest 和实际 URL，确认结果正确。
+3. 新增已发布文章时先跑 `pnpm sync:short-links`；构建只运行 `check:short-links`，不会暗中修改文章。
+4. 涉及产物的改动还要跑对应的 `pnpm build:*`，跨工具改动跑 `pnpm build:all`。
+5. 抽检几个页面的关键文件、预留台账和实际 URL，确认结果正确。
 
 ## 环境准备
 

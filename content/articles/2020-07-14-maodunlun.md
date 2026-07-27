@@ -2,7 +2,7 @@
 title = "从《吹响吧！上低音号》中学习《毛泽东选集》之《矛盾论》"
 date = "2020-07-14"
 
-aliases = ["/2020/07/14/maodunlun/"]
+aliases = ["/2020/07/14/maodunlun/", "/s/20525/"]
 [taxonomies]
 tags = ["bilibili", "黄前十五年"]
 author = ["LL教皇"]

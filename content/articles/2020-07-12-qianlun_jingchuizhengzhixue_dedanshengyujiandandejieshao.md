@@ -1,7 +1,7 @@
 +++
 title = "浅论“京吹政治学\"的诞生与简单的介绍"
 date = "2020-07-12"
-aliases = ["/2020/07/12/qianlun_jingchuizhengzhixue_dedanshengyujiandandejieshao/"]
+aliases = ["/2020/07/12/qianlun_jingchuizhengzhixue_dedanshengyujiandandejieshao/", "/s/20023/"]
 slug = "hibike-politics"
 description = "什么是京吹政治学？"
 

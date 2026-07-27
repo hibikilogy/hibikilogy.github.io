@@ -2,7 +2,7 @@
 title = "论黄前久美子高中生活的成与败"
 date = "2024-07-26"
 
-aliases = ["/2024/07/26/KumikoOmae/"]
+aliases = ["/2024/07/26/KumikoOmae/", "/s/24884/"]
 [taxonomies]
 tags = [ "黄前久美子", "高坂丽奈", "黄前十五年", "黄前十六年", "黄前十七年"]
 author = [ "星尘星"]

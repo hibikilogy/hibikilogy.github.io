@@ -2,7 +2,7 @@
 title = "略论义井沙里在入部初期的政治布局"
 date = "2024-04-27"
 
-aliases = ["/2024/04/27/Sari'sLayout/"]
+aliases = ["/2024/04/27/Sari'sLayout/", "/s/24752/"]
 [taxonomies]
 tags = ["义井沙里", "釜屋雀", "上石弥生", "针谷佳穗", "黄前久美子", "bangumi", "黄前十七年"]
 author = ["红茶加盐派"]

@@ -1,7 +1,7 @@
 +++
 title = "武田绫乃到底懂不懂京吹？——久一年结题报告"
 date = "2021-08-15"
-aliases = ["/2021/08/15/jiuyinianjietibaogao/"]
+aliases = ["/2021/08/15/jiuyinianjietibaogao/", "/s/21388/"]
 description = "关于《京吹》开播以来一项吹学重大历史争议的决议"
 
 [taxonomies]

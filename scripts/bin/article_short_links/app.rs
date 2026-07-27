@@ -1,185 +1,220 @@
-use anyhow::{anyhow, bail, Context, Result};
+use anyhow::{bail, Context, Result};
 use clap::Parser;
 use hibikilogy_tools::article_source::{
     normalize_iso_date, parse_article_file_name, ArticleFileName as ParsedArticleFileName,
 };
 use hibikilogy_tools::content_files::sorted_markdown_files;
-use hibikilogy_tools::content_routes;
-use hibikilogy_tools::managed_fs::{
-    ensure_directory_beneath, recover_atomic_file, reject_symlink_or_directory,
-};
+use hibikilogy_tools::managed_fs::{reject_symlink_or_directory, write_atomic};
 use hibikilogy_tools::managed_json;
-use hibikilogy_tools::url_encoding::encode_query_value;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
-use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
+use toml_edit::{value, Array, DocumentMut};
 
-const MANIFEST_PATH: &str = "static/_cache/short-links.json";
-const SHORT_LINK_DIRECTORY: &str = "s";
-const MIN_CODE_LENGTH: usize = 5;
-const YEAR_PREFIX_LENGTH: usize = 2;
-const MIN_HASH_PART_LENGTH: usize = MIN_CODE_LENGTH - YEAR_PREFIX_LENGTH;
-const SHA256_HEX_LENGTH: usize = 64;
+const RESERVATIONS_VERSION: u32 = 1;
+const SHORT_LINK_PREFIX: &str = "/s/";
+const SHORT_LINK_DIGITS: usize = 5;
+const IDS_PER_YEAR: u16 = 1000;
 
 #[derive(Debug, Parser)]
-#[command(about = "Generate hash-based short-link redirect pages for articles.")]
+#[command(about = "Synchronize Zola short-link aliases in article front matter.")]
 struct Args {
     #[arg(long)]
     content_dir: PathBuf,
 
     #[arg(long)]
-    site_root: PathBuf,
-}
+    reservations: PathBuf,
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct ActiveArticle {
-    source_file: String,
-    target_slug: String,
-    digest: String,
-    year_prefix: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct ResolvedArticleMetadata {
-    target_slug: String,
-    publish_date: String,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct RedirectRecord {
-    code: String,
-    target_slug: String,
+    #[arg(long)]
+    check: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-struct ShortLinkRecord {
-    source_file: String,
-    target_slug: String,
-    code: String,
-    digest: String,
+struct Reservations {
+    version: u32,
+    reserved_codes: BTreeSet<String>,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize)]
-struct ShortLinkManifest {
-    #[serde(default)]
-    records: Vec<ShortLinkRecord>,
-
-    #[serde(default, skip_serializing_if = "BTreeSet::is_empty")]
-    retired_codes: BTreeSet<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-struct SearchIndexEntry {
-    url: String,
+impl Default for Reservations {
+    fn default() -> Self {
+        Self {
+            version: RESERVATIONS_VERSION,
+            reserved_codes: BTreeSet::new(),
+        }
+    }
 }
 
 #[derive(Debug, Default, Deserialize)]
 struct FrontMatter {
-    slug: Option<String>,
     date: Option<String>,
+    #[serde(default)]
+    draft: bool,
+    #[serde(default)]
+    aliases: Vec<String>,
+}
+
+#[derive(Debug)]
+struct Article {
+    path: PathBuf,
+    file_name: String,
+    markdown: String,
+    metadata: FrontMatter,
+    short_code: Option<String>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
-struct GenerateReport {
-    total: usize,
-    created: usize,
-    reused: usize,
-    removed: usize,
+struct SyncReport {
+    updated_articles: usize,
+    reserved_codes: usize,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct Assignment {
-    records: Vec<ShortLinkRecord>,
-    reused: usize,
+#[derive(Debug)]
+struct FrontMatterRange {
+    content_start: usize,
+    content_end: usize,
+    newline: &'static str,
 }
 
 pub fn run() -> Result<()> {
     let args = Args::parse();
-    let manifest_path = Path::new(MANIFEST_PATH);
-    let report = generate_short_links(&args.content_dir, &args.site_root, manifest_path)?;
+    let report = sync_short_links(&args.content_dir, &args.reservations, args.check)?;
 
-    println!(
-        "wrote {} short links ({} new, {} reused) and removed {} orphaned redirect(s); manifest: {}",
-        report.total,
-        report.created,
-        report.reused,
-        report.removed,
-        manifest_path.display(),
-    );
+    if args.check {
+        println!(
+            "short-link aliases are in sync ({} reserved code(s))",
+            report.reserved_codes
+        );
+    } else {
+        println!(
+            "updated {} article(s); {} short-link code(s) are permanently reserved",
+            report.updated_articles, report.reserved_codes
+        );
+    }
 
     Ok(())
 }
 
-fn generate_short_links(
+fn sync_short_links(
     content_dir: &Path,
-    site_root: &Path,
-    manifest_path: &Path,
-) -> Result<GenerateReport> {
-    ensure_input_directory(content_dir, "content directory")?;
-    ensure_input_directory(site_root, "site root")?;
+    reservations_path: &Path,
+    check: bool,
+) -> Result<SyncReport> {
+    ensure_input_directory(content_dir)?;
+    reject_symlink_or_directory(reservations_path)?;
 
-    let existing_manifest = load_manifest(manifest_path)?;
-    let article_urls = load_article_urls(site_root)?;
-    let active_articles = collect_active_articles(content_dir, site_root, &article_urls)?;
-    let assignment = assign_short_link_codes(&active_articles, &existing_manifest)?;
-    let orphaned = orphaned_codes(&existing_manifest.records, &assignment.records);
-    let redirects = assignment
-        .records
-        .iter()
-        .map(|record| RedirectRecord {
-            code: record.code.clone(),
-            target_slug: record.target_slug.clone(),
-        })
-        .collect::<Vec<_>>();
+    let existing_reservations = load_reservations(reservations_path)?;
+    let mut reserved_codes = existing_reservations.reserved_codes.clone();
+    let mut articles = load_articles(content_dir)?;
+    let mut claimed_codes = BTreeMap::<String, PathBuf>::new();
 
-    let short_root = site_root.join(SHORT_LINK_DIRECTORY);
-    ensure_directory_beneath(site_root, &short_root)?;
-
-    write_redirect_pages(&short_root, &redirects)?;
-    remove_redirect_directories(&short_root, &orphaned)?;
-
-    let mut retired_codes = existing_manifest.retired_codes;
-    retired_codes.extend(orphaned.iter().cloned());
-    for record in &assignment.records {
-        retired_codes.remove(&record.code);
+    for article in &articles {
+        let Some(code) = &article.short_code else {
+            continue;
+        };
+        if let Some(previous) = claimed_codes.insert(code.clone(), article.path.clone()) {
+            bail!(
+                "short-link code {code} is used by both {} and {}",
+                previous.display(),
+                article.path.display()
+            );
+        }
+        reserved_codes.insert(code.clone());
     }
 
-    save_manifest(
-        manifest_path,
-        &ShortLinkManifest {
-            records: assignment.records.clone(),
-            retired_codes,
-        },
-    )?;
+    let mut updated_articles = Vec::new();
+    for article in &mut articles {
+        if article.short_code.is_some() || article.metadata.draft {
+            continue;
+        }
 
-    Ok(GenerateReport {
-        total: assignment.records.len(),
-        created: assignment.records.len() - assignment.reused,
-        reused: assignment.reused,
-        removed: orphaned.len(),
+        let publish_date = article_publish_date(article)?;
+        let year_prefix = short_year_prefix(&publish_date)?;
+        let initial_id = digest_modulo(article.file_name.as_bytes(), IDS_PER_YEAR);
+        let code = allocate_code(&year_prefix, initial_id, &mut reserved_codes)?;
+        let alias = short_alias(&code);
+        let updated = append_alias(&article.markdown, &alias)
+            .with_context(|| format!("failed to update {}", article.path.display()))?;
+        updated_articles.push((article.path.clone(), updated));
+        article.short_code = Some(code);
+    }
+
+    let desired_reservations = Reservations {
+        version: RESERVATIONS_VERSION,
+        reserved_codes,
+    };
+    let reservations_changed = desired_reservations != existing_reservations;
+
+    if check {
+        if !updated_articles.is_empty() || reservations_changed {
+            let mut reasons = updated_articles
+                .iter()
+                .map(|(path, _)| format!("missing short-link alias: {}", path.display()))
+                .collect::<Vec<_>>();
+            if reservations_changed {
+                reasons.push(format!(
+                    "reservation ledger is out of sync: {}",
+                    reservations_path.display()
+                ));
+            }
+            bail!(
+                "short-link aliases are out of sync:\n{}",
+                reasons.join("\n")
+            );
+        }
+
+        return Ok(SyncReport {
+            updated_articles: 0,
+            reserved_codes: desired_reservations.reserved_codes.len(),
+        });
+    }
+
+    for (path, markdown) in &updated_articles {
+        write_atomic(path, markdown.as_bytes())
+            .with_context(|| format!("failed to write {}", path.display()))?;
+    }
+    if reservations_changed {
+        managed_json::save_pretty(reservations_path, &desired_reservations)?;
+    }
+
+    Ok(SyncReport {
+        updated_articles: updated_articles.len(),
+        reserved_codes: desired_reservations.reserved_codes.len(),
     })
 }
 
-fn ensure_input_directory(path: &Path, label: &str) -> Result<()> {
+fn ensure_input_directory(path: &Path) -> Result<()> {
     let metadata = fs::metadata(path)
-        .with_context(|| format!("failed to inspect {label} {}", path.display()))?;
-
+        .with_context(|| format!("failed to inspect content directory {}", path.display()))?;
     if !metadata.is_dir() {
-        bail!("{label} {} is not a directory", path.display());
+        bail!("content directory {} is not a directory", path.display());
     }
-
     Ok(())
 }
 
-fn collect_active_articles(
-    content_dir: &Path,
-    site_root: &Path,
-    article_urls: &BTreeSet<String>,
-) -> Result<Vec<ActiveArticle>> {
-    let markdown_files = sorted_markdown_files(content_dir, true)?
+fn load_reservations(path: &Path) -> Result<Reservations> {
+    if !path.exists() {
+        return Ok(Reservations::default());
+    }
+
+    let reservations: Reservations = managed_json::load(path)?;
+    if reservations.version != RESERVATIONS_VERSION {
+        bail!(
+            "unsupported reservation ledger version {} in {}",
+            reservations.version,
+            path.display()
+        );
+    }
+    for code in &reservations.reserved_codes {
+        validate_code(code)
+            .with_context(|| format!("invalid reserved code in {}", path.display()))?;
+    }
+    Ok(reservations)
+}
+
+fn load_articles(content_dir: &Path) -> Result<Vec<Article>> {
+    sorted_markdown_files(content_dir, true)?
         .into_iter()
         .map(|path| {
             let file_name = path
@@ -188,139 +223,99 @@ fn collect_active_articles(
                 .with_context(|| {
                     format!("article filename is not valid UTF-8: {}", path.display())
                 })?
-                .to_string();
-            Ok((file_name, path))
+                .to_owned();
+            let markdown = fs::read_to_string(&path)
+                .with_context(|| format!("failed to read {}", path.display()))?;
+            let metadata = parse_front_matter(&markdown)
+                .with_context(|| format!("failed to parse {}", path.display()))?;
+            let short_code = find_short_code(&metadata.aliases)
+                .with_context(|| format!("invalid short-link aliases in {}", path.display()))?;
+
+            Ok(Article {
+                path,
+                file_name,
+                markdown,
+                metadata,
+                short_code,
+            })
         })
-        .collect::<Result<Vec<_>>>()?;
-
-    let mut articles = Vec::with_capacity(markdown_files.len());
-    let mut target_slugs = BTreeSet::new();
-
-    for (file_name, markdown_path) in markdown_files {
-        validate_source_file_name(&file_name)?;
-        let parsed_file_name = parse_article_file_name(&file_name)?;
-        let markdown = fs::read_to_string(&markdown_path)
-            .with_context(|| format!("failed to read {}", markdown_path.display()))?;
-        let metadata = resolve_article_metadata(
-            &file_name,
-            &markdown,
-            &parsed_file_name,
-            site_root,
-            article_urls,
-        )?;
-
-        if !target_slugs.insert(metadata.target_slug.clone()) {
-            bail!(
-                "multiple articles resolve to the same slug: {}",
-                metadata.target_slug
-            );
-        }
-
-        articles.push(ActiveArticle {
-            source_file: file_name.clone(),
-            target_slug: metadata.target_slug,
-            digest: digest_source_file_name(&file_name),
-            year_prefix: short_year_prefix(&metadata.publish_date)?,
-        });
-    }
-
-    Ok(articles)
-}
-
-fn resolve_article_metadata(
-    file_name: &str,
-    markdown: &str,
-    parsed_file_name: &ParsedArticleFileName,
-    site_root: &Path,
-    article_urls: &BTreeSet<String>,
-) -> Result<ResolvedArticleMetadata> {
-    let front_matter = parse_front_matter(markdown)?;
-    let publish_date = front_matter
-        .date
-        .unwrap_or_else(|| parsed_file_name.publish_date.clone());
-    let target_slug = match front_matter.slug {
-        Some(slug) => {
-            ensure_target_page_exists(site_root, article_urls, &slug)
-                .with_context(|| format!("missing built article target for {file_name}"))?;
-            slug
-        }
-        None => resolve_fallback_target_slug(file_name, parsed_file_name, site_root, article_urls)?,
-    };
-
-    Ok(ResolvedArticleMetadata {
-        target_slug,
-        publish_date,
-    })
-}
-
-fn resolve_fallback_target_slug(
-    file_name: &str,
-    parsed_file_name: &ParsedArticleFileName,
-    site_root: &Path,
-    article_urls: &BTreeSet<String>,
-) -> Result<String> {
-    if ensure_target_page_exists(site_root, article_urls, &parsed_file_name.slug_tail).is_ok() {
-        return Ok(parsed_file_name.slug_tail.clone());
-    }
-
-    let slugified = slugify_path_component(&parsed_file_name.slug_tail);
-    ensure_target_page_exists(site_root, article_urls, &slugified).with_context(|| {
-        format!("missing built article target for {file_name} using fallback slug {slugified:?}",)
-    })?;
-
-    Ok(slugified)
-}
-
-fn ensure_target_page_exists(
-    site_root: &Path,
-    article_urls: &BTreeSet<String>,
-    slug: &str,
-) -> Result<()> {
-    validate_slug(slug)?;
-
-    let target_url = format!("/articles/{slug}/");
-    if !article_urls.is_empty() && !article_urls.contains(&target_url) {
-        bail!("{target_url} not found in search_index.zh.json");
-    }
-
-    content_routes::ensure_built_page_exists(site_root, &format!("articles/{slug}"))
-}
-
-fn load_article_urls(site_root: &Path) -> Result<BTreeSet<String>> {
-    let search_index_path = site_root.join("search_index.zh.json");
-    if !search_index_path.is_file() {
-        return Ok(BTreeSet::new());
-    }
-
-    let json = fs::read_to_string(&search_index_path)
-        .with_context(|| format!("failed to read {}", search_index_path.display()))?;
-    let entries: Vec<SearchIndexEntry> = serde_json::from_str(&json)
-        .with_context(|| format!("failed to parse {}", search_index_path.display()))?;
-
-    Ok(entries
-        .into_iter()
-        .map(|entry| entry.url)
-        .filter(|url| url.starts_with("/articles/"))
-        .collect())
+        .collect()
 }
 
 fn parse_front_matter(markdown: &str) -> Result<FrontMatter> {
-    let parsed = content_routes::parse_page_front_matter(markdown)?;
-    let mut parsed = FrontMatter {
-        slug: parsed.slug,
-        date: parsed.date,
+    let range = locate_front_matter(markdown)?;
+    toml::from_str(&markdown[range.content_start..range.content_end])
+        .context("failed to parse TOML front matter")
+}
+
+fn locate_front_matter(markdown: &str) -> Result<FrontMatterRange> {
+    let bom_length = usize::from(markdown.starts_with('\u{feff}')) * '\u{feff}'.len_utf8();
+    let after_bom = &markdown[bom_length..];
+    let (newline, opening_length) = if after_bom.starts_with("+++\r\n") {
+        ("\r\n", 5)
+    } else if after_bom.starts_with("+++\n") {
+        ("\n", 4)
+    } else {
+        bail!("missing TOML front matter");
     };
+    let content_start = bom_length + opening_length;
+    let rest = &markdown[content_start..];
+    let mut offset = 0;
 
-    if let Some(slug) = parsed.slug.take() {
-        validate_slug(&slug).context("invalid slug in TOML front matter")?;
-        parsed.slug = Some(slug.to_lowercase());
+    for segment in rest.split_inclusive('\n') {
+        if segment.trim_end_matches(&['\r', '\n'][..]) == "+++" {
+            return Ok(FrontMatterRange {
+                content_start,
+                content_end: content_start + offset,
+                newline,
+            });
+        }
+        offset += segment.len();
     }
 
-    if let Some(date) = parsed.date.take() {
-        parsed.date = Some(normalize_iso_date(&date).context("invalid date in TOML front matter")?);
+    bail!("unterminated TOML front matter")
+}
+
+fn find_short_code(aliases: &[String]) -> Result<Option<String>> {
+    let short_aliases = aliases
+        .iter()
+        .filter(|alias| alias.starts_with(SHORT_LINK_PREFIX))
+        .collect::<Vec<_>>();
+    if short_aliases.len() > 1 {
+        bail!("multiple /s/ aliases are not allowed");
     }
 
-    Ok(parsed)
+    short_aliases
+        .first()
+        .map(|alias| parse_short_alias(alias))
+        .transpose()
+}
+
+fn parse_short_alias(alias: &str) -> Result<String> {
+    let Some(code) = alias
+        .strip_prefix(SHORT_LINK_PREFIX)
+        .and_then(|value| value.strip_suffix('/'))
+    else {
+        bail!("invalid short-link alias: {alias:?}");
+    };
+    validate_code(code)?;
+    Ok(code.to_owned())
+}
+
+fn validate_code(code: &str) -> Result<()> {
+    if code.len() != SHORT_LINK_DIGITS || !code.bytes().all(|byte| byte.is_ascii_digit()) {
+        bail!("short-link code must contain exactly five digits: {code:?}");
+    }
+    Ok(())
+}
+
+fn article_publish_date(article: &Article) -> Result<String> {
+    if let Some(date) = &article.metadata.date {
+        return normalize_iso_date(date).context("invalid front matter date");
+    }
+
+    let ParsedArticleFileName { publish_date, .. } = parse_article_file_name(&article.file_name)?;
+    Ok(publish_date)
 }
 
 fn short_year_prefix(date: &str) -> Result<String> {
@@ -328,366 +323,65 @@ fn short_year_prefix(date: &str) -> Result<String> {
     Ok(normalized[2..4].to_owned())
 }
 
-fn validate_source_file_name(source_file: &str) -> Result<()> {
-    let valid = !source_file.is_empty()
-        && source_file.ends_with(".md")
-        && !source_file.contains('/')
-        && !source_file.contains('\\')
-        && source_file != "."
-        && source_file != "..";
-
-    if !valid {
-        bail!("invalid article source filename: {source_file:?}");
-    }
-
-    Ok(())
+fn digest_modulo(input: &[u8], modulus: u16) -> u16 {
+    Sha256::digest(input).iter().fold(0u16, |remainder, byte| {
+        ((u32::from(remainder) * 256 + u32::from(*byte)) % u32::from(modulus)) as u16
+    })
 }
 
-fn validate_slug(slug: &str) -> Result<()> {
-    content_routes::validate_slug(slug).map_err(|_| anyhow!("invalid article slug: {slug:?}"))
-}
-
-fn digest_source_file_name(source_file: &str) -> String {
-    let mut hasher = Sha256::new();
-    hasher.update(source_file.as_bytes());
-    hex_lower(&hasher.finalize())
-}
-
-fn hex_lower(bytes: &[u8]) -> String {
-    use std::fmt::Write as _;
-
-    let mut output = String::with_capacity(bytes.len() * 2);
-    for byte in bytes {
-        write!(&mut output, "{byte:02x}").expect("writing to a String cannot fail");
-    }
-    output
-}
-
-fn slugify_path_component(input: &str) -> String {
-    content_routes::slugify_path_component(input)
-}
-
-fn assign_short_link_codes(
-    articles: &[ActiveArticle],
-    existing_manifest: &ShortLinkManifest,
-) -> Result<Assignment> {
-    let existing_by_source = existing_manifest
-        .records
-        .iter()
-        .map(|record| (record.source_file.as_str(), record))
-        .collect::<BTreeMap<_, _>>();
-    let existing_by_slug = existing_manifest
-        .records
-        .iter()
-        .map(|record| (record.target_slug.as_str(), record))
-        .collect::<BTreeMap<_, _>>();
-
-    let mut unavailable_codes = existing_manifest.retired_codes.clone();
-    unavailable_codes.extend(
-        existing_manifest
-            .records
-            .iter()
-            .map(|record| record.code.clone()),
-    );
-
-    let mut matched = vec![None; articles.len()];
-    let mut claimed_codes = BTreeSet::new();
-
-    for (index, article) in articles.iter().enumerate() {
-        if let Some(previous) = existing_by_source.get(article.source_file.as_str()) {
-            if is_reusable_code(&previous.code) && claimed_codes.insert(previous.code.as_str()) {
-                matched[index] = Some(*previous);
-            }
+fn allocate_code(
+    year_prefix: &str,
+    initial_id: u16,
+    reserved_codes: &mut BTreeSet<String>,
+) -> Result<String> {
+    for offset in 0..IDS_PER_YEAR {
+        let id = (initial_id + offset) % IDS_PER_YEAR;
+        let code = format!("{year_prefix}{id:03}");
+        if reserved_codes.insert(code.clone()) {
+            return Ok(code);
         }
     }
 
-    for (index, article) in articles.iter().enumerate() {
-        if matched[index].is_some() {
-            continue;
-        }
-
-        if let Some(previous) = existing_by_slug.get(article.target_slug.as_str()) {
-            if is_reusable_code(&previous.code) && claimed_codes.insert(previous.code.as_str()) {
-                matched[index] = Some(*previous);
-            }
-        }
-    }
-
-    let mut records = Vec::with_capacity(articles.len());
-    let mut reused = 0;
-
-    for (article, previous) in articles.iter().zip(matched) {
-        let code = match previous {
-            Some(previous) => {
-                reused += 1;
-                previous.code.clone()
-            }
-            None => allocate_code(article, &mut unavailable_codes),
-        };
-
-        records.push(ShortLinkRecord {
-            source_file: article.source_file.clone(),
-            target_slug: article.target_slug.clone(),
-            code,
-            digest: article.digest.clone(),
-        });
-    }
-
-    Ok(Assignment { records, reused })
+    bail!("all {IDS_PER_YEAR} short-link IDs for year {year_prefix} are permanently reserved")
 }
 
-fn allocate_code(article: &ActiveArticle, unavailable_codes: &mut BTreeSet<String>) -> String {
-    for hash_length in MIN_HASH_PART_LENGTH..=article.digest.len() {
-        let candidate = format!("{}{}", article.year_prefix, &article.digest[..hash_length]);
-        if unavailable_codes.insert(candidate.clone()) {
-            return candidate;
+fn short_alias(code: &str) -> String {
+    format!("{SHORT_LINK_PREFIX}{code}/")
+}
+
+fn append_alias(markdown: &str, alias: &str) -> Result<String> {
+    let range = locate_front_matter(markdown)?;
+    let front_matter = &markdown[range.content_start..range.content_end];
+    let normalized = front_matter.replace("\r\n", "\n");
+    let mut document = normalized
+        .parse::<DocumentMut>()
+        .context("failed to parse editable TOML front matter")?;
+
+    match document.get_mut("aliases") {
+        Some(item) => {
+            let aliases = item
+                .as_array_mut()
+                .context("front matter aliases must be an array")?;
+            aliases.push(alias);
+        }
+        None => {
+            let mut aliases = Array::new();
+            aliases.push(alias);
+            document["aliases"] = value(aliases);
         }
     }
 
-    let digest_code = format!("{}{}", article.year_prefix, article.digest);
-    for suffix in 2usize.. {
-        let candidate = format!("{digest_code}-{suffix}");
-        if unavailable_codes.insert(candidate.clone()) {
-            return candidate;
-        }
+    let mut rendered = document.to_string();
+    if range.newline == "\r\n" {
+        rendered = rendered.replace("\r\n", "\n").replace('\n', "\r\n");
     }
 
-    unreachable!("the numeric suffix space is effectively unbounded")
-}
-
-fn validate_manifest(manifest: &ShortLinkManifest) -> Result<()> {
-    let mut source_files = BTreeSet::new();
-    let mut target_slugs = BTreeSet::new();
-    let mut active_codes = BTreeSet::new();
-
-    for record in &manifest.records {
-        validate_source_file_name(&record.source_file)
-            .with_context(|| format!("invalid manifest record for code {:?}", record.code))?;
-        validate_slug(&record.target_slug)
-            .with_context(|| format!("invalid manifest record for {}", record.source_file))?;
-        validate_code(&record.code)
-            .with_context(|| format!("invalid manifest record for {}", record.source_file))?;
-        validate_digest(&record.digest)
-            .with_context(|| format!("invalid manifest record for {}", record.source_file))?;
-
-        let expected_digest = digest_source_file_name(&record.source_file);
-        if record.digest != expected_digest {
-            bail!(
-                "manifest digest mismatch for {}: expected {}, found {}",
-                record.source_file,
-                expected_digest,
-                record.digest,
-            );
-        }
-
-        if !source_files.insert(record.source_file.as_str()) {
-            bail!("duplicate source_file in manifest: {}", record.source_file);
-        }
-        if !target_slugs.insert(record.target_slug.as_str()) {
-            bail!("duplicate target_slug in manifest: {}", record.target_slug);
-        }
-        if !active_codes.insert(record.code.as_str()) {
-            bail!("duplicate short-link code in manifest: {}", record.code);
-        }
-    }
-
-    for code in &manifest.retired_codes {
-        validate_code(code).context("invalid retired short-link code in manifest")?;
-        if active_codes.contains(code.as_str()) {
-            bail!("short-link code is both active and retired: {code}");
-        }
-    }
-
-    Ok(())
-}
-
-fn validate_digest(digest: &str) -> Result<()> {
-    if digest.len() != SHA256_HEX_LENGTH || !is_lower_hex(digest) {
-        bail!("invalid SHA-256 digest: {digest:?}");
-    }
-    Ok(())
-}
-
-fn validate_code(code: &str) -> Result<()> {
-    let valid_prefixed = code.rsplit_once('-').map_or_else(
-        || is_year_prefixed_hash(code),
-        |(base, suffix)| {
-            is_year_prefixed_hash(base) && suffix.parse::<usize>().is_ok_and(|number| number >= 2)
-        },
-    );
-    let valid_legacy = code.rsplit_once('-').map_or_else(
-        || is_legacy_hash_code(code),
-        |(base, suffix)| {
-            base.len() == SHA256_HEX_LENGTH
-                && is_lower_hex(base)
-                && suffix.parse::<usize>().is_ok_and(|number| number >= 2)
-        },
-    );
-
-    if !valid_prefixed && !valid_legacy {
-        bail!("invalid short-link code: {code:?}");
-    }
-
-    Ok(())
-}
-
-fn is_year_prefixed_hash(code: &str) -> bool {
-    if code.len() < MIN_CODE_LENGTH || code.len() > YEAR_PREFIX_LENGTH + SHA256_HEX_LENGTH {
-        return false;
-    }
-
-    let (year, hash) = code.split_at(YEAR_PREFIX_LENGTH);
-    year.bytes().all(|byte| byte.is_ascii_digit())
-        && hash.len() >= MIN_HASH_PART_LENGTH
-        && is_lower_hex(hash)
-}
-
-fn is_reusable_code(code: &str) -> bool {
-    code.rsplit_once('-').map_or_else(
-        || is_year_prefixed_hash(code),
-        |(base, suffix)| {
-            is_year_prefixed_hash(base) && suffix.parse::<usize>().is_ok_and(|number| number >= 2)
-        },
-    )
-}
-
-fn is_legacy_hash_code(code: &str) -> bool {
-    (MIN_CODE_LENGTH..=SHA256_HEX_LENGTH).contains(&code.len()) && is_lower_hex(code)
-}
-
-fn is_lower_hex(value: &str) -> bool {
-    value
-        .bytes()
-        .all(|byte| byte.is_ascii_digit() || matches!(byte, b'a'..=b'f'))
-}
-
-fn orphaned_codes(managed: &[ShortLinkRecord], active: &[ShortLinkRecord]) -> Vec<String> {
-    let active_codes = active
-        .iter()
-        .map(|record| record.code.as_str())
-        .collect::<BTreeSet<_>>();
-
-    managed
-        .iter()
-        .filter(|record| !active_codes.contains(record.code.as_str()))
-        .map(|record| record.code.clone())
-        .collect()
-}
-
-fn write_redirect_pages(root: &Path, redirects: &[RedirectRecord]) -> Result<()> {
-    for redirect in redirects {
-        write_redirect_page(root, redirect)?;
-    }
-
-    Ok(())
-}
-
-fn write_redirect_page(root: &Path, redirect: &RedirectRecord) -> Result<()> {
-    validate_code(&redirect.code)?;
-    validate_slug(&redirect.target_slug)?;
-
-    let redirect_dir = root.join(&redirect.code);
-    ensure_directory_beneath(root, &redirect_dir)?;
-
-    let redirect_path = redirect_dir.join("index.html");
-    reject_symlink_or_directory(&redirect_path)?;
-
-    let redirect_html = render_redirect_html(&article_redirect_target(redirect));
-    fs::write(&redirect_path, redirect_html)
-        .with_context(|| format!("failed to write {}", redirect_path.display()))
-}
-
-fn article_redirect_target(redirect: &RedirectRecord) -> String {
-    let source_path = format!("/{SHORT_LINK_DIRECTORY}/{}/", redirect.code);
-    let source_param = encode_query_value(&source_path);
-    format!("/articles/{}?from={}", redirect.target_slug, source_param)
-}
-
-fn remove_redirect_directories(root: &Path, codes: &[String]) -> Result<()> {
-    for code in codes {
-        remove_redirect_directory(root, code)?;
-    }
-
-    Ok(())
-}
-
-fn remove_redirect_directory(root: &Path, code: &str) -> Result<()> {
-    validate_code(code)?;
-    let path = root.join(code);
-
-    match fs::symlink_metadata(&path) {
-        Ok(metadata) if metadata.file_type().is_symlink() => {
-            bail!("refusing to remove symlinked redirect {}", path.display())
-        }
-        Ok(metadata) if metadata.is_dir() => fs::remove_dir_all(&path)
-            .with_context(|| format!("failed to remove {}", path.display())),
-        Ok(_) => bail!("{} exists but is not a directory", path.display()),
-        Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
-        Err(error) => Err(error).with_context(|| format!("failed to inspect {}", path.display())),
-    }
-}
-
-fn render_redirect_html(target_path: &str) -> String {
-    let escaped_attribute = escape_html(target_path, true);
-    let escaped_text = escape_html(target_path, false);
-    let js_target = serde_json::to_string(target_path)
-        .expect("serializing a string cannot fail")
-        .replace('<', "\\u003c");
-
-    format!(
-        "<!doctype html>\n\
-<html lang=\"en\">\n\
-<head>\n\
-  <meta charset=\"utf-8\">\n\
-  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n\
-  <meta name=\"robots\" content=\"noindex\">\n\
-  <title>Redirecting...</title>\n\
-  <meta http-equiv=\"refresh\" content=\"0; url={escaped_attribute}\">\n\
-  <link rel=\"canonical\" href=\"{escaped_attribute}\">\n\
-  <script>window.location.replace({js_target})</script>\n\
-</head>\n\
-<body>\n\
-  <p>Redirecting to <a href=\"{escaped_attribute}\">{escaped_text}</a>.</p>\n\
-</body>\n\
-</html>\n"
-    )
-}
-
-fn escape_html(value: &str, escape_quotes: bool) -> String {
-    let mut output = String::with_capacity(value.len());
-
-    for character in value.chars() {
-        match character {
-            '&' => output.push_str("&amp;"),
-            '<' => output.push_str("&lt;"),
-            '>' => output.push_str("&gt;"),
-            '"' if escape_quotes => output.push_str("&quot;"),
-            '\'' if escape_quotes => output.push_str("&#39;"),
-            _ => output.push(character),
-        }
-    }
-
-    output
-}
-
-fn load_manifest(path: &Path) -> Result<ShortLinkManifest> {
-    recover_atomic_file(path)?;
-    if !path.exists() {
-        return Ok(ShortLinkManifest::default());
-    }
-
-    let manifest: ShortLinkManifest = managed_json::load(path)?;
-
-    validate_manifest(&manifest)
-        .with_context(|| format!("invalid short-link manifest {}", path.display()))?;
-
-    Ok(manifest)
-}
-
-fn save_manifest(path: &Path, manifest: &ShortLinkManifest) -> Result<()> {
-    validate_manifest(manifest)?;
-
-    managed_json::save_pretty(path, manifest)
+    Ok(format!(
+        "{}{}{}",
+        &markdown[..range.content_start],
+        rendered,
+        &markdown[range.content_end..]
+    ))
 }
 
 #[cfg(test)]

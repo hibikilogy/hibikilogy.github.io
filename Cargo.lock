@@ -561,6 +561,7 @@ dependencies = [
  "skera",
  "tempfile",
  "toml",
+ "toml_edit",
  "url",
  "walkdir",
  "woofwoof",

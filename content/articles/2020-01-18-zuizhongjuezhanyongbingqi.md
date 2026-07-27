@@ -2,7 +2,7 @@
 title = "《北宇治高中吹奏部历代政治得失》 最终决战用兵器"
 date = "2020-01-18"
 
-aliases = ["/2020/01/18/zuizhongjuezhanyongbingqi/"]
+aliases = ["/2020/01/18/zuizhongjuezhanyongbingqi/", "/s/20686/"]
 [taxonomies]
 tags = ["bilibili", "加藤叶月", "黄前久美子", "川岛绿辉", "黄前十五年"]
 author = ["LL教皇"]

@@ -2,7 +2,7 @@
 title = "小说《吹响吧！上低音号》久三年时间线整理与研究"
 date = "2024-11-08"
 
-aliases = ["/2024/11/08/KumikoIII_timeline/"]
+aliases = ["/2024/11/08/KumikoIII_timeline/", "/s/24446/"]
 [taxonomies]
 tags = [ "黄前久美子", "川岛绿辉", "加藤叶月", "高坂丽奈", "黑江真由", "久石奏", "剑崎梨梨花", "月永求", "铃木美玲", "铃木皋月", "冢本秀一", "釜屋燕", "小日向梦", "义井沙里", "釜屋雀", "上石弥生", "针谷佳穗", "老师", "佐佐木梓", "名濑雨未华", "武田绫乃", "黄前十七年", "bilibili"]
 author = [ "DreamEupho Team（WonderKindom，晓陆sylph，崎岖山翁，谐波回响HyperEupho）"]

@@ -2,7 +2,7 @@
 title = "从京吹3第12集谈“什么才是特别的人？”"
 date = "2024-06-28"
 
-aliases = ["/2024/06/28/who_is_Special/"]
+aliases = ["/2024/06/28/who_is_Special/", "/s/24539/"]
 [taxonomies]
 tags = ["黄前久美子", "高坂丽奈", "黑江真由", "老师", "中世古香织", "黄前十七年", "知乎"]
 author = ["Hao Lee"]

@@ -86,9 +86,6 @@ jobs:
       - name: Rewrite site artifacts
         run: pnpm build:rewrite-artifacts
 
-      - name: Generate short links
-        run: pnpm build:short-links
-
       - name: Export Markdown routes
         run: pnpm build:markdown
 

@@ -2,7 +2,7 @@
 title = "基于人物对话的“部长失格”事件动画改编分析"
 date = "2024-06-30"
 
-aliases = ["/2024/06/30/Analysis_of_the_Adaptation/"]
+aliases = ["/2024/06/30/Analysis_of_the_Adaptation/", "/s/24633/"]
 [taxonomies]
 tags = ["黄前久美子", "高坂丽奈", "冢本秀一", "加藤叶月", "川岛绿辉", "黄前十七年"]
 author = ["琉璃终究成烬"]

@@ -2,7 +2,7 @@
 title = "青鸟行"
 date = "2024-11-16"
 
-aliases = ["/2024/11/16/Qingniaoxing/"]
+aliases = ["/2024/11/16/Qingniaoxing/", "/s/24974/"]
 [taxonomies]
 tags = [ "伞木希美", "铠冢霙", "利兹与青鸟", "黄前十六年", "文言"]
 author = [ "HC"]

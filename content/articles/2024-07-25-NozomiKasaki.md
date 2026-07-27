@@ -2,7 +2,7 @@
 title = "评析伞木希美"
 date = "2024-07-25"
 
-aliases = ["/2024/07/25/NozomiKasaki/"]
+aliases = ["/2024/07/25/NozomiKasaki/", "/s/24749/"]
 [taxonomies]
 tags = [ "伞木希美", "铠冢霙", "利兹与青鸟", "黄前十四年"]
 author = [ "陶建国"]

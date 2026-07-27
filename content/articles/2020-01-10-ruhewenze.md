@@ -2,7 +2,7 @@
 title = "北宇治高中吹奏乐部止步关西大赛，如何问责？"
 date = "2020-01-10"
 
-aliases = ["/2020/01/10/ruhewenze/"]
+aliases = ["/2020/01/10/ruhewenze/", "/s/20194/"]
 [taxonomies]
 tags = ["虎扑"]
 author = ["巫卫兵"]

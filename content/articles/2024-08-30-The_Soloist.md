@@ -2,7 +2,7 @@
 title = "论《一年之诗》秋之章独奏之争，究竟谁更胜一筹？"
 date = "2024-08-30"
 
-aliases = ["/2024/08/30/The_Soloist/"]
+aliases = ["/2024/08/30/The_Soloist/", "/s/24468/"]
 [taxonomies]
 tags = [ "黄前久美子", "黑江真由", "高坂丽奈", "黄前十七年"]
 author = [ "阿奈"]

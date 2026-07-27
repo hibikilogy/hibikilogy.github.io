@@ -2,7 +2,7 @@
 title = "《北宇治高中吹奏部历代政治得失》“三香主义“的背后"
 date = "2020-04-16"
 
-aliases = ["/2020/04/16/sanxiangzhuyi_debeihou/"]
+aliases = ["/2020/04/16/sanxiangzhuyi_debeihou/", "/s/20259/"]
 [taxonomies]
 tags = ["bilibili", "小笠原晴香", "中世古香织", "黄前久美子", "冢本秀一", "高坂丽奈", "黄前十五年", "黄前十七年"]
 author = ["LL教皇"]

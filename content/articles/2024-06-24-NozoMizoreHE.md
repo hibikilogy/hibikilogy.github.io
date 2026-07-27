@@ -2,7 +2,7 @@
 title = "伞霙he——易碎的美好"
 date = "2024-06-24"
 
-aliases = ["/2024/06/24/NozoMizoreHE/"]
+aliases = ["/2024/06/24/NozoMizoreHE/", "/s/24031/"]
 [taxonomies]
 tags = ["伞木希美", "铠冢霙", "利兹与青鸟", "bilibili"]
 author = ["SimiOVO"]

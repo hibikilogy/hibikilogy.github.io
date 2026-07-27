@@ -20,7 +20,7 @@ on:
       - 'vercel.json'
 
   pull_request:
-    branches: [next, main, dev]
+    branches: [next, main, dev, Refactor/zola]
     types: [opened, synchronize, reopened]
     paths-ignore:
       - '*.md'

@@ -2,7 +2,7 @@
 title = "从现实主义与理想主义的角度试析京吹三的“神鬼二象性”"
 date = "2024-07-01"
 
-aliases = ["/2024/07/01/Realism&Idealism/"]
+aliases = ["/2024/07/01/Realism&Idealism/", "/s/24487/"]
 [taxonomies]
 tags = [ "黄前久美子", "高坂丽奈", "黑江真由", "老师", "武田绫乃", "黄前十七年"]
 author = [ "夕墨"]

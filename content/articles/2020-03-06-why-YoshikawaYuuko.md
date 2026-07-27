@@ -1,7 +1,7 @@
 +++
 title = "吉川优子"
 date = "2020-03-06"
-aliases = ["/2020/03/06/why-YoshikawaYuuko/"]
+aliases = ["/2020/03/06/why-YoshikawaYuuko/", "/s/20831/"]
 description = "北宇治吹奏乐部最伟大的部长"
 
 [taxonomies]

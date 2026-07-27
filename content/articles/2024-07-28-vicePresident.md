@@ -2,7 +2,7 @@
 title = "北宇治三任副部长治部特点及形成原因初探"
 date = "2024-07-28"
 
-aliases = ["/2024/07/28/vicePresident/"]
+aliases = ["/2024/07/28/vicePresident/", "/s/24216/"]
 [taxonomies]
 tags = [ "田中明日香", "中川夏纪", "冢本秀一", "黄前十四年", "黄前十五年", "黄前十六年", "黄前十七年"]
 author = [ "陶建国"]

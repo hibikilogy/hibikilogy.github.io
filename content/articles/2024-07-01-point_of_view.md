@@ -2,7 +2,7 @@
 title = "她的眼中，究竟映照出了什么呢？"
 date = "2024-07-01"
 
-aliases = ["/2024/07/01/point_of_view/"]
+aliases = ["/2024/07/01/point_of_view/", "/s/24015/"]
 [taxonomies]
 tags = ["黄前久美子", "黄前十五年", "黄前十六年", "黄前十七年", "理论天地"]
 author = ["兰鹤"]

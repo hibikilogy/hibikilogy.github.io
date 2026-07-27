@@ -2,7 +2,7 @@
 title = "新南中派系的重振：黄前十八、十九年领导班子的确立"
 date = "2024-04-27"
 
-aliases = ["/2024/04/27/xinnanzhongpaixi/"]
+aliases = ["/2024/04/27/xinnanzhongpaixi/", "/s/24650/"]
 [taxonomies]
 tags = ["南中", "伞木希美", "北山泰瑠", "义井沙里", "釜屋雀", "剑崎梨梨花", "久石奏", "bilibili", "黄前十七年", "黄前十八年", "黄前十九年"]
 author = ["MT德意松"]

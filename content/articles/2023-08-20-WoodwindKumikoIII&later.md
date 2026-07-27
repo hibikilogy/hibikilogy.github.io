@@ -2,7 +2,7 @@
 title = "从长笛&双簧的新一代组合看久三年及后黄前时期北宇治木管阵容实力"
 date = "2023-08-20"
 
-aliases = ["/2023/08/20/WoodwindKumikoIII&later/"]
+aliases = ["/2023/08/20/WoodwindKumikoIII&later/", "/s/23434/"]
 [taxonomies]
 tags = ["豆瓣", "剑崎梨梨花", "伞木希美", "鸟冢宏音", "山根都美贵", "井上调", "黄前十六年", "黄前十七年", "合奏比赛"]
 author = ["亲爱的猥琐猪"]

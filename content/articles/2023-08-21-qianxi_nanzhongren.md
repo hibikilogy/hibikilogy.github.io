@@ -1,7 +1,7 @@
 +++
 title = "浅析南中人在北宇治的过去、现在和未来"
 date = "2023-08-21"
-aliases = ["/qianxi_nanzhongren/", "/2023/08/21/qianxi_nanzhongren/"]
+aliases = ["/qianxi_nanzhongren/", "/2023/08/21/qianxi_nanzhongren/", "/s/23391/"]
 
 [taxonomies]
 tags = ["bilibili", "南中", "伞木希美", "吉川优子", "中川夏纪", "铠冢霙", "铃木美玲", "黄前十四年", "黄前十六年", "黄前十七年"]

@@ -1,7 +1,7 @@
 +++
 title = "副部长中川夏纪答校内外记者问"
 date = "2023-12-22"
-aliases = ["/2023/12/22/Press_Conference/"]
+aliases = ["/2023/12/22/Press_Conference/", "/s/23663/"]
 description = "黄前十六年北高祭记者会_北宇治高校网直播（节选）"
 
 [taxonomies]

@@ -1,7 +1,7 @@
 +++
 title = "或缺的主题：再无“高扬感”，徒留“不甘心”"
 date = "2024-07-01"
-aliases = ["/2024/07/01/Euphoria&Frustrated/"]
+aliases = ["/2024/07/01/Euphoria&Frustrated/", "/s/24962/"]
 description = "——评京吹3音乐元素的缺位"
 
 [taxonomies]

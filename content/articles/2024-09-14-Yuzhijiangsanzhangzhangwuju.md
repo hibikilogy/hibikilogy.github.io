@@ -2,7 +2,7 @@
 title = "宇治江三章章五句"
 date = "2024-09-14"
 
-aliases = ["/2024/09/14/Yuzhijiangsanzhangzhangwuju/"]
+aliases = ["/2024/09/14/Yuzhijiangsanzhangzhangwuju/", "/s/24476/"]
 [taxonomies]
 tags = [ "黄前久美子", "高坂丽奈", "冢本秀一", "文言"]
 author = [ "山中幽士"]

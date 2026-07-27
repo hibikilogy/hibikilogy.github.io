@@ -2,7 +2,7 @@
 title = "论明日香的传位顾虑与隔代指认事"
 date = "2024-04-08"
 
-aliases = ["/2024/04/08/gedaizhirenshi/"]
+aliases = ["/2024/04/08/gedaizhirenshi/", "/s/24477/"]
 [taxonomies]
 tags = ["黄前久美子", "田中明日香", "吉川优子", "中川夏纪", "伞木希美", "铠冢霙", "文言", "bilibili", "黄前十五年", "黄前十六年"]
 author = ["EuphoriaHysteria"]

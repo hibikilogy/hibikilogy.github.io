@@ -2,7 +2,7 @@
 title = "宇治·悲望川"
 date = "2024-09-21"
 
-aliases = ["/2024/09/21/Beiwangchuan/"]
+aliases = ["/2024/09/21/Beiwangchuan/", "/s/24142/"]
 [taxonomies]
 tags = [ "黄前久美子", "高坂丽奈", "黑江真由", "黄前十七年", "文言"]
 author = [ "阿奈"]

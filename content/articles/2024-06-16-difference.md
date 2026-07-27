@@ -2,7 +2,7 @@
 title = "从京吹3第11集谈黑江真由与黄前久美子的分歧"
 date = "2024-06-16"
 
-aliases = ["/2024/06/16/difference/"]
+aliases = ["/2024/06/16/difference/", "/s/24107/"]
 [taxonomies]
 tags = ["黄前久美子", "黑江真由", "黄前十七年", "知乎"]
 author = ["Hao Lee"]

@@ -2,7 +2,7 @@
 title = "为什么历史选择了铃木美玲——久四年领队提名"
 date = "2024-05-27"
 
-aliases = ["/2024/05/27/WhyMireiSuzuki/"]
+aliases = ["/2024/05/27/WhyMireiSuzuki/", "/s/24833/"]
 [taxonomies]
 tags = ["铃木美玲", "小日向梦", "北山泰瑠", "黄前十八年", "贴吧"]
 author = ["迁尺亦"]

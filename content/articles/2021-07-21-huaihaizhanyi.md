@@ -2,7 +2,7 @@
 title = "黄前部长在全国大赛前首席会议上的讲话"
 date = "2021-07-21"
 
-aliases = ["/2021/07/21/huaihaizhanyi/"]
+aliases = ["/2021/07/21/huaihaizhanyi/", "/s/21126/"]
 [taxonomies]
 tags = ["bilibili", "黄前久美子", "黄前十七年", "改编"]
 author = ["幻羽天命"]

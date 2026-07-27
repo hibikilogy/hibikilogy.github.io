@@ -1,7 +1,7 @@
 +++
 title = "为什么剑崎梨梨花是北宇治吹奏部的下届部长？"
 date = "2020-02-06"
-aliases = ["/2020/02/06/weishenmelishixuanzeleririka/"]
+aliases = ["/2020/02/06/weishenmelishixuanzeleririka/", "/s/20762/"]
 description = "——驳《为什么历史选择了久石奏》"
 
 [taxonomies]

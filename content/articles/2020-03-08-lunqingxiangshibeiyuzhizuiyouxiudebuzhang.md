@@ -1,7 +1,7 @@
 +++
 title = "论晴香是北宇治最优秀的部长"
 date = "2020-03-08"
-aliases = ["/2020/03/08/lunqingxiangshibeiyuzhizuiyouxiudebuzhang/"]
+aliases = ["/2020/03/08/lunqingxiangshibeiyuzhizuiyouxiudebuzhang/", "/s/20516/"]
 slug = "haruka-best-prez"
 description = "为亚撒西的工具人正名"
 

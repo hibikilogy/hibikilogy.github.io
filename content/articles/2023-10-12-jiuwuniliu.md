@@ -2,7 +2,7 @@
 title = "北宇治大事件分析——“久五逆流”"
 date = "2023-10-12"
 
-aliases = ["/2023/10/12/jiuwuniliu/"]
+aliases = ["/2023/10/12/jiuwuniliu/", "/s/23574/"]
 [taxonomies]
 tags = ["bilibili", "义井沙里", "黄前久美子", "釜屋雀", "剑崎梨梨花", "高坂丽奈", "黄前十七年"]
 author = ["WonderKindom"]

@@ -2,7 +2,7 @@
 title = "后黄前时代北宇治吹奏部中枢政局初探"
 date = "2020-02-27"
 
-aliases = ["/2020/02/27/postKumikochutan/"]
+aliases = ["/2020/02/27/postKumikochutan/", "/s/20240/"]
 [taxonomies]
 tags = ["贴吧", "剑崎梨梨花", "久石奏", "北山泰瑠", "黄前十七年", "黄前十八年"]
 author = ["尼尔斯哀因斯坦"]

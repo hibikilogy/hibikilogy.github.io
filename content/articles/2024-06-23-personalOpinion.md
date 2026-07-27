@@ -2,7 +2,7 @@
 title = "关于久三年全国赛上低音号选拔的音乐表现，一位中音二胡手的个人愚见"
 date = "2024-06-23"
 
-aliases = ["/2024/06/23/personalOpinion/"]
+aliases = ["/2024/06/23/personalOpinion/", "/s/24391/"]
 [taxonomies]
 tags = ["黄前久美子", "高坂丽奈", "黑江真由", "黄前十七年", "bilibili"]
 author = ["喜欢蛋白质的RNA"]

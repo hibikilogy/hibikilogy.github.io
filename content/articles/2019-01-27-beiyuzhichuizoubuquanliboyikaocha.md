@@ -2,7 +2,7 @@
 title = "北宇治吹奏部权力博弈考察"
 date = "2019-01-27"
 
-aliases = ["/2019/01/27/beiyuzhichuizoubuquanliboyikaocha/"]
+aliases = ["/2019/01/27/beiyuzhichuizoubuquanliboyikaocha/", "/s/19420/"]
 slug = "kitauji-power-play"
 [taxonomies]
 tags = ["Stage1", "黄前十五年", "黄前十六年", "小笠原晴香", "中世古香织", "斋藤葵", "伞木希美"]

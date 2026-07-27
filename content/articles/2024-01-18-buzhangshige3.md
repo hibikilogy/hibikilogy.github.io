@@ -1,7 +1,7 @@
 +++
 title = "北宇治问责？！——“部长失格”黑江真由篇"
 date = "2024-01-18"
-aliases = ["/2024/01/18/buzhangshige3/"]
+aliases = ["/2024/01/18/buzhangshige3/", "/s/24642/"]
 description = "黑江真由的内心"
 
 [taxonomies]

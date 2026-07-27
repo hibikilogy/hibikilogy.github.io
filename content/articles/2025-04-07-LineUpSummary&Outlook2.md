@@ -1,7 +1,7 @@
 +++
 title = "北宇治高中吹奏乐部三年出场阵容得失谈及黄前十八年阵容展望（下）"
 date = "2025-04-07"
-aliases = ["/LineUpSummary&Outlook2/", "/2025/04/07/LineUpSummary&Outlook2/"]
+aliases = ["/LineUpSummary&Outlook2/", "/2025/04/07/LineUpSummary&Outlook2/", "/s/25028/"]
 
 [taxonomies]
 tags = [ "高久智惠里", "山根都美贵", "黄前十七年", "黄前十八年", "bilibili"]
