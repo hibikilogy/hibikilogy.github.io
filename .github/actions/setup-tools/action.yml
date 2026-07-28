@@ -17,6 +17,9 @@ inputs:
   llvm-cov:
     description: 'Install cargo-llvm-cov'
     default: 'false'
+  sccache:
+    description: 'Install and enable sccache for Rust compilation caching'
+    default: 'false'
   cache-shared-key:
     description: 'Shared Rust cache key'
     default: ''
@@ -49,6 +52,20 @@ runs:
     - name: Cache Rust artifacts
       if: inputs.rust == 'true' && inputs.cache-shared-key == ''
       uses: Swatinem/rust-cache@v2
+
+    - name: Install sccache
+      if: inputs.sccache == 'true'
+      uses: taiki-e/install-action@v2
+      with:
+        tool: sccache
+        fallback: none
+
+    - name: Configure sccache
+      if: inputs.sccache == 'true'
+      shell: bash
+      run: |
+        echo 'RUSTC_WRAPPER=sccache' >> "$GITHUB_ENV"
+        echo 'SCCACHE_GHA_ENABLED=true' >> "$GITHUB_ENV"
 
     - name: Setup Rust toolchain
       if: inputs.rust == 'true'

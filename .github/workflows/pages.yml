@@ -12,6 +12,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write
 
 concurrency:
   group: pages
@@ -34,6 +35,7 @@ jobs:
           node: 'true'
           rust: 'true'
           zola: 'true'
+          sccache: 'true'
           cache-shared-key: site-build
 
       - name: Build TypeScript (vite)

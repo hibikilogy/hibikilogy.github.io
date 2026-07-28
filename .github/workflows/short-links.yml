@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: short-links-${{ github.event_name == 'pull_request' && github.head_ref || github.ref_name }}
@@ -47,6 +48,7 @@ jobs:
         uses: ./.github/actions/setup-tools
         with:
           rust: 'true'
+          sccache: 'true'
           cache-shared-key: short-links
 
       - name: Synchronize and push short-link aliases

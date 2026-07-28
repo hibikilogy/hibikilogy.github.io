@@ -31,6 +31,7 @@ jobs:
           node: 'true'
           rust: 'true'
           zola: 'true'
+          sccache: 'true'
           cache-shared-key: site-build
 
       - name: Build TypeScript (vite)

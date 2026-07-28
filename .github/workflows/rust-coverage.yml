@@ -29,6 +29,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: rust-coverage-${{ github.event.pull_request.number || github.ref }}
@@ -49,6 +50,7 @@ jobs:
           rust: 'true'
           nextest: 'true'
           llvm-cov: 'true'
+          sccache: 'true'
 
       - name: Generate Rust coverage
         run: cargo llvm-cov nextest --locked --all-features --config-file nextest.toml --profile ci --lcov --output-path target/lcov.info

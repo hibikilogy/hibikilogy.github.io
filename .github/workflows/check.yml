@@ -38,6 +38,7 @@ on:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: check-${{ github.event.pull_request.number || github.ref }}
@@ -62,6 +63,7 @@ jobs:
           rust: 'true'
           zola: 'true'
           nextest: 'true'
+          sccache: 'true'
 
       # pnpm lint 会先生成模板引用的 Vite CSS，再运行 zola check
       - name: Zola Check
@@ -75,6 +77,22 @@ jobs:
 
       - name: Vitest
         run: pnpm test:ts
+
+      - name: Check Rust file changes
+        uses: dorny/paths-filter@v3
+        id: rust-changes
+        with:
+          filters: |
+            rust:
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+              - 'rust-toolchain.toml'
+              - 'nextest.toml'
+              - 'rustfmt.toml'
+              - 'scripts/**/*.rs'
+              - 'scripts/**/Cargo.toml'
+              - '.github/workflows/check.yml'
+              - '.github/actions/setup-tools/action.yml'
 
       - name: Build title font subset
         run: pnpm build:subset-titlefont
@@ -94,13 +112,17 @@ jobs:
         run: cargo run --locked --bin deploy-markdown -- --config config.toml --base-url "${MARKDOWN_BASE_URL}"
 
       - name: Check Rust formatting
+        if: steps.rust-changes.outputs.rust == 'true'
         run: cargo fmt --all -- --check
 
       - name: Run Rust Clippy
+        if: steps.rust-changes.outputs.rust == 'true'
         run: cargo clippy --locked --all-targets --all-features -- -D warnings
 
       - name: Run Rust tests
+        if: steps.rust-changes.outputs.rust == 'true'
         run: cargo nextest run --locked --all-features --config-file nextest.toml --profile ci
 
       - name: Run Rust doctests
+        if: steps.rust-changes.outputs.rust == 'true'
         run: cargo test --locked --all-features --doc
