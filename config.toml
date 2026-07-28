@@ -78,6 +78,8 @@ taxonomies = "on"
 [extra]
 # Theme configuration overrides
 article_section = "articles/_index.md"
+# Production base URL used to detect non-production builds for the dev banner
+production_base_url = "https://hibikilogy.github.io/"
 stylesheets = [
   "styles/uno.css",
   "styles/source-han-serif-cn-vf.css",

@@ -215,7 +215,7 @@
             {% endblock %}
 
             {% block pagination %}
-            {{ pagination::main() }}
+              {{ pagination::main() }}
             {% endblock %}
           </main>
 
@@ -223,7 +223,7 @@
           {% if slot is defined %}
           {% block slot %}{% endblock %}
           {% else %}
-          {{ footer::main() }}
+            {{ footer::main() }}
           {% endif %}
           {% endblock %}
         </div>
@@ -239,6 +239,28 @@
 
   {% block custom_js %}
   {% endblock %}
+
+  {% if config.extra.production_base_url and config.base_url != config.extra.production_base_url %}
+  {% set commit_hash = get_env(name="GIT_HASH", default="") %}
+  {% set commit_msg = get_env(name="GIT_MESSAGE", default="") %}
+  {% set build_date = now() | date(format="%m-%d %H:%M") %}
+
+  {% set prefix = "" %}
+  {% if commit_msg %}
+    {% set prefix = commit_msg %}
+    {% if commit_hash %}
+      {% set prefix = prefix ~ " - " ~ commit_hash %}
+    {% endif %}
+    {% set prefix = prefix ~ " · " %}
+  {% elif commit_hash %}
+    {% set prefix = commit_hash ~ " · " %}
+  {% endif %}
+
+  <div class="text-#2076df opacity-30 pointer-events-none text-right font-bold fixed bottom-[10px] right-[10px] z-50" aria-hidden="true">
+    <div>开发预览版本不代表最终效果</div>
+    <div class="text-[13px] font-normal">{{ prefix ~ build_date }}</div>
+  </div>
+  {% endif %}
 </body>
 
 </html>
