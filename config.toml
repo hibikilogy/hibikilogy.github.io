@@ -108,7 +108,7 @@ footer = [
     { text = "京吹学报", link = "$BASE_URL" },
     { text = "加入我们", link = "$BASE_URLdocs/join-us" },
     { text = "RSS", link = "$BASE_URLatom.xml" },
-    { text = "GitHub", link = "https://github.com/hibikilogy/hibikilogy.github.io" },
+    { text = "GitHub", link = "https://github.com/hibikilogy/hibikilogy.github.io/tree/Refactor/zola" },
   ], frendlinks = [
     { text = "中国珂学院维基", link = "https://wiki.sukasuka.cn/" },
     { text = "粳米团子", link = "https://kyoani.cn/" },
