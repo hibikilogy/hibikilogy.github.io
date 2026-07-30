@@ -14,9 +14,11 @@
     will-change: translate;
     transition:
       background-color var(--duration-very-slow),
-      translate var(--duration-fast) var(--ease-standard);
+      translate var(--duration-fast) var(--ease-standard),
+      border-color var(--duration-very-slow);
 
     background-color: var(--joh-c-bg);
+    border-bottom: 1px solid transparent;
 
     @media (--pad) {
       --navbar-hidden-translate: calc(-100% - 8px);
@@ -360,6 +362,10 @@
     .NavBarSocialLink {
       cursor: default;
     }
+  }
+
+  .NavBar:not(.top) {
+    border-bottom-color: var(--joh-c-gutter);
   }
 
   .NavBar.scrolling-down:not(.open):not(:focus-within) {
