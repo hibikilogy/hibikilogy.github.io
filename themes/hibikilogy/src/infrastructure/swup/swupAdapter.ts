@@ -1,10 +1,10 @@
 import SwupBodyClassPlugin from '@swup/body-class-plugin'
 import SwupGaPlugin from '@swup/ga-plugin'
 import SwupHeadPlugin from '@swup/head-plugin'
-import SwupPreloadPlugin from '@swup/preload-plugin'
 import SwupScrollPlugin from '@swup/scroll-plugin'
 import Swup from 'swup'
 import { HIBIKILOGY_CONFIG } from 'virtual:hibikilogy-config'
+import { isPageNavigationUrl } from './navigationRules.ts'
 
 export function createSwup(): Swup {
   const gaId = HIBIKILOGY_CONFIG.analyticsGoogle
@@ -14,13 +14,16 @@ export function createSwup(): Swup {
     cache: true,
     animateHistoryBrowsing: true,
     animationSelector: false,
+    // Uncached visits hold the transition until content arrives
+    // (`visit.animation.wait`); a hung fetch must fall back to a native load
+    // instead of stalling the page forever.
+    timeout: 15_000,
     linkSelector: 'a[href]:not([target="_blank"]):not([download]):not([href^="#"]):not([href^="mailto:"]):not([href^="tel:"]):not([href^="javascript:"])',
     ignoreVisit: (url, { el } = {}) => {
       if (el?.closest('[data-no-swup]'))
         return true
 
-      const targetUrl = new URL(url, window.location.href)
-      return targetUrl.origin !== window.location.origin
+      return !isPageNavigationUrl(url, window.location.href)
     },
   })
 
@@ -39,13 +42,6 @@ export function createSwup(): Swup {
       betweenPages: false,
       samePageWithHash: false,
       samePage: false,
-    },
-  }))
-
-  swup.use(new SwupPreloadPlugin({
-    preloadVisibleLinks: {
-      threshold: 0.2,
-      delay: 300,
     },
   }))
 
