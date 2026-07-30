@@ -230,8 +230,11 @@
     --joh-font-family-base:
       'Source Han Sans SC VF', 'Source Han Serif SC VF', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
       'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    --joh-font-family-serif: 'Source Han Serif CN VF', 'Times New Roman';
+    --joh-font-family-serif:
+      'Source Han Serif CN VF', 'Source Han Serif SC', '思源宋体', 'Noto Serif CJK SC', 'Noto Serif SC', 'Songti SC',
+      'STSong', 'SimSun', 'NSimSun', 'Times New Roman', serif;
     --joh-font-family-mono: ui-monospace, 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', monospace;
+    font-synthesis-weight: auto;
     font-optical-sizing: auto;
   }
 
