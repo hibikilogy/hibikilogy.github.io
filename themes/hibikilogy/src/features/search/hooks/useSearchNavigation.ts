@@ -12,6 +12,18 @@ function isEditableTarget(target: EventTarget | null): boolean {
   )
 }
 
+export function scheduleIdleSearchPreload(service: SearchService): void {
+  if (!('requestIdleCallback' in window))
+    return
+
+  requestIdleCallback(() => {
+    void Promise.all([
+      preloadSearchPage(),
+      service.preload(),
+    ]).catch(() => {})
+  })
+}
+
 export function useSearchNavigation(route: RouteModel, service: SearchService): void {
   function preloadSearch(): void {
     route.preload('/search')

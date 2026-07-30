@@ -1,5 +1,6 @@
 import type { PostTitleTransitionPreparation } from '../ui/post-title-transition/index.ts'
 import type { PageContext } from './types.ts'
+import { scheduleIdleSearchPreload } from '../features/search/hooks/useSearchNavigation.ts'
 import { createSwup } from '../infrastructure/swup/index.ts'
 import { pageDom } from '../shared/dom.ts'
 import {
@@ -143,4 +144,5 @@ export function startApp(): void {
   })
 
   initializePage()
+  scheduleIdleSearchPreload(app.searchService)
 }

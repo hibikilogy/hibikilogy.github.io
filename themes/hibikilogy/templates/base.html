@@ -178,6 +178,10 @@
   {
     "prefetch": [
       {
+        "where": { "href_matches": "/search" },
+        "eagerness": "eager"
+      },
+      {
         "where": {
           "and": [
             { "href_matches": "/*" },
