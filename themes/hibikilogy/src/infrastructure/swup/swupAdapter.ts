@@ -4,6 +4,7 @@ import SwupHeadPlugin from '@swup/head-plugin'
 import SwupScrollPlugin from '@swup/scroll-plugin'
 import Swup from 'swup'
 import { HIBIKILOGY_CONFIG } from 'virtual:hibikilogy-config'
+import { LruPageCache } from './lruPageCache.ts'
 import { isPageNavigationUrl } from './navigationRules.ts'
 
 export function createSwup(): Swup {
@@ -26,6 +27,10 @@ export function createSwup(): Swup {
       return !isPageNavigationUrl(url, window.location.href)
     },
   })
+
+  // swup's own cache is unbounded, its class is not exported, and the field
+  // is typed readonly — swap in the LRU-backed equivalent through a cast.
+  ;(swup as unknown as { cache: LruPageCache }).cache = new LruPageCache(swup)
 
   swup.use(new SwupHeadPlugin({
     persistAssets: true,
