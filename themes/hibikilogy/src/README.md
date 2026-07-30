@@ -53,6 +53,9 @@ PageKind 模块：
 | 状态 | 所有者 |
 |---|---|
 | URL、导航类型和进度 | `useRoute` |
+| 导航进度条 | `useNavigationProgress` |
+| 请求优先级、fetch 延迟样本 | `useNavigationPriority` |
+| 页面预加载队列与在途预加载 | `SwupPagePreloadPlugin` |
 | Navbar、滚动和视口 | `useLayout` |
 | 页面类型 | `usePageData` |
 | 搜索 query、phase、response、error | `useSearch` |
