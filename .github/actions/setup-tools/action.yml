@@ -64,8 +64,12 @@ runs:
       if: inputs.sccache == 'true'
       shell: bash
       run: |
+        # SCCACHE_GHA_ENABLED is intentionally NOT set because ACTIONS_RESULTS_URL
+        # and ACTIONS_RUNTIME_TOKEN are not exposed to bash steps within composite
+        # actions, making the GHA cache backend non-functional. Cross-job caching
+        # is handled by Swatinem/rust-cache (target/); sccache provides intra-job
+        # caching across multiple cargo invocations within a single CI job.
         echo 'RUSTC_WRAPPER=sccache' >> "$GITHUB_ENV"
-        echo 'SCCACHE_GHA_ENABLED=true' >> "$GITHUB_ENV"
 
     - name: Setup Rust toolchain
       if: inputs.rust == 'true'
