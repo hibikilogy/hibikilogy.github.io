@@ -45,7 +45,8 @@
         {% if lang == item.code %}
         {% for nav in item.list %}
         <a class="Link link FooterNavLink" aria-expanded="false" aria-label="menu" role="button"
-          href="{{ data::config_link(link=nav.link) }}" title="{{ data::config_link(link=nav.link) }}" tabindex="0">
+          href="{{ data::config_link(link=nav.link) }}" title="{{ data::config_link(link=nav.link) }}" tabindex="0"
+          {% if nav.type %}type="{{ nav.type }}"{% endif %}>
           <span>{{ nav.text }}</span>
           <span class="icon"></span>
         </a>
