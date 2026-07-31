@@ -17,7 +17,7 @@ beforeEach(() => {
 })
 
 describe('search worker initialize key', () => {
-  it('reuses one engine build when only inline metadata presence differs', async () => {
+  it('reuses one engine build for identical bootstrap data', async () => {
     const { buildSearchEngine } = await import('./index.ts')
     const buildMock = vi.mocked(buildSearchEngine)
     buildMock.mockResolvedValue({ records: [] } as unknown as SearchEngine)
@@ -29,12 +29,8 @@ describe('search worker initialize key', () => {
       tagsDataUrl: '/search-tags/',
     }
 
-    await api.initialize({
-      ...bootstrap,
-      articleMetadataIndex: { '/articles/example/': { s: 'Subtitle' } },
-      tagIndex: [{ name: 'tag', href: '/tags/tag/' }],
-    })
-    await api.initialize({ ...bootstrap })
+    await api.initialize(bootstrap)
+    await api.initialize(bootstrap)
 
     expect(buildMock).toHaveBeenCalledTimes(1)
   })

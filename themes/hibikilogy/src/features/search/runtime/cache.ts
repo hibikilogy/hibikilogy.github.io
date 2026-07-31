@@ -1,6 +1,5 @@
 import type {
   SearchArticleMetadataIndex,
-  SearchEngineBootstrapData,
   SearchEngineCacheEntry,
   SearchEngineCacheStorage,
   SearchTagIndexItem,
@@ -39,7 +38,10 @@ export function getSearchIndexVersion(indexUrl: string): string {
 
 export function createSearchCacheKey(
   indexUrl: string,
-  metadata: Pick<SearchEngineBootstrapData, 'articleMetadataIndex' | 'tagIndex'> = {},
+  metadata: {
+    articleMetadataIndex?: SearchArticleMetadataIndex
+    tagIndex?: SearchTagIndexItem[]
+  } = {},
 ): string {
   return [
     'hibikilogy-search',

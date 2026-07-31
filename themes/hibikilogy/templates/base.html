@@ -173,6 +173,8 @@
   <link rel="prefetch" href="{{ url }}">
   {% endfor %}
 
+  {% block prefetch %}{% endblock %}
+
   {% if not config.mode == "serve" %}
   <script type="speculationrules">
   {

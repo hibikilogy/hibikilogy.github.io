@@ -35,26 +35,27 @@ afterEach(() => {
 })
 
 describe('buildSearchEngine metadata resolution', () => {
-  it('uses inline metadata without fetching the metadata URLs', async () => {
+  it('fetches article metadata and tag index from the bootstrap URLs', async () => {
     const urls = createUrls()
-    const fetchMock = stubFetch({ [urls.indexUrl]: rawIndex })
+    const fetchMock = stubFetch({
+      [urls.indexUrl]: rawIndex,
+      [urls.articlesDataUrl]: articleMetadata,
+      [urls.tagsDataUrl]: tagIndex,
+    })
 
-    const { engine, report } = await buildAndReport(createBootstrap(urls, {
-      articleMetadataIndex: articleMetadata,
-      tagIndex,
-    }))
+    const { engine, report } = await buildAndReport(createBootstrap(urls))
 
     expect(engine.records).toHaveLength(1)
     expect(engine.records[0].subtitle).toBe('Subtitle')
-    expect(fetchMock).toHaveBeenCalledTimes(1)
-    expect(fetchMock).toHaveBeenCalledWith(urls.indexUrl)
+    expect(engine.records[0].tags.map(tag => tag.name)).toEqual(['tag'])
+    expect(fetchMock).toHaveBeenCalledTimes(3)
     expect(report.cacheKey).toBe(createSearchCacheKey(urls.indexUrl, {
       articleMetadataIndex: articleMetadata,
       tagIndex,
     }))
   })
 
-  it('fetches missing metadata from the bootstrap URLs and shares the inline cache key', async () => {
+  it('shares the same cache key between two builds with identical metadata', async () => {
     const urls = createUrls()
     stubFetch({
       [urls.indexUrl]: rawIndex,
@@ -62,17 +63,12 @@ describe('buildSearchEngine metadata resolution', () => {
       [urls.tagsDataUrl]: tagIndex,
     })
 
-    const inline = await buildAndReport(createBootstrap(urls, {
-      articleMetadataIndex: articleMetadata,
-      tagIndex,
-    }))
-    const fetched = await buildAndReport(createBootstrap(urls))
+    const first = await buildAndReport(createBootstrap(urls))
+    const second = await buildAndReport(createBootstrap(urls))
 
-    expect(fetched.engine.records).toHaveLength(1)
-    expect(fetched.engine.records[0].subtitle).toBe('Subtitle')
-    expect(fetched.engine.records[0].tags.map(tag => tag.name)).toEqual(['tag'])
-    expect(fetched.report.cacheKey).toBe(inline.report.cacheKey)
-    expect(fetched.report.cacheKey).toBe(createSearchCacheKey(urls.indexUrl, {
+    expect(second.engine.records).toHaveLength(1)
+    expect(second.report.cacheKey).toBe(first.report.cacheKey)
+    expect(second.report.cacheKey).toBe(createSearchCacheKey(urls.indexUrl, {
       articleMetadataIndex: articleMetadata,
       tagIndex,
     }))

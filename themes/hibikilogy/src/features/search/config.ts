@@ -4,8 +4,6 @@ import { fmt } from './utils.ts'
 
 export const searchPageSize = HIBIKILOGY_CONFIG.searchPageSize
 
-export const searchArticleIndexInlineId = 'hibikilogy-search-articles-data'
-export const searchTagIndexInlineId = 'hibikilogy-search-tags-data'
 export const searchFocusIntentKey = 'search-focus-intent'
 export const searchMessages = {
   indexLoading: HIBIKILOGY_TRANSLATIONS.searchIndexLoading,

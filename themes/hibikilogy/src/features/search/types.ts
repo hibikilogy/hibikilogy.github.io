@@ -183,8 +183,6 @@ export interface SearchEngineBootstrapData {
   articlesDataUrl: string
   tagsDataUrl: string
   debug?: boolean
-  articleMetadataIndex?: SearchArticleMetadataIndex
-  tagIndex?: SearchTagIndexItem[]
 }
 
 export type SearchFuseIndexJson = ReturnType<FuseIndex<SearchRecord>['toJSON']>

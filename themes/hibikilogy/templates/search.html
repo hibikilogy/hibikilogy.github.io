@@ -7,6 +7,14 @@
 {{ build::css(path="styles/layouts/search.css") }}
 {% endblock critical_css %}
 
+{% block prefetch %}
+<link rel="prefetch" href="{{ get_url(path='search-articles/') }}" as="fetch" crossorigin="anonymous">
+<link rel="prefetch" href="{{ get_url(path='search-tags/') }}" as="fetch" crossorigin="anonymous">
+{% if config.build_search_index %}
+<link rel="prefetch" href="{{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) }}" as="fetch" crossorigin="anonymous">
+{% endif %}
+{% endblock %}
+
 {% block class %}
 search
 {% endblock %}
@@ -31,10 +39,4 @@ search
     </section>
   </div>
 </div>
-<script id="hibikilogy-search-articles-data" type="application/json">
-{% include "search-articles.html" %}
-</script>
-<script id="hibikilogy-search-tags-data" type="application/json">
-{% include "search-tags.html" %}
-</script>
 {% endblock %}

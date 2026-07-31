@@ -170,9 +170,6 @@ export async function buildSearchEngine(
 async function resolveArticleMetadataIndex(
   bootstrap: SearchEngineBootstrapData,
 ): Promise<SearchArticleMetadataIndex> {
-  if (bootstrap.articleMetadataIndex)
-    return bootstrap.articleMetadataIndex
-
   const [metadata] = await catchAsyncError(
     () => fetchJsonIndex<SearchArticleMetadataIndex>(bootstrap.articlesDataUrl),
   )
@@ -182,9 +179,6 @@ async function resolveArticleMetadataIndex(
 async function resolveSearchTagIndex(
   bootstrap: SearchEngineBootstrapData,
 ): Promise<SearchTagIndexItem[]> {
-  if (bootstrap.tagIndex)
-    return bootstrap.tagIndex
-
   const [tags] = await catchAsyncError(
     () => fetchJsonIndex<SearchTagIndexItem[]>(bootstrap.tagsDataUrl),
   )

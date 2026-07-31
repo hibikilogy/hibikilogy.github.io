@@ -1,7 +1,4 @@
-import { catchError } from 'shared/result.ts'
-
 const jsonIndexPromises = new Map<string, Promise<unknown>>()
-const inlineJsonIndexes = new Map<string, unknown>()
 
 export { normalizeSearchUrl } from '../utils.ts'
 
@@ -24,33 +21,6 @@ export function fetchJsonIndex<T = unknown>(url: string): Promise<T> {
   }
 
   return jsonIndexPromises.get(url) as Promise<T>
-}
-
-export function readInlineJsonIndex<T>(
-  elementId: string,
-  root: ParentNode = document,
-): T | null {
-  if (inlineJsonIndexes.has(elementId)) {
-    return inlineJsonIndexes.get(elementId) as T
-  }
-
-  if (typeof document === 'undefined')
-    return null
-
-  const element = root.querySelector<HTMLElement>(`#${elementId}`)
-  const text = element?.textContent?.trim()
-  if (!text)
-    return null
-
-  const [parsed, error] = catchError(() => parseJsonIndex(text) as T)
-  if (error) {
-    // eslint-disable-next-line no-console
-    console.warn(`Failed to parse inline JSON index: ${elementId}`, error)
-    return null
-  }
-
-  inlineJsonIndexes.set(elementId, parsed)
-  return parsed
 }
 
 export function parseJsonIndex(text: string): unknown {

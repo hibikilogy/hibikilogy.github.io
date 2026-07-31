@@ -43,7 +43,7 @@ const server = await createServer({
   optimizeDeps: { noDiscovery: true },
   appType: 'custom',
   logLevel: 'error',
-  server: { middlewareMode: true },
+  server: { middlewareMode: true, watch: null },
 })
 
 try {
@@ -51,9 +51,12 @@ try {
   const rawIndex = JSON.parse(
     await readFile(resolve(root, 'public/search_index.zh.json'), 'utf8'),
   ) as RawSearchIndexEntry[]
-  const searchPageHtml = await readFile(resolve(root, 'public/search/index.html'), 'utf8')
-  const articleMetadata = readInlineJson<SearchArticleMetadataIndex>(searchPageHtml, 'hibikilogy-search-articles-data', {})
-  const tagIndex = readInlineJson<SearchTagIndexItem[]>(searchPageHtml, 'hibikilogy-search-tags-data', [])
+  const articleMetadata = JSON.parse(
+    await readFile(resolve(root, 'public/search-articles/index.html'), 'utf8'),
+  ) as SearchArticleMetadataIndex
+  const tagIndex = JSON.parse(
+    await readFile(resolve(root, 'public/search-tags/index.html'), 'utf8'),
+  ) as SearchTagIndexItem[]
 
   const normalizeStart = performance.now()
   const records = engineModule.normalizeSearchRecords(rawIndex, articleMetadata, tagIndex)
@@ -114,15 +117,6 @@ function benchmarkQuery(
     maxMs: round(samples.at(-1) || 0),
     ...(topTitles ? { topTitles } : {}),
   }
-}
-
-function readInlineJson<T>(html: string, id: string, fallback: T): T {
-  const escapedId = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const match = html.match(new RegExp(`<script[^>]+id=["']?${escapedId}["']?[^>]*>([\\s\\S]*?)<\\/script>`, 'i'))
-  if (!match?.[1])
-    return fallback
-
-  return JSON.parse(match[1]) as T
 }
 
 function readPositiveIntegerOption(name: string, fallback: number): number {
