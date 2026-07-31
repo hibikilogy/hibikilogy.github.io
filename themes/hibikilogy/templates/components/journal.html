@@ -17,7 +17,97 @@
 {% macro main(show_frontpage=false, pages=false) %}
 {% if not pages %}
   {% if paginator %}
-    {% set pages = paginator.pages %}
+    {# Even-optimised balanced pagination.
+       Distributes articles in pairs so most pages end up with even
+       counts for the 2-column grid.  At most one page gets an odd size. #}
+
+    {% if term %}
+      {% set all_pages = term.pages %}
+    {% else %}
+      {% set section_path =
+        config.extra.article_section
+        | default(value="articles/_index.md")
+      %}
+      {% set articles_section = get_section(
+        path=section_path,
+        lang=lang
+      ) %}
+      {% set all_pages = articles_section.pages %}
+    {% endif %}
+
+    {% set total = all_pages | length %}
+    {% set pager_count = paginator.number_pagers %}
+    {% set index = paginator.current_index - 1 %}
+
+    {% if pager_count <= 1 %}
+      {% set pages = all_pages %}
+
+    {% elif total != paginator.total_pages %}
+      {% set pages = paginator.pages %}
+
+    {% elif total < pager_count * 2 %}
+      {# Sparse — ordinary balanced distribution. #}
+      {% set base =
+        (total / pager_count)
+        | round(method="floor")
+      %}
+      {% set extra = total % pager_count %}
+
+      {% if index < extra %}
+        {% set page_size = base + 1 %}
+        {% set start = index * page_size %}
+      {% else %}
+        {% set page_size = base %}
+        {% set start =
+          extra * (base + 1)
+          + (index - extra) * base
+        %}
+      {% endif %}
+
+      {% set pages = all_pages | slice(
+        start=start,
+        end=start + page_size
+      ) %}
+
+    {% else %}
+      {# Dense — distribute articles in 2-article pairs. #}
+      {% set pair_total =
+        (total / 2)
+        | round(method="floor")
+      %}
+      {% set pair_base =
+        (pair_total / pager_count)
+        | round(method="floor")
+      %}
+      {% set pair_extra = pair_total % pager_count %}
+      {% set odd = total % 2 %}
+      {% set base_size = pair_base * 2 %}
+
+      {% if index < pair_extra %}
+        {% set page_size = base_size + 2 %}
+        {% set start = index * page_size %}
+
+      {% elif odd == 1 and index == pair_extra %}
+        {% set page_size = base_size + 1 %}
+        {% set start =
+          pair_extra * (base_size + 2)
+        %}
+
+      {% else %}
+        {% set page_size = base_size %}
+        {% set start =
+          pair_extra * (base_size + 2)
+          + odd * (base_size + 1)
+          + (index - pair_extra - odd) * base_size
+        %}
+      {% endif %}
+
+      {% set pages = all_pages | slice(
+        start=start,
+        end=start + page_size
+      ) %}
+    {% endif %}
+
   {% else %}
     {% set pages = section.pages %}
   {% endif %}
@@ -33,26 +123,30 @@
     {% if show_frontpage %}
       <a class="FrontPage Section" aria-label="Logo" href="/">
         {% if config.extra.journal_logo %}
-        {% set logo_svg = load_data(path="static" ~ config.extra.journal_logo, required=false, format="plain") %}
-        {% if logo_svg %}
-        {{ logo_svg | safe }}
-        {% endif %}
+          {% set logo_svg = load_data(
+            path="static" ~ config.extra.journal_logo,
+            required=false,
+            format="plain"
+          ) %}
+          {% if logo_svg %}
+            {{ logo_svg | safe }}
+          {% endif %}
         {% endif %}
       </a>
     {% endif %}
 
+    {# Preload the first cover image found in the first 3 articles. #}
     {% set_global cover_index = -1 %}
     {% set_global cover_preload_src = "" %}
-    {% set_global scan_idx = 0 %}
-    {% for page in pages %}
-      {% if scan_idx < 3 and cover_index == -1 %}
-        {% set cover = page.extra.cover | default(value="") %}
-        {% if cover %}
-          {% set_global cover_index = scan_idx %}
-          {% set_global cover_preload_src = cover %}
-        {% endif %}
+
+    {% for page in pages | slice(start=0, end=3) %}
+      {% set cover = page.extra.cover | default(value="") %}
+
+      {% if cover %}
+        {% set_global cover_index = loop.index0 %}
+        {% set_global cover_preload_src = cover %}
+        {% break %}
       {% endif %}
-      {% set_global scan_idx = scan_idx + 1 %}
     {% endfor %}
 
     {% if cover_preload_src %}
@@ -64,14 +158,12 @@
       >
     {% endif %}
 
-    {% set_global idx = 0 %}
     {% for page in pages %}
       {{ article::main(
         page=page,
         show_cover=true,
-        cover_eager=(idx == cover_index)
+        cover_eager=(loop.index0 == cover_index)
       ) }}
-      {% set_global idx = idx + 1 %}
     {% endfor %}
   </div>
 </div>
