@@ -8,6 +8,7 @@ target/
 *.log
 *.lock
 !Cargo.lock
+!pnpm-lock.yaml
 *.tmp
 *.tmp.*
 log.txt

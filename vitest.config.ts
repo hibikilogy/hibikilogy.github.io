@@ -1,7 +1,7 @@
 import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
-import { hibikilogyConfigPlugin } from './scripts/vite/hibikilogy-config.ts'
+import { hibikilogyConfigPlugin } from './scripts/vite/hibikilogy-config/index.ts'
 
 export default defineConfig({
   resolve: {

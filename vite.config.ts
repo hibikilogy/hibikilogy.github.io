@@ -2,33 +2,12 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import UnoCSS from 'unocss/vite'
 import { defineConfig } from 'vite'
-import { chunkCycleGuardPlugin } from './scripts/vite/chunkCycleGuard'
-import { globEntries } from './scripts/vite/entries'
-import { hibikilogyConfigPlugin } from './scripts/vite/hibikilogy-config'
-import { syncBuildOutputPlugin } from './scripts/vite/syncBuildOutput'
+import { globEntries } from './scripts/vite/entries/index'
+import { hibikilogyConfigPlugin } from './scripts/vite/hibikilogy-config/index'
+import { syncBuildOutputPlugin } from './scripts/vite/sync-build-output/index'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const themedir = (p: string) => resolve(__dirname, 'themes/hibikilogy', p)
-
-function normalizeModuleId(id: string): string {
-  return id.replaceAll('\\', '/')
-}
-
-function isSearchEngineModule(id: string): boolean {
-  const moduleId = normalizeModuleId(id)
-  return moduleId.includes('/node_modules/.pnpm/fuse.js@')
-    || /\/features\/search\/(?:core\/(?:body-match|engine|results)|runtime\/(?:cache|engineBuilder|mainThreadClient))\.ts$/.test(moduleId)
-}
-
-function isSearchPageModule(id: string): boolean {
-  const moduleId = normalizeModuleId(id)
-  return /\/features\/search\/(?:page\/|hooks\/useSearch\.ts$)/.test(moduleId)
-    || moduleId.endsWith('/ui/text-swap.ts')
-}
-
-function isSearchCoreModule(id: string): boolean {
-  return /\/features\/search\/core\/(?:query|tags)\.ts$/.test(normalizeModuleId(id))
-}
 
 export default defineConfig({
   publicDir: false,
@@ -52,7 +31,7 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         'components/index': themedir('components/index.ts'),
-        'search/worker': themedir('src/search/worker.ts'),
+        'search/worker': themedir('src/features/search/runtime/worker.ts'),
         'ui': themedir('src/ui/ui.ts'),
         ...globEntries(themedir('styles'), '.css', (rel, name) => {
           if (rel.startsWith('lib/') || rel.startsWith('base/'))
@@ -76,20 +55,11 @@ export default defineConfig({
             return 'imgs/[name][extname]'
           return 'js/assets/[name][extname]'
         },
-        codeSplitting: {
-          includeDependenciesRecursively: false,
-          groups: [
-            { name: 'search-engine', test: isSearchEngineModule },
-            { name: 'search-page', test: isSearchPageModule },
-            { name: 'search-core', test: isSearchCoreModule },
-          ],
-        },
         strictExecutionOrder: true,
       },
     },
   },
   plugins: [
-    chunkCycleGuardPlugin(),
     syncBuildOutputPlugin({
       destination: themedir('static'),
     }),
