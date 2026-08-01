@@ -5,9 +5,9 @@ import { isAbsolute, relative, resolve } from 'node:path'
 import { brotliCompressSync, gzipSync, constants as zlibConstants } from 'node:zlib'
 import Beasties from 'beasties'
 import { load } from 'cheerio'
-import { deriveStylesheetPublicPath } from './beasties/stylesheetPublicPath.ts'
+import { deriveStylesheetPublicPath } from './stylesheetPublicPath.ts'
 
-const root = resolve(import.meta.dirname, '..')
+const root = resolve(import.meta.dirname, '../..')
 const publicDir = resolve(root, 'public')
 
 const { glob } = await import('tinyglobby')

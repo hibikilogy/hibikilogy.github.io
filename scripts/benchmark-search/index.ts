@@ -1,10 +1,10 @@
-import type { RawSearchIndexEntry, SearchArticleMetadataIndex, SearchResultRecord, SearchTagIndexItem } from '../themes/hibikilogy/src/features/search/types.ts'
+import type { RawSearchIndexEntry, SearchArticleMetadataIndex, SearchResultRecord, SearchTagIndexItem } from '../../themes/hibikilogy/src/features/search/types.ts'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import process from 'node:process'
 import { createServer } from 'vite'
-import { hibikilogyConfigPlugin } from './vite/hibikilogy-config.ts'
+import { hibikilogyConfigPlugin } from '../vite/hibikilogy-config/index.ts'
 
 interface SearchEngineModule {
   createSearchEngine: (records: unknown[]) => unknown
@@ -26,7 +26,7 @@ interface QueryBenchmark {
   topTitles?: string
 }
 
-const root = resolve(import.meta.dirname, '..')
+const root = resolve(import.meta.dirname, '../..')
 const iterations = readPositiveIntegerOption('--iterations', 30)
 const topResultCount = readPositiveIntegerOption('--top', 0)
 const customQueries = process.argv.slice(2).filter(argument => !argument.startsWith('--'))

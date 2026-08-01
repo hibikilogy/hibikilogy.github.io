@@ -12,7 +12,7 @@ import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   syncBuildOutput,
-} from './syncBuildOutput.ts'
+} from './index.ts'
 
 const temporaryDirectories: string[] = []
 
