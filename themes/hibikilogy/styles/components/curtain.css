@@ -29,7 +29,11 @@
     transition-delay: 0ms;
   }
 
-  html[data-search-overlay='active'].is-rendering body::after {
+  /* The blur lifts once the new page is rendered; keyed on the body class
+     (which outlives swup's phase classes) so it stays lifted through
+     `visit:end` instead of snapping back to blur(8px). */
+  html[data-search-overlay='active'][data-search-transition-scope='enter-search'] body.search::after,
+  html[data-search-overlay='active'][data-search-transition-scope='leave-search'] body:not(.search)::after {
     backdrop-filter: blur(0px) saturate(100%);
     transition-duration: var(--duration-quick);
   }

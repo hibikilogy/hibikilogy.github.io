@@ -23,12 +23,16 @@ export function parseCssTime(value: string): number | null {
 
 /** Registry of animation-duration CSS custom properties consumed from JS. */
 export const DURATION_VARS = {
+  quick: '--duration-quick',
   fast: '--duration-fast',
   verySlow: '--duration-very-slow',
   reveal: '--duration-reveal',
   hamburgerMorph: '--duration-hamburger-morph',
   pageFlip: '--duration-page-flip',
   mediumZoom: '--duration-medium-zoom',
+  searchTransition: '--duration-search-transition',
+  searchCover: '--duration-search-cover',
+  searchMorph: '--duration-search-morph',
   searchJournalDrawer: '--search-journal-drawer-dur',
   textSwap: '--text-swap-dur',
 } as const

@@ -10,6 +10,12 @@ import {
   setTransitionState,
 } from '../ui/page-transition/index.ts'
 import {
+  deferClearSearchTransitionState,
+  waitForSearchBoxExit,
+  waitForSearchVeilCover,
+} from '../ui/page-transition/searchBoxTransition.ts'
+import { getSearchTransitionScope } from '../ui/page-transition/searchTransition.ts'
+import {
   beginPostTitleTransition,
   playPostTitleExitAnimation,
   preloadPostTitleTransition,
@@ -87,7 +93,13 @@ export function startApp(): void {
       return
 
     activePostTitleVisitId = null
-    clearTransitionState()
+    if (document.documentElement.dataset.searchOverlay === 'active') {
+      // Keep the veil's fill until its retract animation completes.
+      deferClearSearchTransitionState(clearTransitionState)
+    }
+    else {
+      clearTransitionState()
+    }
   }
 
   /**
@@ -128,6 +140,18 @@ export function startApp(): void {
     if (!(await resolveTitleTarget(visit)))
       return
     await playPostTitleExitAnimation()
+  })
+
+  swup.hooks.before('animation:out:await', (visit) => {
+    // Hold the out phase until the veil has covered the page (enter) or the
+    // search box has collapsed into the navbar trigger (leave), so the swap
+    // never exposes the unfinished transition.
+    const scope = getSearchTransitionScope(visit.from.url, visit.to.url)
+    if (scope === 'enter-search')
+      return waitForSearchVeilCover()
+    if (scope === 'leave-search')
+      return waitForSearchBoxExit()
+    return undefined
   })
 
   swup.hooks.before('content:replace', async (visit) => {

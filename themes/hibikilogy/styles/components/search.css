@@ -9,6 +9,9 @@
     --search-journal-drawer-x: 44px;
     --search-journal-drawer-y: 24px;
     --search-journal-drawer-ease: var(--ease-standard);
+    /* Vertical offset of the page box from the navbar trigger (pill center
+       to box top edge); the box morphs in/out along this distance. */
+    --search-box-morph-y: -56px;
 
     margin-top: 2rem;
 
@@ -216,22 +219,97 @@
   }
 
   @media (--max-tablet) {
-    html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-rendering
+    /* Keep the box visible above the search overlay (z-index 25) while it morphs. */
+    html[data-search-overlay='active'] #search .SearchShell--page {
+      position: relative;
+      z-index: 26;
+    }
+
+    #search .SearchShell--page {
+      /* Grows from / collapses back into the navbar trigger (top right). */
+      transform-origin: top right;
+    }
+
+    /* The pop (scale) runs shorter than the slide, so the box snaps to size
+       first, then travels into place; enter and leave are exact mirrors.
+       Keyed on the body class — the same event that starts the veil's
+       retract stage — so both stay in lockstep. The pop overshoots slightly
+       (ease-bounce) for a natural spring feel. */
+    html[data-search-overlay='active'][data-search-transition-scope='enter-search']
+      body.search
       #search
       .SearchShell--page {
-      animation: pop-up var(--duration-slow) var(--ease-out) both;
+      animation:
+        search-box-morph-in var(--duration-search-morph) var(--ease-out) both,
+        search-box-pop-in calc(var(--duration-search-morph) * 0.6) var(--ease-bounce) both;
     }
 
     html[data-search-overlay='active'][data-search-transition-scope='leave-search'].is-animating.is-leaving
       #search
       .SearchShell--page {
-      animation: pop-down var(--duration-fast) var(--ease-out) both;
+      animation:
+        search-box-morph-out var(--duration-search-morph) var(--ease-out) both,
+        search-box-pop-out calc(var(--duration-search-morph) * 0.6) var(--ease-bounce) both;
+    }
+  }
+
+  @keyframes search-box-morph-in {
+    from {
+      opacity: 0;
+      translate: 0 var(--search-box-morph-y);
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes search-box-pop-in {
+    from {
+      scale: 0.55;
+    }
+
+    to {
+      scale: 1;
+    }
+  }
+
+  @keyframes search-box-morph-out {
+    from {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    to {
+      opacity: 0;
+      translate: 0 var(--search-box-morph-y);
+    }
+  }
+
+  @keyframes search-box-pop-out {
+    from {
+      scale: 1;
+    }
+
+    to {
+      scale: 0.55;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     #search .SearchJournal--drawer {
       transition: none;
+    }
+
+    html[data-search-overlay='active'][data-search-transition-scope='enter-search']
+      body.search
+      #search
+      .SearchShell--page,
+    html[data-search-overlay='active'][data-search-transition-scope='leave-search'].is-animating.is-leaving
+      #search
+      .SearchShell--page {
+      animation: none;
     }
   }
 }

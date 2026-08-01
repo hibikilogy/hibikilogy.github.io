@@ -211,12 +211,33 @@
   }
 
   @media (--max-tablet) {
+    /* The veil's top edge sits flush with the navbar's bottom edge while it
+       covers the page; drop its shadow so it reads as part of the navbar. */
     html[data-search-overlay='active'] body::before {
-      transform: none;
+      box-shadow: none;
     }
 
-    html[data-search-overlay='active'].is-changing body::before {
-      transition: opacity var(--duration-search-transition) var(--ease-search-settle);
+    /* Two-stage veil, with enter and leave as exact mirrors: covers fast
+       (tap feedback), then retracts in lockstep with the box morph.
+       Animation-driven (swup's attrs precede `is-changing`, so transitions
+       would never start); stage two keys on the body class, which outlives
+       swup's phase classes, so its fill holds until the state clears. */
+    html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-animating.is-leaving
+      body::before {
+      animation: search-overlay-cover-down var(--duration-search-cover) var(--ease-out) both;
+    }
+
+    html[data-search-overlay='active'][data-search-transition-scope='leave-search'].is-animating.is-leaving
+      body::before {
+      animation: search-overlay-cover-up var(--duration-search-cover) var(--ease-out) both;
+    }
+
+    html[data-search-overlay='active'][data-search-transition-scope='enter-search'] body.search::before {
+      animation: search-overlay-retract-up var(--duration-search-morph) var(--ease-out) both;
+    }
+
+    html[data-search-overlay='active'][data-search-transition-scope='leave-search'] body:not(.search)::before {
+      animation: search-overlay-retract-down var(--duration-search-morph) var(--ease-out) both;
     }
 
     html[data-search-overlay='active'].is-changing main.Content {
@@ -239,6 +260,46 @@
     }
   }
 
+  @keyframes search-overlay-cover-down {
+    from {
+      transform: translate3d(0, -100%, 0);
+    }
+
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes search-overlay-cover-up {
+    from {
+      transform: translate3d(0, 100%, 0);
+    }
+
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes search-overlay-retract-up {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      transform: translate3d(0, -100%, 0);
+    }
+  }
+
+  @keyframes search-overlay-retract-down {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      transform: translate3d(0, 100%, 0);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html[data-search-overlay='active'] body::before,
     html[data-search-overlay='active'] main.Content,
@@ -246,6 +307,15 @@
       transition: none;
       animation: none;
       transform: none;
+    }
+
+    html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-animating.is-leaving
+      body::before,
+    html[data-search-overlay='active'][data-search-transition-scope='leave-search'].is-animating.is-leaving
+      body::before,
+    html[data-search-overlay='active'][data-search-transition-scope='enter-search'] body.search::before,
+    html[data-search-overlay='active'][data-search-transition-scope='leave-search'] body:not(.search)::before {
+      animation: none;
     }
   }
 }

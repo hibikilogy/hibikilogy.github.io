@@ -8,6 +8,8 @@
     --duration-slow: 400ms; /* panel open, skeleton reveal */
     --duration-very-slow: 500ms; /* emphasis, badge appear, text reveal */
     --duration-search-transition: 500ms; /* search overlay wipe, search-box morph */
+    --duration-search-cover: 120ms; /* mobile veil cover stage (enter tap feedback) */
+    --duration-search-morph: 200ms; /* mobile veil retract & search-box morph */
     --duration-reveal: 400ms; /* item-level enter/exit (navscreen cascade, hamburger morph) */
     --duration-hamburger-morph: 120ms; /* hamburger icon morph */
     --duration-page-flip: 320ms; /* journal page-flip view transition */
