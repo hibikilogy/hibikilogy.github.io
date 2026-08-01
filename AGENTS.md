@@ -11,9 +11,9 @@ This repository is a Zola static site using the built-in `hibikilogy` theme. The
 
 ### Theme (`themes/hibikilogy/`)
 - `templates/` — Tera templates with reusable partials under `components/`, taxonomy views under `tags/` and `author/`, macros under `macros/`, and shortcodes under `shortcodes/`
-- `sass/` — SCSS stylesheets organized as `base/`, `components/`, `layouts/`
+- `styles/` — SCSS stylesheets organized as `base/`, `components/`, `layouts/`
 - `static/` — theme static assets (JS bundle, CSS, SVG icons, fonts, KaTeX files)
-- `src/` — TypeScript source for search engine, UI components, and utilities (compiled to `static/js/` by Vite)
+- `src/` — TypeScript source organized as `app/` (lifecycle, composition), `features/` (search), `ui/` (DOM adapters), `shared/` (utilities, runtime config); compiled to `static/js/` by Vite
 - `components/` — Lit Web Components (lazy-image, site-pagination, tags-list)
 - `i18n/zh.toml` — theme default translations. Site can override via `[translations]` in `config.toml`, or replace by adding `i18n/<lang>.toml` files. Templates use `tr::t(key="...")` macro which loads from theme i18n first, falls back to Zola's built-in `trans()`.
 - `theme.toml` — theme metadata and default `[extra]` values
@@ -47,7 +47,7 @@ The site includes a Sveltia CMS setup at `/admin/` for visual content editing. T
 - `zola serve`: run the local development server at `http://127.0.0.1:1111/`. The `-f` (fast) flag enables incremental rebuilds. Zola watches `themes/` directory for live reload since v0.9.0.
 - `zola build`: build the site into `public/` (uses default `config.toml`).
 - `zola build --drafts`: match the GitHub Pages workflow build behavior.
-- Search index (`search_index.zh.json`) is generated automatically by Zola during `zola build` via `build_search_index = true` and `index_format = "fuse_json"` in `config.toml`. The client-side search engine (Fuse.js + Web Worker + IndexedDB cache) lives at `themes/hibikilogy/src/search/`.
+- Search index (`search_index.zh.json`) is generated automatically by Zola during `zola build` via `build_search_index = true` and `index_format = "fuse_json"` in `config.toml`. The client-side search engine (Fuse.js + Web Worker + IndexedDB cache) lives at `themes/hibikilogy/src/features/search/`.
 - `zola check`: validate pages, links, templates, and configuration without producing a deployment artifact.
 - `pnpm build:all`: full build pipeline (Vite → UnoCSS → font subset → Zola → image rewrite → short links).
 - `pnpm dev:all`: start all dev servers in parallel (Zola + Vite watch + UnoCSS watch).
@@ -63,15 +63,15 @@ Translations live in `themes/hibikilogy/i18n/zh.toml`. Templates access them via
 
 To override a translation, add a `[translations]` section in site `config.toml` with the specific key. To add a new language, create `i18n/<lang>.toml` in the theme.
 
-The Vite plugin at `scripts/vite/hibikilogy-config.ts` also reads i18n for client-side JS search messages. It loads from `config.toml` `[translations]` first, then falls back to `themes/<theme>/i18n/<lang>.toml`.
+The Vite plugin at `scripts/vite/hibikilogy-config/index.ts` also reads i18n for client-side JS search messages. It loads from `config.toml` `[translations]` first, then falls back to `themes/<theme>/i18n/<lang>.toml`.
 
 ## Coding Style & Naming Conventions
 
-Follow `.editorconfig`: UTF-8, LF endings, two-space indentation, final newline for code/config files, and trimmed trailing whitespace. Markdown files may omit the final newline and may keep intentional trailing whitespace. Use TOML for site configuration in `config.toml`, Tera syntax in `templates/`, and Sass/SCSS in `sass/`. Name posts with a date prefix when adding articles, for example `content/2024-07-01-title.md`; keep asset folders grouped by post or date under `static/imgs/`.
+Follow `.editorconfig`: UTF-8, LF endings, two-space indentation, final newline for code/config files, and trimmed trailing whitespace. Markdown files may omit the final newline and may keep intentional trailing whitespace. Use TOML for site configuration in `config.toml`, Tera syntax in `templates/`, and Sass/SCSS in `styles/`. Name posts with a date prefix when adding articles, for example `content/2024-07-01-title.md`; keep asset folders grouped by post or date under `static/imgs/`.
 
 ## Testing Guidelines
 
-There is no separate unit test suite. Treat static-site validation as the required test path: run `zola check`, then `zola build`, For template, Sass, or navigation changes, inspect the local site with `zola serve` before opening a PR.
+TypeScript has a Vitest suite (`pnpm test:ts`, happy-dom environment) covering shared utilities, search runtime, and build-script logic; run `pnpm typecheck && pnpm test:ts && pnpm lint:ts` before opening a PR. Static-site validation is the required path for template, Sass, or navigation changes: run `zola check`, then `zola build`, and inspect the local site with `zola serve` before opening a PR.
 
 ## Commit & Pull Request Guidelines
 
