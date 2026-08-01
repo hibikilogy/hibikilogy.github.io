@@ -5,4 +5,7 @@ export {
   renderPostTitleTransitionTarget,
   resolvePostTitleTransitionTarget,
 } from './postTitleTransition.ts'
-export type { PostTitleTransitionPreparation } from './types.ts'
+export type {
+  PostTitleTransitionPreparation,
+  ResolvePostTitleTransitionTargetOptions,
+} from './types.ts'

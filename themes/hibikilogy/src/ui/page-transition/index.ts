@@ -1,3 +1,4 @@
+export { isSearchUrl } from './searchTransition.ts'
 export {
   clearTransitionState,
   setTransitionState,

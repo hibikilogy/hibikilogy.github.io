@@ -1,5 +1,8 @@
 import type { RenderedTitle } from './renderer.ts'
-import type { PostTitleTransitionPreparation } from './types.ts'
+import type {
+  PostTitleTransitionPreparation,
+  ResolvePostTitleTransitionTargetOptions,
+} from './types.ts'
 import { shouldSkipMotion } from '../../shared/animation.ts'
 import { isElementVisibleInViewport } from '../../shared/visibility.ts'
 import { postTitleDom } from './config.ts'
@@ -22,7 +25,7 @@ import {
   waitForStableTitleLayout,
 } from './renderer.ts'
 
-type TitleTransitionMode = 'pending' | 'shared' | 'scatter'
+type TitleTransitionMode = 'pending' | 'shared' | 'scatter' | 'dismissed'
 
 interface BeginTitleTransitionOptions {
   trigger?: Element
@@ -91,7 +94,10 @@ class PostTitleTransitionSession {
     )
   }
 
-  resolveTarget(incomingDocument?: Document): void {
+  resolveTarget(
+    incomingDocument?: Document,
+    options: ResolvePostTitleTransitionTargetOptions = {},
+  ): void {
     const target = incomingDocument
       ? findTitleByKey(this.key, incomingDocument)
       : null
@@ -102,7 +108,12 @@ class PostTitleTransitionSession {
     )
     this.targetIsHero = Boolean(canShare && target && isHeroTitle(target))
 
-    this.setMode(canShare || !this.sourceIsHero ? 'shared' : 'scatter')
+    if (canShare || !this.sourceIsHero) {
+      this.setMode('shared')
+      return
+    }
+
+    this.setMode(options.suppressScatter ? 'dismissed' : 'scatter')
   }
 
   renderTarget(): void {
@@ -162,6 +173,11 @@ class PostTitleTransitionSession {
       return
     }
 
+    if (mode === 'dismissed') {
+      // Restore the source title (its text is hidden while the overlay is
+      // active) and drop the glyph layer so it leaves with the page.
+      disposeRenderedTitle(this.rendered[0])
+    }
     this.style.textContent = ''
   }
 }
@@ -262,8 +278,11 @@ async function preparePostTitleTransition({
   return true
 }
 
-export function resolvePostTitleTransitionTarget(incomingDocument?: Document): void {
-  activeSession?.resolveTarget(incomingDocument)
+export function resolvePostTitleTransitionTarget(
+  incomingDocument?: Document,
+  options?: ResolvePostTitleTransitionTargetOptions,
+): void {
+  activeSession?.resolveTarget(incomingDocument, options)
 }
 
 export async function playPostTitleExitAnimation(): Promise<boolean> {

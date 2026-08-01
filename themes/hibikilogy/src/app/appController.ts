@@ -1,3 +1,4 @@
+import type { Visit } from 'swup'
 import type { PostTitleTransitionPreparation } from '../ui/post-title-transition/index.ts'
 import type { PageContext } from './types.ts'
 import { scheduleIdleSearchPreload } from '../features/search/hooks/useSearchNavigation.ts'
@@ -5,6 +6,7 @@ import { createSwup } from '../infrastructure/swup/index.ts'
 import { pageDom } from '../shared/dom.ts'
 import {
   clearTransitionState,
+  isSearchUrl,
   setTransitionState,
 } from '../ui/page-transition/index.ts'
 import {
@@ -88,6 +90,26 @@ export function startApp(): void {
     clearTransitionState()
   }
 
+  /**
+   * Resolves the post-title transition target once the visit's preparation
+   * is ready. Returns false when no ready preparation applies to the visit.
+   */
+  async function resolveTitleTarget(visit: Visit): Promise<boolean> {
+    const preparation = postTitlePreparations.get(visit.id)
+    if (
+      !preparation
+      || !(await preparation.ready)
+      || postTitlePreparations.get(visit.id) !== preparation
+    ) {
+      return false
+    }
+
+    resolvePostTitleTransitionTarget(visit.to.document, {
+      suppressScatter: isSearchUrl(visit.to.url),
+    })
+    return true
+  }
+
   swup.hooks.on('visit:start', (visit) => {
     stopPageEnter()
     page?.layout.closeNavbar()
@@ -103,30 +125,13 @@ export function startApp(): void {
   })
 
   swup.hooks.before('visit:transition', async (visit) => {
-    const preparation = postTitlePreparations.get(visit.id)
-    if (
-      !preparation
-      || !(await preparation.ready)
-      || postTitlePreparations.get(visit.id) !== preparation
-    ) {
+    if (!(await resolveTitleTarget(visit)))
       return
-    }
-
-    resolvePostTitleTransitionTarget(visit.to.document)
     await playPostTitleExitAnimation()
   })
 
   swup.hooks.before('content:replace', async (visit) => {
-    const preparation = postTitlePreparations.get(visit.id)
-    if (
-      !preparation
-      || !(await preparation.ready)
-      || postTitlePreparations.get(visit.id) !== preparation
-    ) {
-      return
-    }
-
-    resolvePostTitleTransitionTarget(visit.to.document)
+    await resolveTitleTarget(visit)
   })
 
   swup.hooks.on('content:replace', () => {

@@ -2,6 +2,7 @@ import type Swup from 'swup'
 import type { RouteLocation, RouteModel } from './types.ts'
 import { computed, onScopeDispose, readonly, ref, shallowRef } from '@vue/reactivity'
 import { Location, updateHistoryRecord } from 'swup'
+import { isSearchUrl } from '../../ui/page-transition/index.ts'
 
 function readLocation(url = window.location.href): RouteLocation {
   const resolved = new URL(url, window.location.href)
@@ -11,10 +12,6 @@ function readLocation(url = window.location.href): RouteLocation {
     search: resolved.search,
     hash: resolved.hash,
   }
-}
-
-function isSearchPath(pathname: string): boolean {
-  return pathname.replace(/\/+$/, '') === '/search'
 }
 
 // swup tags its history records with `{ source: 'swup', index }`; the index
@@ -29,7 +26,7 @@ export function useRoute(swup: Swup): RouteModel {
   const current = shallowRef(readLocation())
   const isNavigating = ref(false)
   const navigationKind = ref<RouteModel['navigationKind']['value']>('initial')
-  const isSearchPage = computed(() => isSearchPath(current.value.pathname))
+  const isSearchPage = computed(() => isSearchUrl(current.value.href))
 
   const unregister = [
     swup.hooks.on('visit:start', (visit) => {
