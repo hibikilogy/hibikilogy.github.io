@@ -1,9 +1,9 @@
 import type { FuseSearchResult, SearchRecord } from '../types.ts'
 import { normalizeSearchText } from '../utils.ts'
 
-const minExactBodyQueryLength = 2
-const bodyExcerptRadius = 90
-const maxScoredBodyOccurrences = 4
+const MIN_EXACT_BODY_QUERY_LENGTH = 2
+const BODY_EXCERPT_RADIUS = 90
+const MAX_SCORED_BODY_OCCURRENCES = 4
 const normalizedBodyCache = new WeakMap<object, string>()
 
 export function hasExactSearchBodyMatch(record: Pick<SearchRecord, 'body'>, normalizedTerm: string): boolean {
@@ -16,7 +16,7 @@ export function hasExactSearchBodyMatch(record: Pick<SearchRecord, 'body'>, norm
 export function buildExactBodySearchResults(
   records: SearchRecord[],
   normalizedTerm: string,
-  minimumQueryLength = minExactBodyQueryLength,
+  minimumQueryLength = MIN_EXACT_BODY_QUERY_LENGTH,
 ): FuseSearchResult[] {
   if (!Array.isArray(records) || normalizedTerm.length < minimumQueryLength)
     return []
@@ -32,7 +32,7 @@ function buildExactBodySearchResult(record: SearchRecord, normalizedTerm: string
   if (matchIndex === -1)
     return null
 
-  const occurrenceCount = countOccurrences(normalizedBody, normalizedTerm, maxScoredBodyOccurrences)
+  const occurrenceCount = countOccurrences(normalizedBody, normalizedTerm, MAX_SCORED_BODY_OCCURRENCES)
   const positionRatio = normalizedBody.length ? matchIndex / normalizedBody.length : 1
 
   return {
@@ -52,7 +52,7 @@ function buildExactBodySearchResult(record: SearchRecord, normalizedTerm: string
 }
 
 function shouldUseExactBodySearch(normalizedTerm: string): boolean {
-  return normalizedTerm.length >= minExactBodyQueryLength
+  return normalizedTerm.length >= MIN_EXACT_BODY_QUERY_LENGTH
 }
 
 function countOccurrences(value: string, needle: string, limit = Number.POSITIVE_INFINITY): number {
@@ -84,8 +84,8 @@ function createBodyMatchExcerpt(body: string, normalizedTerm: string): string {
     return ''
 
   const matchIndex = findOriginalMatchIndex(text, normalizedTerm)
-  const start = Math.max(0, matchIndex - bodyExcerptRadius)
-  const end = Math.min(text.length, matchIndex + normalizedTerm.length + bodyExcerptRadius)
+  const start = Math.max(0, matchIndex - BODY_EXCERPT_RADIUS)
+  const end = Math.min(text.length, matchIndex + normalizedTerm.length + BODY_EXCERPT_RADIUS)
   const prefix = start > 0 ? '...' : ''
   const suffix = end < text.length ? '...' : ''
 

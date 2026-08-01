@@ -4,12 +4,9 @@ import { customElement, state } from 'lit/decorators.js'
 import { readItemsFromChildren, sortTagItems } from './utils'
 
 /**
- * `<tags-list>` — a sorted list of tag links, rendered into Shadow DOM.
- *
- * On connect it hydrates from any server-rendered light-DOM `<a>` children
- * (footer tags), re-renders them sorted into the shadow root, and leaves the
- * original anchors in place as a no-JS fallback. {@link setItems} replaces the
- * list imperatively — used by `static/js/search/related-tags.js`.
+ * `<tags-list>` — sorted tag links in Shadow DOM. Hydrates from light-DOM
+ * `<a>` children (kept as a no-JS fallback); {@link setItems} replaces the
+ * list imperatively (search page).
  */
 @customElement('tags-list')
 export class TagsList extends LitElement {
@@ -53,7 +50,7 @@ export class TagsList extends LitElement {
     }
   }
 
-  /** Replace the rendered tag list (called by search/related-tags.js). */
+  /** Replace the rendered tag list (called by the search page). */
   setItems(items: TagItem[]): void {
     this.items = Array.isArray(items) ? items : []
   }
@@ -92,7 +89,4 @@ export class TagsList extends LitElement {
   }
 }
 
-// Re-export so `search/tags.js`'s `import { sortTagItems } from '../components/tags-list.js'`
-// keeps resolving after the Vite build.
-export { sortTagItems }
 export type { TagItem }

@@ -16,13 +16,14 @@ import {
   watch,
 } from '@vue/reactivity'
 import { catchAsyncError } from 'shared/result.ts'
-import { searchPageSize } from '../config.ts'
+import { SEARCH_PAGE_SIZE } from '../config.ts'
 import { aggregateResultTags } from '../core/tags.ts'
 import {
   buildSearchHref,
   getSearchLocationKey,
   parseSearchLocation,
 } from '../page/searchLocation.ts'
+import { getSearchTitle } from '../utils.ts'
 
 export function useSearch(
   route: RouteModel,
@@ -58,8 +59,8 @@ export function useSearch(
       ))
     }
 
-    const offset = (state.value.query.page - 1) * searchPageSize
-    return records.slice(offset, offset + searchPageSize)
+    const offset = (state.value.query.page - 1) * SEARCH_PAGE_SIZE
+    return records.slice(offset, offset + SEARCH_PAGE_SIZE)
   })
 
   const relatedTags = computed(() => aggregateResultTags(results.value))
@@ -69,7 +70,7 @@ export function useSearch(
       : 0
     return {
       currentPage: state.value.query.page,
-      totalPages: Math.max(1, Math.ceil(totalRecords / searchPageSize)),
+      totalPages: Math.max(1, Math.ceil(totalRecords / SEARCH_PAGE_SIZE)),
       totalRecords,
     }
   })
@@ -169,8 +170,4 @@ export function useSearch(
       void synchronize(state.value.query, route.current.value.href)
     },
   }
-}
-
-function getSearchTitle(record: { title?: string, slug?: string }): string {
-  return record.title || record.slug || ''
 }

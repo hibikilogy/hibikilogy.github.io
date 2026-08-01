@@ -2,9 +2,9 @@
 
 import type { PaginationItem } from './types'
 
-export const compactPageLimit = 10
-const siblingCount = 4
-const neighborPageBudget = siblingCount * 2
+export const COMPACT_PAGE_LIMIT = 10
+const SIBLING_COUNT = 4
+const NEIGHBOR_PAGE_BUDGET = SIBLING_COUNT * 2
 
 /** Either a concrete page number, or an ellipsis placeholder. */
 type WindowPage = number | 'ellipsis'
@@ -19,7 +19,7 @@ export function getPaginationItems(
   if (total <= 1)
     return []
 
-  const pages = total <= compactPageLimit
+  const pages = total <= COMPACT_PAGE_LIMIT
     ? range(1, total)
     : getWindowedPages(current, total)
 
@@ -52,14 +52,14 @@ function getWindowedPages(
   const availableLeft = currentPage - 1
   const availableRight = totalPages - currentPage
   const leftCount = Math.min(
-    siblingCount,
-    availableLeft + Math.max(0, siblingCount - availableRight),
+    SIBLING_COUNT,
+    availableLeft + Math.max(0, SIBLING_COUNT - availableRight),
   )
   const rightCount = Math.min(
-    siblingCount,
-    availableRight + Math.max(0, siblingCount - availableLeft),
+    SIBLING_COUNT,
+    availableRight + Math.max(0, SIBLING_COUNT - availableLeft),
   )
-  const remainingBudget = neighborPageBudget - leftCount - rightCount
+  const remainingBudget = NEIGHBOR_PAGE_BUDGET - leftCount - rightCount
   const extraLeftCount = Math.min(
     remainingBudget,
     Math.max(0, availableLeft - leftCount),

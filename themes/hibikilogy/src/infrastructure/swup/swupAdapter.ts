@@ -28,8 +28,8 @@ export function createSwup(): Swup {
     },
   })
 
-  // swup's own cache is unbounded, its class is not exported, and the field
-  // is typed readonly — swap in the LRU-backed equivalent through a cast.
+  // Replace swup's unbounded cache with the LRU-backed equivalent (cast: the
+  // class is not exported and the field is typed readonly).
   ;(swup as unknown as { cache: LruPageCache }).cache = new LruPageCache(swup)
 
   swup.use(new SwupHeadPlugin({

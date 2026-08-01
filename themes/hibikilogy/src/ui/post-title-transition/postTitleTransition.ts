@@ -3,15 +3,15 @@ import type {
   PostTitleTransitionPreparation,
   ResolvePostTitleTransitionTargetOptions,
 } from './types.ts'
-import { shouldSkipMotion } from '../../shared/animation.ts'
-import { isElementVisibleInViewport } from '../../shared/visibility.ts'
+import { shouldSkipMotion } from 'shared/animation.ts'
+import { isLowPerformanceMobileDevice, supportsIntersectionObserver } from 'shared/capabilities.ts'
+import { isElementVisibleInViewport } from 'shared/visibility.ts'
 import { postTitleDom } from './config.ts'
 import {
   createSharedTransitionCss,
   createTransitionNames,
   playScatterAnimation,
 } from './motion.ts'
-import { isLowPerformanceMobileDevice } from './performance.ts'
 import {
   clearRenderedTitleShadow,
   countTitleGlyphs,
@@ -174,8 +174,8 @@ class PostTitleTransitionSession {
     }
 
     if (mode === 'dismissed') {
-      // Restore the source title (its text is hidden while the overlay is
-      // active) and drop the glyph layer so it leaves with the page.
+      // Restore the source title (hidden while the overlay is active) and
+      // drop the glyph layer so it leaves with the page.
       disposeRenderedTitle(this.rendered[0])
     }
     this.style.textContent = ''
@@ -330,7 +330,7 @@ function supportsPostTitleTransition(): boolean {
   return Boolean(
     typeof viewTransitionDocument.startViewTransition === 'function'
     && typeof Intl.Segmenter === 'function'
-    && typeof IntersectionObserver === 'function'
+    && supportsIntersectionObserver()
     && typeof Element.prototype.checkVisibility === 'function'
     && !shouldSkipMotion()
     && !isLowPerformanceMobileDevice(),

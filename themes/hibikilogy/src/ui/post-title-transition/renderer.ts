@@ -1,10 +1,10 @@
-import { wait, waitForAnimationFrame } from '../../shared/animation.ts'
+import { wait, waitForAnimationFrame } from 'shared/animation.ts'
 import {
   postTitleDom,
-  svgNamespace,
-  titleFontWaitLimit,
-  titleLayoutStabilityFrameLimit,
-  titleLayoutWarmDuration,
+  SVG_NAMESPACE,
+  TITLE_FONT_WAIT_LIMIT,
+  TITLE_LAYOUT_STABILITY_FRAME_LIMIT,
+  TITLE_LAYOUT_WARM_DURATION,
 } from './config.ts'
 import { roundCoordinate } from './utils.ts'
 
@@ -87,7 +87,7 @@ export async function waitForStableTitleLayout(element: HTMLElement): Promise<vo
   const stable = stableTitleLayouts.get(element)
   if (
     stable
-    && Date.now() - stable.timestamp <= titleLayoutWarmDuration
+    && Date.now() - stable.timestamp <= TITLE_LAYOUT_WARM_DURATION
     && haveEqualGeometry(stable.rect, currentRect)
   ) {
     return
@@ -119,12 +119,12 @@ async function stabilizeTitleLayout(element: HTMLElement): Promise<void> {
   if (!document.fonts.check(font, text)) {
     await Promise.race([
       document.fonts.load(font, text).catch(() => []),
-      wait(titleFontWaitLimit),
+      wait(TITLE_FONT_WAIT_LIMIT),
     ])
   }
 
   let previousRect = textElement.getBoundingClientRect()
-  for (let frame = 0; frame < titleLayoutStabilityFrameLimit; frame++) {
+  for (let frame = 0; frame < TITLE_LAYOUT_STABILITY_FRAME_LIMIT; frame++) {
     await waitForAnimationFrame()
     const currentRect = textElement.getBoundingClientRect()
     if (haveEqualGeometry(previousRect, currentRect)) {
@@ -241,13 +241,13 @@ function createGlyphLayer(
   layer.style.width = `${position.width}px`
   layer.style.height = `${position.height}px`
 
-  const svg = document.createElementNS(svgNamespace, 'svg')
+  const svg = document.createElementNS(SVG_NAMESPACE, 'svg')
   svg.classList.add(postTitleDom.svgClass)
   svg.setAttribute('focusable', 'false')
   svg.setAttribute('viewBox', `0 0 ${position.width} ${position.height}`)
   svg.setAttribute('preserveAspectRatio', 'none')
 
-  const glyph = document.createElementNS(svgNamespace, 'text')
+  const glyph = document.createElementNS(SVG_NAMESPACE, 'text')
   glyph.textContent = position.text
   glyph.setAttribute('x', '0')
   glyph.setAttribute('y', '0')

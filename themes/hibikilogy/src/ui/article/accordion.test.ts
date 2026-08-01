@@ -1,5 +1,12 @@
+import { effectScope } from '@vue/reactivity'
 import { describe, expect, it } from 'vitest'
 import { mountAccordions } from './accordion.ts'
+
+function mountInScope(root: ParentNode): () => void {
+  const scope = effectScope()
+  scope.run(() => mountAccordions(root))
+  return () => scope.stop()
+}
 
 describe('mountAccordions', () => {
   it('removes article listeners when the page scope is disposed', () => {
@@ -16,7 +23,7 @@ describe('mountAccordions', () => {
     if (!item || !summary)
       throw new Error('Invalid accordion fixture')
 
-    const dispose = mountAccordions(root)
+    const dispose = mountInScope(root)
     const handledEvent = new MouseEvent('click', { bubbles: true, cancelable: true })
     summary.dispatchEvent(handledEvent)
     expect(handledEvent.defaultPrevented).toBe(true)
@@ -42,9 +49,8 @@ describe('mountAccordions', () => {
       </div>
     `
 
-    const dispose = mountAccordions(root)
+    mountInScope(root)
     const items = root.querySelectorAll('details')
     expect([...items].map(item => item.open)).toEqual([false, true])
-    dispose()
   })
 })

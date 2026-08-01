@@ -1,7 +1,7 @@
 import type { RuntimeConfig } from './types.ts'
-import { catchError } from '../../shared/result.ts'
+import { catchError } from '../result.ts'
 
-const runtimeConfigId = 'hibikilogy-runtime-config'
+const RUNTIME_CONFIG_ID = 'hibikilogy-runtime-config'
 const defaults: RuntimeConfig = {
   baseUrl: 'http://localhost',
   searchIndexUrl: 'search_index.zh.json',
@@ -21,7 +21,7 @@ export function getRuntimeConfig(
   if (!root)
     return defaults
 
-  const element = root.querySelector<HTMLScriptElement>(`#${runtimeConfigId}`)
+  const element = root.querySelector<HTMLScriptElement>(`#${RUNTIME_CONFIG_ID}`)
   if (!element?.textContent)
     return defaults
 

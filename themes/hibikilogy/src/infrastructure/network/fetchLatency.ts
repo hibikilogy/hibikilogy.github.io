@@ -14,13 +14,11 @@ export interface FetchLatencyMonitorOptions {
   slowThresholdMs?: number
   fastThresholdMs?: number
   minSamples?: number
-  // Pre-populated durations, e.g. the initial document fetch, so network
-  // classification kicks in one real sample earlier.
+  // Pre-populated durations, e.g. the initial document fetch.
   seed?: number[]
 }
 
-// Tracks median fetch duration over a sliding window so network quality is
-// known before a navigation starts.
+// Median fetch duration over a sliding window, known before navigation starts.
 export function createFetchLatencyMonitor({
   windowSize = FETCH_LATENCY_WINDOW_SIZE,
   slowThresholdMs = FETCH_LATENCY_SLOW_THRESHOLD_MS,

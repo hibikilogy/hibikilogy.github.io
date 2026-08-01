@@ -2,6 +2,7 @@ import type { SearchModel } from '../types.ts'
 import type { SearchJournalMotion } from './motion.ts'
 import type { SearchView } from './types.ts'
 import { html, nothing, render } from 'lit'
+import { serializeUrl } from 'shared/url.ts'
 import { searchMessages } from '../config.ts'
 import { searchDom } from '../searchDom.ts'
 import { getSearchHighlightTerms, renderSearchArticle } from './articleView.ts'
@@ -32,9 +33,7 @@ export function createSearchView(root: ParentNode, model: SearchModel): SearchVi
       results.setAttribute('aria-busy', String(state.phase === 'loading'))
 
       if (state.phase === 'idle') {
-        render(nothing, results)
-        setControlsVisible(controls, pagination, false)
-        setSearchRelatedTags([], root)
+        renderEmptyState(results, controls, pagination, root)
         const text = state.count === undefined
           ? resolveSearchLoadingMessage({
               status: model.indexStatus.value,
@@ -51,9 +50,7 @@ export function createSearchView(root: ParentNode, model: SearchModel): SearchVi
       }
 
       if (state.phase === 'loading') {
-        render(nothing, results)
-        setControlsVisible(controls, pagination, false)
-        setSearchRelatedTags([], root)
+        renderEmptyState(results, controls, pagination, root)
         if (message) {
           await updateSearchMessage(message, searchMessages.loading(state.query.term), {
             loading: true,
@@ -63,9 +60,7 @@ export function createSearchView(root: ParentNode, model: SearchModel): SearchVi
       }
 
       if (state.phase === 'error') {
-        render(nothing, results)
-        setControlsVisible(controls, pagination, false)
-        setSearchRelatedTags([], root)
+        renderEmptyState(results, controls, pagination, root)
         if (message)
           await updateSearchMessage(message, searchMessages.failed)
         return
@@ -91,7 +86,7 @@ export function createSearchView(root: ParentNode, model: SearchModel): SearchVi
             pageNumber > 1
               ? url.searchParams.set('p', String(pageNumber))
               : url.searchParams.delete('p')
-            return `${url.pathname}${url.search}${url.hash}`
+            return serializeUrl(url)
           },
           onPageChange: model.setPage,
         }, root)
@@ -119,6 +114,17 @@ function resolveMotion(previousPage: number, nextPage: number): SearchJournalMot
   if (nextPage < previousPage)
     return 'backward'
   return 'replace'
+}
+
+function renderEmptyState(
+  results: HTMLElement,
+  controls: HTMLElement | null,
+  pagination: HTMLElement | null,
+  root: ParentNode,
+): void {
+  render(nothing, results)
+  setControlsVisible(controls, pagination, false)
+  setSearchRelatedTags([], root)
 }
 
 function setControlsVisible(

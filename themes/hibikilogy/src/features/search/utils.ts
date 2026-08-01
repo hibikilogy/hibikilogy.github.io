@@ -1,11 +1,7 @@
-import { getDefaultOrigin, parseUrl } from '../../shared/url.ts'
+import { getDefaultOrigin, parseUrl, serializeUrl } from 'shared/url.ts'
 
 const cjkPattern = /[\u3400-\u9FFF]+/gu
 
-/**
- * Replace `{0}` `{1}` ... positional placeholders with provided arguments.
- * Usage: fmt('共找到 {0} 条与"{1}"相关的结果', 12, '黄前久美子')
- */
 export function fmt(template: string, ...args: (string | number)[]): string {
   return template.replace(/\{(\d+)\}/g, (_, i) => String(args[+i] ?? ''))
 }
@@ -28,15 +24,17 @@ export function sanitizeSearchBody(value: string | null | undefined): string {
     .trim()
 }
 
-// Re-export shared URL utilities for backward compatibility
-export { getPathSlug, normalizeAssetUrl, normalizeSiteUrl } from '../../shared/url.ts'
+// Re-exported so search modules import URL helpers from a single place.
+export { getPathSlug, normalizeAssetUrl, normalizeSiteUrl } from 'shared/url.ts'
 
+// Like `normalizeSiteUrl` but without the origin check: index entries are
+// always internal paths, and parsing failures fall back to the raw value.
 export function normalizeSearchUrl(value: string | null | undefined): string {
   if (!value)
     return '#'
 
   const url = parseUrl(String(value), getDefaultOrigin())
-  return url ? url.pathname + url.search + url.hash : String(value)
+  return url ? serializeUrl(url) : String(value)
 }
 
 export function createExcerpt(value: SearchTextInput, maxLength = 180): string {
@@ -59,18 +57,6 @@ export function segmentSearchText(value: SearchTextInput): string {
   ]).join(' ')
 }
 
-export function segmentSearchQueryText(value: SearchTextInput): string {
-  const normalized = normalizeSearchText(value)
-  if (!normalized)
-    return ''
-
-  const tokens = segmentSearchText(normalized).split(/\s+/).filter(Boolean)
-  if (normalized.length <= 1)
-    return tokens.join(' ')
-
-  return tokens.filter(token => token.length > 1).join(' ')
-}
-
 export function tokenizeForFuse(value: string): string[] {
   const normalized = normalizeSearchText(value)
   if (!normalized)
@@ -85,6 +71,13 @@ export function tokenizeForFuse(value: string): string[] {
 
 export function uniqueTokens(tokens: string[]): string[] {
   return [...new Set(tokens.map(normalizeSearchText).filter(Boolean))]
+}
+
+export function getSearchTitle(
+  record: { title?: string, slug?: string },
+  fallback = '',
+): string {
+  return record.title || record.slug || fallback
 }
 
 function segmentWords(value: string): string[] {

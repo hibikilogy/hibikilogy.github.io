@@ -1,7 +1,7 @@
 /** Pure helpers for `<tags-list>` — sorting and hydration from light DOM. */
 
 import type { TagItem } from './types'
-import { sortTagItems } from '../../src/shared/tags.ts'
+import { sortTagItems } from 'shared/tags.ts'
 
 /**
  * Read the server-rendered light-DOM children (`<a>` links with optional

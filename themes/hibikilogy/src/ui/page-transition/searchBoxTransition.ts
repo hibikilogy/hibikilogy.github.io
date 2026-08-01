@@ -1,24 +1,30 @@
-import { resolveDurationMs, shouldSkipMotion, wait } from '../../shared/animation.ts'
-
-// Mirrors the --max-tablet breakpoint in styles/lib/media.css.
-const MOBILE_MEDIA_QUERY = '(max-width: 719px)'
+import { resolveDurationMs, shouldSkipMotion, wait } from 'shared/animation.ts'
+import { isMaxTabletViewport } from 'shared/media.ts'
+import { pageDom } from 'shared/selectors.ts'
+import { getSearchTransitionScope } from './searchTransition.ts'
 
 const CLEAR_GRACE_MS = 20
 
-export function isMobileSearchBoxTransition(): boolean {
-  return window.matchMedia(MOBILE_MEDIA_QUERY).matches
-}
-
 function shouldHoldSearchOutPhase(): boolean {
-  return isMobileSearchBoxTransition() && !shouldSkipMotion()
+  return isMaxTabletViewport() && !shouldSkipMotion()
 }
 
 /**
- * Holds the swup out phase until the search veil has covered the page (its
- * cover stage runs at `--duration-search-cover`). Waits on a timer because
- * the cover animation runs on the `body::before` pseudo-element, whose
- * animation events are not reliably dispatched to the host element.
+ * Holds the out phase while the search transition is mid-flight: the veil
+ * covers the page on enter, the box collapses into the navbar trigger on
+ * leave. Returns nothing when the visit does not cross the search boundary.
  */
+export function waitForSearchTransition(fromUrl: string, toUrl: string): Promise<void> | undefined {
+  const scope = getSearchTransitionScope(fromUrl, toUrl)
+  if (scope === 'enter-search')
+    return waitForSearchVeilCover()
+  if (scope === 'leave-search')
+    return waitForSearchBoxExit()
+  return undefined
+}
+
+// Holds the out phase until the veil covers the page; timed because the cover
+// runs on a `body::before` pseudo-element with unreliable animation events.
 export async function waitForSearchVeilCover(): Promise<void> {
   if (!shouldHoldSearchOutPhase())
     return
@@ -26,16 +32,13 @@ export async function waitForSearchVeilCover(): Promise<void> {
   await wait(resolveDurationMs('searchCover') + 30)
 }
 
-/**
- * Holds the swup out phase until the mobile search box finishes collapsing
- * into the navbar trigger; the box lives in the swapped container and would
- * otherwise be removed a frame after `is-leaving`.
- */
+// Holds the out phase until the box collapses into the navbar trigger; the
+// box lives in the swapped container and would vanish with the old page.
 export async function waitForSearchBoxExit(): Promise<void> {
   if (!shouldHoldSearchOutPhase())
     return
 
-  const box = document.querySelector<HTMLElement>('#search .SearchShell--page')
+  const box = document.querySelector<HTMLElement>(`${pageDom.search} .SearchShell--page`)
   if (!box)
     return
 
@@ -51,12 +54,8 @@ export async function waitForSearchBoxExit(): Promise<void> {
   })
 }
 
-/**
- * Clears the search transition state after the veil's retract animation has
- * finished; clearing right at `visit:end` would snap the veil back. The
- * captured scope guards against clobbering a newer visit's state when the
- * clear is deferred.
- */
+// Clears after the veil retracts; the captured scope guards against
+// clobbering a newer visit's state.
 export function deferClearSearchTransitionState(clear: () => void): void {
   const root = document.documentElement
   const scope = root.dataset.searchTransitionScope ?? null

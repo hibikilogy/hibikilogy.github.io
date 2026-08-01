@@ -3,8 +3,8 @@ import type { AppContext } from './types.ts'
 import { effectScope, onScopeDispose } from '@vue/reactivity'
 import { createSearchService, getSearchBootstrap, useSearchNavigation } from '../features/search/index.ts'
 import { createFetchLatencyMonitor } from '../infrastructure/network/index.ts'
-import { getRuntimeConfig } from '../infrastructure/runtime-config/index.ts'
 import { SwupPagePreloadPlugin } from '../infrastructure/swup/index.ts'
+import { getRuntimeConfig } from '../shared/runtime-config/index.ts'
 import { useNavigationPriority, useNavigationProgress, usePaginationNavigation, useRoute } from './hooks/index.ts'
 
 export function createAppContext(swup: Swup): AppContext {
@@ -18,18 +18,10 @@ export function createAppContext(swup: Swup): AppContext {
     workerUrl: config.searchWorkerUrl,
     getBootstrap: () => getSearchBootstrap(config),
   })
+
   scope.run(() => {
-    // Seed with the initial document fetch so the very first navigation
-    // already counts toward the network estimate.
-    const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
-    const latencyMonitor = createFetchLatencyMonitor({ seed: navigationEntry ? [navigationEntry.responseEnd] : [] })
-    const preloader = new SwupPagePreloadPlugin({ isFastNetwork: () => latencyMonitor.isFast() })
-    swup.use(preloader)
-    onScopeDispose(() => swup.unuse(preloader.name))
-    useSearchNavigation(route, searchService)
-    usePaginationNavigation(route)
-    useNavigationPriority(swup, latencyMonitor, preloader)
-    useNavigationProgress(swup, latencyMonitor)
+    setupNavigationFeatures(route, searchService)
+    setupNetworkAndPreload(swup)
   })
 
   return {
@@ -41,4 +33,25 @@ export function createAppContext(swup: Swup): AppContext {
       scope.stop()
     },
   }
+}
+
+// Search shortcuts and the pagination page-change bridge.
+function setupNavigationFeatures(
+  route: AppContext['route'],
+  searchService: AppContext['searchService'],
+): void {
+  useSearchNavigation(route, searchService)
+  usePaginationNavigation(route)
+}
+
+// Network quality monitor, page preloading and the progress bar; seeded with
+// the initial document fetch so classification starts one sample earlier.
+function setupNetworkAndPreload(swup: Swup): void {
+  const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+  const latencyMonitor = createFetchLatencyMonitor({ seed: navigationEntry ? [navigationEntry.responseEnd] : [] })
+  const preloader = new SwupPagePreloadPlugin({ isFastNetwork: () => latencyMonitor.isFast() })
+  swup.use(preloader)
+  onScopeDispose(() => swup.unuse(preloader.name))
+  useNavigationPriority(swup, latencyMonitor, preloader)
+  useNavigationProgress(swup, latencyMonitor)
 }

@@ -2,15 +2,13 @@
 import type {
   SearchBuildReport,
   SearchEngineBootstrapData,
-  SearchRuntimeReport,
-  SearchTimingPhase,
 } from './types.ts'
-import { catchError } from '../../shared/result.ts'
+import { catchError } from 'shared/result.ts'
 
-export const searchDebugStorageKey = 'hibikilogy:search-debug'
+export const SEARCH_DEBUG_STORAGE_KEY = 'hibikilogy:search-debug'
 
 export function isSearchDebugEnabled(): boolean {
-  const [enabled] = catchError(() => globalThis.localStorage?.getItem(searchDebugStorageKey) === '1')
+  const [enabled] = catchError(() => globalThis.localStorage?.getItem(SEARCH_DEBUG_STORAGE_KEY) === '1')
   return enabled ?? false
 }
 
@@ -24,45 +22,6 @@ export function nowMs(): number {
 
 export function getDurationMs(start: number): number {
   return Math.round((nowMs() - start) * 10) / 10
-}
-
-export async function measureSearchPhase<T>(
-  phases: SearchTimingPhase[],
-  label: string,
-  operation: () => Promise<T> | T,
-  metadata?: Record<string, unknown>,
-): Promise<T> {
-  const start = nowMs()
-  try {
-    return await operation()
-  }
-  finally {
-    phases.push({ label, durationMs: getDurationMs(start), metadata })
-  }
-}
-
-export function logSearchRuntimeReport(isEnabled: boolean, report: SearchRuntimeReport): void {
-  if (!isEnabled)
-    return
-
-  console.groupCollapsed(`[search] Query ${report.status}: ${report.totalDurationMs}ms`)
-  console.info({
-    status: report.status,
-    totalDurationMs: report.totalDurationMs,
-    termLength: report.termLength,
-    queryMode: report.queryMode,
-    clauseCount: report.clauseCount,
-    fieldClauseCount: report.fieldClauseCount,
-    negativeClauseCount: report.negativeClauseCount,
-    resultCount: report.resultCount,
-    page: report.page,
-  })
-  console.table(report.phases.map(phase => ({
-    phase: phase.label,
-    ms: phase.durationMs,
-    metadata: phase.metadata ? JSON.stringify(phase.metadata) : '',
-  })))
-  console.groupEnd()
 }
 
 export function logSearchBuildReport(isEnabled: boolean, report: SearchBuildReport): void {

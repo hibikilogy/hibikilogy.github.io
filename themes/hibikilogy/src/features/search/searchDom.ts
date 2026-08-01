@@ -1,4 +1,4 @@
-import { pageDom } from 'shared/dom.ts'
+import { pageDom } from 'shared/selectors.ts'
 
 export const searchDom = {
   root: pageDom.search,

@@ -1,18 +1,13 @@
-import type Swup from 'swup'
 import type { CacheData } from 'swup'
+import type Swup from 'swup'
+import { LRUCache } from 'shared/lruCache.ts'
 import { Location } from 'swup'
-import { LRUCache } from '../../shared/lruCache.ts'
 
 export const PAGE_CACHE_MAX_ENTRIES = 50
 
-// Drop-in replacement for swup's built-in page cache, which is unbounded:
-// with aggressive preloading a long session would otherwise accumulate page
-// HTML without limit. Mirrors the original Cache API and semantics (URL
-// resolution, shallow-copy reads, `cache:set` / `cache:clear` hooks) but
-// evicts the least-recently-used entry past the cap.
-//
-// swup's own Cache class is not exported and the `cache` field is typed
-// readonly, so swupAdapter installs this through a cast.
+// Drop-in replacement for swup's unbounded cache: same API, but evicts the
+// least-recently-used entry past the cap. Installed via a cast because swup
+// does not export its Cache class and types the field readonly.
 export class LruPageCache {
   private readonly lru: LRUCache<string, CacheData>
 

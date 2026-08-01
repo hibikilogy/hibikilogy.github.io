@@ -1,5 +1,2 @@
 export { mountAccordions } from './accordion.ts'
-export {
-  disposeArticlePage,
-  initArticlePage,
-} from './articlePage.ts'
+export { setupArticlePage } from './articlePage.ts'

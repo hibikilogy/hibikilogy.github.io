@@ -1,3 +1,5 @@
+export { setupTitleTransitionCoordinator } from './coordinator.ts'
+export type { TitleTransitionCoordinator } from './coordinator.ts'
 export {
   beginPostTitleTransition,
   playPostTitleExitAnimation,

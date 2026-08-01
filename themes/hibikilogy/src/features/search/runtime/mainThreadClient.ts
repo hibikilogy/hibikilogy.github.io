@@ -1,10 +1,10 @@
 import type {
-  SearchEngine,
   SearchEngineBootstrapData,
   SearchReportListener,
   SearchStatusListener,
 } from '../types.ts'
 import type { SearchClient } from './types.ts'
+import { createSingleFlight } from 'shared/singleFlight.ts'
 import { searchRecordsInEngine } from '../core/engine.ts'
 import { getDurationMs, nowMs } from '../debug.ts'
 import { buildSearchEngine } from './engineBuilder.ts'
@@ -14,35 +14,23 @@ export function createMainThreadClient(
   onStatus?: SearchStatusListener,
   onReport?: SearchReportListener,
 ): SearchClient {
-  let enginePromise: Promise<SearchEngine> | null = null
-
-  function getEngine(): Promise<SearchEngine> {
-    if (!enginePromise) {
-      const pending = buildSearchEngine(bootstrap, { onStatus, onReport })
-      enginePromise = pending
-      void pending.catch(() => {
-        if (enginePromise === pending)
-          enginePromise = null
-      })
-    }
-    return enginePromise
-  }
+  const engine = createSingleFlight(() => buildSearchEngine(bootstrap, { onStatus, onReport }))
 
   return {
     preload: async () => {
-      await getEngine()
+      await engine.run()
     },
-    count: async () => (await getEngine()).records.length,
+    count: async () => (await engine.run()).records.length,
     search: async (term) => {
-      const engine = await getEngine()
+      const instance = await engine.run()
       const start = nowMs()
       return {
-        records: searchRecordsInEngine(engine, term),
+        records: searchRecordsInEngine(instance, term),
         engineDurationMs: getDurationMs(start),
       }
     },
     dispose: () => {
-      enginePromise = null
+      engine.reset()
     },
   }
 }

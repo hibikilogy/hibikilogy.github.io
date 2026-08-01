@@ -6,13 +6,14 @@ import type {
 } from '../types.ts'
 import type { SearchClient, SearchServiceOptions } from './types.ts'
 import { catchError } from 'shared/result.ts'
+import { createSingleFlight } from 'shared/singleFlight.ts'
 import { logSearchBuildReport } from '../debug.ts'
 
 export function createSearchService(options: SearchServiceOptions): SearchService {
   const listeners = new Set<SearchStatusListener>()
   let status: SearchIndexBuildStatus = 'cache-read'
-  let clientPromise: Promise<SearchClient> | null = null
   let disposed = false
+  const client = createSingleFlight(() => createClient())
 
   function emit(next: SearchIndexBuildStatus): void {
     status = next
@@ -21,15 +22,7 @@ export function createSearchService(options: SearchServiceOptions): SearchServic
   }
 
   function getClient(): Promise<SearchClient> {
-    if (!clientPromise) {
-      const pending = createClient()
-      clientPromise = pending
-      void pending.catch(() => {
-        if (clientPromise === pending)
-          clientPromise = null
-      })
-    }
-    return clientPromise
+    return client.run()
   }
 
   async function createClient(): Promise<SearchClient> {
@@ -60,8 +53,8 @@ export function createSearchService(options: SearchServiceOptions): SearchServic
     dispose: () => {
       disposed = true
       listeners.clear()
-      void clientPromise?.then(client => client.dispose())
-      clientPromise = null
+      void client.peek()?.then(instance => instance.dispose())
+      client.reset()
     },
   }
 
@@ -104,21 +97,17 @@ function createResilientClient(
   createFallback: () => Promise<SearchClient>,
 ): SearchClient {
   let active = primary
-  let fallbackPromise: Promise<SearchClient> | null = null
   let primaryDisposed = false
+  const fallback = createSingleFlight(createFallback)
 
   async function getFallback(error: unknown): Promise<SearchClient> {
-    if (!fallbackPromise) {
-      if (!primaryDisposed) {
-        primary.dispose()
-        primaryDisposed = true
-      }
-      // eslint-disable-next-line no-console
-      console.warn('Search worker failed during a request; falling back to main thread search.', error)
-      fallbackPromise = createFallback()
+    if (!primaryDisposed) {
+      primary.dispose()
+      primaryDisposed = true
     }
-
-    active = await fallbackPromise
+    // eslint-disable-next-line no-console
+    console.warn('Search worker failed during a request; falling back to main thread search.', error)
+    active = await fallback.run()
     return active
   }
 

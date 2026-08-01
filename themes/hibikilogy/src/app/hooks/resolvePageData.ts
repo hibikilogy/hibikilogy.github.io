@@ -1,5 +1,5 @@
 import type { PageData, PageKind } from './types.ts'
-import { pageDom } from '../../shared/dom.ts'
+import { pageDom } from 'shared/selectors.ts'
 
 function resolvePageKind(root: HTMLElement): PageKind {
   if (root.querySelector(pageDom.search))
@@ -11,7 +11,7 @@ function resolvePageKind(root: HTMLElement): PageKind {
   return 'default'
 }
 
-export function usePageData(root: HTMLElement): PageData {
+export function resolvePageData(root: HTMLElement): PageData {
   return Object.freeze({
     kind: resolvePageKind(root),
   })

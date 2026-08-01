@@ -12,6 +12,12 @@
       total-pages="{{ paginator.number_pagers }}"
       base-url="{{ paginator.base_url }}"
       mode="event"
+      aria-label="{{ tr::t(key='pagination_aria') }}"
+      previous-label="{{ tr::t(key='pagination_prev') }}"
+      next-label="{{ tr::t(key='pagination_next') }}"
+      current-page-template="{{ tr::t(key='pagination_current_template', default='第 {page} 页') }}"
+      page-aria-label-template="{{ tr::t(key='pagination_page_aria_template', default='前往第 {page} 页') }}"
+      mobile-page-template="{{ tr::t(key='pagination_mobile_template', default='第 {page} 页') }}"
       {% if paginator.previous %}previous-url="{{ paginator.previous }}"{% endif %}
       {% if paginator.next %}next-url="{{ paginator.next }}"{% endif %}
     ></site-pagination>
@@ -33,6 +39,12 @@
       total-pages="1"
       base-url="{page}"
       mode="event"
+      aria-label="{{ tr::t(key='pagination_aria') }}"
+      previous-label="{{ tr::t(key='pagination_prev') }}"
+      next-label="{{ tr::t(key='pagination_next') }}"
+      current-page-template="{{ tr::t(key='pagination_current_template', default='第 {page} 页') }}"
+      page-aria-label-template="{{ tr::t(key='pagination_page_aria_template', default='前往第 {page} 页') }}"
+      mobile-page-template="{{ tr::t(key='pagination_mobile_template', default='第 {page} 页') }}"
     ></site-pagination>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { resolveDurationMs } from '../../src/shared/animation'
+import { resolveDurationMs } from 'shared/animation.ts'
 
 const openHandlers = new WeakMap<HTMLImageElement, EventListener>()
 const attachedImages = new Set<HTMLImageElement>()
@@ -35,11 +35,6 @@ export function attachToZoom(image: HTMLImageElement): void {
   attachedImages.add(image)
 }
 
-export function attachAllToZoom(images: Iterable<HTMLImageElement> | ArrayLike<HTMLImageElement>): void {
-  for (const image of Array.from(images))
-    attachToZoom(image)
-}
-
 export function detachFromZoom(image: HTMLImageElement): void {
   const openHandler = openHandlers.get(image)
   if (openHandler) {
@@ -53,14 +48,33 @@ export function detachFromZoom(image: HTMLImageElement): void {
     closeZoom()
 }
 
-export function detachAllFromZoom(): void {
-  for (const image of attachedImages) {
-    const openHandler = openHandlers.get(image)
-    if (openHandler)
-      image.removeEventListener('click', openHandler)
+export interface ZoomBinding {
+  attachAll: (images: Iterable<HTMLImageElement> | ArrayLike<HTMLImageElement>) => void
+  detachAll: () => void
+  close: () => void
+}
+
+/**
+ * Zoom state scoped to one owner (a page): attach a set of images and later
+ * detach exactly those, leaving other owners' bindings untouched.
+ */
+export function createZoomBinding(): ZoomBinding {
+  const bound = new Set<HTMLImageElement>()
+
+  return {
+    attachAll(images) {
+      for (const image of Array.from(images)) {
+        attachToZoom(image)
+        bound.add(image)
+      }
+    },
+    detachAll() {
+      for (const image of bound)
+        detachFromZoom(image)
+      bound.clear()
+    },
+    close: () => closeZoom(),
   }
-  attachedImages.clear()
-  closeZoom()
 }
 
 export function closeZoom(): void {
@@ -87,15 +101,14 @@ function openZoom(source: HTMLImageElement): void {
     return
 
   const overlay = document.createElement('div')
-  overlay.className = 'medium-zoom-overlay'
-  applyOverlayStyle(overlay)
+  overlay.className = 'zoom-overlay'
 
   const zoomed = source.cloneNode(false) as HTMLImageElement
-  zoomed.className = `${source.className} medium-zoom-image--opened`
+  zoomed.className = `${source.className} zoom-image--opened`
   zoomed.removeAttribute('srcset')
   zoomed.removeAttribute('sizes')
   zoomed.src = source.currentSrc || source.src
-  applyZoomedImageStyle(zoomed, sourceRect)
+  applyRect(zoomed, sourceRect)
 
   const keydownHandler = (event: KeyboardEvent) => {
     if (event.key === 'Escape')
@@ -136,7 +149,7 @@ function openZoom(source: HTMLImageElement): void {
   activeSession = session
   document.body.append(overlay, zoomed)
   hideSourceImage(source)
-  document.body.classList.add('medium-zoom--opened')
+  document.body.classList.add('zoom--opened')
 
   overlay.addEventListener('click', () => closeSession(session))
   zoomed.addEventListener('click', () => closeSession(session))
@@ -200,7 +213,7 @@ function destroySession(session: ZoomSession): void {
 
   if (activeSession === session) {
     activeSession = undefined
-    document.body.classList.remove('medium-zoom--opened')
+    document.body.classList.remove('zoom--opened')
   }
 }
 
@@ -219,43 +232,14 @@ function computeTargetRect(image: HTMLImageElement): DOMRect {
 
 function hideSourceImage(image: HTMLImageElement): void {
   originalVisibility.set(image, image.style.visibility)
-  image.classList.add('medium-zoom-image--hidden')
+  image.classList.add('zoom-image--hidden')
   image.style.visibility = 'hidden'
 }
 
 function restoreSourceImage(image: HTMLImageElement): void {
-  image.classList.remove('medium-zoom-image--hidden')
+  image.classList.remove('zoom-image--hidden')
   image.style.visibility = originalVisibility.get(image) ?? ''
   originalVisibility.delete(image)
-}
-
-function applyOverlayStyle(overlay: HTMLDivElement): void {
-  Object.assign(overlay.style, {
-    position: 'fixed',
-    inset: '0',
-    opacity: '0',
-    background: 'rgba(255, 255, 255, 0.88)',
-    transition: `opacity ${resolveDurationMs('mediumZoom')}ms ease`,
-    cursor: 'zoom-out',
-    zIndex: '999',
-  })
-}
-
-function applyZoomedImageStyle(image: HTMLImageElement, rect: DOMRect): void {
-  Object.assign(image.style, {
-    position: 'fixed',
-    top: `${rect.top}px`,
-    left: `${rect.left}px`,
-    width: `${rect.width}px`,
-    height: `${rect.height}px`,
-    margin: '0',
-    opacity: '1',
-    transform: 'none',
-    transition: `top ${resolveDurationMs('mediumZoom')}ms ease, left ${resolveDurationMs('mediumZoom')}ms ease, width ${resolveDurationMs('mediumZoom')}ms ease, height ${resolveDurationMs('mediumZoom')}ms ease, opacity ${resolveDurationMs('mediumZoom')}ms ease`,
-    cursor: 'zoom-out',
-    zIndex: '1000',
-    objectFit: 'contain',
-  })
 }
 
 function applyRect(image: HTMLImageElement, rect: DOMRect): void {

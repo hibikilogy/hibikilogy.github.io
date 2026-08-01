@@ -1,8 +1,8 @@
 import type Swup from 'swup'
 import type { RouteLocation, RouteModel } from './types.ts'
 import { computed, onScopeDispose, readonly, ref, shallowRef } from '@vue/reactivity'
+import { isSearchUrl } from 'shared/url.ts'
 import { Location, updateHistoryRecord } from 'swup'
-import { isSearchUrl } from '../../ui/page-transition/index.ts'
 
 function readLocation(url = window.location.href): RouteLocation {
   const resolved = new URL(url, window.location.href)
@@ -14,9 +14,8 @@ function readLocation(url = window.location.href): RouteLocation {
   }
 }
 
-// swup tags its history records with `{ source: 'swup', index }`; the index
-// starts at 1 for the session's entry page and increments on every in-app
-// push, so an index above 1 proves a prior same-site page exists.
+// swup tags its history records with `{ source: 'swup', index }`; an index
+// above 1 proves a prior same-site page exists.
 function hasSameSiteHistory(): boolean {
   const state = window.history.state as { source?: unknown, index?: unknown } | null
   return state?.source === 'swup' && typeof state.index === 'number' && state.index > 1

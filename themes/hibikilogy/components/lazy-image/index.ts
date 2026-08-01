@@ -2,7 +2,8 @@ import type { LazyImageSource } from './types'
 import { css, html, LitElement, nothing } from 'lit'
 import { customElement, property, state } from 'lit/decorators.js'
 import { ifDefined } from 'lit/directives/if-defined.js'
-import { resolveDurationMs } from '../../src/shared/animation'
+import { resolveDurationMs } from 'shared/animation.ts'
+import { supportsIntersectionObserver } from 'shared/capabilities.ts'
 import { cn } from '../utils'
 import {
   DEFAULT_IMAGE_PLACEHOLDER,
@@ -14,7 +15,7 @@ import {
   autoSizes,
   createPlaceholderFromThumbHash,
   triggerLoad,
-} from './LazyLoad'
+} from './lazyLoad'
 import { getPreloadRootMargin, isWithinLoadThreshold, shouldLoadImmediately } from './loadPolicy'
 import { FrameLoadScheduler } from './loadScheduler'
 import { attachToZoom, detachFromZoom } from './zoom'
@@ -292,7 +293,7 @@ export class LazyImage extends LitElement {
 
     if (
       this.shouldLoadImmediately
-      || typeof IntersectionObserver === 'undefined'
+      || !supportsIntersectionObserver()
       || isWithinLoadThreshold(image, this.preloadMargin)
     ) {
       this.startLoad(image)

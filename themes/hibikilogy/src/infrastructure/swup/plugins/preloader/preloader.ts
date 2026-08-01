@@ -6,6 +6,7 @@ import type {
   PreloadStrategy,
 } from './types.ts'
 import Plugin from '@swup/plugin'
+import { deviceSupportsHover, supportsIdleCallback } from 'shared/capabilities.ts'
 import { getCurrentUrl, Location } from 'swup'
 
 const BASE_STRATEGY: PreloadStrategy = {
@@ -26,16 +27,11 @@ type AnchorElement = HTMLAnchorElement | SVGAElement
 
 interface PreloadEntry {
   state: 'queued' | 'fetching'
-  // User-intent driven (hover/touch/focus/explicit) rather than a background
-  // viewport scan; the fetch layer maps this to request priority.
+  // User-intent driven (hover/touch/focus); maps to fetch priority.
   priority: boolean
   promise: Promise<PageData>
   resolve: (page: PageData) => void
   reject: (error: unknown) => void
-}
-
-function deviceSupportsHover(): boolean {
-  return window.matchMedia('(hover: hover)').matches
 }
 
 function isAnchorElement(element: unknown): element is AnchorElement {
@@ -47,7 +43,7 @@ function isAnchorElement(element: unknown): element is AnchorElement {
 }
 
 function whenIdle(callback: () => void): () => void {
-  if ('requestIdleCallback' in window) {
+  if (supportsIdleCallback()) {
     const id = window.requestIdleCallback(callback)
     return () => window.cancelIdleCallback(id)
   }
@@ -74,9 +70,9 @@ function afterPageReady(callback: () => void): () => void {
   }
 }
 
-// Replacement for @swup/preload-plugin. Keyed by normalized `Location.url`
-// (same as `visit.to.url`), so navigations dedupe against in-flight preloads.
-// Two tiers: conservative base, aggressive on fast networks.
+// Replacement for @swup/preload-plugin, keyed by normalized URL so
+// navigations dedupe against in-flight preloads. Two tiers: conservative
+// base, aggressive on fast networks.
 export default class SwupPagePreloadPlugin extends Plugin implements PagePreloader {
   override name = 'SwupPagePreloadPlugin'
   override requires = { swup: '>=4.5' }
@@ -120,7 +116,7 @@ export default class SwupPagePreloadPlugin extends Plugin implements PagePreload
       // strong references to detached DOM across navigations.
       this.observer?.disconnect()
       this.observed = new WeakSet()
-      // Let the new page's own images and scripts start first.
+      // Let the new page's own assets start first.
       this.cancelBackgroundWork = afterPageReady(() => this.scanVisibleLinks())
     })
 
@@ -144,9 +140,8 @@ export default class SwupPagePreloadPlugin extends Plugin implements PagePreload
       }, { passive: true, capture: true }),
     ]
 
-    // Wait for page resources + idle so background work never competes
-    // with first-render assets, then cache the current page for instant
-    // back-button navigation.
+    // Wait for page resources + idle, then cache the current page for
+    // instant back-button navigation.
     this.cancelBackgroundWork = afterPageReady(() => {
       void this.preload(getCurrentUrl())
       this.scanVisibleLinks()
@@ -202,14 +197,14 @@ export default class SwupPagePreloadPlugin extends Plugin implements PagePreload
     const { swup } = this
     if (swup.cache.has(url) || this.entries.has(url))
       return false
-    // While a visit is in flight its fetch takes precedence over speculation.
-    // The initial visit has an empty target and never blocks preloading.
+    // In-flight visits take precedence over speculation (the initial visit
+    // has an empty target and never blocks).
     if (!swup.visit.done && swup.visit.to.url !== '')
       return false
     if (swup.shouldIgnoreVisit(href, { el }))
       return false
-    // Only applies to links: preloading the page we are on is pointless,
-    // while the explicit string form is how the entry page itself gets cached.
+    // Links only: preloading the current page is pointless, while the string
+    // form is how the entry page gets cached.
     if (el && swup.resolveUrl(url) === swup.resolveUrl(getCurrentUrl()))
       return false
 
@@ -251,7 +246,7 @@ export default class SwupPagePreloadPlugin extends Plugin implements PagePreload
     })
     entry.promise = promise
     this.entries.set(url, entry as PreloadEntry)
-    // Prevent unhandled rejections; navigations reuse the stored promise.
+    // Prevent unhandled rejections (navigations reuse the stored promise).
     promise.catch(() => {})
 
     ;(priority ? this.priorityQueue : this.queue).push(url)
@@ -268,8 +263,7 @@ export default class SwupPagePreloadPlugin extends Plugin implements PagePreload
       if (entryUrl === url && entry.state === 'fetching')
         continue
 
-      // Removed entries are skipped by pump(); in-flight fetches are aborted
-      // by the navigation layer's fetch:request hook.
+      // Removed entries are skipped by pump(); in-flight fetches are aborted upstream.
       this.entries.delete(entryUrl)
     }
   }
@@ -282,7 +276,7 @@ export default class SwupPagePreloadPlugin extends Plugin implements PagePreload
     return defaultHandler!(visit, args)
   }
 
-  // Observer is rebuilt when the strategy tier changes.
+  // Rebuilt when the strategy tier changes.
   private getObserver(): IntersectionObserver {
     const { threshold, rootMargin } = this.strategy()
     if (this.observer && this.observerThreshold === threshold && this.observerRootMargin === rootMargin)

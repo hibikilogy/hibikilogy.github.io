@@ -1,22 +1,21 @@
 import type { WaterfallController } from './types.ts'
-import { catchError } from '../../shared/result.ts'
+import { supportsGridLanes } from 'shared/capabilities.ts'
+import { catchError } from 'shared/result.ts'
 
-const defaultChildSelector = ':scope > .Section, :scope > .FrontPage'
-
-function supportsGridLanes(): boolean {
-  return typeof CSS !== 'undefined' && CSS.supports('display', 'grid-lanes')
-}
+const SECTION_SELECTOR = '.Section, .FrontPage'
+const DEFAULT_CHILD_SELECTOR = `:scope > ${SECTION_SELECTOR}`
 
 function queryChildren(container: Element, childSelector: string): HTMLElement[] {
   const [children] = catchError(() => (
     [...container.querySelectorAll<HTMLElement>(childSelector)]
   ))
-  return children ?? [...container.querySelectorAll<HTMLElement>('.Section, .FrontPage')]
+  // Fall back to the unscoped selector when `:scope` is unsupported.
+  return children ?? [...container.querySelectorAll<HTMLElement>(SECTION_SELECTOR)]
 }
 
 export function createWaterfallController(
   journal: HTMLElement,
-  childSelector = defaultChildSelector,
+  childSelector = DEFAULT_CHILD_SELECTOR,
   nativeLayout = supportsGridLanes(),
 ): WaterfallController {
   let animationFrame = 0
@@ -142,8 +141,8 @@ export function createWaterfallController(
     return Boolean(article && journal.clientWidth >= article.offsetWidth * 2)
   }
 
-  // The taller column owns the middle seam so the space below the shorter
-  // column stays unframed.
+  // The taller column owns the middle seam, leaving the space below the
+  // shorter column unframed.
   function updateSeamOwner(items: HTMLElement[]): void {
     const columns = new Map<number, number>()
     items.forEach((item) => {

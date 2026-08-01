@@ -18,8 +18,7 @@ export interface NavigationProgress {
   onSettle: () => void
 }
 
-// Progress bar state machine. Shows only for uncached pages when the network
-// is measured slow (immediately) or turns out slow (fallback timer).
+// Shows only for uncached pages when the network is measured slow (or turns out slow).
 export function createNavigationProgress({
   fallbackDelayMs = NAVIGATION_PROGRESS_FALLBACK_DELAY_MS,
   onStart,
@@ -81,9 +80,7 @@ export function useNavigationProgress(swup: Swup, monitor: FetchLatencyMonitor):
 
   const progress = createNavigationProgress({
     onStart: () => NProgress.start(),
-    // done(true) jumps the bar to 100% first, then NProgress fades it out and
-    // removes it on its own — the completion flash is visible instead of the
-    // bar vanishing mid-progress.
+    // done(true) completes the bar first so the finish flash is visible.
     onDone: () => NProgress.done(true),
   })
 
@@ -92,8 +89,7 @@ export function useNavigationProgress(swup: Swup, monitor: FetchLatencyMonitor):
       const url = Location.fromUrl(visit.to.url).url
       progress.onVisitStart({ cached: swup.cache.has(url), slow: monitor.isSlow() })
     }),
-    // Priority below swup's own `visit:transition` handlers so the bar
-    // completes to 100% before the exit animation and the snapshot capture.
+    // Below swup's own handlers so the bar hits 100% before the exit animation.
     swup.hooks.before('visit:transition', () => progress.onTransitionStart(), { priority: -100 }),
     swup.hooks.on('content:replace', () => progress.onTransitionStart()),
     swup.hooks.on('visit:abort', () => progress.onSettle()),

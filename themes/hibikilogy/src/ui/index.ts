@@ -1,6 +1,5 @@
 export {
-  disposeArticlePage,
-  initArticlePage,
   mountAccordions,
+  setupArticlePage,
 } from './article/index.ts'
-export { disposeOutline, initOutline } from './outline/index.ts'
+export { setupOutline } from './outline/index.ts'

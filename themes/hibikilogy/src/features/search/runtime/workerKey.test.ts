@@ -39,7 +39,7 @@ describe('search worker initialize key', () => {
 async function importWorkerApi(): Promise<SearchWorkerApi> {
   const { expose } = await import('comlink')
   const exposeMock = vi.mocked(expose)
-  await import('../../../search/worker.ts')
+  await import('./worker.ts')
 
   const api = exposeMock.mock.calls.at(-1)?.[0]
   if (!api)

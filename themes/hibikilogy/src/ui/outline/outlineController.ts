@@ -1,13 +1,23 @@
 import type { HeaderItem, OutlineOptions } from './types.ts'
+import { onScopeDispose } from '@vue/reactivity'
 import { throttle } from 'lodash-es'
-import { catchError } from '../../shared/result.ts'
+import { catchError } from 'shared/result.ts'
+import { safeDecodeURIComponent } from 'shared/url.ts'
+import { useEventListener } from 'shared/useEventListener.ts'
 import { outlineDom } from './config.ts'
 
-const resolvedHeaders: Array<Pick<HeaderItem, 'element' | 'link'>> = []
-let cleanupOutline: (() => void) | null = null
-let currentActiveHash: string | null = null
+interface OutlineState {
+  /** Level-filtered headings, in document order, for active-link tracking. */
+  anchors: Array<Pick<HeaderItem, 'element' | 'link'>>
+  activeHash: { value: string | null }
+}
 
-function getHeaders(range: number | [number, number] | 'deep' | false): HeaderItem[] {
+// Marker geometry: 8px below the active link; parked at 40px when no link is
+// active (top is set from JS; CSS only styles the visuals).
+const MARKER_ACTIVE_OFFSET = 8
+const MARKER_HIDDEN_TOP = 40
+
+function getHeaders(range: number | [number, number] | 'deep' | false): OutlineState['anchors'] {
   const headers = [...document.querySelectorAll<HTMLElement>(outlineDom.headings)]
     .filter(el => el.id && el.hasChildNodes())
     .map(el => ({
@@ -17,7 +27,8 @@ function getHeaders(range: number | [number, number] | 'deep' | false): HeaderIt
       level: Number(el.tagName[1]),
     }))
 
-  return resolveHeaders(headers, range)
+  return filterHeadersByLevel(headers, range)
+    .map(({ element, link }) => ({ element, link }))
 }
 
 function serializeHeader(header: HTMLElement): string {
@@ -30,7 +41,7 @@ function serializeHeader(header: HTMLElement): string {
   return text.trim()
 }
 
-function resolveHeaders(headers: HeaderItem[], range: number | [number, number] | 'deep' | false): HeaderItem[] {
+function filterHeadersByLevel(headers: HeaderItem[], range: number | [number, number] | 'deep' | false): HeaderItem[] {
   if (range === false)
     return []
 
@@ -41,42 +52,7 @@ function resolveHeaders(headers: HeaderItem[], range: number | [number, number] 
       ? [2, 6]
       : levelsRange
 
-  const filteredHeaders = headers.filter(header => header.level >= high && header.level <= low)
-  resolvedHeaders.length = 0
-  for (const { element, link } of filteredHeaders) {
-    resolvedHeaders.push({ element, link })
-  }
-
-  const tree: HeaderItem[] = []
-  for (let index = 0; index < filteredHeaders.length; index += 1) {
-    const current = filteredHeaders[index]
-    if (index === 0) {
-      tree.push(current)
-      continue
-    }
-
-    appendToParentOrRoot(current, filteredHeaders, index, tree)
-  }
-
-  return tree
-}
-
-function appendToParentOrRoot(
-  current: HeaderItem,
-  headers: HeaderItem[],
-  currentIndex: number,
-  tree: HeaderItem[],
-): void {
-  for (let prevIndex = currentIndex - 1; prevIndex >= 0; prevIndex -= 1) {
-    const previous = headers[prevIndex]
-    if (previous.level < current.level) {
-      const children = previous.children ??= []
-      children.push(current)
-      return
-    }
-  }
-
-  tree.push(current)
+  return headers.filter(header => header.level >= high && header.level <= low)
 }
 
 function findOutlineLink(hash: string): Element | null {
@@ -89,15 +65,11 @@ function findOutlineLink(hash: string): Element | null {
   return link ?? null
 }
 
-interface ActiveAnchorController {
-  beginNavigation: (hash: string) => void
-  dispose: () => void
-}
-
-function useActiveAnchor(marker: HTMLElement, options: OutlineOptions): ActiveAnchorController {
+function useActiveAnchor(marker: HTMLElement, options: OutlineOptions, state: OutlineState): void {
   let pendingNavigationHash: string | null = null
   let settleTimer: number | null = null
   let previousActiveLink: Element | null = null
+  let scrollFrame = 0
   const onScroll = throttle(() => {
     setActiveLink()
     if (pendingNavigationHash)
@@ -118,20 +90,22 @@ function useActiveAnchor(marker: HTMLElement, options: OutlineOptions): ActiveAn
     settleTimer = window.setTimeout(finishNavigation, 180)
   }
 
-  requestAnimationFrame(setActiveLink)
-  window.addEventListener('scroll', onScroll)
-  window.addEventListener('scrollend', finishNavigation)
+  scrollFrame = requestAnimationFrame(setActiveLink)
+  useEventListener(window, 'scroll', onScroll, { passive: true })
+  useEventListener(window, 'scrollend', finishNavigation)
+  onScopeDispose(() => {
+    onScroll.cancel()
+    cancelAnimationFrame(scrollFrame)
+    if (settleTimer !== null)
+      window.clearTimeout(settleTimer)
+  })
 
   function setActiveLink(): void {
     const scrollY = window.scrollY
     const innerHeight = window.innerHeight
     const offsetHeight = document.body.offsetHeight
     const isBottom = Math.abs(scrollY + innerHeight - offsetHeight) < 1
-    const headers = resolvedHeaders
-      .map(({ element, link }) => ({
-        element,
-        link,
-      }))
+    const headers = state.anchors
       .filter(({ element }) => !Number.isNaN(element.getBoundingClientRect().top))
 
     if (!headers.length || scrollY < 1) {
@@ -163,78 +137,54 @@ function useActiveAnchor(marker: HTMLElement, options: OutlineOptions): ActiveAn
 
     if (previousActiveLink instanceof HTMLElement) {
       previousActiveLink.classList.add('active')
-      marker.style.top = `${previousActiveLink.offsetTop + 8}px`
+      marker.style.top = `${previousActiveLink.offsetTop + MARKER_ACTIVE_OFFSET}px`
       marker.style.opacity = '1'
     }
     else {
-      marker.style.top = '40px'
+      marker.style.top = `${MARKER_HIDDEN_TOP}px`
       marker.style.opacity = '0'
     }
 
     // Sync URL hash with current active heading (without triggering scroll)
-    if (!pendingNavigationHash && hash !== currentActiveHash) {
-      currentActiveHash = hash
+    if (!pendingNavigationHash && hash !== state.activeHash.value) {
+      state.activeHash.value = hash
       options.replaceHash(hash)
     }
   }
 
-  return {
-    beginNavigation: (hash) => {
-      pendingNavigationHash = hash
-      currentActiveHash = hash
-      scheduleNavigationEnd()
-    },
-    dispose: () => {
-      onScroll.cancel()
-      if (settleTimer !== null)
-        window.clearTimeout(settleTimer)
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('scrollend', finishNavigation)
-    },
+  function beginNavigation(hash: string): void {
+    pendingNavigationHash = hash
+    state.activeHash.value = hash
+    scheduleNavigationEnd()
   }
-}
 
-export function initOutline(options: OutlineOptions): void {
-  disposeOutline()
-
-  const marker = document.querySelector<HTMLElement>(outlineDom.marker)
-  if (!marker)
-    return
-
-  getHeaders([1, 2])
-
-  const activeAnchor = useActiveAnchor(marker, options)
   const outline = marker.closest(outlineDom.root)
-  // Delegated click handler on outline: focus the target heading for accessibility
   const handleClick = (event: Event): void => {
     const el = event.target
     if (el instanceof HTMLAnchorElement && el.matches(outlineDom.link)) {
       const id = el.hash.slice(1)
-      const heading = document.getElementById(decodeURIComponent(id))
-      activeAnchor.beginNavigation(el.hash)
+      const heading = document.getElementById(safeDecodeURIComponent(id))
+      beginNavigation(el.hash)
       heading?.focus({ preventScroll: true })
     }
   }
   outline?.addEventListener('click', handleClick)
-
-  cleanupOutline = () => {
-    activeAnchor.dispose()
-    outline?.removeEventListener('click', handleClick)
-    cleanupOutline = null
-  }
-
-  // Scroll to heading if page was loaded with a hash
-  const [decodedLocationHash] = catchError(() => decodeURIComponent(location.hash))
-  const hash = decodedLocationHash ?? location.hash
-  if (hash) {
-    currentActiveHash = hash
-    const heading = resolvedHeaders.find(h => h.link === hash)?.element
-    heading?.scrollIntoView()
-  }
+  onScopeDispose(() => outline?.removeEventListener('click', handleClick))
 }
 
-export function disposeOutline(): void {
-  cleanupOutline?.()
-  resolvedHeaders.length = 0
-  currentActiveHash = null
+export function setupOutline(options: OutlineOptions): void {
+  const marker = document.querySelector<HTMLElement>(outlineDom.marker)
+  if (!marker)
+    return
+
+  const anchors = getHeaders([1, 2])
+  const state: OutlineState = { anchors, activeHash: { value: null } }
+  useActiveAnchor(marker, options, state)
+
+  const hash = safeDecodeURIComponent(location.hash)
+  if (hash) {
+    state.activeHash.value = hash
+    const heading = anchors.find(anchor => anchor.link === hash)?.element
+    heading?.scrollIntoView()
+  }
 }

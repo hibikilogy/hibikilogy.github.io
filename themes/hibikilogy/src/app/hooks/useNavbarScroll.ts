@@ -1,6 +1,8 @@
 import type { ScrollModel } from './types.ts'
 import { onScopeDispose, readonly, ref, watch } from '@vue/reactivity'
-import { useEventListener } from '../../shared/hooks/index.ts'
+import { supportsIntersectionObserver, supportsScrollStateContainers, supportsViewTimeline } from 'shared/capabilities.ts'
+import { pageDom } from 'shared/selectors.ts'
+import { useEventListener } from 'shared/useEventListener.ts'
 import { navbarDom } from '../../ui/navbar/index.ts'
 
 const CSS_DIRECTION_PROPERTY = '--joh-scroll-direction'
@@ -8,17 +10,14 @@ const CSS_DIRECTION_PROPERTY = '--joh-scroll-direction'
 export function useNavbarScroll(root: ParentNode, scroll: ScrollModel) {
   const navbar = root.querySelector<HTMLElement>(navbarDom.root)
   const postHero = document.body.classList.contains('post')
-    ? root.querySelector<HTMLElement>('.Hero')
+    ? root.querySelector<HTMLElement>(pageDom.hero)
     : null
   const scrollingDown = ref(false)
   const postHeroPassed = ref(!postHero)
-  const nativePostHeroBackground = typeof CSS !== 'undefined'
-    && CSS.supports('animation-timeline: view()')
+  const nativePostHeroBackground = supportsViewTimeline()
   let directionProbeFrame = 0
   let nativeDirection: 'pending' | 'supported' | 'unsupported'
-    = typeof CSS !== 'undefined' && CSS.supports('container-type: scroll-state')
-      ? 'pending'
-      : 'unsupported'
+    = supportsScrollStateContainers() ? 'pending' : 'unsupported'
 
   const syncPostHero = (bottom: number): void => {
     if (bottom <= 0)
@@ -61,7 +60,7 @@ export function useNavbarScroll(root: ParentNode, scroll: ScrollModel) {
     syncPostHero(postHero.getBoundingClientRect().bottom)
     syncPostHeroBackground()
 
-    if (typeof IntersectionObserver === 'function') {
+    if (supportsIntersectionObserver()) {
       const observer = new IntersectionObserver(([entry]) => {
         if (entry)
           syncPostHero(entry.boundingClientRect.bottom)
@@ -79,7 +78,7 @@ export function useNavbarScroll(root: ParentNode, scroll: ScrollModel) {
     if (nativeDirection === 'pending')
       probeNativeDirection()
     syncPostHeroBackground()
-    if (postHero && typeof IntersectionObserver !== 'function')
+    if (postHero && !supportsIntersectionObserver())
       syncPostHero(postHero.getBoundingClientRect().bottom)
   })
   onScopeDispose(stopScrollSync)

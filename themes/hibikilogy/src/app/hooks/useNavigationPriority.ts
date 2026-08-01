@@ -13,7 +13,7 @@ export function useNavigationPriority(swup: Swup, monitor: FetchLatencyMonitor, 
       const { url } = args
       const isNavigation = navigationUrl !== null && url === navigationUrl
 
-      // Chain upstream timeout into our controller so preloads stay abortable.
+      // Chain upstream so preloads stay abortable.
       const controller = new AbortController()
       const upstream = args.options.signal
       if (upstream) {
@@ -29,8 +29,7 @@ export function useNavigationPriority(swup: Swup, monitor: FetchLatencyMonitor, 
         inFlightPreloads.set(url, controller)
 
       const startedAt = performance.now()
-      // Three tiers: navigation > user-intent preloads (hover/touch/focus)
-      // > background viewport preloads.
+      // navigation > intent preloads > viewport preloads.
       const priority: RequestInit['priority'] = isNavigation
         ? 'high'
         : preloader.isPriorityPreload(url) ? 'auto' : 'low'
@@ -65,7 +64,7 @@ export function useNavigationPriority(swup: Swup, monitor: FetchLatencyMonitor, 
 
       visit.animation.wait = true
 
-      // Keep the target's own in-flight preload for the navigation to reuse.
+      // Keep the target's in-flight preload for the navigation to reuse.
       preloader.releaseForNavigation(url)
       for (const [preloadUrl, controller] of inFlightPreloads) {
         if (preloadUrl !== url)

@@ -1,6 +1,6 @@
 @import '../lib/media.css';
 @import '../components/hero.css';
-@import '../components/medium-zoom.css';
+@import '../components/zoom.css';
 @import '../components/toc.css';
 @import '../components/footnotes.css';
 @import '../components/code.css';

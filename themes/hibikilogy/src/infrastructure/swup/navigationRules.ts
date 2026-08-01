@@ -1,6 +1,4 @@
-// Feeds and file assets (any pathname with an extension) load natively —
-// swup can't match their containers, and caching non-HTML bodies as pages
-// would break subsequent visits.
+// Feeds and file assets (pathnames with extensions) load natively.
 export function isPageNavigationUrl(url: string, base: string): boolean {
   const target = new URL(url, base)
   if (target.origin !== new URL(base).origin)

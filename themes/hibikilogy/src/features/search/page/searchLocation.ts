@@ -1,5 +1,6 @@
 import type { SearchQuery, SearchSort } from '../types.ts'
 import { normalizePageNumber } from 'components/site-pagination/utils.ts'
+import { serializeUrl } from 'shared/url.ts'
 
 export function parseSearchLocation(href: string): SearchQuery {
   const url = new URL(href, window.location.href)
@@ -28,13 +29,15 @@ export function buildSearchHref(currentHref: string, query: SearchQuery): string
       : url.searchParams.delete('sort')
   }
 
-  return `${url.pathname}${url.search}${url.hash}`
+  return serializeUrl(url)
 }
 
 export function normalizeSearchSort(value: string | null | undefined): SearchSort {
   return value === 'title' ? 'title' : 'relevance'
 }
 
+// Deliberately excludes the hash: the snapshot key identifies a result set,
+// and the hash only tracks the last focused heading.
 export function getSearchLocationKey(href: string): string {
   const url = new URL(href, window.location.href)
   return `${url.pathname}${url.search}`

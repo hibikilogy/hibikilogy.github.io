@@ -2,9 +2,9 @@ import type { SearchFieldDefinition, SearchRecord } from './types.ts'
 import { HIBIKILOGY_CONFIG, HIBIKILOGY_TRANSLATIONS } from 'virtual:hibikilogy-config'
 import { fmt } from './utils.ts'
 
-export const searchPageSize = HIBIKILOGY_CONFIG.searchPageSize
+export const SEARCH_PAGE_SIZE = HIBIKILOGY_CONFIG.searchPageSize
 
-export const searchFocusIntentKey = 'search-focus-intent'
+export const SEARCH_FOCUS_INTENT_KEY = 'search-focus-intent'
 export const searchMessages = {
   indexLoading: HIBIKILOGY_TRANSLATIONS.searchIndexLoading,
   cacheReading: HIBIKILOGY_TRANSLATIONS.searchCacheReading,

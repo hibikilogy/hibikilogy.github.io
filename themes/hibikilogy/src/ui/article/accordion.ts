@@ -1,4 +1,5 @@
-import { catchError } from '../../shared/result.ts'
+import { onScopeDispose } from '@vue/reactivity'
+import { catchError } from 'shared/result.ts'
 
 function normalizeAccordionDefaultValue(rawValue: string | undefined): string[] {
   if (!rawValue)
@@ -31,8 +32,9 @@ function applyAccordionState(root: HTMLElement, targetItem: HTMLDetailsElement, 
   targetItem.open = nextOpenState
 }
 
-export function mountAccordions(root: ParentNode): () => void {
+export function mountAccordions(root: ParentNode): void {
   const controller = new AbortController()
+  onScopeDispose(() => controller.abort())
   const accordions = root.querySelectorAll<HTMLElement>('[data-accordion]')
 
   for (const root of accordions) {
@@ -63,6 +65,4 @@ export function mountAccordions(root: ParentNode): () => void {
       }, { signal: controller.signal })
     }
   }
-
-  return () => controller.abort()
 }

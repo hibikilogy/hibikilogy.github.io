@@ -1,28 +1,20 @@
 import type { PageModule } from './types.ts'
-import { onScopeDispose } from '@vue/reactivity'
+import { serializeUrl } from 'shared/url.ts'
 import {
-  disposeArticlePage,
-  disposeOutline,
-  initArticlePage,
-  initOutline,
   mountAccordions,
+  setupArticlePage,
+  setupOutline,
 } from '../../ui/index.ts'
 
 export const mountArticlePage: PageModule = ({ app, page }) => {
-  const disposeAccordions = mountAccordions(page.root)
+  mountAccordions(page.root)
 
-  initOutline({
+  setupOutline({
     replaceHash: (hash) => {
       const url = new URL(app.route.current.value.href)
       url.hash = hash ?? ''
-      app.route.replace(url.pathname + url.search + url.hash)
+      app.route.replace(serializeUrl(url))
     },
   })
-  initArticlePage()
-
-  onScopeDispose(() => {
-    disposeAccordions()
-    disposeOutline()
-    disposeArticlePage()
-  })
+  setupArticlePage()
 }

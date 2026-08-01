@@ -5,16 +5,28 @@ import type {
   SearchExecutionResult,
   SearchIndexBuildStatus,
   SearchWorkerApi,
-} from '../features/search/types.ts'
+} from '../types.ts'
 import { expose } from 'comlink'
-import { searchRecordsInEngine } from '../features/search/core/engine.ts'
-import { getDurationMs, nowMs } from '../features/search/debug.ts'
-import { buildSearchEngine } from '../features/search/runtime/index.ts'
+import { createSingleFlight } from 'shared/singleFlight.ts'
+import { searchRecordsInEngine } from '../core/engine.ts'
+import { getDurationMs, nowMs } from '../debug.ts'
+import { buildSearchEngine } from './index.ts'
 
-let enginePromise: Promise<SearchEngine> | null = null
+let currentBootstrap: SearchEngineBootstrapData | null = null
 let currentKey = ''
 let statusListener: ((status: SearchIndexBuildStatus) => void) | undefined
 let reportListener: ((report: SearchBuildReport) => void) | undefined
+const engine = createSingleFlight<SearchEngine>(() => {
+  if (!currentBootstrap)
+    throw new Error('Search worker is not initialized')
+  return buildSearchEngine(
+    currentBootstrap,
+    {
+      onStatus: status => statusListener?.(status),
+      onReport: report => reportListener?.(report),
+    },
+  )
+})
 
 const api: SearchWorkerApi = {
   async initialize(bootstrap, onStatus, onReport) {
@@ -28,43 +40,34 @@ const api: SearchWorkerApi = {
     reportListener = onReport
     if (currentKey !== nextKey) {
       currentKey = nextKey
-      enginePromise = null
+      currentBootstrap = bootstrap
+      engine.reset()
     }
 
-    await getEngine(bootstrap)
+    await getEngine()
   },
   async count() {
     return (await requireEngine()).records.length
   },
   async search(term: string): Promise<SearchExecutionResult> {
-    const engine = await requireEngine()
+    const instance = await requireEngine()
     const start = nowMs()
     return {
-      records: searchRecordsInEngine(engine, term),
+      records: searchRecordsInEngine(instance, term),
       engineDurationMs: getDurationMs(start),
     }
   },
 }
 
-function getEngine(bootstrap: SearchEngineBootstrapData): Promise<SearchEngine> {
-  if (!enginePromise) {
-    const pending = buildSearchEngine(bootstrap, {
-      onStatus: status => statusListener?.(status),
-      onReport: report => reportListener?.(report),
-    })
-    enginePromise = pending
-    void pending.catch(() => {
-      if (enginePromise === pending)
-        enginePromise = null
-    })
-  }
-  return enginePromise
+function getEngine(): Promise<SearchEngine> {
+  return engine.run()
 }
 
 function requireEngine(): Promise<SearchEngine> {
-  if (!enginePromise)
+  const pending = engine.peek()
+  if (!pending)
     return Promise.reject(new Error('Search worker is not initialized'))
-  return enginePromise
+  return pending
 }
 
 expose(api)

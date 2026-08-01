@@ -1,40 +1,38 @@
-import { pageDom } from '../../shared/dom.ts'
+import type { ZoomBinding } from 'components/lazy-image/zoom.ts'
+import { onScopeDispose } from '@vue/reactivity'
+import { createZoomBinding } from 'components/lazy-image/zoom.ts'
+import { pageDom } from 'shared/selectors.ts'
 import { outlineDom } from '../outline/index.ts'
 
-interface MediumZoomController {
-  close: () => Promise<unknown>
-  detach: (...selectors: Array<string | NodeListOf<Element> | Element[] | Element>) => MediumZoomController
-}
-
-let articleZoom: MediumZoomController | null = null
-let activeArticle: HTMLElement | null = null
-
-export function initArticlePage(): void {
+/**
+ * Sets up the article page enhancements (KaTeX, image zoom, Heti spacing)
+ * inside the page scope. Async tasks guard against running after the scope
+ * is disposed — the page was already swapped out.
+ */
+export function setupArticlePage(): void {
   const article = document.querySelector<HTMLElement>(pageDom.article)
-  if (!article) {
-    disposeArticlePage()
+  if (!article)
     return
-  }
 
-  activeArticle = article
-  void renderArticleMath(article).catch(() => {})
-  void bindArticleZoom(article).catch(() => {})
-  void applyHetiSpacing(article).catch(() => {})
+  let disposed = false
+  const zoom = createZoomBinding()
+  onScopeDispose(() => {
+    disposed = true
+    zoom.close()
+    zoom.detachAll()
+  })
+
+  void renderArticleMath(article, () => disposed).catch(() => {})
+  bindArticleZoom(article, zoom)
+  void applyHetiSpacing(article, () => disposed).catch(() => {})
 }
 
-export function disposeArticlePage(): void {
-  void articleZoom?.close?.().catch(() => {})
-  articleZoom?.detach?.()
-  articleZoom = null
-  activeArticle = null
-}
-
-async function renderArticleMath(article: HTMLElement): Promise<void> {
+async function renderArticleMath(article: HTMLElement, isDisposed: () => boolean): Promise<void> {
   if (!article.hasAttribute('data-katex'))
     return
 
   const { default: renderMathInElement } = await import('katex/dist/contrib/auto-render.mjs')
-  if (activeArticle !== article || !document.contains(article))
+  if (isDisposed() || !document.contains(article))
     return
 
   renderMathInElement(article, {
@@ -48,26 +46,22 @@ async function renderArticleMath(article: HTMLElement): Promise<void> {
   })
 }
 
-async function bindArticleZoom(article: HTMLElement): Promise<void> {
-  const images = article.querySelectorAll(':where(img)')
+function bindArticleZoom(article: HTMLElement, zoom: ZoomBinding): void {
+  const images = article.querySelectorAll<HTMLImageElement>(':where(img)')
   if (!images.length)
     return
 
-  const { default: mediumZoom } = await import('medium-zoom')
-  if (activeArticle !== article || !document.contains(article))
-    return
-
-  void articleZoom?.close?.().catch(() => {})
-  articleZoom?.detach?.()
-  articleZoom = mediumZoom(images) as MediumZoomController
+  zoom.close()
+  zoom.detachAll()
+  zoom.attachAll(images)
 }
 
-async function applyHetiSpacing(article: HTMLElement): Promise<void> {
+async function applyHetiSpacing(article: HTMLElement, isDisposed: () => boolean): Promise<void> {
   if (!document.querySelector(outlineDom.marker))
     return
 
   const { default: Heti } = await import('./heti')
-  if (activeArticle !== article || !document.contains(article))
+  if (isDisposed() || !document.contains(article))
     return
 
   const heti = new Heti(pageDom.article)

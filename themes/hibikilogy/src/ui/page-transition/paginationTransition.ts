@@ -1,4 +1,4 @@
-import { getDefaultOrigin, getPathname, normalizePathname } from '../../shared/url.ts'
+import { getDefaultOrigin, getPathname, normalizePathname } from 'shared/url.ts'
 
 export type PaginationTransitionDirection = 'forward' | 'backward'
 

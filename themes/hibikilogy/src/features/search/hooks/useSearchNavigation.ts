@@ -1,19 +1,15 @@
 import type { RouteModel } from 'app/hooks/index.ts'
 import type { SearchService } from '../types.ts'
-import { useEventListener } from 'shared/hooks/index.ts'
-import { searchFocusIntentKey } from '../config.ts'
+import { supportsIdleCallback } from 'shared/capabilities.ts'
+import { isEditableTarget, shouldIgnoreKeyEvent } from 'shared/keyboard.ts'
+import { SEARCH_PATH } from 'shared/url.ts'
+import { useEventListener } from 'shared/useEventListener.ts'
+import { SEARCH_FOCUS_INTENT_KEY } from '../config.ts'
 import { focusSearchInput, searchDom } from '../searchDom.ts'
 import { preloadSearchPage } from '../searchPage.ts'
 
-function isEditableTarget(target: EventTarget | null): boolean {
-  return target instanceof HTMLElement && (
-    target.isContentEditable
-    || ['input', 'textarea', 'select'].includes(target.tagName.toLowerCase())
-  )
-}
-
 export function scheduleIdleSearchPreload(service: SearchService): void {
-  if (!('requestIdleCallback' in window))
+  if (!supportsIdleCallback())
     return
 
   requestIdleCallback(() => {
@@ -26,7 +22,7 @@ export function scheduleIdleSearchPreload(service: SearchService): void {
 
 export function useSearchNavigation(route: RouteModel, service: SearchService): void {
   function preloadSearch(): void {
-    route.preload('/search')
+    route.preload(SEARCH_PATH)
     void Promise.all([
       preloadSearchPage(),
       service.preload(),
@@ -39,8 +35,8 @@ export function useSearchNavigation(route: RouteModel, service: SearchService): 
       return
     }
     preloadSearch()
-    sessionStorage.setItem(searchFocusIntentKey, focusIntent)
-    route.navigate('/search')
+    sessionStorage.setItem(SEARCH_FOCUS_INTENT_KEY, focusIntent)
+    route.navigate(SEARCH_PATH)
   }
 
   useEventListener(document, 'pointerover', (event) => {
@@ -69,7 +65,7 @@ export function useSearchNavigation(route: RouteModel, service: SearchService): 
   })
 
   useEventListener(document, 'keydown', (event) => {
-    if (event.defaultPrevented || event.isComposing || event.altKey)
+    if (shouldIgnoreKeyEvent(event))
       return
 
     if (event.key === 'Escape' && route.isSearchPage.value) {

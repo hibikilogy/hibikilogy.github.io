@@ -1,12 +1,6 @@
-import { getDefaultOrigin, getPathname, normalizePathname } from '../../shared/url.ts'
-
-export const searchPath = '/search'
+import { getDefaultOrigin, isSearchUrl } from 'shared/url.ts'
 
 export type SearchTransitionScope = 'enter-search' | 'leave-search'
-
-export function isSearchUrl(url: string, origin = getDefaultOrigin()): boolean {
-  return normalizePathname(getPathname(url, origin)) === searchPath
-}
 
 export function getSearchTransitionScope(
   fromUrl: string,

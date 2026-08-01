@@ -29,7 +29,7 @@ import {
   segmentSearchText,
   tokenizeForFuse,
 } from '../utils.ts'
-import { buildExactBodySearchResults } from './body-match.ts'
+import { buildExactBodySearchResults } from './bodyMatch.ts'
 import {
   getFuseQueryText,
   getPositiveQueryText,

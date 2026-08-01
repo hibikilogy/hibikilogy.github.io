@@ -2,7 +2,7 @@ import type { SearchResultRecord } from '../types.ts'
 import { html, nothing } from 'lit'
 import { HIBIKILOGY_TRANSLATIONS } from 'virtual:hibikilogy-config'
 import { parseSearchQuery } from '../core/query.ts'
-import { createExcerpt, getPathSlug, normalizeSiteUrl } from '../utils.ts'
+import { createExcerpt, getPathSlug, getSearchTitle, normalizeSiteUrl } from '../utils.ts'
 import { formatPublishDate } from './formatPublishDate.ts'
 
 export function renderSearchArticle(
@@ -10,7 +10,7 @@ export function renderSearchArticle(
   highlightTerms: readonly string[],
 ) {
   const href = normalizeSiteUrl(result.url || result.path)
-  const title = getSearchTitle(result)
+  const title = getSearchTitle(result, HIBIKILOGY_TRANSLATIONS.untitled)
   const subtitle = result.subtitle || result.description || getPathSlug(href)
   const excerpt = buildSearchExcerpt(result, subtitle)
 
@@ -57,10 +57,6 @@ export function getSearchHighlightTerms(searchTerm: string): string[] {
   return [...new Set(terms)]
     .sort((left, right) => right.length - left.length)
     .slice(0, 6)
-}
-
-function getSearchTitle(result: Partial<SearchResultRecord>): string {
-  return result.title || result.slug || HIBIKILOGY_TRANSLATIONS.untitled
 }
 
 function buildSearchExcerpt(result: SearchResultRecord, subtitle: string): string {
@@ -123,6 +119,11 @@ function renderMeta(result: SearchResultRecord) {
   `
 }
 
+/**
+ * Stable per-page key for the post-title transition. Must stay in sync with
+ * `post_title_transition_name` in templates/macros/data.html — server-rendered
+ * titles use that macro, search results generate the same shape here.
+ */
 function getPostTitleTransitionName(href: string): string {
   const path = href.replace(/[?#].*$/, '').replace(/^\/|\/$/g, '').replace(/[/.]/g, '-')
   return `post-title-${path || 'index'}`

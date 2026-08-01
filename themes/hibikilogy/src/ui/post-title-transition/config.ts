@@ -1,7 +1,9 @@
+import { pageDom } from 'shared/selectors.ts'
+
 export const postTitleDom = {
   titleSelector: '.PostTitleTransition[data-post-title-key]',
   titleTextSelector: '.PostTitleTransitionText',
-  heroSelector: '.Hero',
+  heroSelector: pageDom.hero,
   overlayClass: 'PostTitleTransitionOverlay',
   glyphClass: 'PostTitleTransitionGlyph',
   svgClass: 'PostTitleTransitionSvg',
@@ -11,23 +13,15 @@ export const postTitleDom = {
   styleAttribute: 'data-post-title-transition-style',
 } as const
 
-/**
- * Viewport width below which the device is considered "mobile" for title
- * motion purposes (shorter scatter travel, stricter performance gating).
- * Shared by scatter layout and the capability probe to avoid drift.
- */
-export const compactViewportWidth = 720
+/** Consecutive frames sampled before accepting title geometry. */
+export const TITLE_LAYOUT_STABILITY_FRAME_LIMIT = 2
 
-/** Number of consecutive frames sampled before accepting title geometry. */
-export const titleLayoutStabilityFrameLimit = 2
-
-/** Keep navigation responsive when a webfont request is slow or unavailable. */
-export const titleFontWaitLimit = 120
+/** Cap on webfont loading before layout is accepted anyway. */
+export const TITLE_FONT_WAIT_LIMIT = 120
 
 /** Reuse a recently verified layout after pointer/focus intent. */
-export const titleLayoutWarmDuration = 2_000
+export const TITLE_LAYOUT_WARM_DURATION = 2_000
 
-/** Timing for the shared title-to-title transition. */
 export const sharedTitleMotion = {
   glyphDuration: 500,
   maxOrderedDelay: 180,
@@ -36,18 +30,17 @@ export const sharedTitleMotion = {
   crossFadeEasing: 'ease-in-out',
 } as const
 
-/** Motion and geometry for a Hero title leaving toward the upper-right. */
+/** Geometry for a Hero title leaving toward the upper-right. */
 export const scatterTitleMotion = {
   glyphDuration: 220,
   maxStagger: 130,
   easing: 'cubic-bezier(0.72, 0, 1, 0.35)',
 
-  // Compact viewports use a shorter travel distance to avoid edge clipping.
   compactMaxDistance: 72,
   wideMaxDistance: 104,
   minDistance: 40,
 
-  // atan2(-1, 5) points mostly right with a subtle upward trajectory.
+  // atan2(-1, 5): mostly right with a subtle upward trajectory.
   directionX: 5,
   directionY: -1,
   angleVariation: 0.28,
@@ -60,10 +53,4 @@ export const scatterTitleMotion = {
   randomDelayWeight: 0.45,
 } as const
 
-/** Conservative capability guard for detailed per-glyph motion on mobile. */
-export const titleMotionPerformance = {
-  lowCoreCount: 4,
-  lowMemoryGb: 4,
-} as const
-
-export const svgNamespace = 'http://www.w3.org/2000/svg'
+export const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'

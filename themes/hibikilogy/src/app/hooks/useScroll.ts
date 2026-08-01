@@ -1,6 +1,6 @@
 import type { ScrollModel } from './types.ts'
 import { computed, onScopeDispose, reactive, readonly, ref } from '@vue/reactivity'
-import { useEventListener } from '../../shared/hooks/index.ts'
+import { useEventListener } from 'shared/useEventListener.ts'
 
 type ScrollTarget = Window | Document | HTMLElement
 

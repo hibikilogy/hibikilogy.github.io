@@ -1,5 +1,6 @@
+import { effectScope } from '@vue/reactivity'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { disposeOutline, initOutline } from './outlineController.ts'
+import { setupOutline } from './outlineController.ts'
 
 function mountOutlineDom(): void {
   document.body.innerHTML = `
@@ -16,8 +17,11 @@ function mountOutlineDom(): void {
 }
 
 describe('outlineController', () => {
+  let scope: ReturnType<typeof effectScope> | null = null
+
   afterEach(() => {
-    disposeOutline()
+    scope?.stop()
+    scope = null
     document.body.replaceChildren()
     window.history.replaceState(null, '', '/')
   })
@@ -26,14 +30,19 @@ describe('outlineController', () => {
     mountOutlineDom()
     window.history.replaceState(null, '', '/articles/foo/#%')
 
-    expect(() => initOutline({ replaceHash: vi.fn() })).not.toThrow()
-    expect(() => disposeOutline()).not.toThrow()
+    scope = effectScope()
+    expect(() => {
+      scope!.run(() => setupOutline({ replaceHash: vi.fn() }))
+    }).not.toThrow()
   })
 
   it('initializes and scrolls to the heading for a valid hash', () => {
     mountOutlineDom()
     window.history.replaceState(null, '', '/articles/foo/#details')
 
-    expect(() => initOutline({ replaceHash: vi.fn() })).not.toThrow()
+    scope = effectScope()
+    expect(() => {
+      scope!.run(() => setupOutline({ replaceHash: vi.fn() }))
+    }).not.toThrow()
   })
 })

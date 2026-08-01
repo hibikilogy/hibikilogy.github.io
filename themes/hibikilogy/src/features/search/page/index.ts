@@ -1,7 +1,7 @@
 import type { AppContext, PageContext } from 'app/index.ts'
 import { onScopeDispose, watch } from '@vue/reactivity'
-import { useEventListener } from 'shared/hooks/index.ts'
-import { searchFocusIntentKey } from '../config.ts'
+import { useEventListener } from 'shared/useEventListener.ts'
+import { SEARCH_FOCUS_INTENT_KEY } from '../config.ts'
 import { useSearch } from '../hooks/useSearch.ts'
 import { focusSearchInput, searchDom } from '../searchDom.ts'
 import { createSearchView } from './searchView.ts'
@@ -63,10 +63,10 @@ export function mountSearchPage(app: AppContext, page: PageContext): void {
 }
 
 function consumeSearchFocusIntent(): boolean {
-  const intent = sessionStorage.getItem(searchFocusIntentKey)
+  const intent = sessionStorage.getItem(SEARCH_FOCUS_INTENT_KEY)
   if (!intent)
     return false
 
-  sessionStorage.removeItem(searchFocusIntentKey)
+  sessionStorage.removeItem(SEARCH_FOCUS_INTENT_KEY)
   return true
 }

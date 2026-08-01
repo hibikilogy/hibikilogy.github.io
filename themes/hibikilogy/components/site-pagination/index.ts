@@ -5,7 +5,7 @@ import { customElement, property } from 'lit/decorators.js'
 import { cn } from '../utils'
 import {
   clampPage,
-  compactPageLimit,
+  COMPACT_PAGE_LIMIT,
   getPaginationItems,
   normalizePageNumber,
 } from './utils'
@@ -21,9 +21,7 @@ const DIRECTION_LINK_CLASS = [
 ].join(' ')
 const DIRECTION_ICON_CLASS = 'inline-block h-[1.5em] w-[1.5em] align-sub'
 
-/**
- * `<site-pagination>` - paginated navigation, rendered into Shadow DOM.
- */
+/** `<site-pagination>` - paginated navigation, rendered into Shadow DOM. */
 @customElement('site-pagination')
 export class SitePagination extends LitElement {
   getHref?: (page: number) => string
@@ -41,49 +39,38 @@ export class SitePagination extends LitElement {
     }
   `
 
-  /** @attr current-page */
   @property({ attribute: 'current-page', type: Number })
   currentPage = 1
 
-  /** @attr total-pages */
   @property({ attribute: 'total-pages', type: Number })
   totalPages = 1
 
-  /** @attr base-url */
   @property({ attribute: 'base-url' })
   baseUrl = ''
 
-  /** @attr previous-url */
   @property({ attribute: 'previous-url' })
   previousUrl: string | null = null
 
-  /** @attr next-url */
   @property({ attribute: 'next-url' })
   nextUrl: string | null = null
 
-  /** @attr aria-label */
   @property({ attribute: 'aria-label' })
-  navigationLabel = '分页'
+  navigationLabel = 'Pagination'
 
-  /** @attr previous-label */
   @property({ attribute: 'previous-label' })
-  previousLabel = '上一页'
+  previousLabel = 'Previous page'
 
-  /** @attr next-label */
   @property({ attribute: 'next-label' })
-  nextLabel = '下一页'
+  nextLabel = 'Next page'
 
-  /** @attr current-page-template */
   @property({ attribute: 'current-page-template' })
-  currentPageTemplate = '第 {page} 页'
+  currentPageTemplate = 'Page {page}'
 
-  /** @attr page-aria-label-template */
   @property({ attribute: 'page-aria-label-template' })
-  pageAriaLabelTemplate = '前往第 {page} 页'
+  pageAriaLabelTemplate = 'Go to page {page}'
 
-  /** @attr mobile-page-template */
   @property({ attribute: 'mobile-page-template' })
-  mobilePageTemplate = '第 {page} 页'
+  mobilePageTemplate = 'Page {page}'
 
   /** @attr mode - `"link"` (navigate) or `"event"` (dispatch page-change). */
   @property()
@@ -139,7 +126,7 @@ export class SitePagination extends LitElement {
   }
 
   private renderPageLink(page: number, isCurrent: boolean) {
-    const showPageNumber = isCurrent && this.totalPages > compactPageLimit
+    const showPageNumber = isCurrent && this.totalPages > COMPACT_PAGE_LIMIT
     const label = showPageNumber
       ? this.formatTemplate(this.currentPageTemplate, page)
       : String(page)

@@ -1,9 +1,3 @@
-/**
- * Check whether an element is rendered and intersects the current viewport.
- *
- * `checkVisibility` covers CSS/rendering state, while IntersectionObserver
- * covers viewport intersection without duplicating browser geometry rules.
- */
 export async function isElementVisibleInViewport(
   element: Element,
   signal?: AbortSignal,

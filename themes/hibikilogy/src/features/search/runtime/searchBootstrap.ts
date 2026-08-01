@@ -1,4 +1,4 @@
-import type { RuntimeConfig } from 'infra/runtime-config/index.ts'
+import type { RuntimeConfig } from 'shared/runtime-config/index.ts'
 import type {
   SearchEngineBootstrapData,
 } from '../types.ts'

@@ -1,4 +1,5 @@
 import { getPaginationTransitionDirection } from './paginationTransition.ts'
+import { deferClearSearchTransitionState } from './searchBoxTransition.ts'
 import { getSearchTransitionScope } from './searchTransition.ts'
 
 const transitionAttributes = [
@@ -31,4 +32,15 @@ export function setTransitionState(fromUrl: string, toUrl: string): void {
 export function clearTransitionState(): void {
   for (const attribute of transitionAttributes)
     document.documentElement.removeAttribute(attribute)
+}
+
+/** Clears the transition state at visit end; defers while the search veil is retracting. */
+export function settleTransitionState(): void {
+  if (document.documentElement.dataset.searchOverlay === 'active') {
+    // Keep the veil's fill until its retract animation completes.
+    deferClearSearchTransitionState(clearTransitionState)
+  }
+  else {
+    clearTransitionState()
+  }
 }

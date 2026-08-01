@@ -20,7 +20,7 @@ useSearch
 生产代码位于 `themes/hibikilogy/src/features/search/`：
 
 ```text
-search/
+features/search/
 ├─ core/       纯查询、规范化、结果合并和标签聚合
 ├─ hooks/      URL 驱动的搜索状态与全局搜索入口交互
 ├─ page/       搜索页 DOM adapter、Lit 模板、分页和动效
@@ -79,14 +79,14 @@ search/
 
 ## Worker 与 fallback
 
-`SearchService` 通过 Comlink 调用 `src/search/worker.ts`。Worker 初始化或请求失败时：
+`SearchService` 通过 Comlink 调用 `src/features/search/runtime/worker.ts`。Worker 初始化或请求失败时：
 
 1. 终止失败 Worker；
 2. 只创建一个共享 fallback Promise，避免并发失败重复建立索引；
 3. 动态导入 `mainThreadClient.ts`；
 4. 使用同一套纯 core 和 IndexedDB 缓存继续查询。
 
-Vite 将搜索页面、纯搜索 core 和 Fuse 引擎分成独立 chunk。首屏 `ui.js` 不静态加载 Fuse 或搜索引擎；进入搜索页只加载页面层，Worker 正常时主线程仍不会加载 Fuse。
+产物由 rolldown 自动代码分割：Fuse 与搜索引擎只从 Worker 入口和懒加载页面可达，首屏 `ui.js` 不静态加载它们；进入搜索页只加载页面层，Worker 正常时主线程仍不会加载 Fuse。
 
 ## URL 参数
 

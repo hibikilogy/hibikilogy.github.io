@@ -19,10 +19,9 @@ Swup 替换 `#app` 时先销毁旧 PageScope。应用服务不能保存页面 DO
 |---|---|
 | `app/` | 生命周期、依赖组合、PageKind 调度 |
 | `features/` | Search、Waterfall 等业务能力 |
-| `infrastructure/` | Swup、运行时配置、浏览器机制 |
+| `infrastructure/` | Swup 适配、网络质量监测 |
 | `ui/` | DOM adapter、ARIA、动画 |
 | `shared/` | 小型通用函数和稳定契约 |
-| `search/worker.ts` | Search Worker 入口 |
 
 ```text
 entry -> app -> features / infrastructure / ui
@@ -35,7 +34,7 @@ infrastructure -> shared
 - Feature 内按需拆为 `core/`、`hooks/`、`runtime/`、`page/`。
 - `core` 只接收显式输入，不读取 DOM、Worker、缓存或 Swup。
 - Infrastructure 封装外部机制；UI 只渲染并派发 action。
-- Shared 不作杂项目录。现有 `shared/url.ts -> runtime config` 是例外，不继续复制。
+- Shared 不作杂项目录。`shared/runtime-config/` 存放站点运行时配置（虚拟模块），其余共享代码集中在 `shared/` 各文件。
 - 跨模块从 `index.ts` 导入；模块内部直接导入实现文件。
 - `index.ts` 只组合或导出，禁止从自己的 barrel 回引。
 
@@ -57,7 +56,7 @@ PageKind 模块：
 | 请求优先级、fetch 延迟样本 | `useNavigationPriority` |
 | 页面预加载队列与在途预加载 | `SwupPagePreloadPlugin` |
 | Navbar、滚动和视口 | `useLayout` |
-| 页面类型 | `usePageData` |
+| 页面类型 | `resolvePageData` |
 | 搜索 query、phase、response、error | `useSearch` |
 | 搜索索引状态 | `SearchService` |
 | 搜索成功快照 | `SnapshotStore` |
@@ -90,7 +89,7 @@ event -> action -> owning hook/service -> state -> computed ViewModel -> render
 
 | 范围 | 配置 |
 |---|---|
-| 页面 | `shared/dom.ts#pageDom` |
+| 页面 | `shared/selectors.ts#pageDom` |
 | Navbar | `ui/navbar/config.ts#navbarDom` |
 | Outline | `ui/outline/config.ts#outlineDom` |
 | Search | `features/search/searchDom.ts#searchDom` |
@@ -134,7 +133,7 @@ Hash 链接使用原生滚动并绕过 Swup。无滚动 hash 同步由 Route/His
 ## 文件约定
 
 - 文件 camelCase；多词目录 kebab-case。
-- Hook 使用 `useXxx.ts`。
+- Hook 使用 `useXxx.ts`；注册型初始化使用 `setupXxx.ts`；纯解析使用 `resolveXxx`。
 - 公开入口使用 `index.ts`。
 - 类型放在最近的 `types.ts`。
 - 测试与实现同目录，命名为 `*.test.ts`。

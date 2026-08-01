@@ -1,5 +1,6 @@
 import type { GlyphPosition, RenderedTitle } from './renderer.ts'
-import { compactViewportWidth, postTitleDom, scatterTitleMotion, sharedTitleMotion } from './config.ts'
+import { isMaxTabletViewport } from 'shared/media.ts'
+import { postTitleDom, scatterTitleMotion, sharedTitleMotion } from './config.ts'
 import {
   createStableToken,
   deterministicIndexJitter,
@@ -21,7 +22,7 @@ interface ScatterParameters {
 
 const scatterRandomChannel = {
   angle: 0,
-  // Channel 1 is intentionally reserved to preserve the established motion.
+  // Channel 1 is reserved to preserve the established motion.
   distance: 2,
   scale: 3,
   delay: 4,
@@ -119,7 +120,7 @@ function createScatterParameters(
   positions: GlyphPosition[],
   key: string,
 ): ScatterParameters[] {
-  const maxDistance = window.innerWidth < compactViewportWidth
+  const maxDistance = isMaxTabletViewport()
     ? scatterTitleMotion.compactMaxDistance
     : scatterTitleMotion.wideMaxDistance
   const canonicalAngle = Math.atan2(
