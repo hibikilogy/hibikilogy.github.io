@@ -21,7 +21,7 @@
        Distributes articles in pairs so most pages end up with even
        counts for the 2-column grid.  At most one page gets an odd size. #}
 
-    {% if term %}
+    {% if term is defined %}
       {% set all_pages = term.pages %}
     {% else %}
       {% set section_path =
