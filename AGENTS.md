@@ -75,7 +75,7 @@ TypeScript has a Vitest suite (`pnpm test:ts`, happy-dom environment) covering s
 
 ## Commit & Pull Request Guidelines
 
-Follow [Angular's commit convention](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular): `<type>(<scope>): <subject>`. Allowed scopes are limited to: `theme`, `scripts`, `content`, `docs`, `build`. Examples: `feat(theme): add dark mode support`, `fix(scripts): correct build cache path`, `docs(content): add article guide`. Keep the subject imperative, lowercase, and under 50 characters when practical. See `.github/commit-convention.md` for the full format.
+Follow [Angular's commit convention](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular): `<type>(<scope>): <subject>`. Allowed scopes are: `theme/themes`, `script/scripts`, `content`, `docs`, `build`, `template/templates`, `search`, `ui`, `component/components`, `i18n`, `static`, `cms`, `article/articles`. Examples: `feat(theme): add dark mode support`, `fix(scripts): correct build cache path`, `docs(content): add article guide`. Keep the subject imperative, lowercase, and under 50 characters when practical. See `.github/commit-convention.md` for the full format.
 
 PRs should describe the change, note affected content/templates/assets, link related issues, and include screenshots for visible layout changes. Mention whether `zola check` and `zola build` were run.
 
