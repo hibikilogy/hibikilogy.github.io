@@ -122,12 +122,6 @@
       }
     }
 
-    @media (--max-tablet) {
-      html[data-search-transition='active'] .NavBarHamburger {
-        view-transition-name: navbar-hamburger;
-      }
-    }
-
     html[data-search-transition='active']
       body:not(.search)
       .NavBarSearch
@@ -165,12 +159,6 @@
       animation-duration: var(--duration-search-transition);
       animation-timing-function: var(--ease-search-settle);
       z-index: 19;
-    }
-
-    html[data-search-transition='active']::view-transition-group(navbar-hamburger) {
-      animation-duration: var(--duration-reveal);
-      animation-timing-function: var(--ease-search-settle);
-      z-index: 31;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='enter-search']::view-transition-old(
@@ -257,6 +245,30 @@
       .NavBar
       .NavBarSearch {
       opacity: 0;
+    }
+
+    /* The hamburger fades in step with the curtain sweep: a view transition
+       would only start at the swap, responding when the page arrives. */
+    html[data-search-transition='active'] .NavBar .NavBarHamburger {
+      transition: opacity var(--duration-search-transition) var(--ease-search-settle);
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='enter-search'].is-animating
+      .NavBar
+      .NavBarHamburger,
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'].is-animating
+      .NavBar
+      .NavBarHamburger {
+      opacity: 0;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='enter-search'].is-rendering
+      .NavBar
+      .NavBarHamburger,
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'].is-rendering
+      .NavBar
+      .NavBarHamburger {
+      opacity: 1;
     }
   }
 
