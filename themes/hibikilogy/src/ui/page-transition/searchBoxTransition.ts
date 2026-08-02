@@ -4,6 +4,9 @@ import { pageDom } from 'shared/selectors.ts'
 import { getSearchTransitionScope } from './searchTransition.ts'
 
 const CLEAR_GRACE_MS = 20
+// Fallback timers add slack beyond the CSS durations.
+const VEIL_COVER_GRACE_MS = 30
+const BOX_EXIT_GRACE_MS = 100
 
 function shouldHoldSearchOutPhase(): boolean {
   return isMaxTabletViewport() && !shouldSkipMotion()
@@ -29,7 +32,7 @@ export async function waitForSearchVeilCover(): Promise<void> {
   if (!shouldHoldSearchOutPhase())
     return
 
-  await wait(resolveDurationMs('searchCover') + 30)
+  await wait(resolveDurationMs('searchCover') + VEIL_COVER_GRACE_MS)
 }
 
 // Holds the out phase until the box collapses into the navbar trigger; the
@@ -50,7 +53,7 @@ export async function waitForSearchBoxExit(): Promise<void> {
       resolve()
     }
     box.addEventListener('animationend', finish, { once: true })
-    timer = window.setTimeout(finish, boxMs + 100)
+    timer = window.setTimeout(finish, boxMs + BOX_EXIT_GRACE_MS)
   })
 }
 

@@ -71,11 +71,17 @@ function computeLowResourceSignal(): boolean {
 }
 
 // Hardware signals are stable for the page lifetime; viewport and pointer
-// characteristics are evaluated per call because they can change.
-const hasLowResourceSignal = computeLowResourceSignal()
+// characteristics are evaluated per call because they can change. The probe
+// is lazy so importing this module never touches `navigator` eagerly.
+let lowResourceSignal: boolean | undefined
+
+function hasLowResourceSignal(): boolean {
+  lowResourceSignal ??= computeLowResourceSignal()
+  return lowResourceSignal
+}
 
 export function isLowPerformanceMobileDevice(): boolean {
-  return hasLowResourceSignal
+  return hasLowResourceSignal()
     && isMaxTabletViewport()
     && hasCoarsePointer()
 }

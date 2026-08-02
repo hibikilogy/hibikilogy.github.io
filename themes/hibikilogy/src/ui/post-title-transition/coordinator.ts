@@ -34,6 +34,12 @@ export function setupTitleTransitionCoordinator(): TitleTransitionCoordinator {
 
   return {
     begin(visit) {
+      // finish() clears each visit on end/abort; drop stale ones defensively.
+      for (const [id, stale] of preparations) {
+        stale.cancel()
+        preparations.delete(id)
+      }
+
       const preparation = beginPostTitleTransition({
         trigger: visit.trigger.el,
       })
