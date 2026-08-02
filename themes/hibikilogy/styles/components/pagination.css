@@ -59,8 +59,8 @@
 
           &::picker-icon {
             color: var(--joh-c-text-1);
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             background: currentColor;
             -webkit-mask: var(--joh-icon-svg-arrow-down) no-repeat;
             mask: var(--joh-icon-svg-arrow-down) no-repeat;
