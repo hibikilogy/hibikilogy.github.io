@@ -188,8 +188,10 @@ export class SitePagination extends LitElement {
     page: number,
     isCurrent: boolean,
   ): void {
-    if (isCurrent)
+    if (isCurrent) {
+      event.preventDefault()
       return
+    }
 
     const href = this.getPageHref(page)
     if (this.mode === 'event' || this.onPageChange) {
