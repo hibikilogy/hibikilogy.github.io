@@ -55,7 +55,7 @@ The site includes a Sveltia CMS setup at `/admin/` for visual content editing. T
 - `pnpm dev:admin`: start the CMS admin dev server with HMR.
 - `pnpm dev:cms`: watch `static/` and sync changes to `public/` for CMS config development.
 
-Requires Zola 0.19+ and Node.js 18+.
+Requires Zola 0.19+ and Node.js 24+ (see `.nvmrc`; Node 24 runs TypeScript entry scripts directly via type stripping).
 
 ## i18n / Translations
 
