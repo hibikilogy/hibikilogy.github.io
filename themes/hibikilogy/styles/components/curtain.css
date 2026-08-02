@@ -21,20 +21,24 @@
     transition-duration: var(--duration-reveal), var(--duration-reveal), var(--duration-quick);
   }
 
+  /* The blur swaps out instantly while the curtain still covers the page
+     (invisible behind it), and fades in during the covering sweep — the
+     base `duration-reveal` fade-out would linger on the revealed search
+     page, since the curtain settles almost immediately after covering. */
   html[data-search-overlay='active'] body::after {
+    transition-duration: 0ms;
+  }
+
+  /* The blur follows the covering sweep only: it fades in as the curtain
+     starts moving down and lifts once the page is covered (hidden behind
+     the curtain), so the search page is revealed cleanly as the curtain
+     retracts. `is-leaving` marks the old page's exit phase — the exact
+     window of the covering sweep; `is-animating` alone lasts the whole
+     visit. The leave direction sweeps without blur. */
+  html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-animating.is-leaving body::after {
     opacity: 1;
     visibility: visible;
     backdrop-filter: blur(8px) saturate(140%);
-    transition-duration: var(--duration-quick);
-    transition-delay: 0ms;
-  }
-
-  /* The blur lifts once the new page is rendered; keyed on the body class
-     (which outlives swup's phase classes) so it stays lifted through
-     `visit:end` instead of snapping back to blur(8px). */
-  html[data-search-overlay='active'][data-search-transition-scope='enter-search'] body.search::after,
-  html[data-search-overlay='active'][data-search-transition-scope='leave-search'] body:not(.search)::after {
-    backdrop-filter: blur(0px) saturate(100%);
     transition-duration: var(--duration-quick);
   }
 
