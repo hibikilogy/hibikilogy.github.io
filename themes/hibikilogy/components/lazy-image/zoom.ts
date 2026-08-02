@@ -9,6 +9,7 @@ interface ZoomSession {
   source: HTMLImageElement
   overlay: HTMLDivElement
   zoomed: HTMLImageElement
+  previouslyFocused: HTMLElement | null
   keydownHandler: (event: KeyboardEvent) => void
   resizeHandler: () => void
   scrollHandler: () => void
@@ -103,11 +104,21 @@ function openZoom(source: HTMLImageElement): void {
   const overlay = document.createElement('div')
   overlay.className = 'zoom-overlay'
 
+  const previouslyFocused = document.activeElement instanceof HTMLElement
+    ? document.activeElement
+    : null
+
   const zoomed = source.cloneNode(false) as HTMLImageElement
   zoomed.className = `${source.className} zoom-image--opened`
   zoomed.removeAttribute('srcset')
   zoomed.removeAttribute('sizes')
   zoomed.src = source.currentSrc || source.src
+  // Dialog semantics; the source alt doubles as the localized accessible name.
+  zoomed.tabIndex = -1
+  zoomed.setAttribute('role', 'dialog')
+  zoomed.setAttribute('aria-modal', 'true')
+  if (source.alt)
+    zoomed.setAttribute('aria-label', source.alt)
   applyRect(zoomed, sourceRect)
 
   const keydownHandler = (event: KeyboardEvent) => {
@@ -138,6 +149,7 @@ function openZoom(source: HTMLImageElement): void {
     source,
     overlay,
     zoomed,
+    previouslyFocused,
     keydownHandler,
     resizeHandler,
     scrollHandler,
@@ -150,6 +162,7 @@ function openZoom(source: HTMLImageElement): void {
   document.body.append(overlay, zoomed)
   hideSourceImage(source)
   document.body.classList.add('zoom--opened')
+  zoomed.focus({ preventScroll: true })
 
   overlay.addEventListener('click', () => closeSession(session))
   zoomed.addEventListener('click', () => closeSession(session))
@@ -207,6 +220,7 @@ function destroySession(session: ZoomSession): void {
   if (session.cleanupTimer !== undefined)
     window.clearTimeout(session.cleanupTimer)
 
+  restoreFocus(session)
   restoreSourceImage(session.source)
   session.overlay.remove()
   session.zoomed.remove()
@@ -215,6 +229,15 @@ function destroySession(session: ZoomSession): void {
     activeSession = undefined
     document.body.classList.remove('zoom--opened')
   }
+}
+
+function restoreFocus(session: ZoomSession): void {
+  // Return focus to the opener unless the user already moved it elsewhere.
+  const active = document.activeElement
+  if (active !== session.zoomed && active !== document.body)
+    return
+
+  session.previouslyFocused?.focus({ preventScroll: true })
 }
 
 function computeTargetRect(image: HTMLImageElement): DOMRect {
