@@ -62,6 +62,10 @@ export function createWaterfallController(
     return pendingLayout
   }
 
+  function scheduleLayoutEvent(): void {
+    void scheduleLayout()
+  }
+
   function observeDynamicContent(items: Element[]): void {
     items.forEach((item) => {
       if (!resizeObserver || observedItems.has(item))
@@ -86,25 +90,19 @@ export function createWaterfallController(
     const items = queryChildren(journal, childSelector)
     observeDynamicContent(items)
 
-    const signature = [
-      journal.clientWidth,
-      items.length,
-      ...items.map(item => item.offsetHeight),
-    ].join(':')
-    const hasSameItems = items.length === lastItems.length
-      && items.every((item, index) => item === lastItems[index])
-    if (signature === lastSignature && hasSameItems)
-      return
-    lastSignature = signature
-    lastItems = items
-
     if (!items.length) {
+      lastSignature = ''
+      lastItems = []
       resetLayout(items)
       markLayoutReady()
       return
     }
 
     if (!isWaterfallLayout(items)) {
+      // Clear the signature: resetLayout strips spans, so a later identical
+      // signature must not bail — the spans have to be written again.
+      lastSignature = ''
+      lastItems = []
       resetLayout(items)
       markLayoutReady()
       return
@@ -120,10 +118,25 @@ export function createWaterfallController(
     const rowHeight = Number.parseFloat(styles.getPropertyValue('grid-auto-rows')) || 1
     const rowGap = Number.parseFloat(styles.getPropertyValue('row-gap')) || 0
 
+    // Measure unconstrained: a stale span pins the item's height to the
+    // previous layout, which would poison both the signature and the spans.
     journal.style.display = 'block'
     journal.style.opacity = '0'
-    items.forEach((item) => {
-      const rowSpan = Math.ceil((item.offsetHeight + rowGap) / (rowHeight + rowGap))
+    const heights = items.map(item => item.offsetHeight)
+
+    const signature = [journal.clientWidth, items.length, ...heights].join(':')
+    const hasSameItems = items.length === lastItems.length
+      && items.every((item, index) => item === lastItems[index])
+    if (signature === lastSignature && hasSameItems) {
+      journal.style.display = 'grid'
+      markLayoutReady()
+      return
+    }
+    lastSignature = signature
+    lastItems = items
+
+    items.forEach((item, index) => {
+      const rowSpan = Math.ceil((heights[index] + rowGap) / (rowHeight + rowGap))
       item.style.gridRow = `span ${rowSpan}`
     })
     journal.style.display = 'grid'
@@ -170,10 +183,18 @@ export function createWaterfallController(
 
   window.addEventListener('resize', scheduleLayout)
   window.addEventListener('load', scheduleLayout, { once: true })
+  // <lazy-image> loads inside shadow DOM — invisible to img listeners and,
+  // once a span pins the card, to the ResizeObserver. Its composed
+  // image-load/image-error events are the only reliable growth signal.
+  journal.addEventListener('image-load', scheduleLayoutEvent)
+  journal.addEventListener('image-error', scheduleLayoutEvent)
   resizeObserver?.observe(journal)
   mutationObserver?.observe(journal, {
     childList: true,
     subtree: true,
+    // lit patches reused result cards via text-node writes; without
+    // characterData those swaps never schedule a relayout.
+    characterData: true,
   })
 
   if (document.fonts)
@@ -198,6 +219,8 @@ export function createWaterfallController(
       mutationObserver?.disconnect()
       window.removeEventListener('resize', scheduleLayout)
       window.removeEventListener('load', scheduleLayout)
+      journal.removeEventListener('image-load', scheduleLayoutEvent)
+      journal.removeEventListener('image-error', scheduleLayoutEvent)
     },
   }
 }
