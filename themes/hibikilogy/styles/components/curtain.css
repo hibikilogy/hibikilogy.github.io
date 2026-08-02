@@ -21,23 +21,6 @@
     transition-duration: var(--duration-reveal), var(--duration-reveal), var(--duration-quick);
   }
 
-  /* Swap the blur out instantly while the curtain still covers the page
-     (invisible behind it); a `duration-reveal` fade-out would linger on the
-     revealed page, since the curtain settles right after covering. */
-  html[data-search-overlay='active'] body::after {
-    transition-duration: 0ms;
-  }
-
-  /* The blur follows the covering sweep: fade in while the curtain sweeps
-     down, off once covered. `is-leaving` is the exit-phase window (swup's
-     `is-animating` alone lasts the whole visit); leave has no blur. */
-  html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-animating.is-leaving body::after {
-    opacity: 1;
-    visibility: visible;
-    backdrop-filter: blur(8px) saturate(140%);
-    transition-duration: var(--duration-quick);
-  }
-
   @media (prefers-reduced-motion: reduce) {
     body::after {
       transition-duration: 120ms;
@@ -47,8 +30,8 @@
 
   @media (prefers-reduced-transparency: reduce) {
     body::after {
-      /* Wins over the navscreen and search-overlay blur rules, whose
-         specificity outranks this plain selector. */
+      /* Wins over the navscreen blur rule, whose specificity outranks
+         this plain selector. */
       backdrop-filter: none !important;
     }
   }
