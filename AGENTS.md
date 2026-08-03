@@ -48,7 +48,7 @@ The site includes a Sveltia CMS setup at `/admin/` for visual content editing. T
 - `zola build`: build the site into `public/` (uses default `config.toml`).
 - `zola build --drafts`: match the GitHub Pages workflow build behavior.
 - Search index (`search_index.zh.json`) is generated automatically by Zola during `zola build` via `build_search_index = true` and `index_format = "fuse_json"` in `config.toml`. The client-side search engine (Fuse.js + Web Worker + IndexedDB cache) lives at `themes/hibikilogy/src/features/search/`.
-- `zola check`: validate pages, links, templates, and configuration without producing a deployment artifact.
+- `zola check --skip-external-links`: validate pages, internal links, templates, and configuration without producing a deployment artifact. The `--skip-external-links` flag skips external link verification for significantly faster checks; use plain `zola check` only when you've added or changed external links.
 - `pnpm build:all`: full build pipeline (Vite → UnoCSS → font subset → Zola → image rewrite → short links).
 - `pnpm dev:all`: start all dev servers in parallel (Zola + Vite watch + UnoCSS watch).
 - `pnpm build:admin`: build the Sveltia CMS admin bundle to `static/admin/admin.js`.
@@ -71,13 +71,13 @@ Follow `.editorconfig`: UTF-8, LF endings, two-space indentation, final newline 
 
 ## Testing Guidelines
 
-TypeScript has a Vitest suite (`pnpm test:ts`, happy-dom environment) covering shared utilities, search runtime, and build-script logic; run `pnpm typecheck && pnpm test:ts && pnpm lint:ts` before opening a PR. Static-site validation is the required path for template, Sass, or navigation changes: run `zola check`, then `zola build`, and inspect the local site with `zola serve` before opening a PR.
+TypeScript has a Vitest suite (`pnpm test:ts`, happy-dom environment) covering shared utilities, search runtime, and build-script logic; run `pnpm typecheck && pnpm test:ts && pnpm lint:ts` before opening a PR. Static-site validation is the required path for template, Sass, or navigation changes: run `zola check --skip-external-links`, then `zola build`, and inspect the local site with `zola serve` before opening a PR.
 
 ## Commit & Pull Request Guidelines
 
 Follow [Angular's commit convention](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular): `<type>(<scope>): <subject>`. Allowed scopes are: `theme/themes`, `script/scripts`, `content`, `docs`, `build`, `template/templates`, `search`, `ui`, `component/components`, `i18n`, `static`, `cms`, `article/articles`. Examples: `feat(theme): add dark mode support`, `fix(scripts): correct build cache path`, `docs(content): add article guide`. Keep the subject imperative, lowercase, and under 50 characters when practical. See `.github/commit-convention.md` for the full format.
 
-PRs should describe the change, note affected content/templates/assets, link related issues, and include screenshots for visible layout changes. Mention whether `zola check` and `zola build` were run.
+PRs should describe the change, note affected content/templates/assets, link related issues, and include screenshots for visible layout changes. Mention whether `zola check --skip-external-links` and `zola build` were run.
 
 ## Security & Configuration Tips
 
