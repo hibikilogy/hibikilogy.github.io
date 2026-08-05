@@ -18,11 +18,21 @@
         display: flex;
         justify-content: center;
         flex-direction: column;
-        min-height: 52vh;
+        min-height: max(52vh, 30rem);
         max-height: 600px;
         overflow: hidden;
         background-color: var(--joh-c-hero-heading-bg);
         color: var(--joh-c-white);
+
+        /* Must stay before the mobile block: its in-flow override wins the cascade. */
+        .post-heading-info {
+          position: absolute;
+          bottom: 0;
+          z-index: var(--joh-z-index-layout-top);
+          width: 100%;
+          height: min-content;
+          text-shadow: var(--joh-hero-text-shadow);
+        }
 
         @media (--max-tablet) {
           min-height: 52vh;
@@ -86,15 +96,6 @@
           .post-heading-dark-overlay {
             opacity: 1;
           }
-        }
-
-        .post-heading-info {
-          position: absolute;
-          bottom: 0;
-          z-index: var(--joh-z-index-layout-top);
-          width: 100%;
-          height: min-content;
-          text-shadow: var(--joh-hero-text-shadow);
         }
 
         .post-heading-info-container {
@@ -216,6 +217,36 @@
                   font-weight: 600;
                 }
               }
+            }
+          }
+        }
+
+        @media (--max-tablet) and (max-height: 640px) {
+          &::before {
+            /* 4.5rem floor keeps the text below the floating navbar. */
+            flex: 1 0 max(18vh, 4.5rem);
+            flex: 1 0 max(18dvh, 4.5rem);
+          }
+
+          .post-heading-info-container {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+
+            .post-heading-tags {
+              margin-bottom: 12px;
+            }
+
+            h1 {
+              font-size: 30px;
+              line-height: 38px;
+            }
+
+            .post-heading-subtitle {
+              margin-top: 4px;
+            }
+
+            .post-heading-meta {
+              margin-top: 18px;
             }
           }
         }
