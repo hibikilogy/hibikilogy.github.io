@@ -13,12 +13,27 @@ This repository is a Zola static site using the built-in `hibikilogy` theme. The
 - `templates/` — Tera templates with reusable partials under `components/`, taxonomy views under `tags/` and `author/`, macros under `macros/`, and shortcodes under `shortcodes/`
 - `styles/` — SCSS stylesheets organized as `base/`, `components/`, `layouts/`
 - `static/` — theme static assets (JS bundle, CSS, SVG icons, fonts, KaTeX files)
-- `src/` — TypeScript source organized as `app/` (lifecycle, composition), `features/` (search), `ui/` (DOM adapters), `shared/` (utilities, runtime config); compiled to `static/js/` by Vite
+- `src/` — TypeScript source organized as `app/` (lifecycle, composition), `features/` (search), `ui/` (DOM adapters), `infrastructure/` (Swup integration, network), `shared/` (utilities, runtime config); compiled to `static/js/` by Vite. TS layering/review rules: `themes/hibikilogy/src/README.md`
 - `components/` — Lit Web Components (lazy-image, site-pagination, tags-list)
 - `i18n/zh.toml` — theme default translations. Site can override via `[translations]` in `config.toml`, or replace by adding `i18n/<lang>.toml` files. Templates use `tr::t(key="...")` macro which loads from theme i18n first, falls back to Zola's built-in `trans()`.
 - `theme.toml` — theme metadata and default `[extra]` values
 
 `public/` is the generated site output. Prefer editing source files, then regenerate output, rather than hand-editing `public/`.
+
+### Build tooling (`scripts/`)
+
+`scripts/` holds the build-time tooling: a Rust crate (`hibikilogy-tools`, see `Cargo.toml`) plus TypeScript scripts. The Rust code runs only during builds — never in the site runtime. `scripts/README.md` is the authoritative developer guide for it.
+
+- `scripts/lib.rs` + `scripts/shared/` — shared library modules (front matter, content files, URL encoding, managed file/JSON writes)
+- `scripts/bin/<tool>/` — five CLI binaries (`main.rs` + `app.rs` + domain modules):
+  - `title-font-subset` / `body-font-subset` (feature `font-tools`) — subset fonts to glyphs actually used in content
+  - `site-artifact-rewrite` (feature `artifact-rewrite`) — post-process `public/` per `scripts/artifact-rewrite.toml` (URL cache busting, image attrs, thumbhash)
+  - `article-short-links` — assign `/s/YYNNN/` short links and sync Zola `aliases` (ledger: `scripts/data/short-link-reservations.json`)
+  - `deploy-markdown` — export articles/docs to `.md` routes with relative links
+- `scripts/integration/` — Rust smoke tests (run via nextest)
+- Heavy dependencies are optional, gated behind the `font-tools` and `artifact-rewrite` cargo features (default = none)
+
+`plans/` holds numbered implementation plans; read `plans/README.md` for their execution order. `dist/` is gitignored Vite output. `tests/` holds JS/Python contract tests and fixtures for the build pipeline (Rust integration tests live in `scripts/integration/`).
 
 ### Sveltia CMS (`static/admin/` + `cms/`)
 
@@ -49,13 +64,24 @@ The site includes a Sveltia CMS setup at `/admin/` for visual content editing. T
 - `zola build --drafts`: match the GitHub Pages workflow build behavior.
 - Search index (`search_index.zh.json`) is generated automatically by Zola during `zola build` via `build_search_index = true` and `index_format = "fuse_json"` in `config.toml`. The client-side search engine (Fuse.js + Web Worker + IndexedDB cache) lives at `themes/hibikilogy/src/features/search/`.
 - `zola check --skip-external-links`: validate pages, internal links, templates, and configuration without producing a deployment artifact. The `--skip-external-links` flag skips external link verification for significantly faster checks; use plain `zola check` only when you've added or changed external links.
-- `pnpm build:all`: full build pipeline (Vite → UnoCSS → font subset → Zola → image rewrite → short links).
-- `pnpm dev:all`: start all dev servers in parallel (Zola + Vite watch + UnoCSS watch).
+- `pnpm build:all`: full production pipeline — Vite bundle → CMS admin bundle → title/body font subsetting → short-link check → Zola build → beasties inlining → artifact rewrite → markdown export (exact chain in `package.json`).
+- `pnpm dev:all`: start dev servers in parallel (Zola + Vite watch).
 - `pnpm build:admin`: build the Sveltia CMS admin bundle to `static/admin/admin.js`.
 - `pnpm dev:admin`: start the CMS admin dev server with HMR.
 - `pnpm dev:cms`: watch `static/` and sync changes to `public/` for CMS config development.
+- `pnpm lint:zh`: run zhlint over `content/**/*.md` for Chinese typography.
+- `pnpm verify:ts`: full TypeScript gate — typecheck + Vitest + scoped lint + theme/CMS builds.
 
-Requires Zola 0.19+ and Node.js 24+ (see `.nvmrc`; Node 24 runs TypeScript entry scripts directly via type stripping).
+Rust build tools (the `hibikilogy-tools` crate, invoked via pnpm):
+- `pnpm build:subset-titlefont` / `pnpm build:subset-bodyfont` — subset fonts to glyphs used in content
+- `pnpm build:rewrite-artifacts` — post-process `public/` per `scripts/artifact-rewrite.toml`
+- `pnpm sync:short-links` / `pnpm check:short-links` — assign or verify `/s/YYNNN/` short links against `scripts/data/short-link-reservations.json`
+- `pnpm build:markdown` — export `.md` routes from content
+- `pnpm test:rust` — cargo nextest + doc tests (all features)
+- `pnpm verify:rust` — fmt check + clippy `-D warnings` + `pnpm test:rust`
+- `pnpm coverage:rust` — llvm-cov HTML report
+
+Requires Zola 0.22.1 (as pinned in `.github/actions/setup-tools`), Node.js 24+ (see `.nvmrc`; Node 24 runs TypeScript entry scripts directly via type stripping), and Rust 1.97.1 (pinned by `rust-toolchain.toml`) with `cargo-nextest` 0.9.140 and `cargo-llvm-cov` 0.8.7 installed.
 
 ## i18n / Translations
 
@@ -69,9 +95,13 @@ The Vite plugin at `scripts/vite/hibikilogy-config/index.ts` also reads i18n for
 
 Follow `.editorconfig`: UTF-8, LF endings, two-space indentation, final newline for code/config files, and trimmed trailing whitespace. Markdown files may omit the final newline and may keep intentional trailing whitespace. Use TOML for site configuration in `config.toml`, Tera syntax in `templates/`, and Sass/SCSS in `styles/`. Name posts with a date prefix when adding articles, for example `content/2024-07-01-title.md`; keep asset folders grouped by post or date under `static/imgs/`.
 
+Paragraph first-line indentation is handled by the theme via CSS (`text-indent: 2em` on `article[data-text-indent] > p`, enabled by default): do **not** write `&emsp;&emsp;` or `&emsp;` in Markdown for indentation. To keep an article unindented (e.g. legacy posts), set `extra.text_indent = false` in its front matter.
+
+Rust code follows `rustfmt.toml` (max_width 100). Always use `cargo --locked`, report errors via `anyhow` + `.context()`, use clap with readable `--help`, and keep output reproducible (details in `scripts/README.md`).
+
 ## Testing Guidelines
 
-TypeScript has a Vitest suite (`pnpm test:ts`, happy-dom environment) covering shared utilities, search runtime, and build-script logic; run `pnpm typecheck && pnpm test:ts && pnpm lint:ts` before opening a PR. Static-site validation is the required path for template, Sass, or navigation changes: run `zola check --skip-external-links`, then `zola build`, and inspect the local site with `zola serve` before opening a PR.
+TypeScript has a Vitest suite (`pnpm test:ts`, happy-dom environment) covering shared utilities, search runtime, and build-script logic; run `pnpm typecheck && pnpm test:ts && pnpm lint:ts` before opening a PR. Rust changes require `pnpm verify:rust` (fmt + clippy + nextest); CI (`check.yml`) runs the same checks when Rust files change, and lint-staged runs `cargo fmt --` on `*.rs` pre-commit. Static-site validation is the required path for template, Sass, or navigation changes: run `zola check --skip-external-links`, then `zola build`, and inspect the local site with `zola serve` before opening a PR.
 
 ## Commit & Pull Request Guidelines
 

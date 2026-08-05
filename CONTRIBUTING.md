@@ -12,7 +12,7 @@
 
 - **[Node.js](https://nodejs.org/en/download)** >= 24
 - **[pnpm](https://pnpm.io/installation)** >= 10
-- **[Rust](https://rust-lang.org/tools/install/)** >= 1.70
+- **[Rust](https://rust-lang.org/tools/install/)** >= 1.97.1(仓库通过 `rust-toolchain.toml` 固定版本)
 - **[Zola](https://www.getzola.org/)** >= 0.22.1
 
 ```bash
@@ -88,7 +88,8 @@ zola build
 ### Rust 脚本
 
 ```bash
-cargo test --locked
+pnpm test:rust      # cargo nextest + 文档测试
+pnpm verify:rust    # fmt + clippy + test
 ```
 
 ### 完整构建
