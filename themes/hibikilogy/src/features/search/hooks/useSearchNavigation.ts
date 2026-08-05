@@ -9,15 +9,17 @@ import { focusSearchInput, searchDom } from '../searchDom.ts'
 import { preloadSearchPage } from '../searchPage.ts'
 
 export function scheduleIdleSearchPreload(service: SearchService): void {
-  if (!supportsIdleCallback())
-    return
-
-  requestIdleCallback(() => {
+  const preload = (): void => {
     void Promise.all([
       preloadSearchPage(),
       service.preload(),
     ]).catch(() => {})
-  })
+  }
+
+  if (supportsIdleCallback())
+    requestIdleCallback(preload)
+  else
+    preload()
 }
 
 export function useSearchNavigation(route: RouteModel, service: SearchService): void {
@@ -40,6 +42,13 @@ export function useSearchNavigation(route: RouteModel, service: SearchService): 
   }
 
   useEventListener(document, 'pointerover', (event) => {
+    if ((event.target as Element | null)?.closest(searchDom.openTrigger))
+      preloadSearch()
+  })
+
+  // pointerover misses taps and stationary-cursor clicks; pointerdown covers
+  // both and gives the fetch a head start before `click`.
+  useEventListener(document, 'pointerdown', (event) => {
     if ((event.target as Element | null)?.closest(searchDom.openTrigger))
       preloadSearch()
   })

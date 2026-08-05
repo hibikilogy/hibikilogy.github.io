@@ -2,6 +2,7 @@ import type Swup from 'swup'
 import type { FetchLatencyMonitor } from '../../infrastructure/network/index.ts'
 import type { PagePreloader } from '../../infrastructure/swup/index.ts'
 import { onScopeDispose } from '@vue/reactivity'
+import { isSearchUrl } from 'shared/url.ts'
 import { Location } from 'swup'
 
 export function useNavigationPriority(swup: Swup, monitor: FetchLatencyMonitor, preloader: PagePreloader): void {
@@ -62,7 +63,11 @@ export function useNavigationPriority(swup: Swup, monitor: FetchLatencyMonitor, 
       if (swup.cache.has(url))
         return
 
-      visit.animation.wait = true
+      // Search transitions have their own covering veil, so they start
+      // animating immediately on click while the page loads underneath;
+      // everything else holds until content arrives.
+      if (!isSearchUrl(url) && !isSearchUrl(visit.from.url))
+        visit.animation.wait = true
 
       // Keep the target's in-flight preload for the navigation to reuse.
       preloader.releaseForNavigation(url)

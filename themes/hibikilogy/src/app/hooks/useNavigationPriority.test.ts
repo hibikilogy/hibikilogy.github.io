@@ -36,8 +36,8 @@ function createSwupMock(options: SwupMockOptions = {}) {
   return { swup: swup as unknown as Swup, handlers, replaced }
 }
 
-function visitTo(url: string) {
-  return { to: { url }, animation: { wait: false } }
+function visitTo(url: string, from = '/') {
+  return { from: { url: from }, to: { url }, animation: { wait: false } }
 }
 
 describe('useNavigationPriority', () => {
@@ -133,6 +133,24 @@ describe('useNavigationPriority', () => {
     expect(visit.animation.wait).toBe(false)
     expect(fetchCalls[0].init.signal?.aborted).toBe(false)
     expect(installed.preloader.releaseForNavigation).not.toHaveBeenCalled()
+  })
+
+  it('starts uncached search transitions without waiting for the page', () => {
+    const installed = install({ cached: false })
+
+    const visit = visitTo('/search/')
+    installed.handlers.get('visit:start')![0](visit)
+
+    expect(visit.animation.wait).toBe(false)
+  })
+
+  it('starts uncached leave-search transitions without waiting for the page', () => {
+    const installed = install({ cached: false })
+
+    const visit = visitTo('/', '/search/')
+    installed.handlers.get('visit:start')![0](visit)
+
+    expect(visit.animation.wait).toBe(false)
   })
 
   it('issues user-intent preloads with auto priority', () => {

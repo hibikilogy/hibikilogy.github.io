@@ -5,6 +5,7 @@ import { onScopeDispose } from '@vue/reactivity'
 import { mountPageModules } from 'app/page-modules/index.ts'
 import { createPageContext } from 'app/pageContext.ts'
 import { pageDom } from 'shared/selectors.ts'
+import { Location } from 'swup'
 import {
   settleTransitionState,
   setTransitionState,
@@ -74,7 +75,8 @@ export function setupAppNavigation(swup: Swup, app: AppContext): void {
   }
 
   function onHoldOutPhase(visit: SwupVisit): Promise<void> | undefined {
-    return waitForSearchTransition(visit.from.url, visit.to.url)
+    const url = Location.fromUrl(visit.to.url).url
+    return waitForSearchTransition(visit.from.url, visit.to.url, swup.cache.has(url))
   }
 
   async function onBeforeContentReplace(visit: SwupVisit): Promise<void> {

@@ -11,24 +11,34 @@ function shouldHoldSearchOutPhase(): boolean {
   return isMaxTabletViewport() && !shouldSkipMotion()
 }
 
+// On mobile the cover animation IS the transition, so it always plays. On
+// desktop the morph is the transition, and the veil only needs to cover an
+// uncached page while it loads underneath.
+function shouldHoldSearchVeilCover(isCached: boolean): boolean {
+  return !shouldSkipMotion() && (isMaxTabletViewport() || !isCached)
+}
+
 export function shouldDisableNativeTransition(fromUrl: string, toUrl: string): boolean {
   return getSearchTransitionScope(fromUrl, toUrl) !== null && isMaxTabletViewport()
 }
 
-export function waitForSearchTransition(fromUrl: string, toUrl: string): Promise<void> | undefined {
+export function waitForSearchTransition(fromUrl: string, toUrl: string, isCached: boolean): Promise<void> | undefined {
   const scope = getSearchTransitionScope(fromUrl, toUrl)
   if (scope === 'enter-search')
-    return waitForSearchVeilCover()
+    return waitForSearchVeilCover(isCached)
   if (scope === 'leave-search')
     return waitForSearchBoxExit()
   return undefined
 }
 
-export async function waitForSearchVeilCover(): Promise<void> {
-  if (!shouldHoldSearchOutPhase())
+export async function waitForSearchVeilCover(isCached: boolean): Promise<void> {
+  if (!shouldHoldSearchVeilCover(isCached))
     return
 
-  await wait(resolveDurationMs('searchCover') + VEIL_COVER_GRACE_MS)
+  // Desktop covers via the `--duration-search-transition` transition, mobile
+  // via the `--duration-search-cover` keyframe animation.
+  const duration = isMaxTabletViewport() ? 'searchCover' : 'searchTransition'
+  await wait(resolveDurationMs(duration) + VEIL_COVER_GRACE_MS)
 }
 
 export async function waitForSearchBoxExit(): Promise<void> {
