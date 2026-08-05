@@ -1,6 +1,7 @@
 {% import 'components/nav-screen.html' as navScreen %}
 {% import 'components/search_shell.html' as search_shell %}
 {% import 'components/hamburger.html' as hamburger %}
+
 {% macro main() %}
 <header class="NavBar top">
   <div class="wrapper">
@@ -20,7 +21,7 @@
           <nav aria-labelledby="main-nav-aria-label" role="navigation" aria-label="section navigation"
             class="NavBarMenu menu">
             <span id="main-nav-aria-label" class="visually-hidden">
-              {{ tr::t(key="nav_aria_label", default="Main Navigation") }}
+              {{ tr::t(key="nav_aria_label") }}
             </span>
             {% for item in config.extra.navbar %}
             {% if lang == item.code %}

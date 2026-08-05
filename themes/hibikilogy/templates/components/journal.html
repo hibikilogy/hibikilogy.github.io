@@ -18,20 +18,14 @@
 {% if not pages %}
   {% if paginator %}
     {# Even-optimised balanced pagination.
-       Distributes articles in pairs so most pages end up with even
-       counts for the 2-column grid.  At most one page gets an odd size. #}
+           Distributes articles in pairs so most pages end up with even
+           counts for the 2-column grid.  At most one page gets an odd size. #}
 
     {% if term is defined %}
       {% set all_pages = term.pages %}
     {% else %}
-      {% set section_path =
-        config.extra.article_section
-        | default(value="articles/_index.md")
-      %}
-      {% set articles_section = get_section(
-        path=section_path,
-        lang=lang
-      ) %}
+      {% set section_path = config.extra.article_section | default(value="articles/_index.md") %}
+      {% set articles_section = get_section(path=section_path, lang=lang) %}
       {% set all_pages = articles_section.pages %}
     {% endif %}
 
@@ -45,67 +39,43 @@
     {% elif total != paginator.total_pages %}
       {% set pages = paginator.pages %}
 
-    {% elif total < pager_count * 2 %}
+    {% elif total <pager_count * 2 %}
       {# Sparse — ordinary balanced distribution. #}
-      {% set base =
-        (total / pager_count)
-        | round(method="floor")
-      %}
+      {% set base = (total / pager_count) | round(method="floor") %}
       {% set extra = total % pager_count %}
 
-      {% if index < extra %}
+      {% if index <extra %}
         {% set page_size = base + 1 %}
         {% set start = index * page_size %}
       {% else %}
         {% set page_size = base %}
-        {% set start =
-          extra * (base + 1)
-          + (index - extra) * base
-        %}
+        {% set start = extra * (base + 1) + (index - extra) * base %}
       {% endif %}
 
-      {% set pages = all_pages | slice(
-        start=start,
-        end=start + page_size
-      ) %}
+      {% set pages = all_pages | slice(start=start, end=start + page_size) %}
 
     {% else %}
       {# Dense — distribute articles in 2-article pairs. #}
-      {% set pair_total =
-        (total / 2)
-        | round(method="floor")
-      %}
-      {% set pair_base =
-        (pair_total / pager_count)
-        | round(method="floor")
-      %}
+      {% set pair_total = (total / 2) | round(method="floor") %}
+      {% set pair_base = (pair_total / pager_count) | round(method="floor") %}
       {% set pair_extra = pair_total % pager_count %}
       {% set odd = total % 2 %}
       {% set base_size = pair_base * 2 %}
 
-      {% if index < pair_extra %}
+      {% if index <pair_extra %}
         {% set page_size = base_size + 2 %}
         {% set start = index * page_size %}
 
       {% elif odd == 1 and index == pair_extra %}
         {% set page_size = base_size + 1 %}
-        {% set start =
-          pair_extra * (base_size + 2)
-        %}
+        {% set start = pair_extra * (base_size + 2) %}
 
       {% else %}
         {% set page_size = base_size %}
-        {% set start =
-          pair_extra * (base_size + 2)
-          + odd * (base_size + 1)
-          + (index - pair_extra - odd) * base_size
-        %}
+        {% set start = pair_extra * (base_size + 2) + odd * (base_size + 1) + (index - pair_extra - odd) * base_size %}
       {% endif %}
 
-      {% set pages = all_pages | slice(
-        start=start,
-        end=start + page_size
-      ) %}
+      {% set pages = all_pages | slice(start=start, end=start + page_size) %}
     {% endif %}
 
   {% else %}
@@ -121,13 +91,13 @@
     style="--page-enter-stage: 1"
   >
     {% if show_frontpage %}
-      <a class="FrontPage Section" aria-label="Logo" href="/">
+      <a
+        class="FrontPage Section"
+        aria-label="Logo"
+        href="/"
+      >
         {% if config.extra.journal_logo %}
-          {% set logo_svg = load_data(
-            path="static" ~ config.extra.journal_logo,
-            required=false,
-            format="plain"
-          ) %}
+          {% set logo_svg = load_data(path="static" ~ config.extra.journal_logo, required=false, format="plain") %}
           {% if logo_svg %}
             {{ logo_svg | safe }}
           {% endif %}
@@ -159,11 +129,7 @@
     {% endif %}
 
     {% for page in pages %}
-      {{ article::main(
-        page=page,
-        show_cover=true,
-        cover_eager=(loop.index0 == cover_index)
-      ) }}
+      {{ article::main(page=page, show_cover=true, cover_eager=(loop.index0 == cover_index)) }}
     {% endfor %}
   </div>
 </div>

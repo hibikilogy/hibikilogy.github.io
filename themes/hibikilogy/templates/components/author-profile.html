@@ -20,7 +20,7 @@
       {% endif %}
       <div class="author-profile-meta" data-page-enter-item style="--page-enter-stage: 3">
         <span class="author-profile-count">
-          {{ term.page_count }}{{ tr::t(key="related_articles_suffix", default="篇文章") }}
+          {{ term.page_count }}{{ tr::t(key="related_articles_suffix") }}
         </span>
         {% if custom_page.link %}
           {% set domain = custom_page.link

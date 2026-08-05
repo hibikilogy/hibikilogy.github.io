@@ -7,12 +7,12 @@
   <div class="content">
     <section class="content-container">
       {% if paginator %}
-      {% set pages = paginator.pages %}
+        {% set pages = paginator.pages %}
       {% else %}
-      {% set pages = section.pages %}
+        {% set pages = section.pages %}
       {% endif %}
       {% for page in pages %}
-      {{ article::main(page=page, show_cover=false) }}
+        {{ article::main(page=page, show_cover=false) }}
       {% endfor %}
     </section>
   </div>

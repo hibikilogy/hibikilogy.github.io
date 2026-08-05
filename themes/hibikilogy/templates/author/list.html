@@ -13,7 +13,7 @@ author
 
 {% block header %}
 {% set author_count = terms | length %}
-{% set suffix = tr::t(key="author_count_suffix", default=" authors") %}
+{% set suffix = tr::t(key="author_count_suffix") %}
 {% set author_description = author_count ~ suffix %}
 {{ hero::main(isPost=false, page="", title=tr::t(key="author_title"), description=author_description) }}
 {% endblock %}
@@ -27,7 +27,7 @@ author
     <a class="author-list-item" href="{{ get_taxonomy_url(kind='author', name=author.name) | trim_end_matches(pat='/') }}" target="_blank"
       title="{{ author.name }}">
       <span class="author-name">{{ author.name }}</span>
-      <span class="author-count">{{ author.pages | length }}{{ tr::t(key="article_count_suffix", default=" articles") }}</span>
+      <span class="author-count">{{ author.pages | length }}{{ tr::t(key="article_count_suffix") }}</span>
     </a>
     {% endfor %}
   </div>

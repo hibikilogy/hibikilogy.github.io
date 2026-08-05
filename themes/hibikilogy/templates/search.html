@@ -8,10 +8,25 @@
 {% endblock critical_css %}
 
 {% block prefetch %}
-<link rel="prefetch" href="{{ get_url(path='search-articles/') }}" as="fetch" crossorigin="anonymous">
-<link rel="prefetch" href="{{ get_url(path='search-tags/') }}" as="fetch" crossorigin="anonymous">
+<link
+  rel="prefetch"
+  href="{{ get_url(path='search-articles/') }}"
+  as="fetch"
+  crossorigin="anonymous"
+>
+<link
+  rel="prefetch"
+  href="{{ get_url(path='search-tags/') }}"
+  as="fetch"
+  crossorigin="anonymous"
+>
 {% if config.build_search_index %}
-<link rel="prefetch" href="{{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) }}" as="fetch" crossorigin="anonymous">
+  <link
+    rel="prefetch"
+    href="{{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) }}"
+    as="fetch"
+    crossorigin="anonymous"
+  >
 {% endif %}
 {% endblock %}
 
@@ -20,22 +35,44 @@ search
 {% endblock %}
 
 {% block content %}
-<div id="search" class="SearchPage" data-page-size="{{ config.extra.search_page_size }}">
+<div
+  id="search"
+  class="SearchPage"
+  data-page-size="{{ config.extra.search_page_size }}"
+>
   <div class="container">
-      <div class="content">
-        <div class="content-container">
-        {{ search_shell::main(input_id="search-input", transition_name="site-search-trigger",
-        show_submit=true, placeholder=tr::t(key="search_placeholder"), title="Search") }}
+    <div class="content">
+      <div class="content-container">
+        {{
+          search_shell::main(
+            input_id="search-input",
+            transition_name="site-search-trigger",
+            show_submit=true,
+            placeholder=tr::t(key="search_placeholder"),
+            title="Search"
+          )
+        }}
       </div>
     </div>
   </div>
   <div class="SearchPageTransitionContent">
-    <p id="search-message" class="SearchMessage t-text-swap" aria-live="polite"></p>
+    <p
+      id="search-message"
+      class="SearchMessage t-text-swap"
+      aria-live="polite"
+    ></p>
     {{ journal::search() }}
     {{ pagination::search() }}
-    <section id="search-related-tags" class="SearchRelatedTags footer-tags" hidden>
+    <section
+      id="search-related-tags"
+      class="SearchRelatedTags footer-tags"
+      hidden
+    >
       <h3>{{ tr::t(key="search_related_tags") }}</h3>
-      <tags-list id="search-related-tags-list" class="footer-list TagsList"></tags-list>
+      <tags-list
+        id="search-related-tags-list"
+        class="footer-list TagsList"
+      ></tags-list>
     </section>
   </div>
 </div>

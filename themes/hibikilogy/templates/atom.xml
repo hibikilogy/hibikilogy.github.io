@@ -4,9 +4,9 @@
 {%- if term is defined %}
    <title>{{ term.name }} - {{ config.title }}</title>
 {%- if taxonomy.name == "author" %}
-  <subtitle>{% if theme_i18n["author_title"] is defined %}{{ theme_i18n["author_title"] }}{% else %}{{ trans(key="author_title") }}{% endif %}：{{ term.name }} - {{ config.description }}</subtitle>
+  <subtitle>{{ theme_i18n["author_title"] | default(value="") }}：{{ term.name }} - {{ config.description }}</subtitle>
 {%- elif taxonomy.name == "tags" %}
-  <subtitle>{% if theme_i18n["tags_title"] is defined %}{{ theme_i18n["tags_title"] }}{% else %}{{ trans(key="tags_title") }}{% endif %}：{{ term.name }} - {{ config.description }}</subtitle>
+  <subtitle>{{ theme_i18n["tags_title"] | default(value="") }}：{{ term.name }} - {{ config.description }}</subtitle>
 {%- else %}
   <subtitle>{{ taxonomy.name }} / {{ term.name }} - {{ config.description }}</subtitle>
 {%- endif %}

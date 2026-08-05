@@ -55,7 +55,7 @@ author{% if custom_author %} has-custom-profile{% endif %}
 {% block content %}
 {% if custom_author %}
 <div class="container">
-  <p class="author-articles-label">{{ tr::t(key="author_articles_label", default="发表的文章") }}</p>
+  <p class="author-articles-label">{{ tr::t(key="author_articles_label") }}</p>
 </div>
 {% endif %}
 {{ journal::main() }}
