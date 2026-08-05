@@ -151,9 +151,7 @@
         transition:
           opacity calc(var(--cascade-enter-opacity-dur) + var(--navscreen-item-index, 0) * 7ms) var(--ease-cascade)
             calc(var(--cascade-enter-opacity-delay) + var(--navscreen-item-index, 0) * var(--duration-curtain-stagger)),
-          transform
-            calc(var(--cascade-enter-transform-dur) + var(--navscreen-item-index, 0) * 16ms)
-            var(--ease-cascade)
+          transform calc(var(--cascade-enter-transform-dur) + var(--navscreen-item-index, 0) * 16ms) var(--ease-cascade)
             calc(
               var(--cascade-enter-transform-delay) + var(--navscreen-item-index, 0) * var(--duration-curtain-stagger)
             ),
