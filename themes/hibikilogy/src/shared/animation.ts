@@ -26,6 +26,7 @@ export const DURATION_VARS = {
   mediumZoom: '--duration-medium-zoom',
   searchTransition: '--duration-search-transition',
   searchCover: '--duration-search-cover',
+  searchVeil: '--duration-curtain',
   searchMorph: '--duration-search-morph',
   searchJournalDrawer: '--search-journal-drawer-dur',
   textSwap: '--text-swap-dur',
@@ -33,10 +34,6 @@ export const DURATION_VARS = {
 
 export type DurationVarName = keyof typeof DURATION_VARS
 
-/**
- * Resolve a registered duration CSS variable in milliseconds, with
- * `fallbackMs` when the variable is missing or unparseable.
- */
 export function resolveDurationMs(name: DurationVarName, fallbackMs = 0): number {
   const varName = DURATION_VARS[name]
   const raw = getComputedStyle(document.documentElement)

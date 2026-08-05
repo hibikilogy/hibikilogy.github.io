@@ -199,37 +199,37 @@
   }
 
   @media (--max-tablet) {
-    /* The veil's top edge sits flush with the navbar's bottom edge while it
-       covers the page; drop its shadow so it reads as part of the navbar. */
     html[data-search-overlay='active'] body::before {
       box-shadow: none;
+      top: 0;
     }
 
-    /* Two-stage veil, with enter and leave as exact mirrors: covers fast
-       (tap feedback), then retracts in lockstep with the box morph.
-       Animation-driven (swup's attrs precede `is-changing`, so transitions
-       would never start); stage two keys on the body class, which outlives
-       swup's phase classes, so its fill holds until the state clears. */
     html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-animating.is-leaving
       body::before {
-      animation: search-overlay-cover-down var(--duration-search-cover) var(--ease-out) both;
+      animation: search-overlay-cover-down var(--duration-search-cover) var(--ease-curtain) both;
     }
 
     html[data-search-overlay='active'][data-search-transition-scope='leave-search'].is-animating.is-leaving
       body::before {
-      animation: search-overlay-cover-up var(--duration-search-cover) var(--ease-out) both;
+      animation: search-overlay-cover-up var(--duration-search-cover) var(--ease-curtain) both;
     }
 
     html[data-search-overlay='active'][data-search-transition-scope='enter-search'] body.search::before {
-      animation: search-overlay-retract-up var(--duration-search-morph) var(--ease-out) both;
+      animation: search-overlay-retract-up var(--duration-curtain) var(--ease-curtain) both;
     }
 
     html[data-search-overlay='active'][data-search-transition-scope='leave-search'] body:not(.search)::before {
-      animation: search-overlay-retract-down var(--duration-search-morph) var(--ease-out) both;
+      animation: search-overlay-retract-up var(--duration-curtain) var(--ease-curtain) both;
     }
 
     html[data-search-overlay='active'].is-changing main.Content {
       transition: none;
+      will-change: auto;
+    }
+
+    html[data-search-overlay='active'].is-rendering main.Content,
+    html[data-search-overlay='active']:not(.is-changing) main.Content {
+      transform: none;
     }
 
     html[data-search-overlay='active'][data-search-overlay-scope='leave-search'].is-animating.is-leaving main.Content {
@@ -237,7 +237,10 @@
     }
 
     body:not(.search) .NavBar .NavBarSearch {
-      transition: opacity var(--duration-reveal) var(--ease-out);
+      transition:
+        color var(--duration-fast),
+        opacity var(--duration-fast) var(--ease-cascade),
+        visibility var(--duration-fast) var(--ease-cascade);
     }
 
     html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-animating
@@ -247,10 +250,8 @@
       opacity: 0;
     }
 
-    /* The hamburger fades in step with the curtain sweep: a view transition
-       would only start at the swap, responding when the page arrives. */
     html[data-search-transition='active'] .NavBar .NavBarHamburger {
-      transition: opacity var(--duration-search-transition) var(--ease-search-settle);
+      transition: opacity var(--duration-curtain) var(--ease-curtain);
     }
 
     html[data-search-transition='active'][data-search-transition-scope='enter-search'].is-animating
@@ -259,6 +260,7 @@
     html[data-search-transition='active'][data-search-transition-scope='leave-search'].is-animating
       .NavBar
       .NavBarHamburger {
+      transition: opacity var(--duration-search-cover) var(--ease-curtain);
       opacity: 0;
     }
 
@@ -268,6 +270,7 @@
     html[data-search-transition='active'][data-search-transition-scope='leave-search'].is-rendering
       .NavBar
       .NavBarHamburger {
+      transition: opacity var(--duration-curtain) var(--ease-curtain);
       opacity: 1;
     }
   }
@@ -299,16 +302,6 @@
 
     to {
       transform: translate3d(0, -100%, 0);
-    }
-  }
-
-  @keyframes search-overlay-retract-down {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-
-    to {
-      transform: translate3d(0, 100%, 0);
     }
   }
 

@@ -8,6 +8,7 @@ import { pageDom } from 'shared/selectors.ts'
 import {
   settleTransitionState,
   setTransitionState,
+  shouldDisableNativeTransition,
   waitForSearchTransition,
 } from 'ui/page-transition/index.ts'
 import { startPageEnter, stopPageEnter } from 'ui/page-transition/pageEnter.ts'
@@ -18,12 +19,6 @@ import {
   setupTitleTransitionCoordinator,
 } from 'ui/post-title-transition/index.ts'
 
-/**
- * Orchestrates SPA navigation inside the application scope: owns the current
- * page and wires swup's lifecycle hooks to page initialization and the
- * search/post-title transition systems. The transition systems own their
- * decisions; this file only connects them to the visit lifecycle.
- */
 export function setupAppNavigation(swup: Swup, app: AppContext): void {
   const titles = setupTitleTransitionCoordinator()
   let page: PageContext | null = null
@@ -67,6 +62,8 @@ export function setupAppNavigation(swup: Swup, app: AppContext): void {
     stopPageEnter()
     page?.layout.closeNavbar()
     setTransitionState(visit.from.url, visit.to.url)
+    if (shouldDisableNativeTransition(visit.from.url, visit.to.url))
+      visit.animation.native = false
     titles.begin(visit)
   }
 

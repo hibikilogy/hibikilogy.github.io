@@ -4,7 +4,6 @@ import { pageDom } from 'shared/selectors.ts'
 import { getSearchTransitionScope } from './searchTransition.ts'
 
 const CLEAR_GRACE_MS = 20
-// Fallback timers add slack beyond the CSS durations.
 const VEIL_COVER_GRACE_MS = 30
 const BOX_EXIT_GRACE_MS = 100
 
@@ -12,11 +11,10 @@ function shouldHoldSearchOutPhase(): boolean {
   return isMaxTabletViewport() && !shouldSkipMotion()
 }
 
-/**
- * Holds the out phase while the search transition is mid-flight: the veil
- * covers the page on enter, the box collapses into the navbar trigger on
- * leave. Returns nothing when the visit does not cross the search boundary.
- */
+export function shouldDisableNativeTransition(fromUrl: string, toUrl: string): boolean {
+  return getSearchTransitionScope(fromUrl, toUrl) !== null && isMaxTabletViewport()
+}
+
 export function waitForSearchTransition(fromUrl: string, toUrl: string): Promise<void> | undefined {
   const scope = getSearchTransitionScope(fromUrl, toUrl)
   if (scope === 'enter-search')
@@ -26,8 +24,6 @@ export function waitForSearchTransition(fromUrl: string, toUrl: string): Promise
   return undefined
 }
 
-// Holds the out phase until the veil covers the page; timed because the cover
-// runs on a `body::before` pseudo-element with unreliable animation events.
 export async function waitForSearchVeilCover(): Promise<void> {
   if (!shouldHoldSearchOutPhase())
     return
@@ -35,18 +31,19 @@ export async function waitForSearchVeilCover(): Promise<void> {
   await wait(resolveDurationMs('searchCover') + VEIL_COVER_GRACE_MS)
 }
 
-// Holds the out phase until the box collapses into the navbar trigger; the
-// box lives in the swapped container and would vanish with the old page.
 export async function waitForSearchBoxExit(): Promise<void> {
   if (!shouldHoldSearchOutPhase())
     return
 
+  const veilCover = wait(resolveDurationMs('searchCover') + VEIL_COVER_GRACE_MS)
   const box = document.querySelector<HTMLElement>(`${pageDom.search} .SearchShell--page`)
-  if (!box)
+  if (!box) {
+    await veilCover
     return
+  }
 
   const boxMs = resolveDurationMs('searchMorph')
-  await new Promise<void>((resolve) => {
+  const boxExit = new Promise<void>((resolve) => {
     let timer = 0
     const finish = (): void => {
       window.clearTimeout(timer)
@@ -55,10 +52,10 @@ export async function waitForSearchBoxExit(): Promise<void> {
     box.addEventListener('animationend', finish, { once: true })
     timer = window.setTimeout(finish, boxMs + BOX_EXIT_GRACE_MS)
   })
+
+  await Promise.all([boxExit, veilCover])
 }
 
-// Clears after the veil retracts; the captured scope guards against
-// clobbering a newer visit's state.
 export function deferClearSearchTransitionState(clear: () => void): void {
   const root = document.documentElement
   const scope = root.dataset.searchTransitionScope ?? null
@@ -66,5 +63,5 @@ export function deferClearSearchTransitionState(clear: () => void): void {
   window.setTimeout(() => {
     if ((root.dataset.searchTransitionScope ?? null) === scope)
       clear()
-  }, resolveDurationMs('searchMorph') + CLEAR_GRACE_MS)
+  }, resolveDurationMs('searchVeil') + CLEAR_GRACE_MS)
 }

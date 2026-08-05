@@ -9,8 +9,7 @@
     --search-journal-drawer-x: 44px;
     --search-journal-drawer-y: 24px;
     --search-journal-drawer-ease: var(--ease-standard);
-    /* Vertical offset of the page box from the navbar trigger (pill center
-       to box top edge); the box morphs in/out along this distance. */
+    /* Box morph distance: navbar trigger (pill center) to page box top edge. */
     --search-box-morph-y: -56px;
 
     margin-top: 2rem;
@@ -219,22 +218,15 @@
   }
 
   @media (--max-tablet) {
-    /* Keep the box visible above the search overlay (z-index 25) while it morphs. */
     html[data-search-overlay='active'] #search .SearchShell--page {
       position: relative;
       z-index: 26;
     }
 
     #search .SearchShell--page {
-      /* Grows from / collapses back into the navbar trigger (top right). */
       transform-origin: top right;
     }
 
-    /* The pop (scale) runs shorter than the slide, so the box snaps to size
-       first, then travels into place; enter and leave are exact mirrors.
-       Keyed on the body class — the same event that starts the veil's
-       retract stage — so both stay in lockstep. The pop overshoots slightly
-       (ease-bounce) for a natural spring feel. */
     html[data-search-overlay='active'][data-search-transition-scope='enter-search']
       body.search
       #search
