@@ -8,12 +8,20 @@
     --duration-slow: 400ms; /* panel open, skeleton reveal */
     --duration-very-slow: 500ms; /* emphasis, badge appear, text reveal */
     --duration-search-transition: 500ms; /* search overlay wipe, search-box morph */
-    --duration-search-cover: 120ms; /* mobile veil cover stage (enter tap feedback) */
-    --duration-search-morph: 200ms; /* mobile veil retract & search-box morph */
-    --duration-reveal: 400ms; /* item-level enter/exit (navscreen cascade, hamburger morph) */
-    --duration-hamburger-morph: 120ms; /* hamburger icon morph */
+    --duration-search-cover: 250ms; /* mobile veil cover stage (tap feedback; retract reuses --duration-curtain) */
+    --duration-search-morph: 200ms; /* mobile search-box morph (veil sweep reuses --duration-curtain) */
+    --duration-reveal: 400ms; /* search veil fade */
+    --duration-hamburger-morph: 120ms; /* JS-mirrored; CSS uses the phase tokens below */
     --duration-page-flip: 320ms; /* journal page-flip view transition */
     --duration-medium-zoom: 220ms; /* image zoom overlay & position transition */
+
+    /* apple.com globalnav curtain choreography (mobile navscreen + search veil) */
+    --duration-curtain: 560ms; /* navscreen height sweep, mobile search veil sweep */
+    --duration-curtain-stagger: 30ms; /* per-item cascade offset, both directions */
+    --duration-hamburger-converge: 180ms; /* bars slide together (open) / rotate back (close) */
+    --duration-hamburger-rotate: 320ms; /* bars rotate into the X */
+    --duration-hamburger-separate: 160ms; /* bars drift apart on close */
+    --duration-hamburger-phase-delay: 100ms; /* offset between the two morph phases */
 
     --distance-micro: 4px; /* text swap */
     --distance-small: 6px; /* error shake (small segment) */
@@ -27,6 +35,12 @@
     --ease-search-settle: cubic-bezier(0.16, 1, 0.3, 1); /* fast search wipe, soft landing */
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* UI enter / exit */
     --ease-linear: linear; /* shimmer, skeleton pulse, spinner */
+
+    /* apple.com globalnav curtain easings (mobile navscreen) */
+    --ease-curtain: cubic-bezier(0.52, 0.16, 0.24, 1); /* navscreen height sweep */
+    --ease-cascade: cubic-bezier(0.32, 0.08, 0.24, 1); /* navscreen items entering, bar tint on open */
+    --ease-cascade-exit: cubic-bezier(0.52, 0.16, 0.52, 0.84); /* navscreen items leaving */
+    --ease-icon-morph: cubic-bezier(0.04, 0.04, 0.12, 0.96); /* hamburger bar phases */
     --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1); /* badge pop open */
     --ease-bounce-strong: cubic-bezier(0.34, 3.85, 0.64, 1); /* bouncy hover-out */
 
@@ -93,7 +107,6 @@
       animation-delay: calc(var(--page-enter-stage, 0) * var(--page-enter-stagger));
     }
 
-    /* CSS counters cannot produce numeric custom properties, so cap the staggered range. */
     [data-page-enter-content] > *:nth-child(1) {
       --page-enter-stage: 1;
     }

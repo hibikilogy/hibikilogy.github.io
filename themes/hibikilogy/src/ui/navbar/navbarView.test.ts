@@ -11,7 +11,7 @@ const closedState = {
 
 describe('syncNavbarView', () => {
   afterEach(() => {
-    document.documentElement.classList.remove('navscreen-open', 'navscreen-noscroll')
+    document.documentElement.classList.remove('navscreen-noscroll')
     document.documentElement.style.removeProperty('--navscreen-scrollbar-width')
   })
 
@@ -38,7 +38,6 @@ describe('syncNavbarView', () => {
     expect(close?.getAttribute('aria-expanded')).toBe('true')
     expect(close?.classList.contains('open')).toBe(true)
     expect(screen?.classList.contains('open')).toBe(true)
-    expect(document.documentElement.classList.contains('navscreen-open')).toBe(true)
     expect(document.documentElement.classList.contains('navscreen-noscroll')).toBe(true)
     expect(
       screen
@@ -46,7 +45,20 @@ describe('syncNavbarView', () => {
         ?.style
         .getPropertyValue('--navscreen-item-index'),
     ).toBe('0')
+    expect(
+      screen
+        ?.querySelector<HTMLElement>('.NavScreenMenu > :first-child')
+        ?.style
+        .getPropertyValue('--navscreen-item-reverse-index'),
+    ).toBe('2')
+    expect(
+      screen
+        ?.querySelector<HTMLElement>('.NavScreenMenu > :last-child')
+        ?.style
+        .getPropertyValue('--navscreen-item-reverse-index'),
+    ).toBe('1')
     expect(close?.style.getPropertyValue('--navscreen-item-index')).toBe('2')
+    expect(close?.style.getPropertyValue('--navscreen-item-reverse-index')).toBe('0')
 
     syncNavbarView(root, closedState)
 
@@ -54,7 +66,6 @@ describe('syncNavbarView', () => {
     expect(close?.getAttribute('aria-expanded')).toBe('false')
     expect(close?.classList.contains('open')).toBe(false)
     expect(screen?.classList.contains('open')).toBe(false)
-    expect(document.documentElement.classList.contains('navscreen-open')).toBe(false)
     expect(document.documentElement.classList.contains('navscreen-noscroll')).toBe(false)
   })
 })

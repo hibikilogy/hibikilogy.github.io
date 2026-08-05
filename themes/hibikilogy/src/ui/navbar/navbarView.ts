@@ -5,13 +5,14 @@ function syncNavScreenItems(screen: HTMLElement): void {
   const menu = screen.querySelector<HTMLElement>('.NavScreenMenu')
   const items = menu ? Array.from(menu.children) : []
   items.forEach((item, index) => {
-    if (item instanceof HTMLElement)
+    if (item instanceof HTMLElement) {
       item.style.setProperty('--navscreen-item-index', String(index))
+      item.style.setProperty('--navscreen-item-reverse-index', String(items.length - index))
+    }
   })
-  // The close button cascades as the final item: enters last, exits first.
-  screen.querySelector<HTMLElement>(navbarDom.close)
-    ?.style
-    .setProperty('--navscreen-item-index', String(items.length))
+  const close = screen.querySelector<HTMLElement>(navbarDom.close)
+  close?.style.setProperty('--navscreen-item-index', String(items.length))
+  close?.style.setProperty('--navscreen-item-reverse-index', '0')
 }
 
 function syncNavScreenScrollLock(open: boolean): void {
@@ -48,5 +49,4 @@ export function syncNavbarView(root: ParentNode, state: NavbarViewState): void {
   if (screen && state.open)
     syncNavScreenItems(screen)
   syncNavScreenScrollLock(state.open)
-  document.documentElement.classList.toggle('navscreen-open', state.open)
 }

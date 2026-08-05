@@ -2,20 +2,9 @@
 
 @layer components {
   .NavBar {
-    &.open {
-      position: fixed !important;
-      top: 0 !important;
-      background: var(--joh-c-nav-overlay-bg) !important;
-      /* No backdrop-filter here: it would make the bar a containing block
-         for the fixed-position NavScreen descendant and collapse the panel
-         to the bar's height. The blur lives on the panel itself. */
-    }
-
-    /* Prevent content shift when NavBar becomes fixed */
     &.open ~ .Content {
       margin-top: var(--joh-nav-height);
     }
-
     /* NavBarHamburger */
 
     .NavBarHamburger {
@@ -49,9 +38,9 @@
           border-radius: 2px;
           background-color: var(--joh-c-text-2);
           transition:
-            translate var(--duration-hamburger-morph) var(--ease-out) var(--duration-hamburger-morph),
-            rotate var(--duration-hamburger-morph) var(--ease-morph),
-            scale var(--duration-hamburger-morph) var(--ease-out) var(--duration-hamburger-morph),
+            translate var(--duration-hamburger-separate) var(--ease-cascade-exit) var(--duration-hamburger-phase-delay),
+            rotate var(--duration-hamburger-converge) var(--ease-icon-morph),
+            scale var(--duration-hamburger-separate) var(--ease-cascade-exit) var(--duration-hamburger-phase-delay),
             background-color var(--duration-fast);
         }
 
@@ -62,9 +51,9 @@
 
       &.open .container > span {
         transition:
-          translate var(--duration-hamburger-morph) var(--ease-morph),
-          rotate var(--duration-hamburger-morph) var(--ease-out) var(--duration-hamburger-morph),
-          scale var(--duration-hamburger-morph) var(--ease-morph),
+          translate var(--duration-hamburger-converge) var(--ease-icon-morph),
+          rotate var(--duration-hamburger-rotate) var(--ease-icon-morph) var(--duration-hamburger-phase-delay),
+          scale var(--duration-hamburger-converge) var(--ease-icon-morph),
           background-color var(--duration-fast);
       }
 
@@ -84,76 +73,92 @@
       }
     }
 
-    .NavScreen.open {
-      display: flex;
-      opacity: 1;
-    }
-
     .NavScreen {
-      /* Local animation tokens — tune navscreen timing here */
-      --navscreen-item-exit-dur: 240ms;
-      --navscreen-item-enter-dur: 280ms;
-      --navscreen-stagger-base: 60ms;
+      /* Per-item cascade tokens; indexes are injected from JS (navbarView). */
+      --cascade-park-offset: -56px;
+      --cascade-park-step: 4px;
+      --cascade-enter-opacity-dur: 460ms;
+      --cascade-enter-transform-dur: 520ms;
+      --cascade-enter-opacity-delay: 30ms;
+      --cascade-enter-transform-delay: 20ms;
+      --cascade-exit-opacity-dur: 440ms;
+      --cascade-exit-opacity-step: 14ms;
+      --cascade-exit-transform-dur: 520ms;
+      --cascade-exit-transform-step: 8ms;
+      --cascade-exit-delay: 30ms;
 
-      /* Keep the sidebar z-index while closed: allow-discrete keeps the
-         panel displayed during the closing transition. */
-      z-index: var(--joh-z-index-sidebar);
-      display: none;
+      z-index: -1;
       position: fixed;
-      top: calc(var(--joh-nav-height) - 1px);
+      top: calc(-1 * var(--joh-nav-floating-offset));
       /*rtl:ignore*/
       right: 0;
       /*rtl:ignore*/
       left: 0;
-      height: calc(100vh - var(--joh-nav-height) + 1px);
-      height: calc(100dvh - var(--joh-nav-height) + 1px);
+      display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 0 32px calc(var(--joh-nav-height) + 20vh);
       width: 100%;
+      height: 0;
+      padding: 0 32px;
       background-color: var(--joh-c-nav-overlay-bg);
-      overflow-y: auto;
+      overflow: hidden;
+      visibility: hidden;
       pointer-events: auto;
-      opacity: 0;
       transition:
-        display var(--duration-reveal) var(--ease-out),
-        opacity var(--duration-reveal) var(--ease-out),
-        transform var(--duration-reveal) var(--ease-out);
-      transition-behavior: allow-discrete;
+        height var(--duration-curtain) var(--ease-curtain),
+        visibility 0s linear var(--duration-curtain);
 
-      @starting-style {
-        opacity: 0;
-        transform: translateY(-8px);
+      &.open {
+        height: calc(100vh + var(--joh-nav-floating-offset));
+        height: calc(100dvh + var(--joh-nav-floating-offset));
+        visibility: visible;
+        transition:
+          height var(--duration-curtain) var(--ease-curtain),
+          visibility 0s linear;
       }
 
-      .NavScreenMenu > *,
+      .NavScreenMenu > a.NavScreenMenuLink,
+      .NavScreenMenu > div.NavScreenMenuGroupLink,
       .NavScreenClose {
         opacity: 0;
-        transform: translateY(-8px);
-        filter: blur(var(--blur-small));
+        transform: translateY(
+          calc(var(--cascade-park-offset) + var(--navscreen-item-index, 0) * var(--cascade-park-step))
+        );
         transition:
-          opacity var(--navscreen-item-exit-dur) var(--ease-out),
-          transform var(--navscreen-item-exit-dur) var(--ease-out),
-          filter var(--navscreen-item-exit-dur) var(--ease-out);
+          opacity
+            calc(
+              var(--cascade-exit-opacity-dur) + var(--navscreen-item-reverse-index, 0) *
+                var(--cascade-exit-opacity-step)
+            )
+            var(--ease-curtain)
+            calc(var(--cascade-exit-delay) + var(--navscreen-item-reverse-index, 0) * var(--duration-curtain-stagger)),
+          transform
+            calc(
+              var(--cascade-exit-transform-dur) + var(--navscreen-item-reverse-index, 0) *
+                var(--cascade-exit-transform-step)
+            )
+            var(--ease-curtain)
+            calc(var(--cascade-exit-delay) + var(--navscreen-item-reverse-index, 0) * var(--duration-curtain-stagger)),
+          color var(--duration-fast),
+          border-color var(--duration-fast);
       }
 
-      &.open .NavScreenMenu > *,
+      &.open .NavScreenMenu > a.NavScreenMenuLink,
+      &.open .NavScreenMenu > div.NavScreenMenuGroupLink,
       &.open .NavScreenClose {
         opacity: 1;
         transform: translateY(0);
-        filter: blur(0px);
-        transition-duration: var(--navscreen-item-enter-dur);
-        transition-delay: calc(
-          var(--navscreen-stagger-base) + var(--navscreen-item-index, 0) * var(--duration-stagger)
-        );
-
-        /* Lets the entry cascade transition (not snap) when the panel flips
-           display: none → flex in the same frame. */
-        @starting-style {
-          opacity: 0;
-          transform: translateY(-8px);
-          filter: blur(var(--blur-small));
-        }
+        transition:
+          opacity calc(var(--cascade-enter-opacity-dur) + var(--navscreen-item-index, 0) * 7ms) var(--ease-cascade)
+            calc(var(--cascade-enter-opacity-delay) + var(--navscreen-item-index, 0) * var(--duration-curtain-stagger)),
+          transform
+            calc(var(--cascade-enter-transform-dur) + var(--navscreen-item-index, 0) * 16ms)
+            var(--ease-cascade)
+            calc(
+              var(--cascade-enter-transform-delay) + var(--navscreen-item-index, 0) * var(--duration-curtain-stagger)
+            ),
+          color var(--duration-fast),
+          border-color var(--duration-fast);
       }
 
       > .container,
@@ -189,11 +194,18 @@
         }
       }
 
-      /* Direct-child scope: the close button's inner hamburger icon box is
-         also a .container and must not inherit this. */
       > .container {
+        max-height: 100%;
         margin: auto 0;
         gap: 12px;
+        overflow-y: auto;
+        scrollbar-width: none;
+        padding-top: var(--joh-nav-height);
+        padding-bottom: calc(var(--joh-nav-height) + 50vh);
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
       }
 
       .NavScreenClose {
@@ -204,16 +216,16 @@
 
     @media (--max-tablet) {
       .NavBarSearch,
-      .NavBarSocialLink,
+      a.NavBarMenuLink.NavBarSocialLink,
       .NavBarHamburger:not(.NavScreenClose) {
         transition:
           color var(--duration-fast),
-          opacity var(--duration-reveal) var(--ease-standard),
-          visibility var(--duration-reveal) var(--ease-standard);
+          opacity var(--duration-fast) var(--ease-cascade),
+          visibility var(--duration-fast) var(--ease-cascade);
       }
 
       &.open .NavBarSearch,
-      &.open .NavBarSocialLink,
+      &.open a.NavBarMenuLink.NavBarSocialLink,
       &.open .NavBarHamburger:not(.NavScreenClose) {
         opacity: 0;
         visibility: hidden;
@@ -240,15 +252,22 @@
   @media (prefers-reduced-motion: reduce) {
     .NavBar .NavScreen {
       transition-duration: 120ms;
-      transition-property: display, opacity;
+      transition-delay: 0ms, 120ms; /* visibility follows the 120ms height snap */
     }
 
-    .NavBar .NavScreen .NavScreenMenu > *,
-    .NavBar .NavScreen .NavScreenClose {
+    .NavBar .NavScreen.open {
+      transition-delay: 0ms;
+    }
+
+    .NavBar .NavScreen .NavScreenMenu > a.NavScreenMenuLink,
+    .NavBar .NavScreen .NavScreenMenu > div.NavScreenMenuGroupLink,
+    .NavBar .NavScreen .NavScreenClose,
+    .NavBar .NavScreen.open .NavScreenMenu > a.NavScreenMenuLink,
+    .NavBar .NavScreen.open .NavScreenMenu > div.NavScreenMenuGroupLink,
+    .NavBar .NavScreen.open .NavScreenClose {
       transition-duration: 120ms;
       transition-delay: 0ms;
       transform: none;
-      filter: none;
     }
 
     .NavBar .NavBarHamburger .container > span,
