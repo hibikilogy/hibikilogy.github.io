@@ -300,6 +300,7 @@
   :root {
     --joh-nav-height: 64px;
     --joh-nav-logo-height: 42px;
+    --joh-nav-floating-offset: 8px;
     --joh-c-nav-overlay-bg: var(--joh-c-bg);
   }
 

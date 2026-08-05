@@ -3,7 +3,7 @@
 @layer components {
   .NavBar {
     --searchbox-width: 48px;
-    --navbar-hidden-translate: -100%;
+    --navbar-hidden-translate: calc(-100% - var(--joh-nav-floating-offset));
     z-index: var(--joh-z-index-nav);
     width: 100%;
     position: sticky;
@@ -20,10 +20,7 @@
     background-color: var(--joh-c-bg);
     border-bottom: 1px solid transparent;
 
-    @media (--pad) {
-      --navbar-hidden-translate: calc(-100% - 8px);
-      margin-top: 8px;
-    }
+    margin-top: var(--joh-nav-floating-offset);
 
     .wrapper {
       padding: 0 8px;

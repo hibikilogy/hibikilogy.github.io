@@ -12,8 +12,11 @@
 
 @layer pages {
   .post > #app > .Layout > .NavBar {
-    margin-block-start: 0;
     margin-block-end: calc(-1 * var(--joh-nav-height));
+  }
+
+  .post > #app > .Layout > .Hero {
+    margin-top: calc(-1 * var(--joh-nav-floating-offset));
   }
 
   .post > #app > .Layout > .NavBar:not(.post-hero-passed) {
