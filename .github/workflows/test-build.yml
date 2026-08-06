@@ -46,6 +46,9 @@ jobs:
       - name: Subset body font
         run: pnpm build:subset-bodyfont
 
+      - name: Generate build info
+        run: pnpm run build:build-info
+
       - name: Build site
         run: zola build --drafts --base-url https://hibikilogy-pr${{ github.event.number }}.surge.sh
 
