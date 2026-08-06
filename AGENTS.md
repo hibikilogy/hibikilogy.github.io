@@ -10,12 +10,12 @@ This repository is a Zola static site using the built-in `hibikilogy` theme. The
 - `static/` — site-specific static files (logos, favicons, images, opensearch.xml, site.manifest, build caches). Files here override theme `static/` by path.
 
 ### Theme (`themes/hibikilogy/`)
-- `templates/` — Tera templates with reusable partials under `components/`, taxonomy views under `tags/` and `author/`, macros under `macros/`, and shortcodes under `shortcodes/`
+- `templates/` — Tera 2 templates with reusable components under `components/` (Tera `{% component %}` definitions, globally registered; Zola 0.23 removed macros and shortcodes), taxonomy views under `tags/` and `author/`
 - `styles/` — SCSS stylesheets organized as `base/`, `components/`, `layouts/`
 - `static/` — theme static assets (JS bundle, CSS, SVG icons, fonts, KaTeX files)
 - `src/` — TypeScript source organized as `app/` (lifecycle, composition), `features/` (search), `ui/` (DOM adapters), `infrastructure/` (Swup integration, network), `shared/` (utilities, runtime config); compiled to `static/js/` by Vite. TS layering/review rules: `themes/hibikilogy/src/README.md`
 - `components/` — Lit Web Components (lazy-image, site-pagination, tags-list)
-- `i18n/zh.toml` — theme default translations. Site can override via `[translations]` in `config.toml`, or replace by adding `i18n/<lang>.toml` files. Templates use `tr::t(key="...")` macro which loads from theme i18n first, falls back to Zola's built-in `trans()`.
+- `i18n/zh.toml` — theme default translations. Site can override via `[translations]` in `config.toml`, or replace by adding `i18n/<lang>.toml` files. Templates use the `{{<i18n.t key="..." lang={lang} />}}` component which loads from theme i18n first, falls back to Zola's built-in `trans()`. Components only see their own parameters, so callers pass `config`/`lang` explicitly.
 - `theme.toml` — theme metadata and default `[extra]` values
 
 `public/` is the generated site output. Prefer editing source files, then regenerate output, rather than hand-editing `public/`.
@@ -81,11 +81,11 @@ Rust build tools (the `hibikilogy-tools` crate, invoked via pnpm):
 - `pnpm verify:rust` — fmt check + clippy `-D warnings` + `pnpm test:rust`
 - `pnpm coverage:rust` — llvm-cov HTML report
 
-Requires Zola 0.22.1 (as pinned in `.github/actions/setup-tools`), Node.js 24+ (see `.nvmrc`; Node 24 runs TypeScript entry scripts directly via type stripping), and Rust 1.97.1 (pinned by `rust-toolchain.toml`) with `cargo-nextest` 0.9.140 and `cargo-llvm-cov` 0.8.7 installed.
+Requires Zola 0.23.1 (as pinned in `.github/actions/setup-tools`), Node.js 24+ (see `.nvmrc`; Node 24 runs TypeScript entry scripts directly via type stripping), and Rust 1.97.1 (pinned by `rust-toolchain.toml`) with `cargo-nextest` 0.9.140 and `cargo-llvm-cov` 0.8.7 installed.
 
 ## i18n / Translations
 
-Translations live in `themes/hibikilogy/i18n/zh.toml`. Templates access them via the `tr::t(key, default)` macro (defined in `themes/hibikilogy/templates/macros/i18n.html`). The macro loads theme i18n via `load_data()`, then falls back to Zola's `trans()` (which reads site `config.toml` `[translations]`), then to the inline `default` parameter.
+Translations live in `themes/hibikilogy/i18n/zh.toml`. Templates access them via the `i18n.t` component (defined in `themes/hibikilogy/templates/components/i18n.html`). The component loads theme i18n via `load_data()`, then falls back to Zola's `trans()` (which reads site `config.toml` `[translations]`), then to the inline `default` parameter.
 
 To override a translation, add a `[translations]` section in site `config.toml` with the specific key. To add a new language, create `i18n/<lang>.toml` in the theme.
 
