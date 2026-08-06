@@ -6,7 +6,7 @@ import { parse } from 'smol-toml'
 import { normalizePath } from 'vite'
 
 type Scalar = string | number | boolean
-type TomlObject = Record<string, unknown>
+export type TomlObject = Record<string, unknown>
 
 const VIRTUAL_ID = 'virtual:hibikilogy-config'
 const RESOLVED_ID = `\0${VIRTUAL_ID}`
@@ -21,7 +21,7 @@ function getThemeI18nPath(config: TomlObject, rootDir: string): string | null {
     : undefined
   const lang = typeof config.default_language === 'string'
     ? config.default_language
-    : 'zh'
+    : 'en'
 
   return themeName
     ? resolve(rootDir, 'themes', themeName, 'i18n', `${lang}.toml`)
@@ -64,35 +64,88 @@ function flattenScalars(
   return result
 }
 
-function generateModule(tomlPath: string, rootDir: string): string {
-  const parsed = parse(
-    readFileSync(tomlPath, 'utf8'),
-  ) as TomlObject
+interface PreparedRoot {
+  /** 根配置，已剥离 translations / 各语言 translations / extra */
+  root: TomlObject
+  /** [extra]，已剥离废弃的 extra.translations */
+  extra: TomlObject
+  /** 站点翻译：顶层 [translations] 或 [languages.<default>.translations]，二选一 */
+  siteTranslations: TomlObject
+}
 
+/**
+ * 结构化提取站点翻译，使剩余部分可安全地扁平化进 HIBIKILOGY_CONFIG。
+ *
+ * 与 Zola 的 LanguageOptions::merge() 语义一致：默认语言的翻译只能通过
+ * 顶层 [translations] 或 [languages.<default>.translations] 之一提供，
+ * 二者同时非空会报错，而不是叠加覆盖。
+ */
+export function prepareRoot(parsed: TomlObject): PreparedRoot {
   const root = { ...parsed }
 
   const extra = isTomlObject(root.extra)
     ? { ...root.extra }
     : {}
 
+  const languages = isTomlObject(root.languages)
+    ? { ...root.languages }
+    : {}
+
+  const defaultLang = typeof root.default_language === 'string'
+    ? root.default_language
+    : 'en'
+
+  // 剥离各语言的 translations：默认语言的用于 JS 烘焙，其余语言的丢弃，
+  // 避免被 flattenScalars 展开成 languagesZhTranslationsSearchPlaceholder 之类的键
+  let languageTranslations: TomlObject = {}
+  for (const [langCode, langOptions] of Object.entries(languages)) {
+    if (!isTomlObject(langOptions))
+      continue
+    const options = { ...langOptions }
+    if (isTomlObject(options.translations)) {
+      if (langCode === defaultLang) {
+        languageTranslations = options.translations
+      }
+      delete options.translations
+    }
+    languages[langCode] = options
+  }
+
   const rootTranslations = isTomlObject(root.translations)
     ? root.translations
     : {}
 
-  const extraTranslations = isTomlObject(extra.translations)
-    ? extra.translations
-    : {}
+  if (Object.keys(rootTranslations).length > 0
+    && Object.keys(languageTranslations).length > 0) {
+    throw new Error(
+      '[hibikilogy-config] translations for the default language are specified twice',
+    )
+  }
+
+  const siteTranslations = Object.keys(rootTranslations).length > 0
+    ? rootTranslations
+    : languageTranslations
 
   delete root.extra
   delete root.translations
+  root.languages = languages
+  // [extra].translations 已废弃：不参与翻译合并，也不应混入 config 展平
   delete extra.translations
 
-  /*
-   * 分别展开根配置和 [extra]，使同名属性能够触发重复检测，
-   * 而不是在对象展开阶段被静默覆盖。
-   */
-  const config = flattenScalars(root)
-  flattenScalars(extra, [], config)
+  return { root, extra, siteTranslations }
+}
+
+/**
+ * 客户端翻译：站点默认语言翻译（顶层 [translations] 或
+ * [languages.<default>.translations]，二选一）覆盖主题 i18n/<default>.toml。
+ *
+ * 只烘焙 default_language 的翻译；不提供按页面语言切换的客户端翻译。
+ */
+export function resolveTranslations(
+  prepared: PreparedRoot,
+  rootDir: string,
+): Record<string, Scalar> {
+  const { root, siteTranslations } = prepared
 
   const translations: Record<string, Scalar> = {}
   const themeI18nPath = getThemeI18nPath(root, rootDir)
@@ -101,9 +154,34 @@ function generateModule(tomlPath: string, rootDir: string): string {
     flattenScalars(i18nParsed, [], translations)
   }
 
-  const siteTranslations = flattenScalars(rootTranslations)
-  flattenScalars(extraTranslations, [], siteTranslations)
-  Object.assign(translations, siteTranslations)
+  const siteTranslationsFlattened = flattenScalars(siteTranslations)
+  for (const [key, value] of Object.entries(siteTranslationsFlattened)) {
+    if (typeof value !== 'string') {
+      throw new TypeError(
+        `[hibikilogy-config] Translation value for '${key}' must be a string`,
+      )
+    }
+  }
+  Object.assign(translations, siteTranslationsFlattened)
+
+  return translations
+}
+
+export function generateModule(tomlPath: string, rootDir: string): string {
+  const parsed = parse(
+    readFileSync(tomlPath, 'utf8'),
+  ) as TomlObject
+
+  const prepared = prepareRoot(parsed)
+
+  /*
+   * 分别展开根配置和 [extra]，使同名属性能够触发重复检测，
+   * 而不是在对象展开阶段被静默覆盖。
+   */
+  const config = flattenScalars(prepared.root)
+  flattenScalars(prepared.extra, [], config)
+
+  const translations = resolveTranslations(prepared, rootDir)
 
   return [
     '// Generated from config.toml.',
