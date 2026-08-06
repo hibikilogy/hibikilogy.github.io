@@ -6,6 +6,8 @@ backend:
   branch: Refactor/zola
   base_url: https://gh-oauth.interknot.site
   squash_merges: true
+  # Multi-user editor team: OAuth only, no PAT/token sign-in.
+  auth_methods: [oauth]
 
 # —— Output ——
 output:
