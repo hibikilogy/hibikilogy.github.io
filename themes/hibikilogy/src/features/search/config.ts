@@ -47,37 +47,31 @@ export const searchFieldDefinitions = [
   {
     field: 'author',
     aliases: ['author', '作者'],
-    label: '作者',
     searchKey: 'authorSearch',
   },
   {
     field: 'tag',
     aliases: ['tag', 'tags', '标签'],
-    label: '标签',
     searchKey: 'tagSearch',
   },
   {
     field: 'title',
     aliases: ['title', '标题'],
-    label: '标题',
     searchKey: 'titleSearch',
   },
   {
     field: 'body',
     aliases: ['body', '正文'],
-    label: '正文',
     searchKey: 'body',
   },
   {
     field: 'description',
     aliases: ['description', 'desc', '摘要'],
-    label: '摘要',
     searchKey: 'descriptionSearch',
   },
   {
     field: 'slug',
     aliases: ['slug'],
-    label: 'Slug',
     searchKey: 'slugSearch',
   },
 ] satisfies SearchFieldDefinition[]

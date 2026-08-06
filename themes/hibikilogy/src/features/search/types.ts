@@ -150,7 +150,6 @@ export type SearchField = 'author' | 'tag' | 'title' | 'body' | 'description' | 
 export interface SearchFieldDefinition {
   field: SearchField
   aliases: string[]
-  label: string
   searchKey: keyof SearchRecord
 }
 
