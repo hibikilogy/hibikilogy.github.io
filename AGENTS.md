@@ -15,7 +15,7 @@ This repository is a Zola static site using the built-in `hibikilogy` theme. The
 - `static/` — theme static assets (JS bundle, CSS, SVG icons, fonts, KaTeX files)
 - `src/` — TypeScript source organized as `app/` (lifecycle, composition), `features/` (search), `ui/` (DOM adapters), `infrastructure/` (Swup integration, network), `shared/` (utilities, runtime config); compiled to `static/js/` by Vite. TS layering/review rules: `themes/hibikilogy/src/README.md`
 - `components/` — Lit Web Components (lazy-image, site-pagination, tags-list)
-- `i18n/zh.toml` — theme default translations. Site can override via `[translations]` in `config.toml`, or replace by adding `i18n/<lang>.toml` files. Templates use the `{{<i18n.t key="..." lang={lang} />}}` component which loads from theme i18n first, falls back to Zola's built-in `trans()`. Components only see their own parameters; callers pass `config`/`lang` explicitly.
+- `i18n/zh.toml` — theme default translations. Templates look up `{{<i18n.t key="..." lang={lang} />}}` (defined in `templates/components/i18n.html`) in order: `config.toml [languages.<lang>].translations` → `[translations]` (default language only) → this file; a missing key fails the build via Tera 2's `throw()`. Default-language site translations come from either `[translations]` or `[languages.<default>.translations]`, never both (same rule as Zola's `LanguageOptions::merge()`). Components only see their own parameters; callers pass `config`/`lang` explicitly.
 - `theme.toml` — theme metadata and default `[extra]` values
 
 `public/` is the generated site output. Prefer editing source files, then regenerate output, rather than hand-editing `public/`.
@@ -85,11 +85,19 @@ Requires Zola 0.23.1 (as pinned in `.github/actions/setup-tools`), Node.js 24+ (
 
 ## i18n / Translations
 
-Translations live in `themes/hibikilogy/i18n/zh.toml`. Templates access them via the `i18n.t` component (defined in `themes/hibikilogy/templates/components/i18n.html`). The component loads theme i18n via `load_data()`, then falls back to Zola's `trans()` (which reads site `config.toml` `[translations]`), then to the inline `default` parameter.
+Translations live in `themes/hibikilogy/i18n/zh.toml`. Templates access them via the `i18n.t` component (defined in `themes/hibikilogy/templates/components/i18n.html`), with the lookup chain:
 
-To override a translation, add a `[translations]` section in site `config.toml` with the specific key. To add a new language, create `i18n/<lang>.toml` in the theme.
+1. `config.toml [languages.<lang>].translations` — per-language site overrides
+2. `config.toml [translations]` — only when `lang == default_language` (top-level `[translations]` belongs to the default language; it is not a fallback for other languages)
+3. `themes/hibikilogy/i18n/<lang>.toml` — theme baseline
 
-The Vite plugin at `scripts/vite/hibikilogy-config/index.ts` also reads i18n for client-side JS search messages. It loads from `config.toml` `[translations]` first, then falls back to `themes/<theme>/i18n/<lang>.toml`.
+When the key is missing everywhere, the component fails the build via Tera 2's `throw(message=...)` — there is no silent fallback. The component's `lang` parameter is required.
+
+The default language's site translations must be defined in exactly one place: top-level `[translations]` or `[languages.<default>.translations]`. Zola's `LanguageOptions::merge()` rejects both being set, and the Vite plugin enforces the same rule at build time.
+
+The Vite plugin at `scripts/vite/hibikilogy-config/index.ts` bakes client-side JS search messages from the same sources: the default language's site translations (one of the two forms above) override `themes/<theme>/i18n/<default_language>.toml`, flattened to camelCase keys (`search_index_loading` → `searchIndexLoading`) into `virtual:hibikilogy-config`. Only the `default_language` is baked; per-page-language client translations are out of scope. `scripts/check-i18n-keys.test.ts` verifies that template `key` literals, JS `HIBIKILOGY_TRANSLATIONS.*` references, and the CMS i18n fields in `static/admin/config.yml` (names and defaults) stay in sync with `zh.toml`.
+
+To add a new language, create `i18n/<lang>.toml` in the theme.
 
 ## Coding Style & Naming Conventions
 
