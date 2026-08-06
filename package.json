@@ -41,7 +41,7 @@
     "postinstall": "simple-git-hooks"
   },
   "dependencies": {
-    "@sveltia/cms": "0.170.7",
+    "@sveltia/cms": "0.180.0",
     "@swup/body-class-plugin": "^3.3.0",
     "@swup/ga-plugin": "^2.0.0",
     "@swup/head-plugin": "^2.3.1",

@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@sveltia/cms':
-        specifier: 0.170.7
-        version: 0.170.7
+        specifier: 0.180.0
+        version: 0.180.0
       '@swup/body-class-plugin':
         specifier: ^3.3.0
         version: 3.3.0(swup@4.9.2)
@@ -1656,8 +1656,8 @@ packages:
   '@surma/rollup-plugin-off-main-thread@2.2.3':
     resolution: {integrity: sha512-lR8q/9W7hZpMWweNiAKU7NQerBnzQQLvi8qnTDU/fxItPhtZVMbPV3lbCwjhIlNBe9Bbr5V+KHshvWmVSG9cxQ==}
 
-  '@sveltia/cms@0.170.7':
-    resolution: {integrity: sha512-yqpPqNd/PKH9RvkqtJPjiCfDe3BzYM/mq9wUFjCF0BhybGs+4rQIOhelceU5uWjSk7NwHFjBRAidqlbuQpIZDA==}
+  '@sveltia/cms@0.180.0':
+    resolution: {integrity: sha512-2EBud1RezH0vlqONZF7RQAbMLfESdWesEBAzYRvA1dD5ztDh6ahqIv86H8e4hZI9CGQQxBxPV7oQPWTrT0YJhw==}
 
   '@swup/body-class-plugin@3.3.0':
     resolution: {integrity: sha512-4h/6mAgDd0+ml8Gc2kX8tikIR0HZZLF+WTnfm0JTVrGDw74bgEBenbsaWFfIS+gn4RWKZdWBUOfaZ+Im5J7Gvw==}
@@ -6640,7 +6640,7 @@ snapshots:
       magic-string: 0.25.9
       string.prototype.matchall: 4.0.12
 
-  '@sveltia/cms@0.170.7': {}
+  '@sveltia/cms@0.180.0': {}
 
   '@swup/body-class-plugin@3.3.0(swup@4.9.2)':
     dependencies:
