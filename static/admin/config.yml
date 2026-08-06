@@ -697,6 +697,18 @@ singletons:
             label: 下一页
             widget: string
             default: 下一页
+          - name: pagination_current_template
+            label: 当前页模板
+            widget: string
+            default: '第 {page} 页'
+          - name: pagination_page_aria_template
+            label: 页码 ARIA 模板
+            widget: string
+            default: '前往第 {page} 页'
+          - name: pagination_mobile_template
+            label: 移动端页码模板
+            widget: string
+            default: '第 {page} 页'
           - name: sort_relevance
             label: 相关度排序
             widget: string
@@ -709,6 +721,10 @@ singletons:
             label: 日期正序
             widget: string
             default: 发布日期正序
+          - name: sort_control_label
+            label: 排序方式标签
+            widget: string
+            default: 排序方式
           - name: tags_title
             label: 标签标题
             widget: string
@@ -737,10 +753,6 @@ singletons:
             label: 杂类分类名
             widget: string
             default: 杂类
-          - name: search_clear
-            label: 清空搜索
-            widget: string
-            default: 清空
           - name: search_index_loading
             label: 加载索引提示
             widget: string
@@ -760,11 +772,7 @@ singletons:
           - name: search_failed
             label: 搜索失败
             widget: string
-            default: 搜索失败
-          - name: search_failed_with_error
-            label: 搜索失败详情
-            widget: string
-            default: 搜索失败：{0}
+            default: 搜索失败，请稍后重试
           - name: search_empty
             label: 搜索无结果
             widget: string
@@ -789,6 +797,10 @@ singletons:
             label: 导航 ARIA 标签
             widget: string
             default: 主导航
+          - name: nav_close
+            label: 关闭导航菜单
+            widget: string
+            default: 关闭导航菜单
           - name: anonymous_author
             label: 匿名作者
             widget: string
