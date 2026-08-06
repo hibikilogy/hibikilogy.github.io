@@ -10,7 +10,7 @@ This repository is a Zola static site using the built-in `hibikilogy` theme. The
 - `static/` — site-specific static files (logos, favicons, images, opensearch.xml, site.manifest, build caches). Files here override theme `static/` by path.
 
 ### Theme (`themes/hibikilogy/`)
-- `templates/` — Tera 2 templates: reusable `{% component %}` definitions under `components/` (globally registered; Zola 0.23 removed macros and shortcodes), taxonomy views under `tags/` and `author/`
+- `templates/` — Tera 2 templates: reusable `{% component %}` definitions under `components/` (globally registered; Zola 0.23 removed macros and shortcodes), grouped as page components at the top level, markdown-body components under `content/`, and helpers under `util/`; taxonomy views under `tags/` and `author/`
 - `styles/` — SCSS stylesheets organized as `base/`, `components/`, `layouts/`
 - `static/` — theme static assets (JS bundle, CSS, SVG icons, fonts, KaTeX files)
 - `src/` — TypeScript source organized as `app/` (lifecycle, composition), `features/` (search), `ui/` (DOM adapters), `infrastructure/` (Swup integration, network), `shared/` (utilities, runtime config); compiled to `static/js/` by Vite. TS layering/review rules: `themes/hibikilogy/src/README.md`
