@@ -16,7 +16,7 @@
 - **[Zola](https://www.getzola.org/)** >= 0.23.1
 
 > [!NOTE]
-> **Windows 用户**：官方 Zola 0.23.x Windows 二进制存在一个上游 bug——`zola build`/`serve`/`check` 无法加载任何模板（`main.rs` 对根目录 `canonicalize()` 产生 `\\?\` UNC 前缀路径，导致 Tera 2 的 `load_from_glob` 匹配失败，报 `Template ... not found`）。CI 使用 Linux 不受影响。本地 Windows 开发需使用打了补丁的二进制（修复方式：在 `src/main.rs` 中对 `cli.root.canonicalize()` 的结果应用 `src/cmd/init.rs` 中的 `strip_unc` 后重新编译），可参考 `refactor/zola` 分支的迁移过程。
+> **Windows 用户**：官方 Zola 0.23.x Windows 二进制有上游 bug——`canonicalize()` 产生 `\\?\` UNC 路径导致模板无法加载（CI 为 Linux 不受影响）。本地开发需用应用了 `strip_unc` 补丁重新编译的二进制。
 
 ```bash
 git clone https://github.com/hibikilogy/hibikilogy.github.io.git

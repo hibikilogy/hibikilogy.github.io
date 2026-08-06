@@ -10,12 +10,12 @@ This repository is a Zola static site using the built-in `hibikilogy` theme. The
 - `static/` — site-specific static files (logos, favicons, images, opensearch.xml, site.manifest, build caches). Files here override theme `static/` by path.
 
 ### Theme (`themes/hibikilogy/`)
-- `templates/` — Tera 2 templates with reusable components under `components/` (Tera `{% component %}` definitions, globally registered; Zola 0.23 removed macros and shortcodes), taxonomy views under `tags/` and `author/`
+- `templates/` — Tera 2 templates: reusable `{% component %}` definitions under `components/` (globally registered; Zola 0.23 removed macros and shortcodes), taxonomy views under `tags/` and `author/`
 - `styles/` — SCSS stylesheets organized as `base/`, `components/`, `layouts/`
 - `static/` — theme static assets (JS bundle, CSS, SVG icons, fonts, KaTeX files)
 - `src/` — TypeScript source organized as `app/` (lifecycle, composition), `features/` (search), `ui/` (DOM adapters), `infrastructure/` (Swup integration, network), `shared/` (utilities, runtime config); compiled to `static/js/` by Vite. TS layering/review rules: `themes/hibikilogy/src/README.md`
 - `components/` — Lit Web Components (lazy-image, site-pagination, tags-list)
-- `i18n/zh.toml` — theme default translations. Site can override via `[translations]` in `config.toml`, or replace by adding `i18n/<lang>.toml` files. Templates use the `{{<i18n.t key="..." lang={lang} />}}` component which loads from theme i18n first, falls back to Zola's built-in `trans()`. Components only see their own parameters, so callers pass `config`/`lang` explicitly.
+- `i18n/zh.toml` — theme default translations. Site can override via `[translations]` in `config.toml`, or replace by adding `i18n/<lang>.toml` files. Templates use the `{{<i18n.t key="..." lang={lang} />}}` component which loads from theme i18n first, falls back to Zola's built-in `trans()`. Components only see their own parameters; callers pass `config`/`lang` explicitly.
 - `theme.toml` — theme metadata and default `[extra]` values
 
 `public/` is the generated site output. Prefer editing source files, then regenerate output, rather than hand-editing `public/`.

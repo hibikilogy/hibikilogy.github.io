@@ -2,10 +2,8 @@ import { execFileSync } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
 import process from 'node:process'
 
-// Generates `build-info.json` at the site root before every Zola build.
-// The dev-preview banner in `base.html` reads it via `load_data()` —
-// Zola 0.23 removed the `get_env` function, so Git metadata can no
-// longer be injected through environment variables.
+// Writes `build-info.json` for the dev banner in base.html, which reads
+// it via load_data() — get_env no longer exists in Zola 0.23.
 function git(args: string[]): string {
   try {
     return execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
@@ -17,8 +15,7 @@ function git(args: string[]): string {
 
 const commit = git(['rev-parse', '--short=7', 'HEAD'])
 const message = git(['log', '-1', '--format=%s', 'HEAD'])
-// Local branches resolve directly; CI checkouts are detached, so fall
-// back to the workflow-provided ref name.
+// CI checkouts are detached; fall back to the workflow ref name.
 const branch = git(['branch', '--show-current']) || process.env.GITHUB_REF_NAME || ''
 
 writeFileSync(

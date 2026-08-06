@@ -122,7 +122,7 @@ Convert supported embeds to existing theme components only after checking `theme
 [文章标题](@/articles/2020-01-07-example.md)
 ```
 
-Since Zola 0.23 templates all Markdown content with Tera, escape any literal `{{` / `{%` sequences that come from the source article with `{% raw %}` / `{% endraw %}` blocks. Prefer `raw` blocks over `skip_content_templating`: the latter disables all Tera and component execution for the whole file, so it only fits files that exist purely to display Tera code and need no live components.
+Zola 0.23 templates all Markdown content with Tera — escape literal `{{` / `{%` from the source with `{% raw %}` / `{% endraw %}` blocks. Prefer `raw` over `skip_content_templating`, which disables all Tera/component execution for the whole file.
 
 Do not retain unsafe scripts, event-handler attributes, iframes without a repository component, or arbitrary copied styles.
 
