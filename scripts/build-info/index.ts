@@ -20,5 +20,6 @@ const branch = git(['branch', '--show-current']) || process.env.GITHUB_REF_NAME 
 
 writeFileSync(
   'build-info.json',
-  JSON.stringify({ commit, branch, message, build_time: new Date().toISOString() }, null, 2) + '\n',
+  // eslint-disable-next-line ts/naming-convention -- build_time 键名被 base.html 的 load_data 消费
+  `${JSON.stringify({ commit, branch, message, build_time: new Date().toISOString() }, null, 2)}\n`,
 )
