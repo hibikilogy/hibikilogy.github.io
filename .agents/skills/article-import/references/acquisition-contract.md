@@ -61,7 +61,8 @@ Return only the article body in `body_markdown`; do not include YAML/TOML frontm
 - Preserve semantic emphasis with `**bold**`, `*italic*`, and `~~strikethrough~~` only when present in the source.
 - Preserve meaningful section order, quotations, captions, tables, footnotes, and intentional line breaks.
 - Exclude navigation, advertisements, counters, avatars, badges, controls, signatures, unrelated replies, duplicated quotations, tracking parameters, placeholders, and empty wrappers.
-- Do not emit scripts, event handlers, arbitrary styles, unsafe HTML, unsupported iframes, repository shortcodes, local repository paths, or localized image paths.
+- Do not emit scripts, event handlers, arbitrary styles, unsafe HTML, unsupported iframes, repository component calls, local repository paths, or localized image paths.
+- Escape any literal `{{` / `{%` sequences from the source in `{% raw %}` / `{% endraw %}` blocks, since Zola 0.23 templates article Markdown with Tera.
 - Represent an unsupported embed as a normal source link and describe the omission in `warnings`.
 
 ## Acceptance boundary

@@ -116,13 +116,15 @@ Treat the acquisition contract's `body_markdown` as the source body. For copied 
 
 Remove navigation, reply controls, signatures, ads, counters, duplicated quoted blocks, tracking parameters, and empty wrappers. Preserve semantic emphasis, quotations, headings, tables, footnotes, and intentional line breaks. Start body headings at `##` because the page template renders the title.
 
-Convert supported embeds to existing shortcodes only after checking `themes/hibikilogy/templates/shortcodes/`. Convert links to existing site articles to Zola internal links:
+Convert supported embeds to existing theme components only after checking `themes/hibikilogy/templates/components/` (Zola 0.23 removed shortcodes; use the `{{<ns.name ... />}}` component syntax). Convert links to existing site articles to Zola internal links:
 
 ```markdown
 [文章标题](@/articles/2020-01-07-example.md)
 ```
 
-Do not retain unsafe scripts, event-handler attributes, iframes without a repository shortcode, or arbitrary copied styles.
+Since Zola 0.23 templates all Markdown content with Tera, escape any literal `{{` / `{%` sequences that come from the source article with `{% raw %}` / `{% endraw %}` blocks. Prefer `raw` blocks over `skip_content_templating`: the latter disables all Tera and component execution for the whole file, so it only fits files that exist purely to display Tera code and need no live components.
+
+Do not retain unsafe scripts, event-handler attributes, iframes without a repository component, or arbitrary copied styles.
 
 ### 6. Build repository metadata
 

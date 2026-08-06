@@ -24,7 +24,7 @@
 {%- endif %}
   <generator uri="https://www.getzola.org/">Zola</generator>
 {%- if pages | length > 0 %}
-{%- set newest = pages[0].updated | default(value=pages[0].date) %}
+{%- set newest = pages[0].updated or pages[0].date %}
   <updated>{{ newest | date(format="%Y-%m-%dT%H:%M:%S+00:00") }}</updated>
 {%- endif %}
   <id>{{ feed_self | safe }}</id>
@@ -32,7 +32,7 @@
 {%- set authors = page.taxonomies.author | default(value=[]) %}
 {%- set tags    = page.taxonomies.tags    | default(value=[]) %}
 {%- set pub     = page.date %}
-{%- set upd     = page.updated | default(value=page.date) %}
+{%- set upd     = page.updated or page.date %}
   <entry xml:lang="{{ lang }}">
     <title>{{ page.title }}</title>
     <published>{{ pub | date(format="%Y-%m-%dT%H:%M:%S+00:00") }}</published>
@@ -41,7 +41,7 @@
 {%- for author_name in authors %}
     <author>
       <name>{{ author_name }}</name>
-      <uri>{{ get_taxonomy_url(kind='author', name=author_name) | trim_end_matches(pat='/') | safe }}</uri>
+      <uri>{{ get_taxonomy_url(kind='author', term=author_name) | trim_end(pat='/') | safe }}</uri>
     </author>
 {%- endfor %}
 {%- else %}
@@ -50,17 +50,17 @@
     </author>
 {%- endif %}
 {%- for tag in tags %}
-    <category term="{{ tag }}" scheme="{{ get_taxonomy_url(kind='tags', name=tag) | trim_end_matches(pat='/') | safe }}"/>
+    <category term="{{ tag }}" scheme="{{ get_taxonomy_url(kind='tags', term=tag) | trim_end(pat='/') | safe }}"/>
 {%- endfor %}
-    <link rel="alternate" type="text/html" href="{{ page.permalink | trim_end_matches(pat='/') | safe }}"/>
-    <id>{{ page.permalink | trim_end_matches(pat='/') | safe }}</id>
+    <link rel="alternate" type="text/html" href="{{ page.permalink | trim_end(pat='/') | safe }}"/>
+    <id>{{ page.permalink | trim_end(pat='/') | safe }}</id>
 {%- if page.extra.abstract %}
     <summary>{{ page.extra.abstract }}</summary>
 {%- endif %}
 {%- if page.extra.original %}
     <link rel="related" href="{{ page.extra.original }}" title="原文链接"/>
 {%- endif %}
-    <content type="html" xml:base="{{ page.permalink | trim_end_matches(pat='/') | safe }}">
+    <content type="html" xml:base="{{ page.permalink | trim_end(pat='/') | safe }}">
       {{ page.content }}
     </content>
   </entry>

@@ -1,6 +1,6 @@
-{%- if page.title -%}
+{%- if page is defined and page.title -%}
   {{ page.title }} - {{ config.title }}
-{%- elif section.title -%}
+{%- elif section is defined and section.title -%}
   {{ section.title }} - {{ config.title }}
 {%- else -%}
   {{ config.title }}

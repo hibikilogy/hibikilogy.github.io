@@ -1,6 +1,3 @@
-{% import 'components/journal.html' as journal %}
-{% import 'components/hero.html' as hero %}
-{% import 'components/author-profile.html' as author_profile %}
 {% extends "base.html" %}
 
 {% block vars %}
@@ -8,10 +5,10 @@
 {% endblock vars %}
 
 {% block critical_css %}
-{{ build::css(path="styles/components/journal.css") }}
-{{ build::css(path="styles/components/hero.css") }}
+{{<build.css path="styles/components/journal.css" />}}
+{{<build.css path="styles/components/hero.css" />}}
 {% if custom_author %}
-{{ build::css(path="styles/layouts/author-profile.css") }}
+{{<build.css path="styles/layouts/author-profile.css" />}}
 {% endif %}
 {% endblock critical_css %}
 
@@ -36,7 +33,7 @@ author{% if custom_author %} has-custom-profile{% endif %}
     "@context": "https://schema.org",
     "@type": "Person",
     "name": {{ term.name | json_encode | safe }},
-    "url": "{{ current_url | trim_end_matches(pat='/') | safe }}"{% if custom_author and custom_author.avatar %},
+    "url": "{{ current_url | trim_end(pat='/') | safe }}"{% if custom_author and custom_author.avatar %},
     "image": {{ custom_author.avatar | json_encode | safe }}{% endif %}{% if custom_author and custom_author.bio %},
     "description": {{ custom_author.bio | json_encode | safe }}{% endif %}{% if custom_author and custom_author.link %},
     "sameAs": {{ custom_author.link | json_encode | safe }}{% endif %}
@@ -46,17 +43,18 @@ author{% if custom_author %} has-custom-profile{% endif %}
 
 {% block header %}
 {% if custom_author %}
-{{ author_profile::main(term=term, custom_page=custom_author) }}
+{{<author_profile.main term={term} custom_page={custom_author} lang={lang} />}}
 {% else %}
-{{ hero::main(isPost=false, page="", title=tr::t(key="author_title"), name=term.name, kind="author")}}
+{% set author_title = <i18n.t key="author_title" lang={lang} /> %}
+{{<hero.main page="" config={config} lang={lang} isPost={false} title={author_title} name={term.name} kind="author" />}}
 {% endif %}
 {% endblock %}
 
 {% block content %}
 {% if custom_author %}
 <div class="container">
-  <p class="author-articles-label">{{ tr::t(key="author_articles_label") }}</p>
+  <p class="author-articles-label">{{<i18n.t key="author_articles_label" lang={lang} />}}</p>
 </div>
 {% endif %}
-{{ journal::main() }}
+{{<journal.main config={config} lang={lang} paginator={paginator} term={term} section={false} />}}
 {% endblock content %}

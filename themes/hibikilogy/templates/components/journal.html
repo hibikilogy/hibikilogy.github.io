@@ -1,6 +1,4 @@
-{% import 'components/article.html' as article %}
-
-{% macro search() %}
+{% component journal.search() %}
 <div class="Journal SearchJournal">
   <div
     id="search-results"
@@ -12,16 +10,16 @@
     style="--page-enter-stage: 1"
   ></div>
 </div>
-{% endmacro search %}
+{% endcomponent journal.search %}
 
-{% macro main(show_frontpage=false, pages=false) %}
+{% component journal.main(config, lang: string = "", show_frontpage: bool = false, pages = None, paginator = None, term = None, section = None) %}
 {% if not pages %}
   {% if paginator %}
     {# Even-optimised balanced pagination.
            Distributes articles in pairs so most pages end up with even
            counts for the 2-column grid.  At most one page gets an odd size. #}
 
-    {% if term is defined %}
+    {% if term %}
       {% set all_pages = term.pages %}
     {% else %}
       {% set section_path = config.extra.article_section | default(value="articles/_index.md") %}
@@ -41,7 +39,7 @@
 
     {% elif total <pager_count * 2 %}
       {# Sparse — ordinary balanced distribution. #}
-      {% set base = (total / pager_count) | round(method="floor") %}
+      {% set base = (total / pager_count) | round(method="floor") | int %}
       {% set extra = total % pager_count %}
 
       {% if index <extra %}
@@ -52,12 +50,12 @@
         {% set start = extra * (base + 1) + (index - extra) * base %}
       {% endif %}
 
-      {% set pages = all_pages | slice(start=start, end=start + page_size) %}
+      {% set pages = all_pages[start:start + page_size] %}
 
     {% else %}
       {# Dense — distribute articles in 2-article pairs. #}
-      {% set pair_total = (total / 2) | round(method="floor") %}
-      {% set pair_base = (pair_total / pager_count) | round(method="floor") %}
+      {% set pair_total = (total / 2) | round(method="floor") | int %}
+      {% set pair_base = (pair_total / pager_count) | round(method="floor") | int %}
       {% set pair_extra = pair_total % pager_count %}
       {% set odd = total % 2 %}
       {% set base_size = pair_base * 2 %}
@@ -75,7 +73,7 @@
         {% set start = pair_extra * (base_size + 2) + odd * (base_size + 1) + (index - pair_extra - odd) * base_size %}
       {% endif %}
 
-      {% set pages = all_pages | slice(start=start, end=start + page_size) %}
+      {% set pages = all_pages[start:start + page_size] %}
     {% endif %}
 
   {% else %}
@@ -109,7 +107,7 @@
     {% set_global cover_index = -1 %}
     {% set_global cover_preload_src = "" %}
 
-    {% for page in pages | slice(start=0, end=3) %}
+    {% for page in pages[0:3] %}
       {% set cover = page.extra.cover | default(value="") %}
 
       {% if cover %}
@@ -129,8 +127,8 @@
     {% endif %}
 
     {% for page in pages %}
-      {{ article::main(page=page, show_cover=true, cover_eager=(loop.index0 == cover_index)) }}
+      {{<article.main page={page} config={config} lang={lang} show_cover={true} cover_eager={loop.index0 == cover_index} />}}
     {% endfor %}
   </div>
 </div>
-{% endmacro main %}
+{% endcomponent journal.main %}

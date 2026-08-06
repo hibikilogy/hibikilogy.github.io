@@ -100,11 +100,6 @@ jobs:
       - name: Build body font subset
         run: pnpm build:subset-bodyfont
 
-      - name: Set commit info
-        run: |
-          echo "GIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
-          echo "GIT_MESSAGE=$(git log -1 --format=%s HEAD)" >> $GITHUB_ENV
-
       - name: Build site for Markdown export
         run: zola build --base-url "${MARKDOWN_BASE_URL}"
 

@@ -1,4 +1,4 @@
-{% macro main(page, show_cover, cover_eager=false) %}
+{% component article.main(page, config, lang: string = "", show_cover: bool = false, cover_eager: bool = false) %}
 {% set cover_loading = "lazy" %}
 {% set cover_fetchpriority = "auto" %}
 
@@ -7,10 +7,10 @@
   {% set cover_fetchpriority = "high" %}
 {% endif %}
 
-{% set title_transition_name = data::post_title_transition_name(page=page) | trim %}
+{% set title_transition_name = <data.post_title_transition_name page={page} /> %}
 
 <article class="Section Article">
-  <a href="{{ page.permalink | trim_end_matches(pat='/') }}">
+  <a href="{{ page.permalink | trim_end(pat='/') }}">
     <h2 class="article-title">
       <span
         class="PostTitleTransition"
@@ -28,7 +28,7 @@
       {% if show_cover and page.extra.cover %}
         {% set cover_src = page.extra.cover %}
         {% set cover_alt = page.extra.cover_alt | default(value=page.title) %}
-        {% set is_remote_cover = cover_src is starting_with("http") %}
+        {% set is_remote_cover = cover_src is starting_with(pat="http") %}
 
         {% if not is_remote_cover %}
           {% set img_meta = get_image_metadata(path=cover_src) %}
@@ -57,7 +57,7 @@
   </a>
 
   <div class="article-meta">
-    {{ post::page_publish_metadata(page=page) }}
+    {{<post.page_publish_metadata page={page} config={config} lang={lang} />}}
   </div>
 </article>
-{% endmacro %}
+{% endcomponent article.main %}

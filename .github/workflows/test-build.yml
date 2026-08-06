@@ -46,11 +46,6 @@ jobs:
       - name: Subset body font
         run: pnpm build:subset-bodyfont
 
-      - name: Set commit info
-        run: |
-          echo "GIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
-          echo "GIT_MESSAGE=$(git log -1 --format=%s HEAD)" >> $GITHUB_ENV
-
       - name: Build site
         run: zola build --drafts --base-url https://hibikilogy-pr${{ github.event.number }}.surge.sh
 

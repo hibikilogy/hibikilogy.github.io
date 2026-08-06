@@ -1,15 +1,16 @@
-{% macro main(
-  input_id="",
-  compact=false,
-  transition_name="",
-  readonly=false,
-  autofocus=false,
-  show_keys=false,
-  show_submit=false,
-  placeholder="Search",
-  title="Search",
-  value="",
-  extra_class=""
+{% component search_shell.main(
+  input_id: string = "",
+  compact: bool = false,
+  transition_name: string = "",
+  readonly: bool = false,
+  autofocus: bool = false,
+  show_keys: bool = false,
+  show_submit: bool = false,
+  placeholder: string = "Search",
+  title: string = "Search",
+  value: string = "",
+  extra_class: string = "",
+  lang: string = ""
 ) %}
 <form
   class="SearchShell SearchShell--{% if compact %}compact{% else %}page{% endif %}{% if extra_class %} {{ extra_class }}{% endif %}"
@@ -73,7 +74,7 @@
           aria-hidden="true"
         ></span>
         <span class="SearchShellSubmitText">
-          {{ tr::t(key="search_submit_text") }}
+          {{<i18n.t key="search_submit_text" lang={lang} />}}
         </span>
       </button>
     {% else %}
@@ -84,4 +85,4 @@
     {% endif %}
   </div>
 </form>
-{% endmacro main %}
+{% endcomponent search_shell.main %}

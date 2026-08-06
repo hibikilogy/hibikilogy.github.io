@@ -1,0 +1,47 @@
+{# Data utilities — return strings, no HTML output #}
+
+{% component data.clean_url(url: string, base_url: string = "") -%}
+{%- if url and url != "/" and url != base_url -%}
+{{ url | trim_end(pat="/") }}
+{%- else -%}
+{{ url }}
+{%- endif -%}
+{%- endcomponent data.clean_url %}
+
+{% component data.cover_url(page, default: string = "") -%}
+{%- if page.extra.cover -%}
+{%- set cover = page.extra.cover | trim -%}
+{%- set resolved = <data.resolve_url path={cover} /> -%}
+{{- resolved -}}
+{%- elif default -%}
+{%- set resolved = <data.resolve_url path={default} /> -%}
+{{- resolved -}}
+{%- endif -%}
+{% endcomponent data.cover_url %}
+
+{% component data.config_link(link: string, base_url: string = "") -%}
+{%- if link is starting_with(pat="$BASE_URL") -%}
+{%- set path = link | trim_start(pat="$BASE_URL") | trim_start(pat="/") -%}
+{%- if path -%}
+{{- base_url | trim_end(pat="/") -}}/{{- path -}}
+{%- else -%}
+{{- base_url -}}
+{%- endif -%}
+{%- else -%}
+{{- link -}}
+{%- endif -%}
+{%- endcomponent data.config_link %}
+
+{% component data.resolve_url(path: string = "") -%}
+{%- if path is starting_with(pat="http://") or path is starting_with(pat="https://") -%}
+{{- path | trim -}}
+{%- else -%}
+{{- get_url(path=path) | trim -}}
+{%- endif -%}
+{% endcomponent data.resolve_url %}
+
+{% component data.post_title_transition_name(page) -%}
+{%- set pathname = page.path | trim_start(pat="/") | trim_end(pat="/") -%}
+{%- set id = pathname | replace(from="/", to="-") | replace(from=".", to="-") -%}
+{{- "post-title-" ~ id -}}
+{% endcomponent data.post_title_transition_name %}

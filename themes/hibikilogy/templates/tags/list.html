@@ -1,29 +1,23 @@
-{% import 'components/hero.html' as hero %}
 {% extends "base.html" %}
 
-{% macro tag_link(tag) %}
-<a class="joh-tag" href="{{ get_taxonomy_url(kind='tags', name=tag.name) | trim_end_matches(pat='/') }}" title="{{ tag.name }}">
-  <span>{{ tag.name }}</span>
-  <span class="tag-count">{{ tag.pages | length }}</span>
-</a>
-{% endmacro tag_link %}
-
-{% block title %}{{ tr::t(key="tags_title") }} - {{ config.title }}{% endblock title %}
+{% block title %}{{<i18n.t key="tags_title" lang={lang} />}} - {{ config.title }}{% endblock title %}
 
 {% block class %}
 tags
 {% endblock %}
 
 {% block critical_css %}
-{{ build::css(path="styles/layouts/tags.css") }}
+{{<build.css path="styles/layouts/tags.css" />}}
 {% endblock critical_css %}
 
 {% block header %}
-{{ hero::main(isPost=false, page="", name=tr::t(key="tags_title"), count=terms | length, bg=config.extra.tag_cloud_bg | default(value="")) }}
+{% set tags_title = <i18n.t key="tags_title" lang={lang} /> %}
+{{<hero.main page="" config={config} lang={lang} isPost={false} name={tags_title} count={terms | length} bg={config.extra.tag_cloud_bg | default(value="")} />}}
 {% endblock %}
 
 {% block content %}
-{% set sorted_terms = terms | sort(attribute="pages") | reverse %}
+{% set decorated_terms = [ [term.pages | length, term] for term in terms ] | sort(attribute="0") | reverse %}
+{% set sorted_terms = [ pair[1] for pair in decorated_terms ] %}
 
 {% if sorted_terms %}
   <section class="section tags-list-page">
@@ -37,7 +31,7 @@ tags
           {% for tag in sorted_terms %}
           {% set data = load_data(path="content/tags/" ~ tag.name ~ ".yml", required=false) %}
           {% if (data and data.category == cat) or (not data and cat == default_category) %}
-          {{ self::tag_link(tag=tag) }}
+          {{<tags.tag_link tag={tag} />}}
           {% endif %}
           {% endfor %}
         </div>
@@ -49,7 +43,7 @@ tags
   <section class="section tags-list-page">
     <div class="container" data-page-enter-content>
       {% for tag in sorted_terms %}
-      {{ self::tag_link(tag=tag) }}
+      {{<tags.tag_link tag={tag} />}}
       {% endfor %}
     </div>
   </section>

@@ -1,6 +1,4 @@
-{% import 'components/hamburger.html' as hamburger %}
-
-{% macro main() %}
+{% component navScreen.main(config, lang: string = "") %}
 <div
   id="NavScreen"
   class="NavScreen top"
@@ -16,12 +14,13 @@
         {% if lang == item.code %}
           {% for nav in item.list %}
             {% if nav.link %}
+              {% set nav_url = <data.config_link link={nav.link} base_url={config.base_url} /> %}
               <a
                 class="Link link NavScreenMenuLink"
                 aria-expanded="false"
                 aria-label="menu"
                 role="button"
-                href="{{ data::config_link(link=nav.link) }}"
+                href="{{ nav_url }}"
                 tabindex="0"
               >
                 <span>{{ nav.text }}</span>
@@ -43,10 +42,11 @@
                   <div class="Menu">
                     <div class="items">
                       {% for _nav in nav.items %}
+                        {% set subnav_url = <data.config_link link={_nav.link} base_url={config.base_url} /> %}
                         <div class="MenuLink">
                           <a
                             class="Link NavScreenMenuLink"
-                            href="{{ data::config_link(link=_nav.link) }}"
+                            href="{{ subnav_url }}"
                             target="_blank"
                             rel="noreferrer"
                           >
@@ -62,7 +62,8 @@
           {% endif %}
         {% endfor %}
     </nav>
-    {{ hamburger::main(extra_class="NavScreenClose", label=tr::t(key="nav_close")) }}
+    {% set nav_close = <i18n.t key="nav_close" lang={lang} /> %}
+    {{<hamburger.main extra_class="NavScreenClose" label={nav_close} />}}
   </div>
 </div>
-{% endmacro main %}
+{% endcomponent navScreen.main %}

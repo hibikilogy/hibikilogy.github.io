@@ -1,14 +1,15 @@
-{# Image rendering macros #}
+{# Image rendering components #}
 
-{% macro image(path, alt="", class="", loading="lazy", decoding="auto", fetchpriority="auto") %}
+{% component media.image(path: string, alt: string = "", class: string = "", loading: string = "lazy", decoding: string = "auto", fetchpriority: string = "auto") %}
 <img src="{{ path }}" alt="{{ alt }}"{% if class %} class="{{ class }}"{% endif %}
   loading="{{ loading }}" decoding="{{ decoding }}" fetchpriority="{{ fetchpriority }}" />
-{% endmacro %}
+{% endcomponent media.image %}
 
-{% macro img(path, class="", alt="", caption="", scale=1, quality=100, width=1, height=1) %}
-{% if path is starting_with("./") %}
-{% set relative_path = page.relative_path | split(pat="/") | slice(end=-1) | join(sep="/") %}
-{% set img_path = path | trim_start_matches(pat="./") %}
+{% component media.img(path: string, class: string = "", alt: string = "", caption: string = "", scale: integer = 1, quality: integer = 100, width: integer = 1, height: integer = 1) %}
+{% if path is starting_with(pat="./") %}
+{% set path_parts = page.relative_path | split(pat="/") %}
+{% set relative_path = path_parts[:-1] | join(sep="/") %}
+{% set img_path = path | trim_start(pat="./") %}
 {% set img_path = relative_path ~ "/" ~ img_path %}
 {% else %}
 {% set img_path = path %}
@@ -31,4 +32,4 @@
   <figcaption>{{ caption | safe }}</figcaption>
   {% endif %}
 </figure>
-{% endmacro %}
+{% endcomponent media.img %}

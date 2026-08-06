@@ -193,7 +193,7 @@ toc=false
 
 ## 部分参考答案
 
-{% collapsible(defaultOpen=false) %}
+{% <collapsible.main defaultOpen={false}> %}
 
 :::title
 
@@ -244,7 +244,7 @@ toc=false
 
 <span>16. 错误：新乐队中夏纪弹贝斯，优子弹吉他，夏 mio 和 yu 唯。</span>
 
-{% end %}
+{% </collapsible.main> %}
 
 > 来源：https://bbs.saraba1st.com/2b/thread-1922568-1-1.html
 >

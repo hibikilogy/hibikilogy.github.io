@@ -1,7 +1,7 @@
 {# i18n helper — Site config translations override theme i18n defaults.
-   Call: tr::t(key="search_placeholder") #}
+   Call: {{<i18n.t key="search_placeholder" lang={lang} />}} #}
 
-{% macro t(key) %}
+{% component i18n.t(key: string, lang: string = "") %}
   {%- set i18n_path = "themes/hibikilogy/i18n/" ~ lang ~ ".toml" -%}
   {%- set theme_i18n = load_data(path=i18n_path, required=false) -%}
   {%- set site_config = load_data(path="config.toml", required=false) -%}
@@ -24,4 +24,4 @@
   {%- elif theme_i18n and theme_i18n[key] is defined -%}
     {{- theme_i18n[key] -}}
   {%- endif -%}
-{% endmacro %}
+{% endcomponent i18n.t %}

@@ -1,11 +1,11 @@
-{# Build & pagination utilities #}
+{# Build-time asset helpers #}
 
-{% macro css(path) %}
+{% component build.css(path: string) %}
 <link rel="stylesheet" href="{{ get_url(path=path, cachebust=true) }}">
-{% endmacro %}
+{% endcomponent build.css %}
 
-{% macro script(path, cachebust=true, module=false, async=false, defer=false) %}
-  {% set is_serve = config.mode == "serve" %}
+{% component build.script(path: string, cachebust: bool = true, module: bool = false, async: bool = false, defer: bool = false, serve: bool = false) %}
+  {% set is_serve = serve %}
 
   {% if is_serve %}
     {% set src = get_url(path=path) %}
@@ -22,10 +22,10 @@
       integrity="sha384-{{ get_hash(path=path, sha_type=384, base64=true) | safe }}"
     {% endif %}
   ></script>
-{% endmacro %}
+{% endcomponent build.script %}
 
-{% macro katex_css() %}
+{% component build.katex_css(config) %}
 {% if config.extra.katex and config.extra.katex.enabled %}
 <link rel="stylesheet" href="{{ config.extra.katex.css_cdn | default(value='https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css') }}"{% if config.extra.katex.css_integrity %} integrity="{{ config.extra.katex.css_integrity }}"{% endif %} crossorigin="anonymous">
 {% endif %}
-{% endmacro %}
+{% endcomponent build.katex_css %}

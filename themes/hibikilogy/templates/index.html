@@ -1,6 +1,3 @@
-{% import 'components/journal.html' as journal %}
-{% import 'components/footer.html' as footer %}
-
 {% extends "base.html" %}
 
 {% block class %}
@@ -8,17 +5,17 @@ Home
 {% endblock %}
 
 {% block critical_css %}
-{{ build::css(path="styles/components/journal.css") }}
+{{<build.css path="styles/components/journal.css" />}}
 {% endblock critical_css %}
 
 {% block content %}
-{{ journal::main(show_frontpage=true) }}
+{{<journal.main config={config} lang={lang} show_frontpage={true} paginator={paginator} term={false} section={section} />}}
 {% endblock %}
 
 {% block footer %}
 {% if paginator %}
-{{ footer::main(show_tags=true, show_friendlinks=true, tag_pages=paginator.pages) }}
+{{<footer.main config={config} lang={lang} show_tags={true} show_friendlinks={true} tag_pages={paginator.pages} />}}
 {% else %}
-{{ footer::main(show_tags=true, show_friendlinks=true, tag_pages=section.pages) }}
+{{<footer.main config={config} lang={lang} show_tags={true} show_friendlinks={true} tag_pages={section.pages} />}}
 {% endif %}
 {% endblock %}

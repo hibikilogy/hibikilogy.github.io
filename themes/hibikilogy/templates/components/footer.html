@@ -1,4 +1,4 @@
-{% macro main(show_tags=false, show_friendlinks=false, tag_pages=false) %}
+{% component footer.main(config, lang: string = "", show_tags: bool = false, show_friendlinks: bool = false, tag_pages = None) %}
 {% set has_busuanzi = config.extra.busuanzi | default(value=false) %}
 <footer class="Footer" role="contentinfo">
   <div class="container">
@@ -7,7 +7,7 @@
       {% for item in config.extra.footer %}
       {% if lang == item.code %}
       <h3>
-        <a href="{{ get_url(path='/tags') | trim_end_matches(pat='/') }}" title="{{ get_url(path='/tags') | trim_end_matches(pat='/') }}" aria-expanded="false" aria-label="menu" role="button">
+        <a href="{{ get_url(path='/tags') | trim_end(pat='/') }}" title="{{ get_url(path='/tags') | trim_end(pat='/') }}" aria-expanded="false" aria-label="menu" role="button">
           {{ item.tags_text }}
         </a>
       </h3>
@@ -15,9 +15,9 @@
       {% endfor %}
       <tags-list class="footer-list TagsList">
         {% if tag_pages %}
-        {{ tags::tags_list_for_pages(pages=tag_pages, show_count=true) }}
+        {{<tags.tags_list_for_pages pages={tag_pages} show_count={true} />}}
         {% else %}
-        {{ tags::tags_list(show_count=true) }}
+        {{<tags.tags_list show_count={true} />}}
         {% endif %}
       </tags-list>
     </section>
@@ -29,8 +29,9 @@
       <h3>{{ item.frendlinks_text }}</h3>
       <div class="footer-list">
         {% for nav in item.frendlinks %}
+        {% set friendlink_url = <data.config_link link={nav.link} base_url={config.base_url} /> %}
         <a class="Link link FooterFriendLink" aria-expanded="false" aria-label="menu" role="button"
-          href="{{ data::config_link(link=nav.link) }}" title="{{ data::config_link(link=nav.link) }}" tabindex="0" target="_blank" rel="noopener noreferrer">
+          href="{{ friendlink_url }}" title="{{ friendlink_url }}" tabindex="0" target="_blank" rel="noopener noreferrer">
           <span>{{ nav.text }}</span><span class="i-custom-link inline-block w-[1.25em] h-[1.25em] align-text-bottom ml-[0.25em]"></span>
         </a>
         {% endfor %}
@@ -44,15 +45,17 @@
         {% for item in config.extra.footer %}
         {% if lang == item.code %}
         {% for nav in item.list %}
+        {% set nav_url = <data.config_link link={nav.link} base_url={config.base_url} /> %}
         <a class="Link link FooterNavLink" aria-expanded="false" aria-label="menu" role="button"
-          href="{{ data::config_link(link=nav.link) }}" title="{{ data::config_link(link=nav.link) }}" tabindex="0"
+          href="{{ nav_url }}" title="{{ nav_url }}" tabindex="0"
           {% if nav.type %}type="{{ nav.type }}"{% endif %}>
           <span>{{ nav.text }}</span>
           <span class="icon"></span>
         </a>
         {% endfor %}
+        {% set contact_url = <data.config_link link={item.contact.link} base_url={config.base_url} /> %}
         <a class="Link footer-contact-link" rel="noreferrer"
-          href="mailto:{{ data::config_link(link=item.contact.link) }}">
+          href="mailto:{{ contact_url }}">
           {{ item.contact.text }}
         </a>
         {% endif %}
@@ -76,4 +79,4 @@
     </section>
   </div>
 </footer>
-{% endmacro main %}
+{% endcomponent footer.main %}

@@ -1,4 +1,4 @@
-{% macro main(extra_class="", label="mobile navigation") %}
+{% component hamburger.main(extra_class: string = "", label: string = "mobile navigation") %}
 <button type="button" class="NavBarHamburger hamburger{% if extra_class %} {{ extra_class }}{% endif %}"
   aria-label="{{ label }}" aria-expanded="false" aria-controls="NavScreen">
   <span class="container">
@@ -7,4 +7,4 @@
     <span class="bottom"></span>
   </span>
 </button>
-{% endmacro main %}
+{% endcomponent hamburger.main %}

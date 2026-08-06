@@ -1,12 +1,12 @@
-{# Article rendering macros — metadata, JSON-LD, tag links #}
+{# Article rendering components — metadata, JSON-LD, tag links #}
 
-{% macro page_publish_metadata(page) %}
+{% component post.page_publish_metadata(page, config, lang: string = "") %}
 {% set authors = page.taxonomies.author | default(value=[]) %}
 {% set has_author = authors | length > 0 %}
-{% set publish_label = tr::t(key="publish_prefix") %}
-{% set date_fmt = tr::t(key="date_format") %}
+{% set publish_label = <i18n.t key="publish_prefix" lang={lang} /> %}
+{% set date_fmt = <i18n.t key="date_format" lang={lang} /> %}
 {% set formatted_date = page.date | date(format=date_fmt) %}
-{% set author_label = tr::t(key="author_label") %}
+{% set author_label = <i18n.t key="author_label" lang={lang} /> %}
 <time class="article-publish-date" datetime="{{ page.date }}">
   {{ publish_label }} {{ formatted_date }}
 </time>
@@ -14,7 +14,7 @@
   <span class="author-title">{{ author_label }}</span>
   {% if has_author %}
   {% for author_name in authors %}
-  <a class="article-author" href="{{ get_taxonomy_url(kind='author', name=author_name) | trim_end_matches(pat='/') }}">
+  <a class="article-author" href="{{ get_taxonomy_url(kind='author', term=author_name) | trim_end(pat='/') }}">
     <span class="author-name font-bold">{{ author_name }}</span>
   </a>
   {% if not loop.last %}
@@ -25,51 +25,51 @@
   <span class="author-name font-bold">{{ config.author | default(value=config.title) }}</span>
   {% endif %}
 </span>
-{% endmacro %}
+{% endcomponent post.page_publish_metadata %}
 
-{% macro post_tags_list(page) %}
+{% component post.post_tags_list(page) %}
 {% set tags = page.taxonomies.tags | default(value=[]) %}
 {% if tags | length > 0 %}
 {% for tag in tags %}
-<a href="{{ get_taxonomy_url(kind='tags', name=tag) | trim_end_matches(pat='/') }}" class="joh-tag" title="{{ tag }}">
+<a href="{{ get_taxonomy_url(kind='tags', term=tag) | trim_end(pat='/') }}" class="joh-tag" title="{{ tag }}">
   <span>{{ tag }}</span>
 </a>
 {% endfor %}
 {% endif %}
-{% endmacro %}
+{% endcomponent post.post_tags_list %}
 
-{% macro article_json_ld(page, cover_url) -%}
+{% component post.article_json_ld(page, config, current_url, lang: string = "", cover_url) -%}
 {%- set authors = page.taxonomies.author | default(value=[]) -%}
 {%- set has_author = authors | length > 0 -%}
 {%- set tags = page.taxonomies.tags | default(value=[]) -%}
 {%- set has_tags = tags | length > 0 -%}
 {%- set cv = cover_url | trim -%}
 {%- set has_cover = cv | length > 0 -%}
-{%- set modified = page.updated | default(value=page.date) -%}
+{%- set modified = page.updated or page.date -%}
 <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Article",
-    "@id": "{{ current_url | trim_end_matches(pat='/') | safe }}",
+    "@id": "{{ current_url | trim_end(pat='/') | safe }}",
     "headline": {{ page.title | json_encode | safe }},
     "description": {% if page.description %}{{ page.description | json_encode | safe }}{% elif page.extra.abstract %}{{ page.extra.abstract | json_encode | safe }}{% else %}""{% endif %},
-    "url": "{{ current_url | trim_end_matches(pat='/') | safe }}",
-    "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ current_url | trim_end_matches(pat='/') | safe }}" },
+    "url": "{{ current_url | trim_end(pat='/') | safe }}",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "{{ current_url | trim_end(pat='/') | safe }}" },
     "datePublished": "{{ page.date }}T00:00:00+08:00",
     "dateModified": "{{ modified }}T00:00:00+08:00",
     "inLanguage": "{{ lang }}",
     "wordCount": {{ page.word_count }}{% if has_cover or has_author or has_tags %},{% endif %}{% if has_cover %}
     "image": {{ cv | json_encode | safe }},
     "thumbnailUrl": {{ cv | json_encode | safe }}{% if has_author or has_tags %},{% endif %}{% endif %}{% if has_author %}
-    "author": [{% for author_name in authors %}{% if not loop.first %}, {% endif %}{ "@type": "Person", "name": {{ author_name | json_encode | safe }}, "url": "{{ get_taxonomy_url(kind='author', name=author_name) | trim_end_matches(pat='/') | safe }}" }{% endfor %}]{% if has_tags %},{% endif %}{% endif %}{% if has_tags %}
+    "author": [{% for author_name in authors %}{% if not loop.first %}, {% endif %}{ "@type": "Person", "name": {{ author_name | json_encode | safe }}, "url": "{{ get_taxonomy_url(kind='author', term=author_name) | trim_end(pat='/') | safe }}" }{% endfor %}]{% if has_tags %},{% endif %}{% endif %}{% if has_tags %}
     "keywords": [{% for tag in tags %}{% if not loop.first %}, {% endif %}{{ tag | json_encode | safe }}{% endfor %}]{% endif %}{% if has_cover or has_author or has_tags %},
     {% endif %}"publisher": {
       "@type": "Organization",
       "name": "{{ config.title }}",
-      "url": "{{ config.base_url | trim_end_matches(pat="/") | safe }}",
+      "url": "{{ config.base_url | trim_end(pat="/") | safe }}",
       "logo": { "@type": "ImageObject", "url": "{{ get_url(path=config.extra.navbar_logo) }}" }
     }{% if page.extra.original %},
     "isBasedOn": {{ page.extra.original | json_encode | safe }}{% endif %}
   }
 </script>
-{% endmacro %}
+{% endcomponent post.article_json_ld %}

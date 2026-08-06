@@ -1,16 +1,6 @@
-{% import 'macros/data.html' as data %}
-{% import 'macros/tags.html' as tags %}
-{% import 'macros/post.html' as post %}
-{% import 'macros/media.html' as media %}
-{% import 'macros/build.html' as build %}
-{% import 'macros/i18n.html' as tr %}
-{% import 'components/navbar.html' as navbar %}
-{% import 'components/footer.html' as footer %}
-{% import 'components/pagination.html' as pagination %}
-
 {%- block vars %}{% endblock vars -%}
 
-{% set base_url_clean = config.base_url | trim_end_matches(pat="/") %}
+{% set base_url_clean = config.base_url | trim_end(pat="/") %}
 {% set has_aside = page is defined and page.toc and page.extra.toc | default(value=true) != false %}
 
 {% set stylesheets = config.extra.stylesheets | default(value=[
@@ -18,7 +8,7 @@
 ])%}
 
 {% if current_url %}
-  {% set canonical_url = current_url | trim_end_matches(pat="/") %}
+  {% set canonical_url = current_url | trim_end(pat="/") %}
   {% if canonical_url == base_url_clean %}
     {% set canonical_url = base_url_clean ~ "/" %}
   {% endif %}
@@ -70,7 +60,8 @@
   <meta property="og:locale" content="{{ lang }}">
   <meta property="og:title" content="{%- include 'title.html' -%}">
   <meta property="og:locale:alternate" content="{{ lang }}">
-  <meta property="og:url" content="{{ data::clean_url(url=current_url | default(value='/')) | safe }}">
+  {% set og_url = <data.clean_url url={current_url | default(value='/')} base_url={config.base_url} /> %}
+  <meta property="og:url" content="{{ og_url | safe }}">
   <meta property="og:description" content="{{ meta_description }}">
 
   {% if page is defined and page.draft %}
@@ -104,7 +95,7 @@
   <link href='{{ get_url(path=config.extra.favicon.apple_touch_icon) | safe }}' rel="apple-touch-icon" sizes="180x180">
   {% endif %}
 
-  {{ build::css(path="styles/critical.css") }}
+  {{<build.css path="styles/critical.css" />}}
 
   {% block critical_css %}
   {% endblock critical_css %}
@@ -122,18 +113,18 @@
   {% if config.build_search_index %}
   <script id="hibikilogy-runtime-config" type="application/json">
   {
-    "baseUrl": {{ config.base_url | json_encode() | replace(from="<", to="\u003c") | safe }},
-    "searchIndexUrl": {{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) | json_encode() | replace(from="<", to="\u003c") | safe }},
-    "searchWorkerUrl": {{ get_url(path='js/search/worker.js', cachebust=true) | json_encode() | replace(from="<", to="\u003c") | safe }},
-    "searchArticlesDataUrl": {{ get_url(path='search-articles/') | json_encode() | replace(from="<", to="\u003c") | safe }},
-    "searchTagsDataUrl": {{ get_url(path='search-tags/') | json_encode() | replace(from="<", to="\u003c") | safe }}
+    "baseUrl": {{ config.base_url | json_encode() | replace(from="<", to="\\u003c") | safe }},
+    "searchIndexUrl": {{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) | json_encode() | replace(from="<", to="\\u003c") | safe }},
+    "searchWorkerUrl": {{ get_url(path='js/search/worker.js', cachebust=true) | json_encode() | replace(from="<", to="\\u003c") | safe }},
+    "searchArticlesDataUrl": {{ get_url(path='search-articles/') | json_encode() | replace(from="<", to="\\u003c") | safe }},
+    "searchTagsDataUrl": {{ get_url(path='search-tags/') | json_encode() | replace(from="<", to="\\u003c") | safe }}
   }
   </script>
   {% endif %}
   {% endblock search_config %}
 
-  {{ build::script(path="js/components/index.js", module=true) }}
-  {{ build::script(path="js/ui.js", cachebust=false, module=true) }}
+  {{<build.script path="js/components/index.js" module={true} serve={config.mode == "serve"} />}}
+  {{<build.script path="js/ui.js" cachebust={false} module={true} serve={config.mode == "serve"} />}}
 
   {% block analytics %}
   {% if config.extra.analytics.google and not config.mode == "serve" %}
@@ -209,7 +200,7 @@
     <div class="Layout">
       <span class="joh-chevron-up visually-hidden"></span>
 
-      {{ navbar::main() }}
+      {{<navbar.main config={config} lang={lang} />}}
 
       {% block header %}
       {% endblock %}
@@ -221,15 +212,14 @@
             {% endblock %}
 
             {% block pagination %}
-              {{ pagination::main() }}
+              {{<pagination.main lang={lang} paginator={paginator} />}}
             {% endblock %}
           </main>
 
           {% block footer %}
-          {% if slot is defined %}
           {% block slot %}{% endblock %}
-          {% else %}
-            {{ footer::main() }}
+          {% if not slot is defined %}
+            {{<footer.main config={config} lang={lang} />}}
           {% endif %}
           {% endblock %}
         </div>
@@ -247,24 +237,11 @@
   {% endblock %}
 
   {% if config.extra.production_base_url and config.base_url != config.extra.production_base_url %}
-  {% set commit_hash = get_env(name="GIT_HASH", default="") %}
-  {% set commit_msg = get_env(name="GIT_MESSAGE", default="") %}
   {% set build_date = now() | date(format="%m-%d %H:%M") %}
-
-  {% set prefix = "" %}
-  {% if commit_msg %}
-    {% set prefix = commit_msg %}
-    {% if commit_hash %}
-      {% set prefix = prefix ~ " - " ~ commit_hash %}
-    {% endif %}
-    {% set prefix = prefix ~ " · " %}
-  {% elif commit_hash %}
-    {% set prefix = commit_hash ~ " · " %}
-  {% endif %}
 
   <div class="text-#2076df opacity-30 pointer-events-none text-right font-bold fixed bottom-[10px] right-[10px] z-50" aria-hidden="true">
     <div>开发预览版本不代表最终效果</div>
-    <div class="text-[13px] font-normal">{{ prefix ~ build_date }}</div>
+    <div class="text-[13px] font-normal">{{ build_date }}</div>
   </div>
   {% endif %}
 </body>

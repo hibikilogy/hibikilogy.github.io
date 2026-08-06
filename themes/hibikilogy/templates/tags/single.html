@@ -1,10 +1,8 @@
-{% import 'components/journal.html' as journal %}
-{% import 'components/hero.html' as hero %}
 {% extends "base.html" %}
 
 {% block critical_css %}
-{{ build::css(path="styles/components/journal.css") }}
-{{ build::css(path="styles/components/hero.css") }}
+{{<build.css path="styles/components/journal.css" />}}
+{{<build.css path="styles/components/hero.css" />}}
 {% endblock critical_css %}
 
 {% block class %}
@@ -18,9 +16,9 @@ tags
 {% endblock %}
 
 {% block header %}
-{{ hero::main(isPost=false, page="", title="#", name=term.name, kind="tags", bg=config.extra.tag_cloud_bg | default(value="")) }}
+{{<hero.main page="" config={config} lang={lang} isPost={false} title="#" name={term.name} kind="tags" bg={config.extra.tag_cloud_bg | default(value="")} />}}
 {% endblock %}
 
 {% block content %}
-{{ journal::main() }}
+{{<journal.main config={config} lang={lang} paginator={paginator} term={term} section={false} />}}
 {% endblock content %}

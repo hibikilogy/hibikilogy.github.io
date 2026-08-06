@@ -1,10 +1,14 @@
+{% set sort_control_label = <i18n.t key="sort_control_label" lang={lang} /> %}
+{% set sort_relevance = <i18n.t key="sort_relevance" lang={lang} /> %}
+{% set sort_title_asc = <i18n.t key="sort_title_asc" lang={lang} /> %}
+{% set sort_date_asc = <i18n.t key="sort_date_asc" lang={lang} /> %}
 <div class="sorting">
-  <select id="{{ sorting_id }}" aria-label="{{ tr::t(key='sort_control_label') }}">
+  <select id="{{ sorting_id }}" aria-label="{{ sort_control_label }}">
     {% if sorting_search %}
-    <option value="relevance">{{ tr::t(key="sort_relevance") }}</option>
-    <option value="title">{{ tr::t(key="sort_title_asc") }}</option>
+    <option value="relevance">{{ sort_relevance }}</option>
+    <option value="title">{{ sort_title_asc }}</option>
     {% else %}
-    <option value="date">{{ tr::t(key="sort_date_asc") }}</option>
+    <option value="date">{{ sort_date_asc }}</option>
     {# <option value="update">更新日期正序</option>
     <option value="title">文章标题正序</option>
     <option value="date-reversed">发布日期倒序</option>

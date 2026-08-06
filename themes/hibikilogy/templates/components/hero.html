@@ -1,9 +1,9 @@
-{% macro main(isPost=true, page="", title="", name="", kind="none", description="", count=0, bg="") %}
-<header class="Hero {% if page.extra.cover is defined and page.extra.cover %} has-cover{% else %} no-cover {% endif %}">
+{% component hero.main(page, config, lang: string = "", isPost: bool = true, title: string = "", name: string = "", kind: string = "none", description: string = "", count: integer = 0, bg: string = "") %}
+<header class="Hero {% if page?.extra?.cover %} has-cover{% else %} no-cover {% endif %}">
   <div class="container">
     {% if isPost %}
-      {% set cover_url = data::cover_url(page=page, default=config.extra.default_cover) %}
-      {% set default_cover_url = data::resolve_url(path=config.extra.default_cover) %}
+      {% set cover_url = <data.cover_url page={page} default={config.extra.default_cover} /> %}
+      {% set default_cover_url = <data.resolve_url path={config.extra.default_cover} /> %}
       {% set title_wrap_class = "text-pretty" %}
 
       {% set title_len = page.title | length %}
@@ -28,10 +28,10 @@
               style="--page-enter-stage: 0"
             >
               {% if page.taxonomies.tags %}
-                {{ post::post_tags_list(page=page) }}
+                {{<post.post_tags_list page={page} />}}
               {% endif %}
             </div>
-            {% set title_transition_name = data::post_title_transition_name(page=page) | trim %}
+            {% set title_transition_name = <data.post_title_transition_name page={page} /> %}
             <h1
               class="post-heading-title {{ title_wrap_class }}"
               data-page-enter-item
@@ -54,14 +54,14 @@
               data-page-enter-item
               style="--page-enter-stage: 3"
             >
-              {{ post::page_publish_metadata(page=page) }}
+                {{<post.page_publish_metadata page={page} config={config} lang={lang} />}}
             </div>
           </div>
         </div>
       </div>
     {% else %}
       {% if bg -%}
-        {%- set bg_url = data::resolve_url(path=bg) -%}
+        {%- set bg_url = <data.resolve_url path={bg} /> -%}
       {%- endif %}
       <div class="taxonomies-banner{% if bg %} has-bg{% endif %}"{% if bg %} style="--joh-hero-bg: url('{{ bg_url }}')"{% endif %}>
         <div class="taxonomies-meta">
@@ -84,18 +84,18 @@
               class="description"
               data-page-enter-item
               style="--page-enter-stage: 1"
-            >{{ count }} {{ tr::t(key="tags_count_suffix") }}</p>
+            >{{ count }} {{<i18n.t key="tags_count_suffix" lang={lang} />}}</p>
           {% elif kind != "none" %}
             {% set term = get_taxonomy_term(kind=kind, term=name) %}
             <p
               class="description"
               data-page-enter-item
               style="--page-enter-stage: 1"
-            >{{ term.page_count }}{{ tr::t(key="related_articles_suffix") }}</p>
+            >{{ term.page_count }}{{<i18n.t key="related_articles_suffix" lang={lang} />}}</p>
           {% endif %}
         </div>
       </div>
     {% endif %}
   </div>
 </header>
-{% endmacro %}
+{% endcomponent hero.main %}

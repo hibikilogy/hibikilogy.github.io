@@ -8,7 +8,7 @@ catalog = true
 katex = true
 +++
 
-# Markdown {#markdown-extensions}
+{% raw %}# Markdown {#markdown-extensions}{% endraw %}
 
 《京吹学报》支持的内置的 Markdown 相关语法。
 
@@ -191,25 +191,25 @@ _Just an italic paragraph._
 - [ ] Contact the media
 ```
 
-## 标题锚点 {#header-anchors}
+{% raw %}## 标题锚点 {#header-anchors}{% endraw %}
 
 标题会自动应用锚点。可以使用 `markdown.anchor` 选项配置锚点的渲染。
 
-### 自定义锚点 {#custom-anchors}
+{% raw %}### 自定义锚点 {#custom-anchors}{% endraw %}
 
 要为标题指定自定义锚点而不是使用自动生成的锚点，请向标题添加后缀：
 
 ```markdown
-# 使用自定义锚点 {#my-anchor}
+{% raw %}# 使用自定义锚点 {#my-anchor}{% endraw %}
 ```
 
 这允许将标题链接为 `#my-anchor`，而不是默认的 `#使用自定义锚点`。
 
-## 链接 {#links}
+{% raw %}## 链接 {#links}{% endraw %}
 
 内部和外部链接都会被特殊处理。
 
-## Footnote {#footnote}
+{% raw %}## Footnote {#footnote}{% endraw %}
 
 ### Demo
 
@@ -226,7 +226,7 @@ Here's a simple footnote[^1]
 
 ```
 
-### 内部链接 {#internal-links}
+{% raw %}### 内部链接 {#internal-links}{% endraw %}
 
 内部链接将转换为单页导航的路由链接。此外，子目录中包含的每个 `index.md` 都会自动转换为 `index.html`，并带有相应的 URL `/`。
 
@@ -256,7 +256,7 @@ Here's a simple footnote[^1]
 [bar - four](../bar/four.html) <!-- 或者可以添加 .html -->
 ```
 
-## Frontmatter {#frontmatter}
+{% raw %}## Frontmatter {#frontmatter}{% endraw %}
 
 [TOML 格式的 frontmatter](https://www.getzola.org/documentation/content/page/)
 
@@ -333,7 +333,7 @@ cover = "/imgs/2020-02-06-weishenmelishixuanzeleririka/001-ptgjwaq3avsoylb.png"
 abstract = "本文系统性的驳斥了《[为什么历史选择了久石奏](@/articles/2020-01-07-weishenmelishixuanzelekanade.md)》中种种错误观点，并对于黄前四年北宇治吹奏部新一代领导核心，建立了自己的科学预测成果  关键词：吹响吧上低音号 政治光谱 性格分析"
 ```
 
-## GitHub 风格的表格 {#github-style-tables}
+{% raw %}## GitHub 风格的表格 {#github-style-tables}{% endraw %}
 
 **输入**
 
@@ -365,7 +365,7 @@ abstract = "本文系统性的驳斥了《[为什么历史选择了久石奏](@/
 
 :tada: :100:
 
-## GitHub 风格的警报 {#github-flavored-alerts}
+{% raw %}## GitHub 风格的警报 {#github-flavored-alerts}{% endraw %}
 
 支持以标注的方式渲染 [GitHub 风格的警报](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#alerts)。
 
@@ -401,13 +401,13 @@ abstract = "本文系统性的驳斥了《[为什么历史选择了久石奏](@/
 > [!CAUTION]
 > 行为可能带来的负面影响。
 
-## 代码块中的语法高亮 {#syntax-highlighting-in-code-blocks}
+{% raw %}## 代码块中的语法高亮 {#syntax-highlighting-in-code-blocks}{% endraw %}
 
 Zola 使用 [Giallo](https://github.com/getzola/giallo) 在 Markdown 代码块中使用彩色文本实现语法高亮。这是一个基于 VSCode 语法和主题的库。
 
 您可以在 README 中查看支持的语言和主题的完整列表：<https://github.com/getzola/giallo?tab=readme-ov-file#built-in>
 
-## 数学方程 {#math-equations}
+{% raw %}## 数学方程 {#math-equations}{% endraw %}
 
 **输入**
 
@@ -437,20 +437,23 @@ $$ x = {-b \pm \sqrt{b^2-4ac} \over 2a} $$
 | $\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t}  = \vec{\mathbf{0}}$                                                          | curl of $\vec{\mathbf{E}}$ is proportional to the rate of change of $\vec{\mathbf{B}}$ |
 | $\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t} = \frac{4\pi}{c}\vec{\mathbf{j}}    \nabla \cdot \vec{\mathbf{E}} = 4 \pi \rho$ | _wha?_                                                                                 |
 
-## 图片处理 {#image-lazy-loading}
+{% raw %}## 图片处理 {#image-lazy-loading}{% endraw %}
 
 Zola 支持对图片进行自动调整图片大小，和指定输出格式。
 
 详见：<https://www.getzola.org/documentation/content/image-processing/>
 
-## Accordion Shortcode {#accordion-shortcode}
+{% raw %}## Accordion 组件 {#accordion-component}{% endraw %}
+
+> [!NOTE]
+> Zola 0.23 移除了 Shortcode，改用 [Tera Components](https://keats.github.io/tera/) 替代。组件既可用于内容，也可用于模板。以下示例展示了在 Markdown 中调用组件的方法；正文中仅用于展示的 `{{ "{{" }}` / `{{ "{%" }}` 代码必须用 `{{ "{% raw %}" }}` 包裹。
 
 ### Demo
 
-{% accordion(type="single", collapsible=true, defaultValue="item-1") %}
+{% <accordion.main type="single" collapsible={true} defaultValue="item-1"> %}
 :::item item-1
 :::title
-What is this shortcode?
+What is this component?
 :::content
 A native `details` / `summary` based accordion for Markdown content pages.
 
@@ -465,15 +468,16 @@ Yes. You can use **bold text**, lists, and other inline Markdown in the content 
 Does it support multiple open items?
 :::content
 Set `type` to `multiple` to allow more than one item to stay open at the same time.
-{% end %}
+{% </accordion.main> %}
 
 ### 输出
 
+{% raw %}
 ````md
-{%/* accordion(type="single", collapsible=true, defaultValue="item-1") %}
+{% <accordion.main type="single" collapsible={true} defaultValue="item-1"> %}
 :::item item-1
 :::title
-What is this shortcode?
+What is this component?
 :::content
 A native `details` / `summary` based accordion for Markdown content pages.
 
@@ -488,12 +492,13 @@ Yes. You can use **bold text**, lists, and other inline Markdown in the content 
 Does it support multiple open items?
 :::content
 Set `type` to `multiple` to allow more than one item to stay open at the same time.
-{% end */%}
+{% </accordion.main> %}
 ````
+{% endraw %}
 
 ### Parameters
 
-- `accordion`
+- `accordion.main`: 组件名称（带 body 的调用形式）
 - `type`: `single` or `multiple`
 - `collapsible`: whether the currently open item can be collapsed
 - `defaultValue`: default open item value, or an array of values when `type="multiple"`
@@ -501,73 +506,55 @@ Set `type` to `multiple` to allow more than one item to stay open at the same ti
 - `:::title`: item title slot, rendered as Markdown
 - `:::content`: item content slot, rendered as Markdown
 
-## Collapsible {#collapsible}
+{% raw %}## Collapsible 组件 {#collapsible}{% endraw %}
 
 ### Demo
 
-{% collapsible(defaultOpen=true) %}
+{% <collapsible.main defaultOpen={true}> %}
 :::title
 What does this component do?
 :::content
 It provides a single native `details` block with a title slot and a content slot.
-{% end %}
+{% </collapsible.main> %}
 
 ### 输出
 
+{% raw %}
 ````md
-{%/* collapsible(defaultOpen=true) %}
+{% <collapsible.main defaultOpen={true}> %}
 :::title
 What does this component do?
 :::content
 It provides a single native `details` block with a title slot and a content slot.
-{% end */%}
+{% </collapsible.main> %}
 ````
+{% endraw %}
 
-## Bilibili Iframe {#bilibili-iframe}
+{% raw %}## Bilibili Iframe 组件 {#bilibili-iframe}{% endraw %}
 
 ### Demo
 
-{{ bilibili(
-  bvid="BV1vq421F7c5"
-  aid="1452814123",
-  title="吹響吧！上低音號 第三季",
-  ratio="16 / 9"
-) }}
+{{<bilibili.main bvid="BV1vq421F7c5" aid="1452814123" title="吹響吧！上低音號 第三季" ratio="16 / 9" />}}
 
 一个自定义空降地址的 B 站视频
 
-{{ bilibili(
-  bvid="BV1vq421F7c5"
-  aid="1452814123",
-  title="吹響吧！上低音號 第三季",
-  ratio="16 / 9"
-  time="120"
-) }}
+{{<bilibili.main bvid="BV1vq421F7c5" aid="1452814123" title="吹響吧！上低音號 第三季" ratio="16 / 9" time={120} />}}
 
 
 ### Input
 
+{% raw %}
 ````md
-{{/* bilibili(
-  bvid="BV1vq421F7c5"
-  aid="1452814123",
-  title="吹響吧！上低音號 第三季",
-  ratio="16 / 9"
-) */}}
+{{<bilibili.main bvid="BV1vq421F7c5" aid="1452814123" title="吹響吧！上低音號 第三季" ratio="16 / 9" />}}
 
 
-{{/* bilibili(
-  bvid="BV1vq421F7c5"
-  aid="1452814123",
-  title="吹響吧！上低音號 第三季",
-  ratio="16 / 9"
-  time="120"
-) */}}
+{{<bilibili.main bvid="BV1vq421F7c5" aid="1452814123" title="吹響吧！上低音號 第三季" ratio="16 / 9" time={120} />}}
 ````
+{% endraw %}
 
 ### Parameters
 
-- `bilibili`: shortcode name
+- `bilibili.main`: 组件名称（自闭合调用形式）
 - `bvid`: B 站视频 `bvid`
 - `aid`: B 站视频 `aid`
 - `cid`: B 站视频 `cid`, when used with `aid`
@@ -581,11 +568,11 @@ It provides a single native `details` block with a title slot and a content slot
 
 ---
 
-## UnoCSS {#unocss}
+{% raw %}## UnoCSS {#unocss}{% endraw %}
 
 我们集成了 [UnoCSS](https://unocss.dev/) 作为原子化 CSS 引擎，你可以在 Markdown 内容中通过行内 HTML 直接使用工具类。
 
-### Wind4 预设 {#unocss-wind4}
+{% raw %}### Wind4 预设 {#unocss-wind4}{% endraw %}
 
 基于x `presetWind4` 提供了与 Tailwind CSS / Windi CSS 兼容的工具类，涵盖文字、颜色、布局、间距、尺寸等常用样式。
 
@@ -611,7 +598,7 @@ It provides a single native `details` block with a title slot and a content slot
 
 更多可用工具类请参考 [UnoCSS 交互文档](https://unocss.dev/interactive/)。
 
-### Attributify 模式 {#unocss-attributify}
+{% raw %}### Attributify 模式 {#unocss-attributify}{% endraw %}
 
 除了标准 class 写法，也同时支持 Attributify 模式，可将工具类直接作为 HTML 属性书写：
 
@@ -629,7 +616,7 @@ It provides a single native `details` block with a title slot and a content slot
   <span bg="blue-100" text="blue-800" p="x-2 y-1" rounded>标签</span>
 </div>
 
-### 图标 {#unocss-icons}
+{% raw %}### 图标 {#unocss-icons}{% endraw %}
 
 站点通过 UnoCSS 的 `presetIcons` 内置了一套自定义 SVG 图标，以 `i-custom-{name}` 的 class 形式提供。图标源文件位于 `static/svg/` 目录。
 

@@ -1,22 +1,30 @@
 {# Tag taxonomy helpers #}
 
-{% macro tags_list(show_count=false) %}
+{% component tags.tag_link(tag) %}
+<a class="joh-tag" href="{{ get_taxonomy_url(kind='tags', term=tag.name) | trim_end(pat='/') }}" title="{{ tag.name }}">
+  <span>{{ tag.name }}</span>
+  <span class="tag-count">{{ tag.pages | length }}</span>
+</a>
+{% endcomponent tags.tag_link %}
+
+{% component tags.tags_list(show_count: bool = false) %}
 {% set tags = get_taxonomy(kind="tags") %}
-{% for tag in tags.items | sort(attribute='pages') | reverse %}
-<a href="{{ get_taxonomy_url(kind='tags', name=tag.name) | trim_end_matches(pat='/') }}" class="joh-tag" title="{{ tag.name }}">
+{% set decorated_tags = [ [tag.pages | length, tag] for tag in tags.items ] | sort(attribute="0") | reverse %}
+{% for tag in [ pair[1] for pair in decorated_tags ] %}
+<a href="{{ get_taxonomy_url(kind='tags', term=tag.name) | trim_end(pat='/') }}" class="joh-tag" title="{{ tag.name }}">
   <span>{{ tag.name }}</span>
   {% if show_count %}
   <span class="tag-count">{{ tag.pages | length }}</span>
   {% endif %}
 </a>
 {% endfor %}
-{% endmacro %}
+{% endcomponent tags.tags_list %}
 
-{% macro tags_list_for_pages(pages, show_count=false) %}
+{% component tags.tags_list_for_pages(pages, show_count: bool = false) %}
 {% set_global page_tag_names = [] %}
 {% for page in pages %}
   {% for tag_name in page.taxonomies.tags | default(value=[]) %}
-    {% set_global page_tag_names = page_tag_names | concat(with=tag_name) %}
+    {% set_global page_tag_names = [...page_tag_names, tag_name] %}
   {% endfor %}
 {% endfor %}
 
@@ -32,7 +40,7 @@
         {% endif %}
       {% endfor %}
       {% if tag_count == relevance %}
-        <a href="{{ get_taxonomy_url(kind='tags', name=tag_name) | trim_end_matches(pat='/') }}" class="joh-tag" title="{{ tag_name }}">
+        <a href="{{ get_taxonomy_url(kind='tags', term=tag_name) | trim_end(pat='/') }}" class="joh-tag" title="{{ tag_name }}">
           <span>{{ tag_name }}</span>
           {% if show_count %}
           <span class="tag-count">{{ tag_count }}</span>
@@ -42,4 +50,4 @@
     {% endfor %}
   {% endif %}
 {% endfor %}
-{% endmacro %}
+{% endcomponent tags.tags_list_for_pages %}

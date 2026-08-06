@@ -1,35 +1,37 @@
-{% import 'components/hero.html' as hero %}
 {% extends "base.html" %}
 
 {% block class %}
 author
 {% endblock %}
 
-{% block title %}{{ tr::t(key="author_title") }} - {{ config.title }}{% endblock title %}
+{% block title %}{{<i18n.t key="author_title" lang={lang} />}} - {{ config.title }}{% endblock title %}
 
 {% block critical_css %}
-{{ build::css(path="styles/layouts/authors.css") }}
+{{<build.css path="styles/layouts/authors.css" />}}
 {% endblock critical_css %}
 
 {% block header %}
 {% set author_count = terms | length %}
-{% set suffix = tr::t(key="author_count_suffix") %}
+{% set suffix = <i18n.t key="author_count_suffix" lang={lang} /> %}
 {% set author_description = author_count ~ suffix %}
-{{ hero::main(isPost=false, page="", title=tr::t(key="author_title"), description=author_description) }}
+{% set author_title = <i18n.t key="author_title" lang={lang} /> %}
+{{<hero.main page="" config={config} lang={lang} isPost={false} title={author_title} description={author_description} />}}
 {% endblock %}
 
 {% block content %}
-{% set sorted_terms = terms | sort(attribute="pages") | reverse %}
+{% set decorated_terms = [ [term.pages | length, term] for term in terms ] | sort(attribute="0") | reverse %}
+{% set sorted_terms = [ pair[1] for pair in decorated_terms ] %}
 
 <section class="section authors-list-page">
   <div class="container" data-page-enter-content>
     {% for author in sorted_terms %}
-    <a class="author-list-item" href="{{ get_taxonomy_url(kind='author', name=author.name) | trim_end_matches(pat='/') }}" target="_blank"
+    {% set article_count_suffix = <i18n.t key="article_count_suffix" lang={lang} /> %}
+    <a class="author-list-item" href="{{ get_taxonomy_url(kind='author', term=author.name) | trim_end(pat='/') }}" target="_blank"
       title="{{ author.name }}">
       <span class="author-name">{{ author.name }}</span>
-      <span class="author-count">{{ author.pages | length }}{{ tr::t(key="article_count_suffix") }}</span>
+      <span class="author-count">{{ author.pages | length }}{{ article_count_suffix }}</span>
     </a>
     {% endfor %}
   </div>
 </section>
-{% endblock lists %}
+{% endblock content %}

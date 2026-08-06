@@ -1,11 +1,9 @@
-{% import 'components/toc.html' as toc %}
-
-{% macro main(page) %}
+{% component aside.main(page, lang: string = "") %}
 {% if page.toc and page.extra.toc | default(value=true) != false %}
 <div class="Aside" data-page-enter-item style="--page-enter-stage: 2">
   <div class="aside-container">
-    {{ toc::main(page=page) }}
+    {{<toc.main page={page} lang={lang} />}}
   </div>
 </div>
 {% endif %}
-{% endmacro %}
+{% endcomponent aside.main %}

@@ -1,4 +1,4 @@
-{% macro main(term, custom_page) %}
+{% component author_profile.main(term, custom_page, lang: string = "") %}
 <header class="Hero no-cover">
   <div class="container">
     <div class="author-profile-banner">
@@ -12,7 +12,7 @@
            width="180" height="180" />
       {% endif %}
       <h2 class="author-profile-name" data-page-enter-item style="--page-enter-stage: 1">
-        <span class="author-profile-label">{{ tr::t(key="author_title") }}</span>
+        <span class="author-profile-label">{{<i18n.t key="author_title" lang={lang} />}}</span>
         {{ term.name }}
       </h2>
       {% if custom_page.bio %}
@@ -20,12 +20,12 @@
       {% endif %}
       <div class="author-profile-meta" data-page-enter-item style="--page-enter-stage: 3">
         <span class="author-profile-count">
-          {{ term.page_count }}{{ tr::t(key="related_articles_suffix") }}
+          {{ term.page_count }}{{<i18n.t key="related_articles_suffix" lang={lang} />}}
         </span>
         {% if custom_page.link %}
           {% set domain = custom_page.link
-             | trim_start_matches(pat="https://")
-             | trim_start_matches(pat="http://")
+             | trim_start(pat="https://")
+             | trim_start(pat="http://")
              | split(pat="/") | first %}
         <a class="author-profile-link"
            href="{{ custom_page.link }}"
@@ -36,4 +36,4 @@
     </div>
   </div>
 </header>
-{% endmacro main %}
+{% endcomponent author_profile.main %}

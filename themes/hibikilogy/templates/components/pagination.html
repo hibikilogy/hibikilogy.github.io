@@ -1,37 +1,51 @@
-{% macro main() %}
+{% component pagination.main(lang: string = "", paginator = None) %}
 
-{% if paginator.previous or paginator.next %}
+{% if paginator?.previous or paginator?.next %}
 <div class="Pagination">
   <div class="container">
     {% set sorting_id = "sorting" %}
     {% set sorting_search = false %}
     {% include "components/pagination_sorting.html" %}
 
+    {% set pagination_aria = <i18n.t key="pagination_aria" lang={lang} /> %}
+    {% set pagination_prev = <i18n.t key="pagination_prev" lang={lang} /> %}
+    {% set pagination_next = <i18n.t key="pagination_next" lang={lang} /> %}
+    {% set pagination_current_template = <i18n.t key="pagination_current_template" lang={lang} /> %}
+    {% set pagination_page_aria_template = <i18n.t key="pagination_page_aria_template" lang={lang} /> %}
+    {% set pagination_mobile_template = <i18n.t key="pagination_mobile_template" lang={lang} /> %}
+
     <site-pagination
       current-page="{{ paginator.current_index }}"
       total-pages="{{ paginator.number_pagers }}"
       base-url="{{ paginator.base_url }}"
       mode="event"
-      aria-label="{{ tr::t(key='pagination_aria') }}"
-      previous-label="{{ tr::t(key='pagination_prev') }}"
-      next-label="{{ tr::t(key='pagination_next') }}"
-      current-page-template="{{ tr::t(key='pagination_current_template') }}"
-      page-aria-label-template="{{ tr::t(key='pagination_page_aria_template') }}"
-      mobile-page-template="{{ tr::t(key='pagination_mobile_template') }}"
+      aria-label="{{ pagination_aria }}"
+      previous-label="{{ pagination_prev }}"
+      next-label="{{ pagination_next }}"
+      current-page-template="{{ pagination_current_template }}"
+      page-aria-label-template="{{ pagination_page_aria_template }}"
+      mobile-page-template="{{ pagination_mobile_template }}"
       {% if paginator.previous %}previous-url="{{ paginator.previous }}"{% endif %}
       {% if paginator.next %}next-url="{{ paginator.next }}"{% endif %}
     ></site-pagination>
   </div>
 </div>
 {% endif %}
-{% endmacro main %}
+{% endcomponent pagination.main %}
 
-{% macro search() %}
+{% component pagination.search(lang: string = "") %}
 <div id="search-pagination" class="Pagination SearchPagination" hidden>
   <div class="container">
     {% set sorting_id = "search-sorting" %}
     {% set sorting_search = true %}
     {% include "components/pagination_sorting.html" %}
+
+    {% set pagination_aria = <i18n.t key="pagination_aria" lang={lang} /> %}
+    {% set pagination_prev = <i18n.t key="pagination_prev" lang={lang} /> %}
+    {% set pagination_next = <i18n.t key="pagination_next" lang={lang} /> %}
+    {% set pagination_current_template = <i18n.t key="pagination_current_template" lang={lang} /> %}
+    {% set pagination_page_aria_template = <i18n.t key="pagination_page_aria_template" lang={lang} /> %}
+    {% set pagination_mobile_template = <i18n.t key="pagination_mobile_template" lang={lang} /> %}
 
     <site-pagination
       id="search-page-control"
@@ -39,13 +53,13 @@
       total-pages="1"
       base-url="{page}"
       mode="event"
-      aria-label="{{ tr::t(key='pagination_aria') }}"
-      previous-label="{{ tr::t(key='pagination_prev') }}"
-      next-label="{{ tr::t(key='pagination_next') }}"
-      current-page-template="{{ tr::t(key='pagination_current_template') }}"
-      page-aria-label-template="{{ tr::t(key='pagination_page_aria_template') }}"
-      mobile-page-template="{{ tr::t(key='pagination_mobile_template') }}"
+      aria-label="{{ pagination_aria }}"
+      previous-label="{{ pagination_prev }}"
+      next-label="{{ pagination_next }}"
+      current-page-template="{{ pagination_current_template }}"
+      page-aria-label-template="{{ pagination_page_aria_template }}"
+      mobile-page-template="{{ pagination_mobile_template }}"
     ></site-pagination>
   </div>
 </div>
-{% endmacro search %}
+{% endcomponent pagination.search %}
