@@ -52,7 +52,7 @@ pnpm dev:all     # Zola + Vite
 │  │  ├─ ui/                        # DOM adapter 和动画
 │  │  └─ shared/                    # 通用函数、DOM 契约
 │  └─ static/                       # 主题构建产物
-├─ config.toml
+├─ zola.toml
 ├─ vite.config.ts
 ├─ vite.admin.config.ts
 └─ vitest.config.ts

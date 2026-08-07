@@ -331,7 +331,7 @@ collections:
 singletons:
     - name: site
       label: 站点设置
-      file: config.toml
+      file: zola.toml
       editor:
         preview: false
       fields:

@@ -5,7 +5,7 @@
 This repository is a Zola static site using the built-in `hibikilogy` theme. The theme lives in `themes/hibikilogy/` and contains templates, Sass, static assets, TypeScript source (`src/`), and Web Components (`components/`).
 
 ### Site-level (overrides theme defaults)
-- `config.toml` — site configuration (base_url, title, taxonomies, extra settings)
+- `zola.toml` — site configuration (base_url, title, taxonomies, extra settings)
 - `content/` — Markdown pages and posts
 - `static/` — site-specific static files (logos, favicons, images, opensearch.xml, site.manifest, build caches). Files here override theme `static/` by path.
 
@@ -15,7 +15,7 @@ This repository is a Zola static site using the built-in `hibikilogy` theme. The
 - `static/` — theme static assets (JS bundle, CSS, SVG icons, fonts, KaTeX files)
 - `src/` — TypeScript source organized as `app/` (lifecycle, composition), `features/` (search), `ui/` (DOM adapters), `infrastructure/` (Swup integration, network), `shared/` (utilities, runtime config); compiled to `static/js/` by Vite. TS layering/review rules: `themes/hibikilogy/src/README.md`
 - `components/` — Lit Web Components (lazy-image, site-pagination, tags-list)
-- `i18n/zh.toml` — theme default translations. Templates look up `{{<i18n.t key="..." lang={lang} />}}` (defined in `templates/components/i18n.html`) in order: `config.toml [languages.<lang>].translations` → `[translations]` (default language only) → this file; a missing key fails the build via Tera 2's `throw()`. Default-language site translations come from either `[translations]` or `[languages.<default>.translations]`, never both (same rule as Zola's `LanguageOptions::merge()`). Components only see their own parameters; callers pass `config`/`lang` explicitly.
+- `i18n/zh.toml` — theme default translations. Templates look up `{{<i18n.t key="..." lang={lang} />}}` (defined in `templates/components/i18n.html`) in order: `zola.toml [languages.<lang>].translations` → `[translations]` (default language only) → this file; a missing key fails the build via Tera 2's `throw()`. Default-language site translations come from either `[translations]` or `[languages.<default>.translations]`, never both (same rule as Zola's `LanguageOptions::merge()`). Components only see their own parameters; callers pass `config`/`lang` explicitly.
 - `theme.toml` — theme metadata and default `[extra]` values
 
 `public/` is the generated site output. Prefer editing source files, then regenerate output, rather than hand-editing `public/`.
@@ -41,7 +41,7 @@ The site includes a Sveltia CMS setup at `/admin/` for visual content editing. T
 
 #### Runtime
 - `static/admin/index.html` — CMS entry point. Loads the bundled `admin.js` module.
-- `static/admin/config.yml` — CMS configuration. Defines `posts` (articles), `docs` (documentation pages), and `tags` (tag library) collections. Includes singletons for `config.toml` site settings and `themes/hibikilogy/i18n/zh.toml` translations. Uses GitHub backend for OAuth-authenticated content editing.
+- `static/admin/config.yml` — CMS configuration. Defines `posts` (articles), `docs` (documentation pages), and `tags` (tag library) collections. Includes singletons for `zola.toml` site settings and `themes/hibikilogy/i18n/zh.toml` translations. Uses GitHub backend for OAuth-authenticated content editing.
 
 #### CMS source (`cms/`)
 - `cms/bootstrap.ts` — entry point. Initialises the CMS, registers preview templates and styles.
@@ -60,9 +60,9 @@ The site includes a Sveltia CMS setup at `/admin/` for visual content editing. T
 ## Build, Test, and Development Commands
 
 - `zola serve`: run the local development server at `http://127.0.0.1:1111/`. The `-f` (fast) flag enables incremental rebuilds. Zola watches `themes/` directory for live reload since v0.9.0.
-- `zola build`: build the site into `public/` (uses default `config.toml`).
+- `zola build`: build the site into `public/` (uses default `zola.toml`).
 - `zola build --drafts`: match the GitHub Pages workflow build behavior.
-- Search index (`search_index.zh.json`) is generated automatically by Zola during `zola build` via `build_search_index = true` and `index_format = "fuse_json"` in `config.toml`. The client-side search engine (Fuse.js + Web Worker + IndexedDB cache) lives at `themes/hibikilogy/src/features/search/`.
+- Search index (`search_index.zh.json`) is generated automatically by Zola during `zola build` via `build_search_index = true` and `index_format = "fuse_json"` in `zola.toml`. The client-side search engine (Fuse.js + Web Worker + IndexedDB cache) lives at `themes/hibikilogy/src/features/search/`.
 - `zola check --skip-external-links`: validate pages, internal links, templates, and configuration without producing a deployment artifact. The `--skip-external-links` flag skips external link verification for significantly faster checks; use plain `zola check` only when you've added or changed external links.
 - `pnpm build:all`: full production pipeline — Vite bundle → CMS admin bundle → title/body font subsetting → short-link check → Zola build → beasties inlining → artifact rewrite → markdown export (exact chain in `package.json`).
 - `pnpm dev:all`: start dev servers in parallel (Zola + Vite watch).
@@ -87,8 +87,8 @@ Requires Zola 0.23.1 (as pinned in `.github/actions/setup-tools`), Node.js 24+ (
 
 Translations live in `themes/hibikilogy/i18n/zh.toml`. Templates access them via the `i18n.t` component (defined in `themes/hibikilogy/templates/components/i18n.html`), with the lookup chain:
 
-1. `config.toml [languages.<lang>].translations` — per-language site overrides
-2. `config.toml [translations]` — only when `lang == default_language` (top-level `[translations]` belongs to the default language; it is not a fallback for other languages)
+1. `zola.toml [languages.<lang>].translations` — per-language site overrides
+2. `zola.toml [translations]` — only when `lang == default_language` (top-level `[translations]` belongs to the default language; it is not a fallback for other languages)
 3. `themes/hibikilogy/i18n/<lang>.toml` — theme baseline
 
 When the key is missing everywhere, the component fails the build via Tera 2's `throw(message=...)` — there is no silent fallback. The component's `lang` parameter is required.
@@ -101,7 +101,7 @@ To add a new language, create `i18n/<lang>.toml` in the theme.
 
 ## Coding Style & Naming Conventions
 
-Follow `.editorconfig`: UTF-8, LF endings, two-space indentation, final newline for code/config files, and trimmed trailing whitespace. Markdown files may omit the final newline and may keep intentional trailing whitespace. Use TOML for site configuration in `config.toml`, Tera syntax in `templates/`, and Sass/SCSS in `styles/`. Name posts with a date prefix when adding articles, for example `content/2024-07-01-title.md`; keep asset folders grouped by post or date under `static/imgs/`.
+Follow `.editorconfig`: UTF-8, LF endings, two-space indentation, final newline for code/config files, and trimmed trailing whitespace. Markdown files may omit the final newline and may keep intentional trailing whitespace. Use TOML for site configuration in `zola.toml`, Tera syntax in `templates/`, and Sass/SCSS in `styles/`. Name posts with a date prefix when adding articles, for example `content/2024-07-01-title.md`; keep asset folders grouped by post or date under `static/imgs/`.
 
 Paragraph first-line indentation is handled by the theme via CSS (`text-indent: 2em` on `article[data-text-indent] > p`, enabled by default): do **not** write `&emsp;&emsp;` or `&emsp;` in Markdown for indentation. To keep an article unindented (e.g. legacy posts), set `extra.text_indent = false` in its front matter.
 
@@ -119,6 +119,6 @@ PRs should describe the change, note affected content/templates/assets, link rel
 
 ## Security & Configuration Tips
 
-Do not commit local secrets or analytics changes without review. Confirm `base_url`, feeds, taxonomies, and deployment branch expectations before changing `config.toml` or `.github/workflows/pages.yml`.
+Do not commit local secrets or analytics changes without review. Confirm `base_url`, feeds, taxonomies, and deployment branch expectations before changing `zola.toml` or `.github/workflows/pages.yml`.
 
 The site is deployed to Vercel (`https://hibikilogy.vercel.app/`). `vercel.json` includes a Content Security Policy scoped to `/admin/*` for Sveltia CMS OAuth and CDN resources. The GitHub OAuth backend uses the proxy at `https://gh-oauth.interknot.site/`. For local CMS development, the `base_url` in the backend config may need to be removed or pointed to localhost.

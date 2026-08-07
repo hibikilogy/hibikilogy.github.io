@@ -211,7 +211,7 @@ describe('generateModule', () => {
     rootDir = makeRootDir()
     writeThemeI18n(rootDir, 'zh', THEME_I18N)
     writeFileSync(
-      join(rootDir, 'config.toml'),
+      join(rootDir, 'zola.toml'),
       [
         'base_url = "https://example.com/"',
         'default_language = "zh"',
@@ -224,7 +224,7 @@ describe('generateModule', () => {
       'utf8',
     )
 
-    const module = generateModule(join(rootDir, 'config.toml'), rootDir)
+    const module = generateModule(join(rootDir, 'zola.toml'), rootDir)
 
     expect(module).toContain('export const HIBIKILOGY_CONFIG')
     expect(module).toContain('export const HIBIKILOGY_TRANSLATIONS')

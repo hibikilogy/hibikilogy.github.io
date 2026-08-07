@@ -34,7 +34,7 @@ struct Args {
     docs_dir: PathBuf,
     #[arg(long, default_value = "public")]
     site_root: PathBuf,
-    #[arg(long, default_value = "config.toml")]
+    #[arg(long, default_value = "zola.toml")]
     config: PathBuf,
     #[arg(long)]
     base_url: Option<String>,

@@ -104,7 +104,7 @@ jobs:
         run: zola build --base-url "${MARKDOWN_BASE_URL}"
 
       - name: Export Markdown routes
-        run: cargo run --locked --bin deploy-markdown -- --config config.toml --base-url "${MARKDOWN_BASE_URL}"
+        run: cargo run --locked --bin deploy-markdown -- --config zola.toml --base-url "${MARKDOWN_BASE_URL}"
 
       - name: Check Rust formatting
         if: steps.rust-changes.outputs.rust == 'true'

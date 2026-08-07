@@ -184,7 +184,7 @@ export function generateModule(tomlPath: string, rootDir: string): string {
   const translations = resolveTranslations(prepared, rootDir)
 
   return [
-    '// Generated from config.toml.',
+    '// Generated from zola.toml.',
     '// DO NOT EDIT.',
     '',
     `export const HIBIKILOGY_CONFIG = ${JSON.stringify(config, null, 2)}`,
@@ -195,7 +195,7 @@ export function generateModule(tomlPath: string, rootDir: string): string {
 }
 
 export function hibikilogyConfigPlugin(rootDir: string): Plugin {
-  const tomlPath = resolve(rootDir, 'config.toml')
+  const tomlPath = resolve(rootDir, 'zola.toml')
   const normalizedTomlPath = normalizePath(tomlPath)
 
   return {

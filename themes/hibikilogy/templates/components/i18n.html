@@ -5,9 +5,9 @@
 {% component i18n.t(key: string, lang: string) %}
   {%- set i18n_path = "themes/hibikilogy/i18n/" ~ lang ~ ".toml" -%}
   {%- set theme_i18n = load_data(path=i18n_path, required=false) -%}
-  {%- set site_config = load_data(path="config.toml", required=false) -%}
+  {%- set site_config = load_data(path="zola.toml", required=false) -%}
   {%- if not site_config -%}
-    {%- set site_config = load_data(path="zola.toml", required=false) -%}
+    {%- set site_config = load_data(path="config.toml", required=false) -%}
   {%- endif -%}
   {# 1. Site per-language translation #}
   {%- if site_config
