@@ -1,2 +1,4 @@
 User-agent: *
+Disallow: /search-articles/
+Disallow: /search-tags/
 Sitemap: {{ get_url(path='/sitemap.xml') }}
