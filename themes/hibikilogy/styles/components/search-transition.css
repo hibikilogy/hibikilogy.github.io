@@ -17,8 +17,8 @@
     will-change: transform;
   }
 
-  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'] {
-    --search-overlay-direction: -1;
+  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'] body::before {
+    content: none;
   }
 
   html[data-search-overlay='active'] body::before {
@@ -37,19 +37,9 @@
     transform: translate3d(0, calc(100% * var(--search-overlay-direction, 1)), 0);
   }
 
-  /* leave-search 原路退回视口下方：向上扫尾会把白幕停在透明导航栏正后方
-     （其底边恰好落在 --joh-nav-height），在进入动画最后让导航栏看起来变白。 */
-  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'].is-rendering body::before {
-    transform: translate3d(0, 100%, 0);
-  }
-
   html[data-search-overlay='active'].is-changing main.Content {
     transition: transform var(--duration-search-transition) var(--ease-search-settle);
     will-change: transform;
-  }
-
-  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'].is-animating.is-leaving main.Content {
-    transform: translateY(calc(4vh * var(--search-overlay-direction, 1)));
   }
 
   html[data-search-overlay='active'].is-rendering main.Content,
@@ -121,10 +111,69 @@
     }
   }
 
+  @keyframes search-navbar-social-return-in {
+    from {
+      opacity: 0;
+      translate: 12px 0;
+    }
+
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  @keyframes search-reduced-fade-out {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes search-reduced-fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
   @supports (view-transition-name: none) {
     @media (--tablet) {
-      html[data-search-transition='active'] .NavBarSocialLink {
+      html[data-search-transition='active'] body:not(.search) .NavBarSocialLink {
         view-transition-name: navbar-social-slot;
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-group(
+            navbar-social-slot
+          ) {
+          z-index: calc(var(--joh-z-index-layout-top) + 14);
+          animation-delay: var(--duration-search-content-exit);
+          animation-duration: var(--duration-fast);
+          animation-timing-function: var(--ease-search-settle);
+          animation-fill-mode: both;
+        }
+
+        html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
+            navbar-social-slot
+          ) {
+          opacity: 0;
+          animation: none;
+        }
+
+        html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-new(
+            navbar-social-slot
+          ) {
+          mix-blend-mode: normal;
+          animation: search-navbar-social-return-in var(--duration-fast) var(--ease-search-settle)
+            var(--duration-search-content-exit) both;
+        }
       }
     }
 
@@ -142,10 +191,39 @@
       view-transition-name: site-search-trigger;
     }
 
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']
+      body.search
+      #search
+      .SearchPageTransitionContent {
+      view-transition-name: search-page-exit-content;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'] .NavBar {
+      view-transition-name: search-page-exit-navbar;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']
+      body.search
+      #search
+      .SearchPageTransitionContent
+      .Journal
+      > .container {
+      view-transition-name: none !important;
+    }
+
     @media (--max-tablet) {
       html[data-search-transition='active'] .NavBarSearch .SearchShell--compact,
-      html[data-search-transition='active'] #search .SearchShell--page {
+      html[data-search-transition='active'][data-search-transition-scope='enter-search']
+        #search
+        .SearchShell--page {
         view-transition-name: none !important;
+      }
+
+      html[data-search-transition='active'][data-search-transition-scope='leave-search']
+        body.search
+        #search
+        .SearchShell--page {
+        view-transition-name: search-page-exit-box !important;
       }
     }
 
@@ -155,10 +233,90 @@
       animation: none;
     }
 
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-group(root) {
+      z-index: calc(var(--joh-z-index-layout-top) + 10);
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(root) {
+      z-index: 2;
+      mix-blend-mode: normal;
+      animation: search-page-curtain-up var(--duration-curtain) var(--ease-curtain)
+        var(--duration-search-content-exit) both;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-new(root) {
+      z-index: 1;
+      mix-blend-mode: normal;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-group(
+        search-page-exit-navbar
+      ) {
+      z-index: calc(var(--joh-z-index-layout-top) + 12);
+      animation-delay: var(--duration-search-content-exit);
+      animation-duration: var(--duration-fast);
+      animation-timing-function: var(--ease-out);
+      animation-fill-mode: both;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
+        search-page-exit-navbar
+      ),
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-new(
+        search-page-exit-navbar
+      ) {
+      mix-blend-mode: normal;
+      animation-delay: var(--duration-search-content-exit);
+      animation-duration: var(--duration-fast);
+      animation-timing-function: var(--ease-out);
+      animation-fill-mode: both;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-group(
+        search-page-exit-box
+      ) {
+      z-index: calc(var(--joh-z-index-layout-top) + 13);
+      animation: none;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
+        search-page-exit-box
+      ) {
+      mix-blend-mode: normal;
+      transform-origin: top right;
+      animation:
+        search-box-morph-out var(--duration-search-morph) var(--ease-out)
+        var(--duration-search-content-exit) both,
+        search-box-pop-out calc(var(--duration-search-morph) * 0.6) var(--ease-bounce)
+        var(--duration-search-content-exit) both;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-group(
+        search-page-exit-content
+      ) {
+      z-index: calc(var(--joh-z-index-layout-top) + 11);
+      animation: none;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
+        search-page-exit-content
+      ) {
+      mix-blend-mode: normal;
+      animation: search-content-exit-down var(--duration-search-content-exit) var(--ease-out) both;
+    }
+
     html[data-search-transition='active']::view-transition-group(site-search-trigger) {
       animation-duration: var(--duration-search-transition);
       animation-timing-function: var(--ease-search-settle);
       z-index: 30;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-group(
+        site-search-trigger
+      ) {
+      z-index: calc(var(--joh-z-index-layout-top) + 13);
+      animation-delay: var(--duration-search-content-exit);
+      animation-fill-mode: both;
     }
 
     html[data-search-transition='active']::view-transition-group(navbar-social-slot) {
@@ -182,24 +340,130 @@
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
         site-search-trigger
       ) {
-      animation: search-trigger-collapse-out var(--duration-search-transition) var(--ease-search-settle) both;
+      animation: search-trigger-collapse-out var(--duration-search-transition) var(--ease-search-settle)
+        var(--duration-search-content-exit) both;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-new(
         site-search-trigger
       ) {
+      animation: search-trigger-return-in var(--duration-search-transition) var(--ease-search-settle)
+        var(--duration-search-content-exit) both;
+    }
+
+    /* Clicking a search result keeps only the shared title and search-box
+       transitions. The rest of the old search page swaps to the article in
+       place, without the content exit, curtain, navbar, or social-link motion. */
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']
+      body.search
+      #search
+      .SearchPageTransitionContent,
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']
+      .NavBar,
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']
+      .NavBarSocialLink {
+      view-transition-name: none !important;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-group(
+        root
+      ) {
+      /* Keep the instant article snapshot below the shared title glyphs
+         (layout-top) while the search box remains above both. */
+      z-index: calc(var(--joh-z-index-layout-top) - 1);
+      animation: none;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-old(
+        root
+      ) {
+      z-index: 1;
+      opacity: 0;
+      transform: none;
+      animation: none;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-new(
+        root
+      ) {
+      z-index: 2;
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-group(
+        site-search-trigger
+      ) {
+      animation-delay: 0s;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-old(
+        site-search-trigger
+      ) {
+      animation: search-trigger-collapse-out var(--duration-search-transition) var(--ease-search-settle) both;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-new(
+        site-search-trigger
+      ) {
       animation: search-trigger-return-in var(--duration-search-transition) var(--ease-search-settle) both;
     }
 
+    @media (--max-tablet) {
+      html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-old(
+          search-page-exit-box
+        ) {
+        animation:
+          search-box-morph-out var(--duration-search-morph) var(--ease-out) both,
+          search-box-pop-out calc(var(--duration-search-morph) * 0.6) var(--ease-bounce) both;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
-      html[data-search-transition='active']::view-transition-group(site-search-trigger) {
+      html[data-search-transition='active']::view-transition-group(site-search-trigger),
+      html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-group(
+          search-page-exit-navbar
+        ),
+      html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-group(
+          navbar-social-slot
+        ) {
         animation: none;
       }
 
       html[data-search-transition='active'][data-search-transition-scope]::view-transition-old(site-search-trigger),
-      html[data-search-transition='active'][data-search-transition-scope]::view-transition-new(site-search-trigger) {
-        animation-duration: 120ms;
-        animation-timing-function: var(--ease-out);
+      html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-old(
+          site-search-trigger
+        ),
+      html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
+          search-page-exit-box
+        ),
+      html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-old(
+          search-page-exit-box
+        ),
+      html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
+          search-page-exit-content
+        ),
+      html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
+          search-page-exit-navbar
+        ),
+      html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
+          navbar-social-slot
+        ) {
+        animation: search-reduced-fade-out 120ms var(--ease-out) both;
+      }
+
+      html[data-search-transition='active'][data-search-transition-scope]::view-transition-new(site-search-trigger),
+      html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-new(
+          site-search-trigger
+        ),
+      html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-new(
+          search-page-exit-navbar
+        ),
+      html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-new(
+          navbar-social-slot
+        ) {
+        animation: search-reduced-fade-in 120ms var(--ease-out) both;
       }
     }
   }
@@ -215,17 +479,8 @@
       animation: search-overlay-cover-down var(--duration-search-cover) var(--ease-curtain) both;
     }
 
-    html[data-search-overlay='active'][data-search-transition-scope='leave-search'].is-animating.is-leaving
-      body::before {
-      animation: search-overlay-cover-up var(--duration-search-cover) var(--ease-curtain) both;
-    }
-
     html[data-search-overlay='active'][data-search-transition-scope='enter-search'] body.search::before {
       animation: search-overlay-retract-up var(--duration-curtain) var(--ease-curtain) both;
-    }
-
-    html[data-search-overlay='active'][data-search-transition-scope='leave-search'] body:not(.search)::before {
-      animation: search-overlay-retract-down var(--duration-curtain) var(--ease-curtain) both;
     }
 
     html[data-search-overlay='active'].is-changing main.Content {
@@ -291,13 +546,25 @@
     }
   }
 
-  @keyframes search-overlay-cover-up {
+  @keyframes search-page-curtain-up {
     from {
-      transform: translate3d(0, 100%, 0);
+      transform: translate3d(0, 0, 0);
     }
 
     to {
-      transform: translate3d(0, 0, 0);
+      transform: translate3d(0, -100%, 0);
+    }
+  }
+
+  @keyframes search-content-exit-down {
+    from {
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    to {
+      opacity: 0;
+      translate: 0 var(--search-content-exit-y);
     }
   }
 
@@ -308,16 +575,6 @@
 
     to {
       transform: translate3d(0, -100%, 0);
-    }
-  }
-
-  @keyframes search-overlay-retract-down {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-
-    to {
-      transform: translate3d(0, 100%, 0);
     }
   }
 
@@ -332,10 +589,7 @@
 
     html[data-search-overlay='active'][data-search-transition-scope='enter-search'].is-animating.is-leaving
       body::before,
-    html[data-search-overlay='active'][data-search-transition-scope='leave-search'].is-animating.is-leaving
-      body::before,
-    html[data-search-overlay='active'][data-search-transition-scope='enter-search'] body.search::before,
-    html[data-search-overlay='active'][data-search-transition-scope='leave-search'] body:not(.search)::before {
+    html[data-search-overlay='active'][data-search-transition-scope='enter-search'] body.search::before {
       animation: none;
     }
   }

@@ -1,6 +1,7 @@
 import type Swup from 'swup'
 import type { AppContext } from '../types.ts'
 import { effectScope } from '@vue/reactivity'
+import { clearTransitionState } from 'ui/page-transition/index.ts'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { setupAppNavigation } from './appNavigation.ts'
 
@@ -79,6 +80,8 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  document.documentElement.removeAttribute('data-page-enter')
+  clearTransitionState()
   document.body.innerHTML = ''
 })
 
@@ -236,6 +239,56 @@ describe('setupAppNavigation', () => {
     await swup.trigger('content:replace', { id: 2 })
 
     // 替换内容时重设属性，让新页重新起动画。
+    expect(document.documentElement.dataset.pageEnter).toBe('navigation')
+  })
+
+  it('reveals the final target page beneath the native leave-search snapshot', async () => {
+    document.documentElement.dataset.searchOverlayScope = 'leave-search'
+    const swup = createFakeSwup()
+    const { app, scope } = createFakeApp()
+    scope.run(() => setupAppNavigation(swup as unknown as Swup, app))
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+
+    await swup.trigger('content:replace', {
+      id: 2,
+      animation: { native: true },
+      history: { popstate: false },
+    })
+
+    expect(document.documentElement.dataset.pageEnter).toBeUndefined()
+    expect(scrollTo).toHaveBeenCalledWith({ top: 0, left: 0, behavior: 'instant' })
+    expect(swup.onHandlers('animation:in:start')).toBe(0)
+
+    scrollTo.mockRestore()
+  })
+
+  it('preserves restored scroll when a native leave-search reveal comes from history', async () => {
+    document.documentElement.dataset.searchOverlayScope = 'leave-search'
+    const swup = createFakeSwup()
+    const { app, scope } = createFakeApp()
+    scope.run(() => setupAppNavigation(swup as unknown as Swup, app))
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+
+    await swup.trigger('content:replace', {
+      id: 2,
+      animation: { native: true },
+      history: { popstate: true },
+    })
+
+    expect(document.documentElement.dataset.pageEnter).toBeUndefined()
+    expect(scrollTo).not.toHaveBeenCalled()
+
+    scrollTo.mockRestore()
+  })
+
+  it('starts page entry immediately when leave-search has no native snapshot', async () => {
+    document.documentElement.dataset.searchOverlayScope = 'leave-search'
+    const swup = createFakeSwup()
+    const { app, scope } = createFakeApp()
+    scope.run(() => setupAppNavigation(swup as unknown as Swup, app))
+
+    await swup.trigger('content:replace', { id: 2, animation: { native: false } })
+
     expect(document.documentElement.dataset.pageEnter).toBe('navigation')
   })
 

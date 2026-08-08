@@ -9,9 +9,6 @@
     --search-journal-drawer-x: 44px;
     --search-journal-drawer-y: 24px;
     --search-journal-drawer-ease: var(--ease-standard);
-    /* Box morph distance: navbar trigger (pill center) to page box top edge. */
-    --search-box-morph-y: -56px;
-
     margin-top: 2rem;
 
     .content {

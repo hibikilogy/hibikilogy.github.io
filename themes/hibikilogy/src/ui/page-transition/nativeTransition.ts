@@ -4,7 +4,7 @@ import { getSearchTransitionScope } from './searchTransition.ts'
 
 /**
  * 是否保留原生 View Transition：
- * - 搜索过渡保留（桌面 morph，移动端由幕布动画接管）；
+ * - 进入搜索页时移动端由幕布接管；离开搜索页保留真实旧页面快照；
  * - 被中断的普通访问瞬间交换，避免旧页经交叉淡化叠进新页。
  */
 export function shouldKeepNativeTransition(

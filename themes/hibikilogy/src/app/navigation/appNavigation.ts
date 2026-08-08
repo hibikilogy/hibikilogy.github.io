@@ -59,7 +59,7 @@ export function setupAppNavigation(swup: Swup, app: AppContext): void {
   function onVisitStart(visit: SwupVisit): void {
     session.start(visit)
     page?.layout.closeNavbar()
-    setTransitionState(visit.from.url, visit.to.url)
+    setTransitionState(visit.from.url, visit.to.url, visit.trigger.el)
     titles.begin(visit)
   }
 
@@ -71,17 +71,33 @@ export function setupAppNavigation(swup: Swup, app: AppContext): void {
 
   function onHoldOutPhase(visit: SwupVisit): Promise<void> | undefined {
     const url = Location.fromUrl(visit.to.url).url
-    return waitForSearchTransition(visit.from.url, visit.to.url, swup.cache.has(url))
+    return waitForSearchTransition(
+      visit.from.url,
+      visit.to.url,
+      swup.cache.has(url),
+      visit.animation.native,
+    )
   }
 
   async function onBeforeContentReplace(visit: SwupVisit): Promise<void> {
     await titles.awaitIncoming(visit)
   }
 
-  function onContentReplace(): void {
-    // 上一页入场动画在 hold 期间自然播完；替换时重启，让新页重新起动画。
+  function onContentReplace(visit: SwupVisit): void {
+    const usesNativeLeaveSearchSnapshot
+      = document.documentElement.dataset.searchOverlayScope === 'leave-search'
+        && visit.animation.native
+
+    // 原生搜索页退出要求目标内容以最终状态参与新快照：完整模式由旧页上拉揭示，
+    // 文章结果模式直接交换根快照；两者都不能暂停在 page-enter 的透明起始帧。
     stopPageEnter()
-    startPageEnter()
+    if (usesNativeLeaveSearchSnapshot) {
+      if (!visit.history?.popstate)
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    }
+    else {
+      startPageEnter()
+    }
     session.rendered()
     initializePage()
   }

@@ -22,10 +22,10 @@ afterEach(() => {
 })
 
 describe('shouldKeepNativeTransition', () => {
-  it('disables native transitions for search crossings on mobile viewports', () => {
+  it('keeps the old-page snapshot when leaving search on mobile viewports', () => {
     stubViewport(true)
 
-    expect(shouldKeepNativeTransition('/search', '/', false)).toBe(false)
+    expect(shouldKeepNativeTransition('/search', '/', false)).toBe(true)
     expect(shouldKeepNativeTransition('/', '/search', false)).toBe(false)
   })
 

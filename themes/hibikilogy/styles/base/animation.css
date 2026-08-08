@@ -10,6 +10,9 @@
     --duration-search-transition: 500ms; /* search overlay wipe, search-box morph */
     --duration-search-cover: 250ms; /* mobile veil cover stage (tap feedback; retract reuses --duration-curtain) */
     --duration-search-morph: 200ms; /* mobile search-box morph (veil sweep reuses --duration-curtain) */
+    --duration-search-content-exit: 180ms;
+    --search-box-morph-y: -56px; /* page search box to compact trigger offset */
+    --search-content-exit-y: 24px;
     --duration-reveal: 400ms; /* search veil fade */
     --duration-hamburger-morph: 120ms; /* JS-mirrored; CSS uses the phase tokens below */
     --duration-page-flip: 320ms; /* journal page-flip view transition */

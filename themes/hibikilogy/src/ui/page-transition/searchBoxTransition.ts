@@ -19,14 +19,19 @@ function shouldHoldSearchVeilCover(isCached: boolean): boolean {
 }
 
 export function shouldDisableNativeTransition(fromUrl: string, toUrl: string): boolean {
-  return getSearchTransitionScope(fromUrl, toUrl) !== null && isMaxTabletViewport()
+  return getSearchTransitionScope(fromUrl, toUrl) === 'enter-search' && isMaxTabletViewport()
 }
 
-export function waitForSearchTransition(fromUrl: string, toUrl: string, isCached: boolean): Promise<void> | undefined {
+export function waitForSearchTransition(
+  fromUrl: string,
+  toUrl: string,
+  isCached: boolean,
+  hasNativeTransition: boolean,
+): Promise<void> | undefined {
   const scope = getSearchTransitionScope(fromUrl, toUrl)
   if (scope === 'enter-search')
     return waitForSearchVeilCover(isCached)
-  if (scope === 'leave-search')
+  if (scope === 'leave-search' && !hasNativeTransition)
     return waitForSearchBoxExit()
   return undefined
 }
@@ -45,25 +50,33 @@ export async function waitForSearchBoxExit(): Promise<void> {
   if (!shouldHoldSearchOutPhase())
     return
 
-  const veilCover = wait(resolveDurationMs('searchCover') + VEIL_COVER_GRACE_MS)
   const box = document.querySelector<HTMLElement>(`${pageDom.search} .SearchShell--page`)
-  if (!box) {
-    await veilCover
+  if (!box)
     return
-  }
 
   const boxMs = resolveDurationMs('searchMorph')
-  const boxExit = new Promise<void>((resolve) => {
+  await waitForNamedAnimation(box, 'search-box-morph-out', boxMs + BOX_EXIT_GRACE_MS)
+}
+
+function waitForNamedAnimation(
+  element: HTMLElement,
+  animationName: string,
+  timeoutMs: number,
+): Promise<void> {
+  return new Promise<void>((resolve) => {
     let timer = 0
-    const finish = (): void => {
+    function finish(): void {
       window.clearTimeout(timer)
+      element.removeEventListener('animationend', onAnimationEnd)
       resolve()
     }
-    box.addEventListener('animationend', finish, { once: true })
-    timer = window.setTimeout(finish, boxMs + BOX_EXIT_GRACE_MS)
+    function onAnimationEnd(event: AnimationEvent): void {
+      if (event.animationName === animationName)
+        finish()
+    }
+    element.addEventListener('animationend', onAnimationEnd)
+    timer = window.setTimeout(finish, timeoutMs)
   })
-
-  await Promise.all([boxExit, veilCover])
 }
 
 export function deferClearSearchTransitionState(clear: () => void): void {
