@@ -9,7 +9,6 @@ import type {
   SearchTagIndexItem,
 } from '../types.ts'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createSearchCacheKey } from './cache.ts'
 import { buildSearchEngine } from './engineBuilder.ts'
 
 const rawIndex = [
@@ -43,16 +42,12 @@ describe('buildSearchEngine metadata resolution', () => {
       [urls.tagsDataUrl]: tagIndex,
     })
 
-    const { engine, report } = await buildAndReport(createBootstrap(urls))
+    const { engine } = await buildAndReport(createBootstrap(urls))
 
     expect(engine.records).toHaveLength(1)
     expect(engine.records[0].subtitle).toBe('Subtitle')
     expect(engine.records[0].tags.map(tag => tag.name)).toEqual(['tag'])
     expect(fetchMock).toHaveBeenCalledTimes(3)
-    expect(report.cacheKey).toBe(createSearchCacheKey(urls.indexUrl, {
-      articleMetadataIndex: articleMetadata,
-      tagIndex,
-    }))
   })
 
   it('shares the same cache key between two builds with identical metadata', async () => {
@@ -68,10 +63,30 @@ describe('buildSearchEngine metadata resolution', () => {
 
     expect(second.engine.records).toHaveLength(1)
     expect(second.report.cacheKey).toBe(first.report.cacheKey)
-    expect(second.report.cacheKey).toBe(createSearchCacheKey(urls.indexUrl, {
-      articleMetadataIndex: articleMetadata,
-      tagIndex,
-    }))
+  })
+
+  it('derives a different cache key when the metadata changes', async () => {
+    const urls = createUrls()
+    stubFetch({
+      [urls.indexUrl]: rawIndex,
+      [urls.articlesDataUrl]: articleMetadata,
+      [urls.tagsDataUrl]: tagIndex,
+    })
+    const initial = await buildAndReport(createBootstrap(urls))
+
+    // FetchJsonIndex memoizes by URL, so the edited metadata must come from
+    // a fresh URL; the index URL stays identical to isolate the metadata part.
+    const editedUrls = { ...urls, articlesDataUrl: '/search-articles-edited/' }
+    stubFetch({
+      [urls.indexUrl]: rawIndex,
+      [editedUrls.articlesDataUrl]: { '/articles/example/': { s: 'Edited', an: 'Author' } },
+      [urls.tagsDataUrl]: tagIndex,
+    })
+    const edited = await buildAndReport(createBootstrap(editedUrls))
+
+    // The cache key must invalidate when the metadata feeding the engine
+    // changes; otherwise a stale cached engine would be restored.
+    expect(edited.report.cacheKey).not.toBe(initial.report.cacheKey)
   })
 
   it('falls back to empty metadata when the metadata fetches fail', async () => {
@@ -82,10 +97,9 @@ describe('buildSearchEngine metadata resolution', () => {
       [urls.tagsDataUrl]: new Error('offline'),
     })
 
-    const { engine, report } = await buildAndReport(createBootstrap(urls))
+    const { engine } = await buildAndReport(createBootstrap(urls))
 
     expect(engine.records).toHaveLength(1)
-    expect(report.cacheKey).toBe(createSearchCacheKey(urls.indexUrl, {}))
   })
 
   it('restores the cached engine without fetching the raw index', async () => {
