@@ -1,6 +1,7 @@
 {%- set anonymous_author = <i18n.t key="anonymous_author" lang={lang} /> -%}
 {%- set article_section = config.extra.article_section | default(value="articles/_index.md") -%}
 {%- set section = get_section(path=article_section) -%}
+{%- set author_taxonomy = get_taxonomy(kind="author") -%}
 {%-
   set default_author_name = config.author
   | default(value=config.extra.meta_author | default(value=anonymous_author))
@@ -12,7 +13,11 @@
   {%- set authors = page.taxonomies.author | default(value=[]) -%}
   {%- if authors | length == 1 -%}
     {%- set_global author_name = authors[0] -%}
-    {%- set_global author_href = get_taxonomy_url(kind="author", term=authors[0]) -%}
+    {%- for term in author_taxonomy.items -%}
+      {%- if term.name == authors[0] -%}
+        {%- set_global author_href = term.path -%}
+      {%- endif -%}
+    {%- endfor -%}
   {%- elif authors | length > 1 -%}
     {%- set_global author_name = authors | sort | join(sep="、") -%}
   {%- endif -%}
