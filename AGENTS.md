@@ -81,7 +81,7 @@ Rust build tools (the `hibikilogy-tools` crate, invoked via pnpm):
 - `pnpm verify:rust` — fmt check + clippy `-D warnings` + `pnpm test:rust`
 - `pnpm coverage:rust` — llvm-cov HTML report
 
-Requires Zola 0.23.1 (as pinned in `.github/actions/setup-tools`), Node.js 24+ (see `.nvmrc`; Node 24 runs TypeScript entry scripts directly via type stripping), and Rust 1.97.1 (pinned by `rust-toolchain.toml`) with `cargo-nextest` 0.9.140 and `cargo-llvm-cov` 0.8.7 installed.
+Requires Zola 0.23.2 (as pinned in `.github/actions/setup-tools`), Node.js 24+ (see `.nvmrc`; Node 24 runs TypeScript entry scripts directly via type stripping), and Rust 1.97.1 (pinned by `rust-toolchain.toml`) with `cargo-nextest` 0.9.140 and `cargo-llvm-cov` 0.8.7 installed.
 
 ## i18n / Translations
 

@@ -2,7 +2,7 @@ name = "hibikilogy"
 description = ""
 license = ""
 homepage = "https://github.com/hibikilogy/hibikilogy.github.io"
-min_version = "0.23.0"
+min_version = "0.23.2"
 
 [author]
 name = "Hibikilogy"

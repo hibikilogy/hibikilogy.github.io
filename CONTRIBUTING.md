@@ -13,7 +13,7 @@
 - **[Node.js](https://nodejs.org/en/download)** >= 24
 - **[pnpm](https://pnpm.io/installation)** >= 10
 - **[Rust](https://rust-lang.org/tools/install/)** >= 1.97.1(仓库通过 `rust-toolchain.toml` 固定版本)
-- **[Zola](https://www.getzola.org/)** >= 0.23.1
+- **[Zola](https://www.getzola.org/)** >= 0.23.2
 
 > [!NOTE]
 > **Windows 用户**：官方 Zola 0.23.x Windows 二进制有上游 bug——`canonicalize()` 产生 `\\?\` UNC 路径导致模板无法加载（CI 为 Linux 不受影响）。本地开发需用应用了 `strip_unc` 补丁重新编译的二进制。

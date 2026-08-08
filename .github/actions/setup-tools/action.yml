@@ -80,7 +80,7 @@ runs:
       if: inputs.zola == 'true'
       uses: taiki-e/install-action@v2
       with:
-        tool: zola@0.23.1
+        tool: zola@0.23.2
         fallback: none
 
     - name: Install cargo-nextest

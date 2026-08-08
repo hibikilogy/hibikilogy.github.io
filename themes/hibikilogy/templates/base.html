@@ -237,15 +237,10 @@
   {% endblock %}
 
   {% if config.extra.production_base_url and config.base_url != config.extra.production_base_url %}
-  {% set build_info = load_data(path="build-info.json", required=false, format="json") %}
-  {% set commit_hash = build_info?.commit | default(value="") %}
-  {% set branch = build_info?.branch | default(value="") %}
-  {% set commit_msg = build_info?.message | default(value="") %}
-  {% if build_info and build_info.build_time %}
-    {% set build_date = build_info.build_time | date(format="%m-%d %H:%M") %}
-  {% else %}
-    {% set build_date = now() | date(format="%m-%d %H:%M") %}
-  {% endif %}
+  {% set commit_hash = get_env(name="GIT_HASH", default="") %}
+  {% set branch = get_env(name="GIT_BRANCH", default="") %}
+  {% set commit_msg = get_env(name="GIT_MESSAGE", default="") %}
+  {% set build_date = now() | date(format="%m-%d %H:%M") %}
 
   {% set prefix = "" %}
   {% if commit_msg %}
