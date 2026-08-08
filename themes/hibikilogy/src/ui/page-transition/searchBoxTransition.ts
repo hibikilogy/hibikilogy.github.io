@@ -67,7 +67,6 @@ export async function waitForSearchBoxExit(): Promise<void> {
 }
 
 export function deferClearSearchTransitionState(clear: () => void): void {
-  // 纯延迟：是否仍应清理由调用方（transitionState）的代次守卫决定，避免
-  // 被中断访问排定的清理误清新访问的过渡状态。
+  // 纯延迟；是否清理由调用方的代次守卫决定。
   window.setTimeout(clear, resolveDurationMs('searchVeil') + CLEAR_GRACE_MS)
 }

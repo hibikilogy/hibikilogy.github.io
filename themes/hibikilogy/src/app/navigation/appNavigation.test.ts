@@ -160,8 +160,7 @@ describe('setupAppNavigation', () => {
     const animations = [
       { animationName: 'page-enter', playState: 'running' },
     ] as unknown as Animation[]
-    // Mimic a real DOM method: it must be invoked with the document receiver,
-    // otherwise browsers throw "Illegal invocation".
+    // 模拟真实 DOM 方法：必须以 document 为 receiver 调用，否则抛 Illegal invocation。
     Object.defineProperty(document, 'getAnimations', {
       configurable: true,
       value: function getAnimations(this: Document) {
@@ -182,6 +181,35 @@ describe('setupAppNavigation', () => {
     await swup.trigger('visit:start', visit)
 
     expect(visit.animation.native).toBe(false)
+
+    Reflect.deleteProperty(document, 'getAnimations')
+  })
+
+  it('keeps the native transition for search crossings while the page-enter cascade is still running', async () => {
+    const swup = createFakeSwup()
+    const { app, scope } = createFakeApp()
+    scope.run(() => setupAppNavigation(swup as unknown as Swup, app))
+
+    const animations = [
+      { animationName: 'page-enter', playState: 'running' },
+    ] as unknown as Animation[]
+    Object.defineProperty(document, 'getAnimations', {
+      configurable: true,
+      value: () => animations,
+    })
+
+    // 搜索过渡有自己的幕布/morph 编排，不应被中断检测强制成瞬间交换。
+    const visit = {
+      id: 1,
+      animation: { native: true, wait: false },
+      trigger: {},
+      from: { url: '/search' },
+      to: { url: '/article' },
+      history: { popstate: false },
+    }
+    await swup.trigger('visit:start', visit)
+
+    expect(visit.animation.native).toBe(true)
 
     Reflect.deleteProperty(document, 'getAnimations')
   })
