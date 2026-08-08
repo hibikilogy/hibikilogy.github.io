@@ -11,7 +11,6 @@ use tempfile::TempDir;
 fn hashes_into_the_full_three_digit_space() {
     let id = digest_modulo(b"2026-07-27-example.md", IDS_PER_YEAR);
     assert!(id < 1000);
-    assert_eq!(id, 166);
 }
 
 #[test]

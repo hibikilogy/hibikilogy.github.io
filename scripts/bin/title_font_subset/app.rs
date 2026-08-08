@@ -99,13 +99,13 @@ pub fn run() -> Result<()> {
 
 fn generate_title_font_subset(options: &GenerateOptions) -> Result<GenerateReport> {
     let titles = collect_titles_from_content(&options.content_dir)?;
-    let codepoints = collect_title_codepoints(&titles);
-    if codepoints.is_empty() {
+    if titles.is_empty() {
         return Err(anyhow!(
-            "no title characters found in {}",
+            "no titles found in {}",
             options.content_dir.display()
         ));
     }
+    let codepoints = collect_title_codepoints(&titles);
 
     let font_data = fs::read(&options.font_path)
         .with_context(|| format!("failed to read font {}", options.font_path.display()))?;

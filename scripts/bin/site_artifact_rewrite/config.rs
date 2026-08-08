@@ -487,4 +487,60 @@ asset = { type = "image", from = "src" }
         )
         .is_err());
     }
+
+    #[test]
+    fn compiles_a_full_config_with_every_rule_kind() {
+        let compiled = parse(
+            r#"
+version = 1
+
+[url.image_cdn]
+from = [ "https://hibikilogy.vercel.app/" ]
+to = "https://cdn.example.test/"
+relative_to = "target-root"
+exclude_extensions = [ "svg", "gif" ]
+
+[html]
+files = [ "**/*.html", "!search-articles/index.html" ]
+
+[[html.rules]]
+name = "image-urls"
+select = "img, lazy-image"
+rewrite_urls = { map = "image_cdn", attributes = [ "src", "srcset" ] }
+
+[[html.rules]]
+name = "article-images"
+select = ".content-container img"
+asset = { type = "image", from = [ "src", "srcset" ] }
+set = { zoomable = "true" }
+metadata = { thumbhash = "thumbhash", width = "width", height = "height" }
+replace_tag = "lazy-image"
+
+[[json]]
+name = "search-cover"
+sources = [
+  { files = [ "**/*.html" ], select = 'script[type="application/json"]' },
+  { files = [ "search-articles/index.html" ] },
+]
+each = "object-values"
+rewrite_url = { field = "cs", map = "image_cdn" }
+asset = { type = "image", from = "cs" }
+metadata = { thumbhash = "ct", width = "cw", height = "ch" }
+"#,
+        )
+        .unwrap();
+
+        let image_cdn = &compiled.url_maps["image_cdn"];
+        assert_eq!(image_cdn.to.as_str(), "https://cdn.example.test/");
+        assert_eq!(image_cdn.from.len(), 1);
+        assert_eq!(image_cdn.excluded_extensions.len(), 2);
+
+        let matcher = compiled.html_files.as_ref().unwrap();
+        assert!(matcher.is_match("articles/2026/01/page.html"));
+        assert!(!matcher.is_match("search-articles/index.html"));
+
+        assert_eq!(compiled.raw.html.as_ref().unwrap().rules.len(), 2);
+        assert_eq!(compiled.raw.json.len(), 1);
+        assert!(!compiled.fingerprint.is_empty());
+    }
 }

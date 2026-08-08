@@ -52,11 +52,59 @@ pub fn normalize_iso_date(date: &str) -> Result<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::parse_article_file_name;
+    use super::{normalize_iso_date, parse_article_file_name};
 
     #[test]
     fn validates_calendar_dates() {
         assert!(parse_article_file_name("2026-02-29-invalid.md").is_err());
         assert!(parse_article_file_name("2024-02-29-valid.md").is_ok());
+    }
+
+    #[test]
+    fn rejects_non_iso_date_formats() {
+        for bad in [
+            "2026/01/01",  // wrong separators
+            "2026-1-01",   // unpadded month
+            "20260101",    // no separators
+            "2026-01-1",   // unpadded day
+            "2026-01-01x", // trailing junk
+        ] {
+            assert!(
+                normalize_iso_date(bad).is_err(),
+                "expected {bad:?} to be rejected"
+            );
+        }
+        assert_eq!(normalize_iso_date("2026-01-01").unwrap(), "2026-01-01");
+    }
+
+    #[test]
+    fn rejects_non_digit_separators_and_non_positive_years() {
+        assert!(normalize_iso_date("2026-a-01").is_err());
+        assert!(
+            normalize_iso_date("0000-01-01").is_err(),
+            "year zero is not positive"
+        );
+        assert!(
+            normalize_iso_date("2023-02-29").is_err(),
+            "non-leap February 29"
+        );
+    }
+
+    #[test]
+    fn requires_a_slug_tail_and_lowercases_it() {
+        assert!(parse_article_file_name("2026-01-01-.md").is_err());
+        assert!(parse_article_file_name("2026-01-01.md").is_err());
+        assert_eq!(
+            parse_article_file_name("2026-01-01-My-Post.md")
+                .unwrap()
+                .slug_tail,
+            "my-post"
+        );
+    }
+
+    #[test]
+    fn strips_directories_but_keeps_dots_in_the_slug() {
+        let parsed = parse_article_file_name("articles/2026-01-01-post.md.txt").unwrap();
+        assert_eq!(parsed.slug_tail, "post.md");
     }
 }

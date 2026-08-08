@@ -181,13 +181,29 @@ pub(super) fn hex_sha256(bytes: &[u8]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde_json::json;
 
-    #[test]
-    fn config_fingerprint_invalidates_only_file_state() {
+    fn cache_file() -> MetadataCache {
         let mut cache = MetadataCache {
             version: CACHE_VERSION,
             ..Default::default()
         };
+        cache.entries.insert(
+            "img/hero.png".to_string(),
+            CachedImageMetadata {
+                thumbhash: "hash".to_string(),
+                width: 1,
+                height: 2,
+            },
+        );
+        cache.paths.insert(
+            "page.html".to_string(),
+            CachedPathRecord {
+                content_hash: "abc".to_string(),
+                len: 10,
+                modified_ms: 20,
+            },
+        );
         cache.files.insert(
             "page.html".to_string(),
             CachedFileRecord {
@@ -196,20 +212,106 @@ mod tests {
                 config_fingerprint: "old".to_string(),
             },
         );
-        cache.entries.insert(
-            "content".to_string(),
-            CachedImageMetadata {
-                thumbhash: "hash".to_string(),
-                width: 1,
-                height: 2,
-            },
-        );
+        cache
+    }
+
+    #[test]
+    fn config_fingerprint_invalidates_only_file_state() {
+        let cache = cache_file();
         let stat = FileStat {
             len: 10,
             modified_ms: 20,
         };
         assert!(is_fresh(&cache, "page.html", stat, "old"));
         assert!(!is_fresh(&cache, "page.html", stat, "new"));
-        assert!(cache.entries.contains_key("content"));
+        assert!(cache.entries.contains_key("img/hero.png"));
+    }
+
+    #[test]
+    fn load_returns_fresh_defaults_without_cache_files() {
+        let temp = tempfile::tempdir().unwrap();
+        let cache_path = temp.path().join("cache.json");
+        let state_path = temp.path().join("state.json");
+
+        let cache = load(&cache_path, &state_path).unwrap();
+
+        assert_eq!(cache.version, CACHE_VERSION);
+        assert!(cache.entries.is_empty());
+        assert!(cache.paths.is_empty());
+        assert!(cache.files.is_empty());
+    }
+
+    #[test]
+    fn save_then_load_round_trips_all_state() {
+        let temp = tempfile::tempdir().unwrap();
+        let cache_path = temp.path().join("cache.json");
+        let state_path = temp.path().join("state.json");
+        let expected = cache_file();
+
+        save(&cache_path, &state_path, &expected).unwrap();
+        let loaded = load(&cache_path, &state_path).unwrap();
+
+        assert_eq!(loaded.version, CACHE_VERSION);
+        assert_eq!(loaded.entries, expected.entries);
+        assert_eq!(loaded.unsupported_entries, expected.unsupported_entries);
+        assert_eq!(loaded.paths, expected.paths);
+        assert_eq!(loaded.files, expected.files);
+    }
+
+    #[test]
+    fn stale_metadata_version_clears_runtime_state_but_keeps_entries() {
+        let temp = tempfile::tempdir().unwrap();
+        let cache_path = temp.path().join("cache.json");
+        let state_path = temp.path().join("state.json");
+        fs::write(
+            &cache_path,
+            serde_json::to_string_pretty(&json!({
+                "version": CACHE_VERSION - 1,
+                "entries": { "img/hero.png": { "thumbhash": "hash", "width": 1, "height": 2 } },
+                "paths": { "page.html": { "content_hash": "abc", "len": 10, "modified_ms": 20 } },
+                "files": { "page.html": { "len": 10, "modified_ms": 20, "config_fingerprint": "old" } },
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        let cache = load(&cache_path, &state_path).unwrap();
+
+        assert_eq!(cache.version, CACHE_VERSION);
+        assert!(cache.entries.contains_key("img/hero.png"));
+        assert!(cache.paths.is_empty(), "runtime paths must be invalidated");
+        assert!(cache.files.is_empty(), "runtime files must be invalidated");
+    }
+
+    #[test]
+    fn stale_state_version_is_ignored_while_metadata_cache_survives() {
+        let temp = tempfile::tempdir().unwrap();
+        let cache_path = temp.path().join("cache.json");
+        let state_path = temp.path().join("state.json");
+        fs::write(
+            &cache_path,
+            serde_json::to_string_pretty(&json!({
+                "version": CACHE_VERSION,
+                "entries": { "img/hero.png": { "thumbhash": "hash", "width": 1, "height": 2 } },
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+        fs::write(
+            &state_path,
+            serde_json::to_string_pretty(&json!({
+                "version": STATE_CACHE_VERSION + 1,
+                "paths": { "page.html": { "content_hash": "abc", "len": 10, "modified_ms": 20 } },
+                "files": { "page.html": { "len": 10, "modified_ms": 20, "config_fingerprint": "old" } },
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+
+        let cache = load(&cache_path, &state_path).unwrap();
+
+        assert!(cache.entries.contains_key("img/hero.png"));
+        assert!(cache.paths.is_empty(), "stale state must not be merged");
+        assert!(cache.files.is_empty());
     }
 }
