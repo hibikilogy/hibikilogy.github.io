@@ -55,8 +55,11 @@
   }
 
   :root {
-    --page-enter-duration: 460ms;
+    --page-enter-duration: 560ms;
+    --page-enter-duration-step: 14ms;
+    --page-enter-min-duration: 300ms;
     --page-enter-stagger: 82ms;
+    --page-enter-stagger-step: 3ms;
     --text-swap-dur: var(--duration-quick);
     --text-swap-translate-y: var(--distance-base);
     --text-swap-blur: var(--blur-small);
@@ -103,8 +106,17 @@
     html[data-page-enter] [data-page-enter-item]:not([data-page-enter-await-layout]),
     html[data-page-enter] [data-page-enter-item][data-page-enter-await-layout][data-layout-ready],
     html[data-page-enter] [data-page-enter-content] > *:nth-child(-n + 20) {
-      animation: page-enter var(--page-enter-duration) var(--ease-smooth-out) both;
-      animation-delay: calc(var(--page-enter-stage, 0) * var(--page-enter-stagger));
+      animation-name: page-enter;
+      animation-duration: max(
+        var(--page-enter-min-duration),
+        calc(var(--page-enter-duration) - var(--page-enter-stage, 0) * var(--page-enter-duration-step))
+      );
+      animation-timing-function: var(--ease-smooth-out);
+      animation-fill-mode: both;
+      animation-delay: calc(
+        var(--page-enter-stage, 0) * var(--page-enter-stagger)
+          - (var(--page-enter-stage, 0) * var(--page-enter-stage, 0) - var(--page-enter-stage, 0)) / 2 * var(--page-enter-stagger-step)
+      );
     }
 
     [data-page-enter-content] > *:nth-child(1) {
