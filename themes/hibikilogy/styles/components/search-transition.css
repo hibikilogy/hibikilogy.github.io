@@ -37,6 +37,12 @@
     transform: translate3d(0, calc(100% * var(--search-overlay-direction, 1)), 0);
   }
 
+  /* leave-search 原路退回视口下方：向上扫尾会把白幕停在透明导航栏正后方
+     （其底边恰好落在 --joh-nav-height），在进入动画最后让导航栏看起来变白。 */
+  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'].is-rendering body::before {
+    transform: translate3d(0, 100%, 0);
+  }
+
   html[data-search-overlay='active'].is-changing main.Content {
     transition: transform var(--duration-search-transition) var(--ease-search-settle);
     will-change: transform;
@@ -219,7 +225,7 @@
     }
 
     html[data-search-overlay='active'][data-search-transition-scope='leave-search'] body:not(.search)::before {
-      animation: search-overlay-retract-up var(--duration-curtain) var(--ease-curtain) both;
+      animation: search-overlay-retract-down var(--duration-curtain) var(--ease-curtain) both;
     }
 
     html[data-search-overlay='active'].is-changing main.Content {
@@ -302,6 +308,16 @@
 
     to {
       transform: translate3d(0, -100%, 0);
+    }
+  }
+
+  @keyframes search-overlay-retract-down {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      transform: translate3d(0, 100%, 0);
     }
   }
 

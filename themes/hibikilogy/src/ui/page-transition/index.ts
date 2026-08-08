@@ -3,6 +3,7 @@ export { getSearchTransitionScope } from './searchTransition.ts'
 export type { SearchTransitionScope } from './searchTransition.ts'
 export {
   clearTransitionState,
+  markOverlaySettling,
   settleTransitionState,
   setTransitionState,
 } from './transitionState.ts'

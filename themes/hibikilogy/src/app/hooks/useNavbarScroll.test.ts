@@ -57,7 +57,7 @@ describe('useNavbarScroll', () => {
     scope.stop()
   })
 
-  it('tracks the post Hero latch and background fallback', () => {
+  it('tracks the post Hero latch and background fallback', async () => {
     vi.stubGlobal('CSS', { supports: () => false })
     vi.stubGlobal('IntersectionObserver', undefined)
     document.body.classList.add('post')
@@ -80,6 +80,11 @@ describe('useNavbarScroll', () => {
     const scope = effectScope()
     const navbarScroll = scope.run(() => useNavbarScroll(root, scroll.model))!
     const navbar = root.querySelector<HTMLElement>('.NavBar')!
+
+    // 初始同步推迟两帧（等 swup 滚动复位），推进后再断言。
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    })
 
     expect(navbarScroll.postHeroPassed.value).toBe(false)
     expect(navbar.style.getPropertyValue('--post-navbar-background-opacity')).toBe('50%')

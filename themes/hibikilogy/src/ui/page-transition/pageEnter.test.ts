@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { startPageEnter, stopPageEnter } from './pageEnter.ts'
 
 describe('page enter lifecycle', () => {
-  it('stops the current animation before SPA navigation', () => {
+  it('stops the current animation so the incoming page restarts the cascade', () => {
     const root = document.createElement('html')
     root.dataset.pageEnter = 'initial'
 

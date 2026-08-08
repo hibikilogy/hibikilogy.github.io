@@ -57,8 +57,17 @@ export function useNavbarScroll(root: ParentNode, scroll: ScrollModel) {
   }
 
   if (postHero) {
-    syncPostHero(postHero.getBoundingClientRect().bottom)
-    syncPostHeroBackground()
+    // 初次同步推迟到 swup 滚动复位之后（content:replace 后约一帧 scrollTo(0,0)），
+    // 避免用搜索页残留的滚动位置把 postHeroPassed 误置为 true，导航栏闪白。
+    const deferInitialSync = (remaining: number): void => {
+      if (remaining > 0) {
+        requestAnimationFrame(() => deferInitialSync(remaining - 1))
+        return
+      }
+      syncPostHero(postHero.getBoundingClientRect().bottom)
+      syncPostHeroBackground()
+    }
+    deferInitialSync(2)
 
     if (supportsIntersectionObserver()) {
       const observer = new IntersectionObserver(([entry]) => {

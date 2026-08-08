@@ -131,4 +131,104 @@ describe('setupAppNavigation', () => {
     await swup.trigger('content:replace', { id: 2 })
     expect(mocks.mountPageModules).toHaveBeenCalledTimes(1)
   })
+
+  it('skips the native transition for the visit after an aborted one', async () => {
+    const swup = createFakeSwup()
+    const { app, scope } = createFakeApp()
+    scope.run(() => setupAppNavigation(swup as unknown as Swup, app))
+
+    await swup.trigger('visit:abort', { id: 1, history: { popstate: false } })
+
+    const visit = {
+      id: 2,
+      animation: { native: true, wait: false },
+      trigger: {},
+      from: { url: '/' },
+      to: { url: '/article' },
+      history: { popstate: false },
+    }
+    await swup.trigger('visit:start', visit)
+
+    expect(visit.animation.native).toBe(false)
+  })
+
+  it('skips the native transition while the page-enter cascade is still running', async () => {
+    const swup = createFakeSwup()
+    const { app, scope } = createFakeApp()
+    scope.run(() => setupAppNavigation(swup as unknown as Swup, app))
+
+    const animations = [
+      { animationName: 'page-enter', playState: 'running' },
+    ] as unknown as Animation[]
+    // Mimic a real DOM method: it must be invoked with the document receiver,
+    // otherwise browsers throw "Illegal invocation".
+    Object.defineProperty(document, 'getAnimations', {
+      configurable: true,
+      value: function getAnimations(this: Document) {
+        if (this !== document)
+          throw new TypeError('Illegal invocation')
+        return animations
+      },
+    })
+
+    const visit = {
+      id: 1,
+      animation: { native: true, wait: false },
+      trigger: {},
+      from: { url: '/' },
+      to: { url: '/article' },
+      history: { popstate: false },
+    }
+    await swup.trigger('visit:start', visit)
+
+    expect(visit.animation.native).toBe(false)
+
+    Reflect.deleteProperty(document, 'getAnimations')
+  })
+
+  it('keeps the page-enter animation running during a visit hold and restarts it on replacement', async () => {
+    const swup = createFakeSwup()
+    const { app, scope } = createFakeApp()
+    scope.run(() => setupAppNavigation(swup as unknown as Swup, app))
+
+    document.documentElement.dataset.pageEnter = 'navigation'
+
+    await swup.trigger('visit:start', {
+      id: 1,
+      animation: { native: true, wait: false },
+      trigger: {},
+      from: { url: '/' },
+      to: { url: '/article' },
+      history: { popstate: false },
+    })
+
+    // visit:start 不再打断上一页的入场动画（避免页面突然弹成全显）。
+    expect(document.documentElement.dataset.pageEnter).toBe('navigation')
+
+    await swup.trigger('content:replace', { id: 2 })
+
+    // 替换内容时重设属性，让新页重新起动画。
+    expect(document.documentElement.dataset.pageEnter).toBe('navigation')
+  })
+
+  it('resets scroll to top only for visits that rendered content', async () => {
+    const swup = createFakeSwup()
+    const { app, scope } = createFakeApp()
+    scope.run(() => setupAppNavigation(swup as unknown as Swup, app))
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+
+    // 被中断的访问（未渲染内容）不滚动，避免把 hold 中的旧页滚回顶部。
+    await swup.trigger('visit:abort', { id: 1, history: { popstate: false } })
+    expect(scrollTo).not.toHaveBeenCalled()
+
+    // 完成渲染的普通访问回顶。
+    await swup.trigger('content:replace', { id: 2 })
+    await swup.trigger('visit:end', { id: 2, history: { popstate: false } })
+    expect(scrollTo).toHaveBeenCalledTimes(1)
+
+    // popstate 访问保留插件恢复的滚动。
+    await swup.trigger('content:replace', { id: 3 })
+    await swup.trigger('visit:end', { id: 3, history: { popstate: true } })
+    expect(scrollTo).toHaveBeenCalledTimes(1)
+  })
 })
