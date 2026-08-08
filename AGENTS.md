@@ -33,7 +33,7 @@ This repository is a Zola static site using the built-in `hibikilogy` theme. The
 - `scripts/integration/` — Rust smoke tests (run via nextest)
 - Heavy dependencies are optional, gated behind the `font-tools` and `artifact-rewrite` cargo features (default = none)
 
-`plans/` holds numbered implementation plans; read `plans/README.md` for their execution order. `dist/` is gitignored Vite output. `tests/` holds JS/Python contract tests and fixtures for the build pipeline (Rust integration tests live in `scripts/integration/`).
+`plans/` holds numbered implementation plans; read `plans/README.md` for their execution order. `dist/` is gitignored Vite output. Tests live with the code they cover: Vitest suites at `themes/hibikilogy/src/**/*.test.ts` and `scripts/**/*.test.ts` (run via `pnpm test:ts`), Rust unit tests as inline `#[cfg(test)]` modules plus `scripts/integration/cli_smoke.rs` (run via nextest).
 
 ### Sveltia CMS (`static/admin/` + `cms/`)
 
