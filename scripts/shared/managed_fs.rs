@@ -72,6 +72,22 @@ pub fn recover_atomic_file(path: &Path) -> Result<()> {
     Ok(())
 }
 
+/// Like [`write_atomic`], but skips the write entirely when the destination
+/// already holds identical contents. Returns whether a write happened, so
+/// callers can avoid mtime churn for unchanged generated artifacts.
+pub fn write_atomic_if_changed(path: &Path, contents: &[u8]) -> Result<bool> {
+    match fs::read(path) {
+        Ok(existing) if existing == contents => return Ok(false),
+        Ok(_) => {}
+        Err(error) if error.kind() == ErrorKind::NotFound => {}
+        Err(error) => {
+            return Err(error).with_context(|| format!("failed to inspect {}", path.display()));
+        }
+    }
+    write_atomic(path, contents)?;
+    Ok(true)
+}
+
 pub fn write_atomic(path: &Path, contents: &[u8]) -> Result<()> {
     if let Some(parent) = path.parent() {
         ensure_directory(parent)?;
@@ -118,7 +134,48 @@ pub fn write_atomic(path: &Path, contents: &[u8]) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::ensure_directory_beneath;
+    use super::{ensure_directory_beneath, write_atomic_if_changed};
+    use std::fs;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    fn unique_path(name: &str) -> std::path::PathBuf {
+        std::env::temp_dir().join(format!(
+            "hibikilogy-managed-{}-{}",
+            name,
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ))
+    }
+
+    #[test]
+    fn write_atomic_if_changed_writes_when_absent_or_different() {
+        let path = unique_path("absent");
+        assert!(write_atomic_if_changed(&path, b"one").unwrap());
+        assert_eq!(fs::read(&path).unwrap(), b"one");
+
+        assert!(write_atomic_if_changed(&path, b"two").unwrap());
+        assert_eq!(fs::read(&path).unwrap(), b"two");
+
+        let _ = fs::remove_file(&path);
+    }
+
+    #[test]
+    fn write_atomic_if_changed_skips_identical_contents() {
+        let path = unique_path("identical");
+        write_atomic_if_changed(&path, b"same").unwrap();
+        let original_modified = fs::metadata(&path).unwrap().modified().unwrap();
+
+        assert!(!write_atomic_if_changed(&path, b"same").unwrap());
+        assert_eq!(fs::read(&path).unwrap(), b"same");
+        assert_eq!(
+            fs::metadata(&path).unwrap().modified().unwrap(),
+            original_modified
+        );
+
+        let _ = fs::remove_file(&path);
+    }
 
     #[test]
     fn rejects_managed_directory_outside_root() {

@@ -12,6 +12,40 @@
 | `article-short-links` | 为已发布文章分配 `/s/YYNNN/`，并同步到 Zola `aliases`。 |
 | `deploy-markdown` | 把文章/文档导出到对应的 `.md` 路由，并把 Zola 内部链接改成可访问的相对链接。 |
 
+### 字体子集化
+
+两个字体工具共用的子集化参数（`scripts/font/asset.rs`）：
+
+- **layout features**：枚举源字体 GSUB+GPOS 的全部 feature，剔除竖排黑名单
+  `vert/vrt2/vkrn/vpal/vhal/vchw/valt/vjmo` 后显式传给 skera。网页只做横向排版，
+  竖排 feature 及其独占的竖排变体字形不会进入子集。
+- **glyph 编号**：不保留原始 GID（去掉 `RETAIN_GIDS`），子集紧凑重编号。源字体
+  （思源黑体/宋体）的全部表要么由 skera 处理、要么不含 GID 引用（如 `vhea`），
+  审计通过；若未来换用含 AAT 表（`morx/kerx/trak/ankr`）的源字体需重新审计。
+- **WOFF2 压缩**：`woofwoof` quality 11（brotli 最高档）。
+
+实测收益（2026-08，serif 标题字体 / sans patch 正文字体）：竖排黑名单约 −1.4%/−0.3%，
+去掉 GID 保留约 −2%/−2%，quality 8→11 约 −8%/−8%，合计约 **−10.8% / −10.0%**。
+
+两个工具生成的 `@font-face` 描述符从**子集输出字体**读取，而非硬编码：
+
+- 有 `fvar` 的 `wght` 轴 → `font-weight: <min> <max>`（思源 VF 实际是 `250 900`）；
+- 无 `fvar` 有 `OS/2` → `usWeightClass` 单值；
+- 两者皆无 → 省略 `font-weight`。
+
+校验（构建失败即停）：
+
+- 子集输出必须满足 `(请求字符 ∩ 源字体 cmap) ⊆ 输出 cmap`；源字体不支持的字符
+  （如标题里的 emoji）只警告，不失败。
+- body 工具逐 `@font-face` 校验 base CSS：`(声明范围 ∩ 源 cmap) ⊆ chunk cmap`，
+  src 缺失/解压失败/缺字报错，chunk 含未声明码位报警告。base CSS 与 L1/L2 chunk
+  文件漂移时构建会失败——2026-08 曾借此发现并修复了 95 个「声明但任何 chunk 都不含」
+  的码位（其中 12 个实际出现在正文里，此前静默回退到系统字体）。
+
+文件名哈希用 SHA-256 截断 64 位（16 个 hex）；旧产物清理只匹配
+`<stem>.<16位hex>.<扩展名>` 与精确的模板文件名，不会误删同名前缀文件。字体与 CSS
+写入幂等：内容不变时不落盘，避免 mtime 抖动。
+
 通过 pnpm 调用：
 
 ```bash

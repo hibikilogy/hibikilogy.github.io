@@ -1,6 +1,6 @@
 //! Text extraction rules owned by the body-font subset tool.
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 
 use hibikilogy_tools::front_matter;
 
@@ -10,59 +10,37 @@ pub fn extract_markdown_body(markdown: &str) -> Result<&str> {
         .unwrap_or(markdown))
 }
 
-pub fn parse_toml_front_matter(markdown: &str) -> Result<Option<toml::Value>> {
-    front_matter::parse_toml_front_matter(markdown)
-}
-
-pub fn parse_toml_document(document: &str) -> Result<toml::Value> {
-    document
-        .parse::<toml::Value>()
-        .context("failed to parse TOML document")
-}
-
+/// All string values in a TOML document, except `title` values (titles are
+/// covered by the title font, not the body font).
 pub fn collect_non_title_front_matter_strings(value: &toml::Value) -> Vec<String> {
-    let mut strings = Vec::new();
-    collect_non_title_strings_inner(value, &mut strings);
-    strings
+    collect_strings(value, true)
 }
 
+/// Every string value in a TOML document.
 pub fn collect_all_toml_strings(value: &toml::Value) -> Vec<String> {
+    collect_strings(value, false)
+}
+
+fn collect_strings(value: &toml::Value, skip_title_keys: bool) -> Vec<String> {
     let mut strings = Vec::new();
-    collect_all_strings_inner(value, &mut strings);
+    collect_strings_inner(value, skip_title_keys, &mut strings);
     strings
 }
 
-fn collect_non_title_strings_inner(value: &toml::Value, strings: &mut Vec<String>) {
+fn collect_strings_inner(value: &toml::Value, skip_title_keys: bool, strings: &mut Vec<String>) {
     match value {
         toml::Value::String(text) => strings.push(text.clone()),
         toml::Value::Array(values) => {
             for value in values {
-                collect_non_title_strings_inner(value, strings);
+                collect_strings_inner(value, skip_title_keys, strings);
             }
         }
         toml::Value::Table(table) => {
             for (key, value) in table {
-                if key == "title" {
+                if skip_title_keys && key == "title" {
                     continue;
                 }
-                collect_non_title_strings_inner(value, strings);
-            }
-        }
-        _ => {}
-    }
-}
-
-fn collect_all_strings_inner(value: &toml::Value, strings: &mut Vec<String>) {
-    match value {
-        toml::Value::String(text) => strings.push(text.clone()),
-        toml::Value::Array(values) => {
-            for value in values {
-                collect_all_strings_inner(value, strings);
-            }
-        }
-        toml::Value::Table(table) => {
-            for value in table.values() {
-                collect_all_strings_inner(value, strings);
+                collect_strings_inner(value, skip_title_keys, strings);
             }
         }
         _ => {}
