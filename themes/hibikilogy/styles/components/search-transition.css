@@ -24,9 +24,7 @@
   /* Freeze the scroll-driven post navbar before Chromium captures the old
      page. This keeps the transparent navbar and Hero in one source snapshot
      instead of briefly compositing the navbar against the white page canvas. */
-  html[data-search-transition-source='enter-search']
-    body.post
-    .NavBar:not(.post-hero-passed),
+  html[data-search-transition-source='enter-search'] body.post .NavBar:not(.post-hero-passed),
   html[data-search-transition='active'][data-search-transition-scope='enter-search'] .NavBar {
     animation: none;
     background: transparent;
@@ -237,8 +235,7 @@
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(root) {
       z-index: 2;
       mix-blend-mode: normal;
-      animation: search-curtain-up var(--duration-curtain) var(--ease-curtain) var(--duration-search-content-exit)
-        both;
+      animation: search-curtain-up var(--duration-curtain) var(--ease-curtain) var(--duration-search-content-exit) both;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-new(root) {
@@ -283,8 +280,7 @@
       transform-origin: top right;
       animation:
         search-box-morph-out var(--duration-search-morph) var(--ease-out) var(--search-leave-delay) both,
-        search-box-pop-out calc(var(--duration-search-morph) * 0.6) var(--ease-bounce)
-          var(--search-leave-delay) both;
+        search-box-pop-out calc(var(--duration-search-morph) * 0.6) var(--ease-bounce) var(--search-leave-delay) both;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-group(
@@ -411,7 +407,8 @@
       transform: none;
     }
 
-    html[data-search-overlay='active'][data-search-transition-scope='leave-search'].is-animating.is-leaving main.Content {
+    html[data-search-overlay='active'][data-search-transition-scope='leave-search'].is-animating.is-leaving
+      main.Content {
       transform: none;
     }
 
