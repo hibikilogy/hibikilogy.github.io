@@ -3,36 +3,66 @@
 {% set base_url_clean = config.base_url | trim_end(pat="/") %}
 {% set has_aside = page is defined and page.toc and page.extra.toc | default(value=true) != false %}
 
-{% set stylesheets = config.extra.stylesheets | default(value=[
-      "styles/uno.css",
-]) %}
+{% set stylesheets = config.extra.stylesheets | default(value=["styles/uno.css",]) %}
 
 {% if current_url %}
   {% set canonical_url = current_url | trim_end(pat="/") %}
   {% if canonical_url == base_url_clean %}
     {% set canonical_url = base_url_clean ~ "/" %}
   {% endif %}
-  {% else %}
+{% else %}
   {% set canonical_url = base_url_clean ~ "/404.html" %}
 {% endif %}
 <!DOCTYPE html>
-<html lang="{{lang}}" data-page-enter="initial">
+<html
+  lang="{{ lang }}"
+  data-page-enter="initial"
+>
 
 <head>
   <!-- {{ now() | date(format='%F %a %R') }} -->
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="applicable-device" content="pc,mobile">
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"
+  >
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  >
+  <meta
+    name="applicable-device"
+    content="pc,mobile"
+  >
   <meta
     http-equiv="Permissions-Policy"
-    content="camera=(), microphone=(), geolocation=()">
-  <meta name="google" content="notranslate">
-  <meta name="theme-color" content="{{ config.extra.theme_color }}">
-  <meta name="color-scheme" content="dark light">
-  <meta name="theme" content="Zola-Theme-Hibikilogy">
-  <link rel="alternate" hreflang="{{ config.default_language }}" href="{{ base_url_clean }}/">
-  <link href="{{ canonical_url }}" rel="canonical">
+    content="camera=(), microphone=(), geolocation=()"
+  >
+  <meta
+    name="google"
+    content="notranslate"
+  >
+  <meta
+    name="theme-color"
+    content="{{ config.extra.theme_color }}"
+  >
+  <meta
+    name="color-scheme"
+    content="dark light"
+  >
+  <meta
+    name="theme"
+    content="Zola-Theme-Hibikilogy"
+  >
+  <link
+    rel="alternate"
+    hreflang="{{ config.default_language }}"
+    href="{{ base_url_clean }}/"
+  >
+  <link
+    href="{{ canonical_url }}"
+    rel="canonical"
+  >
 
   <title>{% block title %}{%- include 'title.html' -%}{% endblock title %}</title>
 
@@ -50,28 +80,66 @@
     {% endif %}
   {% endif %}
 
-  <meta name="referrer" content="no-referrer-when-downgrade">
-  <meta name="description" content="{{ meta_description }}">
-  <meta name="keywords" content="{{ meta_keywords }}">
-  <meta name="twitter:card" content="{{ config.extra.twitter_card }}">
-  <meta name="twitter:description" content="{{ meta_description }}">
-  <meta name="twitter:widgets:csp" content="on">
+  <meta
+    name="referrer"
+    content="no-referrer-when-downgrade"
+  >
+  <meta
+    name="description"
+    content="{{ meta_description }}"
+  >
+  <meta
+    name="keywords"
+    content="{{ meta_keywords }}"
+  >
+  <meta
+    name="twitter:card"
+    content="{{ config.extra.twitter_card }}"
+  >
+  <meta
+    name="twitter:description"
+    content="{{ meta_description }}"
+  >
+  <meta
+    name="twitter:widgets:csp"
+    content="on"
+  >
   <meta property="og:site_name" content="{%- include 'title.html' -%}">
-  <meta property="og:locale" content="{{ lang }}">
+  <meta
+    property="og:locale"
+    content="{{ lang }}"
+  >
   <meta property="og:title" content="{%- include 'title.html' -%}">
-  <meta property="og:locale:alternate" content="{{ lang }}">
+  <meta
+    property="og:locale:alternate"
+    content="{{ lang }}"
+  >
   {% set og_url = <data.clean_url url={current_url | default(value='/')} base_url={config.base_url} /> %}
-  <meta property="og:url" content="{{ og_url | safe }}">
-  <meta property="og:description" content="{{ meta_description }}">
+  <meta
+    property="og:url"
+    content="{{ og_url | safe }}"
+  >
+  <meta
+    property="og:description"
+    content="{{ meta_description }}"
+  >
 
   {% if page is defined and page.draft %}
-    <meta name="robots" content="noindex">
+    <meta
+      name="robots"
+      content="noindex"
+    >
   {% endif %}
 
   {% block meta %}
   {% endblock %}
 
-  <link rel="alternate" type="application/atom+xml" href="{{ get_url(path='atom.xml') | safe }}" title="{{ config.title }} Atom Feed">
+  <link
+    rel="alternate"
+    type="application/atom+xml"
+    href="{{ get_url(path='atom.xml') | safe }}"
+    title="{{ config.title }} Atom Feed"
+  >
   <link
     rel="search"
     type="application/opensearchdescription+xml"
@@ -80,19 +148,39 @@
   >
 
   {% if config.extra.favicon.webmanifest %}
-    <link href='{{ get_url(path=config.extra.favicon.webmanifest) | safe }}' rel="manifest">
+    <link
+      href='{{ get_url(path=config.extra.favicon.webmanifest) | safe }}'
+      rel="manifest"
+    >
   {% endif %}
   {% if config.extra.favicon.safari_pinned_tab %}
-    <link color="{{ config.extra.theme_color }}" href='{{ get_url(path=config.extra.favicon.safari_pinned_tab) | safe }}' rel="mask-icon">
+    <link
+      color="{{ config.extra.theme_color }}"
+      href='{{ get_url(path=config.extra.favicon.safari_pinned_tab) | safe }}'
+      rel="mask-icon"
+    >
   {% endif %}
   {% if config.extra.favicon.small_icon %}
-    <link rel="icon" href='{{ get_url(path=config.extra.favicon.small_icon) | safe }}' sizes="48x48">
+    <link
+      rel="icon"
+      href='{{ get_url(path=config.extra.favicon.small_icon) | safe }}'
+      sizes="48x48"
+    >
   {% endif %}
   {% if config.extra.favicon.svg_icon %}
-    <link rel="icon" href='{{ get_url(path=config.extra.favicon.svg_icon) | safe }}' sizes="any" type="image/svg+xml">
+    <link
+      rel="icon"
+      href='{{ get_url(path=config.extra.favicon.svg_icon) | safe }}'
+      sizes="any"
+      type="image/svg+xml"
+    >
   {% endif %}
   {% if config.extra.favicon.apple_touch_icon %}
-    <link href='{{ get_url(path=config.extra.favicon.apple_touch_icon) | safe }}' rel="apple-touch-icon" sizes="180x180">
+    <link
+      href='{{ get_url(path=config.extra.favicon.apple_touch_icon) | safe }}'
+      rel="apple-touch-icon"
+      sizes="180x180"
+    >
   {% endif %}
 
   {{<build.css path="styles/critical.css" />}}
@@ -100,27 +188,30 @@
   {% block critical_css %}
   {% endblock critical_css %}
 
-{% block stylesheets %}
-{% for stylesheet in stylesheets %}
-  <link rel="stylesheet" href="{{ get_url(path=stylesheet, cachebust=true) }}">
-{% endfor %}
-{% endblock stylesheets %}
+  {% block stylesheets %}
+  {% for stylesheet in stylesheets %}
+    <link
+      rel="stylesheet"
+      href="{{ get_url(path=stylesheet, cachebust=true) }}"
+    >
+  {% endfor %}
+  {% endblock stylesheets %}
 
   {% block style %}
   {% endblock %}
 
   {% block search_config %}
-    {% if config.build_search_index %}
-      <script id="hibikilogy-runtime-config" type="application/json">
-      {
-        "baseUrl": {{ config.base_url | json_encode() | replace(from="<", to="\\u003c") | safe }},
-        "searchIndexUrl": {{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) | json_encode() | replace(from="<", to="\\u003c") | safe }},
-        "searchWorkerUrl": {{ get_url(path='js/search/worker.js', cachebust=true) | json_encode() | replace(from="<", to="\\u003c") | safe }},
-        "searchArticlesDataUrl": {{ get_url(path='search-articles/') | json_encode() | replace(from="<", to="\\u003c") | safe }},
-        "searchTagsDataUrl": {{ get_url(path='search-tags/') | json_encode() | replace(from="<", to="\\u003c") | safe }}
-      }
-      </script>
-    {% endif %}
+  {% if config.build_search_index %}
+    <script id="hibikilogy-runtime-config" type="application/json">
+    {
+      "baseUrl": {{ config.base_url | json_encode() | replace(from="<", to="\\u003c") | safe }},
+      "searchIndexUrl": {{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) | json_encode() | replace(from="<", to="\\u003c") | safe }},
+      "searchWorkerUrl": {{ get_url(path='js/search/worker.js', cachebust=true) | json_encode() | replace(from="<", to="\\u003c") | safe }},
+      "searchArticlesDataUrl": {{ get_url(path='search-articles/') | json_encode() | replace(from="<", to="\\u003c") | safe }},
+      "searchTagsDataUrl": {{ get_url(path='search-tags/') | json_encode() | replace(from="<", to="\\u003c") | safe }}
+    }
+    </script>
+  {% endif %}
   {% endblock search_config %}
 
   {{<build.script path="js/components/index.js" module={true} serve={config.mode == "serve"} />}}
@@ -128,15 +219,15 @@
 
   {% block analytics %}
   {% if config.extra.analytics.google and not config.mode == "serve" %}
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{ config.extra.analytics.google }}"></script>
-  <script type="text/javascript">
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
-    gtag("config", "{{ config.extra.analytics.google }}");
-  </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config.extra.analytics.google }}"></script>
+    <script type="text/javascript">
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "{{ config.extra.analytics.google }}");
+    </script>
   {% endif %}
   {% endblock analytics %}
 
@@ -144,24 +235,31 @@
   <script>document.documentElement.classList.toggle("mac", /Mac|iPhone|iPod|iPad/i.test(navigator.platform));</script>
 
   {% block structured_data -%}
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": "{%- include 'title.html' -%}",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "{{ base_url_clean }}/search?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "{%- include 'title.html' -%}",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "{{ base_url_clean }}/search?q={search_term_string}",
+      "query-input": "required name=search_term_string"
     }
-    </script>
+  }
+  </script>
   {%- endblock structured_data %}
 
-  <link rel="prefetch" href="{{ config.extra.default_cover }}" as="image">
+  <link
+    rel="prefetch"
+    href="{{ config.extra.default_cover }}"
+    as="image"
+  >
 
   {% for url in config.extra.prefetch_urls %}
-    <link rel="prefetch" href="{{ url }}">
+    <link
+      rel="prefetch"
+      href="{{ url }}"
+    >
   {% endfor %}
 
   {% block prefetch %}{% endblock %}
@@ -170,19 +268,19 @@
   {% endblock %}
 
   {% if not config.mode == "serve" %}
-  {% set service_worker_scope = base_url_clean ~ '/' %}
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register(
-        {{ get_url(path='sw.js') | json_encode() | safe }},
-        {
-          scope: {{ service_worker_scope | json_encode() | safe }},
-          type: 'module',
-          updateViaCache: 'none'
-        },
-      ).catch(() => {})
-    }
-  </script>
+    {% set service_worker_scope = base_url_clean ~ '/' %}
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register(
+          {{ get_url(path='sw.js') | json_encode() | safe }},
+          {
+            scope: {{ service_worker_scope | json_encode() | safe }},
+            type: 'module',
+            updateViaCache: 'none'
+          },
+        ).catch(() => {})
+      }
+    </script>
   {% endif %}
 </head>
 
@@ -204,7 +302,7 @@
             {% endblock %}
 
             {% block pagination %}
-              {{<pagination.main lang={lang} paginator={paginator} />}}
+            {{<pagination.main lang={lang} paginator={paginator} />}}
             {% endblock %}
           </main>
 
@@ -229,26 +327,29 @@
   {% endblock %}
 
   {% if config.extra.production_base_url and config.base_url != config.extra.production_base_url %}
-  {% set commit_hash = get_env(name="GIT_HASH", default="") %}
-  {% set branch = get_env(name="GIT_BRANCH", default="") %}
-  {% set commit_msg = get_env(name="GIT_MESSAGE", default="") %}
-  {% set build_date = now() | date(format="%m-%d %H:%M") %}
+    {% set commit_hash = get_env(name="GIT_HASH", default="") %}
+    {% set branch = get_env(name="GIT_BRANCH", default="") %}
+    {% set commit_msg = get_env(name="GIT_MESSAGE", default="") %}
+    {% set build_date = now() | date(format="%m-%d %H:%M") %}
 
-  {% set prefix = "" %}
-  {% if commit_msg %}
-    {% set prefix = commit_msg %}
-    {% if commit_hash %}
-      {% set prefix = prefix ~ " - " ~ commit_hash %}
+    {% set prefix = "" %}
+    {% if commit_msg %}
+      {% set prefix = commit_msg %}
+      {% if commit_hash %}
+        {% set prefix = prefix ~ " - " ~ commit_hash %}
+      {% endif %}
+      {% set prefix = prefix ~ " · " %}
+    {% elif commit_hash %}
+      {% set prefix = commit_hash ~ " · " %}
     {% endif %}
-    {% set prefix = prefix ~ " · " %}
-  {% elif commit_hash %}
-    {% set prefix = commit_hash ~ " · " %}
-  {% endif %}
 
-  <div class="text-#2076df opacity-30 pointer-events-none text-right font-bold fixed bottom-[10px] right-[10px] z-50" aria-hidden="true">
-    <div>开发预览版本不代表最终效果</div>
-    <div class="text-[13px] font-normal">{{ prefix }}{% if branch %}{{ branch }} · {% endif %}{{ build_date }}</div>
-  </div>
+    <div
+      class="text-#2076df opacity-30 pointer-events-none text-right font-bold fixed bottom-[10px] right-[10px] z-50"
+      aria-hidden="true"
+    >
+      <div>开发预览版本不代表最终效果</div>
+      <div class="text-[13px] font-normal">{{ prefix }}{% if branch %}{{ branch }} · {% endif %}{{ build_date }}</div>
+    </div>
   {% endif %}
 </body>
 

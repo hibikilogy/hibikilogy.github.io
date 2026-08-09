@@ -10,9 +10,14 @@ docs
 
 {% block meta %}
 {% set markdown_url = page.permalink | trim_end(pat="/") %}
-<link rel="alternate" type="text/markdown" href="{{ markdown_url | safe }}.md" title="Markdown version">
+<link
+  rel="alternate"
+  type="text/markdown"
+  href="{{ markdown_url | safe }}.md"
+  title="Markdown version"
+>
 {% if katex_enabled %}
-{{<build.katex_css config={config} />}}
+  {{<build.katex_css config={config} />}}
 {% endif %}
 {% endblock %}
 

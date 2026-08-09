@@ -3,7 +3,10 @@
 {% set sort_title_asc = <i18n.t key="sort_title_asc" lang={lang} /> %}
 {% set sort_date_asc = <i18n.t key="sort_date_asc" lang={lang} /> %}
 <div class="sorting">
-  <select id="{{ sorting_id }}" aria-label="{{ sort_control_label }}">
+  <select
+    id="{{ sorting_id }}"
+    aria-label="{{ sort_control_label }}"
+  >
     {% if sorting_search %}
       <option value="relevance">{{ sort_relevance }}</option>
       <option value="title">{{ sort_title_asc }}</option>

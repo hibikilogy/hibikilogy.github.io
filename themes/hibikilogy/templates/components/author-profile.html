@@ -29,15 +29,22 @@
           style="--page-enter-stage: 2"
         >{{ custom_page.bio }}</p>
       {% endif %}
-      <div class="author-profile-meta" data-page-enter-item style="--page-enter-stage: 3">
+      <div
+        class="author-profile-meta"
+        data-page-enter-item
+        style="--page-enter-stage: 3"
+      >
         <span class="author-profile-count">
           {{ term.page_count }}{{<i18n.t key="related_articles_suffix" lang={lang} />}}
         </span>
         {% if custom_page.link %}
-          {% set domain = custom_page.link
-            | trim_start(pat="https://")
-            | trim_start(pat="http://")
-            | split(pat="/") | first %}
+          {%
+          set domain = custom_page.link
+          | trim_start(pat="https://")
+          | trim_start(pat="http://")
+          | split(pat="/")
+          | first
+        %}
           <a
             class="author-profile-link"
             href="{{ custom_page.link }}"

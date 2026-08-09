@@ -2,13 +2,13 @@
 
 {# ── Data layer: all preprocessing lives here, runs once in parent scope ── #}
 {% block vars %}
-  {% set authors    = page.taxonomies.author | default(value=[]) %}
-  {% set has_author = authors | length > 0 %}
-  {% set tags       = page.taxonomies.tags | default(value=[]) %}
-  {% set modified   = page.updated or page.date %}
-  {% set cover_url  = <data.cover_url page={page} default={config.extra.default_cover} /> %}
-  {% set has_cover  = cover_url | length > 0 %}
-  {% set katex_enabled = config.extra.katex and config.extra.katex.enabled and page.extra.katex | default(value=false) %}
+{% set authors = page.taxonomies.author | default(value=[]) %}
+{% set has_author = authors | length > 0 %}
+{% set tags = page.taxonomies.tags | default(value=[]) %}
+{% set modified = page.updated or page.date %}
+{% set cover_url = <data.cover_url page={page} default={config.extra.default_cover} /> %}
+{% set has_cover = cover_url | length > 0 %}
+{% set katex_enabled = config.extra.katex and config.extra.katex.enabled and page.extra.katex | default(value=false) %}
 {% endblock vars %}
 
 {% block critical_css %}
@@ -20,34 +20,77 @@ post
 {% endblock %}
 
 {% block meta %}
-  {% set markdown_url = page.permalink | trim_end(pat="/") %}
-  <link rel="alternate" type="text/markdown" href="{{ markdown_url | safe }}.md" title="Markdown version">
-  <meta property="og:type" content="article">
-  <meta property="article:published_time" content="{{ page.date }}">
-  <meta property="og:updated_time" content="{{ modified }}">
-  <meta property="article:modified_time" content="{{ modified }}">
-  {% if has_author %}
-    <meta property="article:author" content="{{ authors | join(sep='、') }}">
-    <meta name="author" content="{{ authors | join(sep='、') }}">
+{% set markdown_url = page.permalink | trim_end(pat="/") %}
+<link
+  rel="alternate"
+  type="text/markdown"
+  href="{{ markdown_url | safe }}.md"
+  title="Markdown version"
+>
+<meta
+  property="og:type"
+  content="article"
+>
+<meta
+  property="article:published_time"
+  content="{{ page.date }}"
+>
+<meta
+  property="og:updated_time"
+  content="{{ modified }}"
+>
+<meta
+  property="article:modified_time"
+  content="{{ modified }}"
+>
+{% if has_author %}
+  <meta
+    property="article:author"
+    content="{{ authors | join(sep='、') }}"
+  >
+  <meta
+    name="author"
+    content="{{ authors | join(sep='、') }}"
+  >
+{% endif %}
+{% for tag in tags %}
+  <meta
+    property="article:tag"
+    content="{{ tag }}"
+  >
+{% endfor %}
+{% if has_cover %}
+  <meta
+    property="og:image"
+    content="{{ cover_url }}"
+  >
+  <meta
+    name="twitter:image"
+    content="{{ cover_url }}"
+  >
+  <meta
+    property="og:image:alt"
+    content="{{ page.extra.cover_alt | default(value=page.title) }}"
+  >
+  <meta
+    name="twitter:image:alt"
+    content="{{ page.extra.cover_alt | default(value=page.title) }}"
+  >
+  {% if page.extra.cover %}
+    <link
+      rel="preload"
+      as="image"
+      href="{{ cover_url }}"
+      fetchpriority="high"
+    >
   {% endif %}
-  {% for tag in tags %}
-    <meta property="article:tag" content="{{ tag }}">
-  {% endfor %}
-  {% if has_cover %}
-    <meta property="og:image" content="{{ cover_url }}">
-    <meta name="twitter:image" content="{{ cover_url }}">
-    <meta property="og:image:alt" content="{{ page.extra.cover_alt | default(value=page.title) }}">
-    <meta name="twitter:image:alt" content="{{ page.extra.cover_alt | default(value=page.title) }}">
-    {% if page.extra.cover %}
-      <link rel="preload" as="image" href="{{ cover_url }}" fetchpriority="high">
-    {% endif %}
-  {% endif %}
+{% endif %}
 {% endblock meta %}
 
 {% block style %}
-  {% if katex_enabled %}
-    {{<build.katex_css config={config} />}}
-  {% endif %}
+{% if katex_enabled %}
+  {{<build.katex_css config={config} />}}
+{% endif %}
 {% endblock %}
 
 {% block structured_data %}

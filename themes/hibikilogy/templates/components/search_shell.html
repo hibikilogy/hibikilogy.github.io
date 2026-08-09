@@ -1,17 +1,19 @@
-{% component search_shell.main(
-  input_id: string = "",
-  compact: bool = false,
-  transition_name: string = "",
-  readonly: bool = false,
-  autofocus: bool = false,
-  show_keys: bool = false,
-  show_submit: bool = false,
-  placeholder: string = "Search",
-  title: string = "Search",
-  value: string = "",
-  extra_class: string = "",
-  lang: string = ""
-) %}
+{%
+  component search_shell.main(
+    input_id: string = "",
+    compact: bool = false,
+    transition_name: string = "",
+    readonly: bool = false,
+    autofocus: bool = false,
+    show_keys: bool = false,
+    show_submit: bool = false,
+    placeholder: string = "Search",
+    title: string = "Search",
+    value: string = "",
+    extra_class: string = "",
+    lang: string = ""
+  )
+%}
 <form
   class="SearchShell SearchShell--{% if compact %}compact{% else %}page{% endif %}{% if extra_class %} {{ extra_class }}{% endif %}"
   role="search"
@@ -25,7 +27,10 @@
 >
   <div class="SearchShellBody">
     {% if compact and readonly %}
-      <span class="SearchShellLabel" aria-hidden="true">
+      <span
+        class="SearchShellLabel"
+        aria-hidden="true"
+      >
         {{ placeholder }}
       </span>
     {% else %}
@@ -57,7 +62,10 @@
     {% endif %}
 
     {% if show_keys %}
-      <span class="SearchShellKeys" aria-hidden="true">
+      <span
+        class="SearchShellKeys"
+        aria-hidden="true"
+      >
         <kbd class="SearchShellKey SearchShellKeyModifier"></kbd>
         <kbd class="SearchShellKey">K</kbd>
       </span>

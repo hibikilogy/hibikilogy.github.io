@@ -5,6 +5,6 @@
 {% endblock critical_css %}
 
 {% block header %}
-  {% set not_found_title = <i18n.t key="not_found_title" lang={lang} /> %}
-  {{<hero.main page="" config={config} lang={lang} isPost={false} name={not_found_title} />}}
+{% set not_found_title = <i18n.t key="not_found_title" lang={lang} /> %}
+{{<hero.main page="" config={config} lang={lang} isPost={false} name={not_found_title} />}}
 {% endblock %}

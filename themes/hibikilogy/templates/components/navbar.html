@@ -6,8 +6,15 @@
       {{<navScreen.main config={config} lang={lang} />}}
       <div class="title">
         <div class="NavBarTitle">
-          <a class="title" href="/">
-            <img class="Image logo" src="{{ config.extra.navbar_logo }}" alt>
+          <a
+            class="title"
+            href="/"
+          >
+            <img
+              class="Image logo"
+              src="{{ config.extra.navbar_logo }}"
+              alt
+            >
             <span>{{ config.title }}</span>
           </a>
         </div>
@@ -20,7 +27,10 @@
             aria-label="section navigation"
             class="NavBarMenu menu"
           >
-            <span id="main-nav-aria-label" class="visually-hidden">
+            <span
+              id="main-nav-aria-label"
+              class="visually-hidden"
+            >
               {{<i18n.t key="nav_aria_label" lang={lang} />}}
             </span>
             {% for item in config.extra.navbar %}
@@ -40,7 +50,12 @@
                     </a>
                   {% else %}
                     <div class="NavBarMenuGroup">
-                      <button type="button" class="button" aria-haspopup="true" aria-expanded="false">
+                      <button
+                        type="button"
+                        class="button"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                      >
                         <span class="text">
                           <span>{{ nav.text }}</span>
                           <span class="i-custom-down text-icon"></span>
@@ -88,17 +103,7 @@
           <div class="NavBarSearch search no-hide">
             <div id="docsearch">
               {% set search_placeholder = <i18n.t key="search_placeholder" lang={lang} /> %}
-              {{<search_shell.main
-                compact={true}
-                transition_name="site-search-trigger"
-                readonly={true}
-                show_keys={true}
-                placeholder={search_placeholder}
-                title="Search"
-                lang={lang}
-                extra_class="DocSearch-Button"
-                value=""
-              />}}
+              {{<search_shell.main compact={true} transition_name="site-search-trigger" readonly={true} show_keys={true} placeholder={search_placeholder} title="Search" lang={lang} extra_class="DocSearch-Button" value="" />}}
             </div>
           </div>
         </div>

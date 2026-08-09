@@ -11,31 +11,34 @@ author
 {% endblock critical_css %}
 
 {% block header %}
-  {% set author_count = terms | length %}
-  {% set suffix = <i18n.t key="author_count_suffix" lang={lang} /> %}
-  {% set author_description = author_count ~ suffix %}
-  {% set author_title = <i18n.t key="author_title" lang={lang} /> %}
-  {{<hero.main page="" config={config} lang={lang} isPost={false} title={author_title} description={author_description} />}}
+{% set author_count = terms | length %}
+{% set suffix = <i18n.t key="author_count_suffix" lang={lang} /> %}
+{% set author_description = author_count ~ suffix %}
+{% set author_title = <i18n.t key="author_title" lang={lang} /> %}
+{{<hero.main page="" config={config} lang={lang} isPost={false} title={author_title} description={author_description} />}}
 {% endblock %}
 
 {% block content %}
-  {% set decorated_terms = [ [term.pages | length, term] for term in terms ] | sort(attribute="0") | reverse %}
-  {% set sorted_terms = [ pair[1] for pair in decorated_terms ] %}
+{% set decorated_terms = [[term.pages | length, term] for term in terms] | sort(attribute="0") | reverse %}
+{% set sorted_terms = [pair[1] for pair in decorated_terms] %}
 
-  <section class="section authors-list-page">
-    <div class="container" data-page-enter-content>
-      {% for author in sorted_terms %}
-        {% set article_count_suffix = <i18n.t key="article_count_suffix" lang={lang} /> %}
-        <a
-          class="author-list-item"
-          href="{{ get_taxonomy_url(kind='author', term=author.name) | trim_end(pat='/') }}"
-          target="_blank"
-          title="{{ author.name }}"
-        >
-          <span class="author-name">{{ author.name }}</span>
-          <span class="author-count">{{ author.pages | length }}{{ article_count_suffix }}</span>
-        </a>
-      {% endfor %}
-    </div>
-  </section>
+<section class="section authors-list-page">
+  <div
+    class="container"
+    data-page-enter-content
+  >
+    {% for author in sorted_terms %}
+      {% set article_count_suffix = <i18n.t key="article_count_suffix" lang={lang} /> %}
+      <a
+        class="author-list-item"
+        href="{{ get_taxonomy_url(kind='author', term=author.name) | trim_end(pat='/') }}"
+        target="_blank"
+        title="{{ author.name }}"
+      >
+        <span class="author-name">{{ author.name }}</span>
+        <span class="author-count">{{ author.pages | length }}{{ article_count_suffix }}</span>
+      </a>
+    {% endfor %}
+  </div>
+</section>
 {% endblock content %}

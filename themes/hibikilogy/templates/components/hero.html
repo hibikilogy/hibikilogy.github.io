@@ -1,4 +1,17 @@
-{% component hero.main(page, config, lang: string = "", isPost: bool = true, title: string = "", name: string = "", kind: string = "none", description: string = "", count: integer = 0, bg: string = "") %}
+{%
+  component hero.main(
+    page,
+    config,
+    lang: string = "",
+    isPost: bool = true,
+    title: string = "",
+    name: string = "",
+    kind: string = "none",
+    description: string = "",
+    count: integer = 0,
+    bg: string = ""
+  )
+%}
 <header class="Hero {% if page?.extra?.cover %} has-cover{% else %} no-cover{% endif %}">
   <div class="container">
     {% if isPost %}

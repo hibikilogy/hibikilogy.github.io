@@ -12,7 +12,17 @@
 </div>
 {% endcomponent journal.search %}
 
-{% component journal.main(config, lang: string = "", show_frontpage: bool = false, pages = None, paginator = None, term = None, section = None) %}
+{%
+  component journal.main(
+    config,
+    lang: string = "",
+    show_frontpage: bool = false,
+    pages = None,
+    paginator = None,
+    term = None,
+    section = None
+  )
+%}
 {% if not pages %}
   {% if paginator %}
     {# Even-optimised balanced pagination.
@@ -70,8 +80,7 @@
 
       {% else %}
         {% set page_size = base_size %}
-        {% set start = pair_extra * (base_size + 2) + odd * (base_size + 1)
-          + (index - pair_extra - odd) * base_size %}
+        {% set start = pair_extra * (base_size + 2) + odd * (base_size + 1) + (index - pair_extra - odd) * base_size %}
       {% endif %}
 
       {% set pages = all_pages[start:start + page_size] %}

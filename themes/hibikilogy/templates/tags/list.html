@@ -16,17 +16,22 @@ tags
 {% endblock %}
 
 {% block content %}
-{% set decorated_terms = [ [term.pages | length, term] for term in terms ] | sort(attribute="0") | reverse %}
-{% set sorted_terms = [ pair[1] for pair in decorated_terms ] %}
+{% set decorated_terms = [[term.pages | length, term] for term in terms] | sort(attribute="0") | reverse %}
+{% set sorted_terms = [pair[1] for pair in decorated_terms] %}
 
 {% if sorted_terms %}
   <section class="section tags-list-page">
-    <div class="container" data-page-enter-content>
+    <div
+      class="container"
+      data-page-enter-content
+    >
       {% set cat_order = config.extra.tag_category_order %}
       {% set default_category = config.extra.tag_category_default %}
       {% for cat in cat_order %}
         <section class="tag-category">
-          <div class="tag-category-header"><h3>{{ cat }}</h3></div>
+          <div class="tag-category-header">
+            <h3>{{ cat }}</h3>
+          </div>
           <div class="tag-category-list">
             {% for tag in sorted_terms %}
               {% set data = load_data(path="content/tags/" ~ tag.name ~ ".yml", required=false) %}
@@ -41,7 +46,10 @@ tags
   </section>
 {% else %}
   <section class="section tags-list-page">
-    <div class="container" data-page-enter-content>
+    <div
+      class="container"
+      data-page-enter-content
+    >
       {% for tag in sorted_terms %}
         {{<tags.tag_link tag={tag} />}}
       {% endfor %}

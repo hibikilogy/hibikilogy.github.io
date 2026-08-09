@@ -1,6 +1,17 @@
-{% component footer.main(config, lang: string = "", show_tags: bool = false, show_friendlinks: bool = false, tag_pages = None) %}
+{%
+  component footer.main(
+    config,
+    lang: string = "",
+    show_tags: bool = false,
+    show_friendlinks: bool = false,
+    tag_pages = None
+  )
+%}
 {% set has_busuanzi = config.extra.busuanzi | default(value=false) %}
-<footer class="Footer" role="contentinfo">
+<footer
+  class="Footer"
+  role="contentinfo"
+>
   <div class="container">
     {% if show_tags %}
       <section class="footer-column footer-tags">
@@ -76,7 +87,11 @@
               </a>
             {% endfor %}
             {% set contact_url = <data.config_link link={item.contact.link} base_url={config.base_url} /> %}
-            <a class="Link footer-contact-link" rel="noreferrer" href="mailto:{{ contact_url }}">
+            <a
+              class="Link footer-contact-link"
+              rel="noreferrer"
+              href="mailto:{{ contact_url }}"
+            >
               {{ item.contact.text }}
             </a>
           {% endif %}

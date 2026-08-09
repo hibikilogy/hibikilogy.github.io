@@ -7,14 +7,20 @@
 {% set date_fmt = <i18n.t key="date_format" lang={lang} /> %}
 {% set formatted_date = page.date | date(format=date_fmt) %}
 {% set author_label = <i18n.t key="author_label" lang={lang} /> %}
-<time class="article-publish-date" datetime="{{ page.date }}">
+<time
+  class="article-publish-date"
+  datetime="{{ page.date }}"
+>
   {{ publish_label }} {{ formatted_date }}
 </time>
 <span class="article-authors">
   <span class="author-title">{{ author_label }}</span>
   {% if has_author %}
     {% for author_name in authors %}
-      <a class="article-author" href="{{ get_taxonomy_url(kind='author', term=author_name) | trim_end(pat='/') }}">
+      <a
+        class="article-author"
+        href="{{ get_taxonomy_url(kind='author', term=author_name) | trim_end(pat='/') }}"
+      >
         <span class="author-name font-bold">{{ author_name }}</span>
       </a>
       {% if not loop.last %}
@@ -31,7 +37,11 @@
 {% set tags = page.taxonomies.tags | default(value=[]) %}
 {% if tags | length > 0 %}
   {% for tag in tags %}
-    <a href="{{ get_taxonomy_url(kind='tags', term=tag) | trim_end(pat='/') }}" class="joh-tag" title="{{ tag }}">
+    <a
+      href="{{ get_taxonomy_url(kind='tags', term=tag) | trim_end(pat='/') }}"
+      class="joh-tag"
+      title="{{ tag }}"
+    >
       <span>{{ tag }}</span>
     </a>
   {% endfor %}

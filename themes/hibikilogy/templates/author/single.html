@@ -8,7 +8,7 @@
 {{<build.css path="styles/components/journal.css" />}}
 {{<build.css path="styles/components/hero.css" />}}
 {% if custom_author %}
-{{<build.css path="styles/layouts/author-profile.css" />}}
+  {{<build.css path="styles/layouts/author-profile.css" />}}
 {% endif %}
 {% endblock critical_css %}
 
@@ -19,11 +19,25 @@ author{% if custom_author %} has-custom-profile{% endif %}
 {% block title %}{{ term.name }} - {{ config.title }}{% endblock title %}
 
 {% block meta %}
-<meta name="author" content="{{ term.name }}">
-<link rel="alternate" type="application/atom+xml" href="{{ term.permalink | safe }}/atom.xml" title="{{ config.title }} - {{ term.name }} Atom Feed">
+<meta
+  name="author"
+  content="{{ term.name }}"
+>
+<link
+  rel="alternate"
+  type="application/atom+xml"
+  href="{{ term.permalink | safe }}/atom.xml"
+  title="{{ config.title }} - {{ term.name }} Atom Feed"
+>
 {% if custom_author and custom_author.avatar %}
-<meta property="og:image" content="{{ custom_author.avatar }}">
-<meta name="twitter:image" content="{{ custom_author.avatar }}">
+  <meta
+    property="og:image"
+    content="{{ custom_author.avatar }}"
+  >
+  <meta
+    name="twitter:image"
+    content="{{ custom_author.avatar }}"
+  >
 {% endif %}
 {% endblock %}
 
@@ -43,18 +57,18 @@ author{% if custom_author %} has-custom-profile{% endif %}
 
 {% block header %}
 {% if custom_author %}
-{{<author_profile.main term={term} custom_page={custom_author} lang={lang} />}}
+  {{<author_profile.main term={term} custom_page={custom_author} lang={lang} />}}
 {% else %}
-{% set author_title = <i18n.t key="author_title" lang={lang} /> %}
-{{<hero.main page="" config={config} lang={lang} isPost={false} title={author_title} name={term.name} kind="author" />}}
+  {% set author_title = <i18n.t key="author_title" lang={lang} /> %}
+  {{<hero.main page="" config={config} lang={lang} isPost={false} title={author_title} name={term.name} kind="author" />}}
 {% endif %}
 {% endblock %}
 
 {% block content %}
 {% if custom_author %}
-<div class="container">
-  <p class="author-articles-label">{{<i18n.t key="author_articles_label" lang={lang} />}}</p>
-</div>
+  <div class="container">
+    <p class="author-articles-label">{{<i18n.t key="author_articles_label" lang={lang} />}}</p>
+  </div>
 {% endif %}
 {{<journal.main config={config} lang={lang} paginator={paginator} term={term} section={false} />}}
 {% endblock content %}
