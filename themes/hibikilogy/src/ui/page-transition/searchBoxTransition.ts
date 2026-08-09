@@ -3,7 +3,6 @@ import { isMaxTabletViewport } from 'shared/media.ts'
 import { pageDom } from 'shared/selectors.ts'
 import { getSearchTransitionScope } from './searchTransition.ts'
 
-const CLEAR_GRACE_MS = 20
 const VEIL_COVER_GRACE_MS = 30
 const BOX_EXIT_GRACE_MS = 100
 
@@ -77,9 +76,4 @@ function waitForNamedAnimation(
     element.addEventListener('animationend', onAnimationEnd)
     timer = window.setTimeout(finish, timeoutMs)
   })
-}
-
-export function deferClearSearchTransitionState(clear: () => void): void {
-  // 纯延迟；是否清理由调用方的代次守卫决定。
-  window.setTimeout(clear, resolveDurationMs('searchVeil') + CLEAR_GRACE_MS)
 }

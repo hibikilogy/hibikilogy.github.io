@@ -5,6 +5,8 @@ import { createSearchService, getSearchBootstrap, useSearchNavigation } from '..
 import { createFetchLatencyMonitor } from '../infrastructure/network/index.ts'
 import { SwupPagePreloadPlugin } from '../infrastructure/swup/index.ts'
 import { getRuntimeConfig } from '../shared/runtime-config/index.ts'
+import { SEARCH_PATH } from '../shared/url.ts'
+import { prepareSearchTransitionSource } from '../ui/page-transition/index.ts'
 import { useNavigationPriority, useNavigationProgress, usePaginationNavigation, useRoute } from './hooks/index.ts'
 
 export function createAppContext(swup: Swup): AppContext {
@@ -40,7 +42,9 @@ function setupNavigationFeatures(
   route: AppContext['route'],
   searchService: AppContext['searchService'],
 ): void {
-  useSearchNavigation(route, searchService)
+  useSearchNavigation(route, searchService, () => (
+    prepareSearchTransitionSource(route.current.value.href, SEARCH_PATH)
+  ))
   usePaginationNavigation(route)
 }
 

@@ -5,6 +5,7 @@ export type { SearchTransitionScope } from './searchTransition.ts'
 export {
   clearTransitionState,
   markOverlaySettling,
+  prepareSearchTransitionSource,
   settleTransitionState,
   setTransitionState,
 } from './transitionState.ts'

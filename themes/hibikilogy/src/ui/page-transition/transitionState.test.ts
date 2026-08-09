@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   clearTransitionState,
   markOverlaySettling,
+  prepareSearchTransitionSource,
   settleTransitionState,
   setTransitionState,
 } from './transitionState.ts'
@@ -13,6 +14,25 @@ describe('transition state lifecycle', () => {
     // Keep the veil-retract delay realistic even if happy-dom cannot resolve
     // the CSS custom property.
     document.documentElement.style.setProperty('--duration-curtain', '560ms')
+  })
+
+  it('prepares the enter-search source before the visit starts', () => {
+    prepareSearchTransitionSource('/articles/example', '/search')
+
+    expect(document.documentElement.dataset.searchTransitionSource).toBe('enter-search')
+
+    setTransitionState('/articles/example', '/search')
+    vi.advanceTimersByTime(1_000)
+
+    expect(document.documentElement.dataset.searchTransitionSource).toBe('enter-search')
+  })
+
+  it('clears an unused search source preparation after the navigation task', async () => {
+    prepareSearchTransitionSource('/articles/example', '/search')
+
+    await Promise.resolve()
+
+    expect(document.documentElement.dataset.searchTransitionSource).toBeUndefined()
   })
 
   afterEach(() => {
@@ -112,7 +132,7 @@ describe('transition state lifecycle', () => {
     setTransitionState('/', '/search')
 
     expect(document.documentElement.dataset.searchOverlay).toBe('active')
-    expect(document.documentElement.dataset.searchOverlayScope).toBe('enter-search')
+    expect(document.documentElement.dataset.searchTransitionScope).toBe('enter-search')
   })
 
   it('clears immediately when no overlay is active', () => {

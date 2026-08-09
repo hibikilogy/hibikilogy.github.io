@@ -22,7 +22,11 @@ export function scheduleIdleSearchPreload(service: SearchService): void {
     preload()
 }
 
-export function useSearchNavigation(route: RouteModel, service: SearchService): void {
+export function useSearchNavigation(
+  route: RouteModel,
+  service: SearchService,
+  prepareSourceCapture?: () => void,
+): void {
   function preloadSearch(): void {
     route.preload(SEARCH_PATH)
     void Promise.all([
@@ -38,6 +42,7 @@ export function useSearchNavigation(route: RouteModel, service: SearchService): 
     }
     preloadSearch()
     sessionStorage.setItem(SEARCH_FOCUS_INTENT_KEY, focusIntent)
+    prepareSourceCapture?.()
     route.navigate(SEARCH_PATH)
   }
 

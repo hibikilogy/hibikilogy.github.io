@@ -34,6 +34,27 @@ describe('useSearchNavigation', () => {
 
     scope.stop()
   })
+
+  it('prepares the transition before starting search navigation', () => {
+    const trigger = document.createElement('form')
+    trigger.dataset.action = 'open-search'
+    document.body.append(trigger)
+
+    const route = createRoute()
+    const service = createService()
+    const prepareSourceCapture = vi.fn(() => {
+      expect(route.navigate).not.toHaveBeenCalled()
+    })
+    const scope = effectScope()
+    scope.run(() => useSearchNavigation(route, service, prepareSourceCapture))
+
+    trigger.dispatchEvent(new Event('click', { bubbles: true, cancelable: true }))
+
+    expect(prepareSourceCapture).toHaveBeenCalledOnce()
+    expect(route.navigate).toHaveBeenCalledWith('/search')
+
+    scope.stop()
+  })
 })
 
 function createRoute(): RouteModel {

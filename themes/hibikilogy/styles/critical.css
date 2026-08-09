@@ -9,6 +9,7 @@
 @import './components/navbar.css';
 @import './components/navscreen.css';
 @import './components/search-transition.css';
+@import './components/search-transition-article.css';
 @import './components/footer.css';
 @import './components/aside.css';
 @import './components/external-link.css';

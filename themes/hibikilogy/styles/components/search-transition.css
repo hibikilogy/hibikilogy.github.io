@@ -17,8 +17,21 @@
     will-change: transform;
   }
 
-  html[data-search-overlay='active'][data-search-overlay-scope='leave-search'] body::before {
+  html[data-search-overlay='active'][data-search-transition-scope='leave-search'] body::before {
     content: none;
+  }
+
+  /* Freeze the scroll-driven post navbar before Chromium captures the old
+     page. This keeps the transparent navbar and Hero in one source snapshot
+     instead of briefly compositing the navbar against the white page canvas. */
+  html[data-search-transition-source='enter-search']
+    body.post
+    .NavBar:not(.post-hero-passed),
+  html[data-search-transition='active'][data-search-transition-scope='enter-search'] .NavBar {
+    animation: none;
+    background: transparent;
+    backdrop-filter: none;
+    will-change: auto;
   }
 
   html[data-search-overlay='active'] body::before {
@@ -67,7 +80,7 @@
     filter: blur(0);
   }
 
-  @keyframes search-trigger-expand-out {
+  @keyframes search-trigger-fade-out {
     from {
       opacity: 1;
     }
@@ -78,29 +91,7 @@
     }
   }
 
-  @keyframes search-trigger-settle-in {
-    from {
-      opacity: 0;
-    }
-
-    55%,
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes search-trigger-collapse-out {
-    from {
-      opacity: 1;
-    }
-
-    35%,
-    to {
-      opacity: 0;
-    }
-  }
-
-  @keyframes search-trigger-return-in {
+  @keyframes search-trigger-fade-in {
     from {
       opacity: 0;
     }
@@ -144,6 +135,14 @@
   }
 
   @supports (view-transition-name: none) {
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'] {
+      --search-leave-delay: var(--duration-search-content-exit);
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result'] {
+      --search-leave-delay: 0s;
+    }
+
     @media (--tablet) {
       html[data-search-transition='active'] body:not(.search) .NavBarSocialLink {
         view-transition-name: navbar-social-slot;
@@ -238,7 +237,7 @@
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(root) {
       z-index: 2;
       mix-blend-mode: normal;
-      animation: search-page-curtain-up var(--duration-curtain) var(--ease-curtain) var(--duration-search-content-exit)
+      animation: search-curtain-up var(--duration-curtain) var(--ease-curtain) var(--duration-search-content-exit)
         both;
     }
 
@@ -283,9 +282,9 @@
       mix-blend-mode: normal;
       transform-origin: top right;
       animation:
-        search-box-morph-out var(--duration-search-morph) var(--ease-out) var(--duration-search-content-exit) both,
+        search-box-morph-out var(--duration-search-morph) var(--ease-out) var(--search-leave-delay) both,
         search-box-pop-out calc(var(--duration-search-morph) * 0.6) var(--ease-bounce)
-          var(--duration-search-content-exit) both;
+          var(--search-leave-delay) both;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-group(
@@ -312,7 +311,7 @@
         site-search-trigger
       ) {
       z-index: calc(var(--joh-z-index-layout-top) + 13);
-      animation-delay: var(--duration-search-content-exit);
+      animation-delay: var(--search-leave-delay);
       animation-fill-mode: both;
     }
 
@@ -325,96 +324,27 @@
     html[data-search-transition='active'][data-search-transition-scope='enter-search']::view-transition-old(
         site-search-trigger
       ) {
-      animation: search-trigger-expand-out var(--duration-search-transition) var(--ease-search-settle) both;
+      animation: search-trigger-fade-out var(--duration-search-transition) var(--ease-search-settle) both;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='enter-search']::view-transition-new(
         site-search-trigger
       ) {
-      animation: search-trigger-settle-in var(--duration-search-transition) var(--ease-search-settle) both;
+      animation: search-trigger-fade-in var(--duration-search-transition) var(--ease-search-settle) both;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
         site-search-trigger
       ) {
-      animation: search-trigger-collapse-out var(--duration-search-transition) var(--ease-search-settle)
-        var(--duration-search-content-exit) both;
+      animation: search-trigger-fade-out var(--duration-search-transition) var(--ease-search-settle)
+        var(--search-leave-delay) both;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-new(
         site-search-trigger
       ) {
-      animation: search-trigger-return-in var(--duration-search-transition) var(--ease-search-settle)
-        var(--duration-search-content-exit) both;
-    }
-
-    /* Clicking a search result keeps only the shared title and search-box
-       transitions. The rest of the old search page swaps to the article in
-       place, without the content exit, curtain, navbar, or social-link motion. */
-    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']
-      body.search
-      #search
-      .SearchPageTransitionContent,
-    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']
-      .NavBar,
-    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']
-      .NavBarSocialLink {
-      view-transition-name: none !important;
-    }
-
-    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-group(
-        root
-      ) {
-      /* Keep the instant article snapshot below the shared title glyphs
-         (layout-top) while the search box remains above both. */
-      z-index: calc(var(--joh-z-index-layout-top) - 1);
-      animation: none;
-    }
-
-    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-old(
-        root
-      ) {
-      z-index: 1;
-      opacity: 0;
-      transform: none;
-      animation: none;
-    }
-
-    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-new(
-        root
-      ) {
-      z-index: 2;
-      opacity: 1;
-      transform: none;
-      animation: none;
-    }
-
-    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-group(
-        site-search-trigger
-      ) {
-      animation-delay: 0s;
-    }
-
-    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-old(
-        site-search-trigger
-      ) {
-      animation: search-trigger-collapse-out var(--duration-search-transition) var(--ease-search-settle) both;
-    }
-
-    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-new(
-        site-search-trigger
-      ) {
-      animation: search-trigger-return-in var(--duration-search-transition) var(--ease-search-settle) both;
-    }
-
-    @media (--max-tablet) {
-      html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-old(
-          search-page-exit-box
-        ) {
-        animation:
-          search-box-morph-out var(--duration-search-morph) var(--ease-out) both,
-          search-box-pop-out calc(var(--duration-search-morph) * 0.6) var(--ease-bounce) both;
-      }
+      animation: search-trigger-fade-in var(--duration-search-transition) var(--ease-search-settle)
+        var(--search-leave-delay) both;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -429,13 +359,7 @@
       }
 
       html[data-search-transition='active'][data-search-transition-scope]::view-transition-old(site-search-trigger),
-      html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-old(
-          site-search-trigger
-        ),
       html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
-          search-page-exit-box
-        ),
-      html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-old(
           search-page-exit-box
         ),
       html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(
@@ -451,9 +375,6 @@
       }
 
       html[data-search-transition='active'][data-search-transition-scope]::view-transition-new(site-search-trigger),
-      html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-new(
-          site-search-trigger
-        ),
       html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-new(
           search-page-exit-navbar
         ),
@@ -477,7 +398,7 @@
     }
 
     html[data-search-overlay='active'][data-search-transition-scope='enter-search'] body.search::before {
-      animation: search-overlay-retract-up var(--duration-curtain) var(--ease-curtain) both;
+      animation: search-curtain-up var(--duration-curtain) var(--ease-curtain) both;
     }
 
     html[data-search-overlay='active'].is-changing main.Content {
@@ -490,7 +411,7 @@
       transform: none;
     }
 
-    html[data-search-overlay='active'][data-search-overlay-scope='leave-search'].is-animating.is-leaving main.Content {
+    html[data-search-overlay='active'][data-search-transition-scope='leave-search'].is-animating.is-leaving main.Content {
       transform: none;
     }
 
@@ -543,7 +464,7 @@
     }
   }
 
-  @keyframes search-page-curtain-up {
+  @keyframes search-curtain-up {
     from {
       transform: translate3d(0, 0, 0);
     }
@@ -562,16 +483,6 @@
     to {
       opacity: 0;
       translate: 0 var(--search-content-exit-y);
-    }
-  }
-
-  @keyframes search-overlay-retract-up {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-
-    to {
-      transform: translate3d(0, -100%, 0);
     }
   }
 

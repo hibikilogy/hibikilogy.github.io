@@ -243,7 +243,7 @@ describe('setupAppNavigation', () => {
   })
 
   it('reveals the final target page beneath the native leave-search snapshot', async () => {
-    document.documentElement.dataset.searchOverlayScope = 'leave-search'
+    document.documentElement.dataset.searchTransitionScope = 'leave-search'
     const swup = createFakeSwup()
     const { app, scope } = createFakeApp()
     scope.run(() => setupAppNavigation(swup as unknown as Swup, app))
@@ -263,7 +263,7 @@ describe('setupAppNavigation', () => {
   })
 
   it('preserves restored scroll when a native leave-search reveal comes from history', async () => {
-    document.documentElement.dataset.searchOverlayScope = 'leave-search'
+    document.documentElement.dataset.searchTransitionScope = 'leave-search'
     const swup = createFakeSwup()
     const { app, scope } = createFakeApp()
     scope.run(() => setupAppNavigation(swup as unknown as Swup, app))
@@ -282,7 +282,7 @@ describe('setupAppNavigation', () => {
   })
 
   it('starts page entry immediately when leave-search has no native snapshot', async () => {
-    document.documentElement.dataset.searchOverlayScope = 'leave-search'
+    document.documentElement.dataset.searchTransitionScope = 'leave-search'
     const swup = createFakeSwup()
     const { app, scope } = createFakeApp()
     scope.run(() => setupAppNavigation(swup as unknown as Swup, app))

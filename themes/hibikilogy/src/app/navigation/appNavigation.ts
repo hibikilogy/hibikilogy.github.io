@@ -85,7 +85,7 @@ export function setupAppNavigation(swup: Swup, app: AppContext): void {
 
   function onContentReplace(visit: SwupVisit): void {
     const usesNativeLeaveSearchSnapshot
-      = document.documentElement.dataset.searchOverlayScope === 'leave-search'
+      = document.documentElement.dataset.searchTransitionScope === 'leave-search'
         && visit.animation.native
 
     // 原生搜索页退出要求目标内容以最终状态参与新快照：完整模式由旧页上拉揭示，
