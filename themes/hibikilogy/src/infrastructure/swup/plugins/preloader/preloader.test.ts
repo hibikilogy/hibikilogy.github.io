@@ -20,6 +20,7 @@ function createSwupMock(options: SwupMockOptions = {}) {
     cache: {
       has: vi.fn((url: string) => cached.has(url)),
       get: vi.fn((url: string) => ({ url, html: 'cached' })),
+      set: vi.fn((url: string) => cached.add(url)),
     },
     fetchPage: vi.fn((url: string) => new Promise<PageData>((resolve) => {
       fetchResolvers.set(url, resolve)
@@ -97,6 +98,20 @@ describe('swupPagePreloadPlugin', () => {
     expect(result).toBe(preloaded)
     expect(defaultHandler).not.toHaveBeenCalled()
     expect((mock.swup.fetchPage as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1)
+  })
+
+  it('stores a completed standalone preload for the later navigation', async () => {
+    const mock = install()
+    const preloaded = mock.preloader.preload('/target/')
+
+    mock.settleFetch('/target/')
+    await preloaded
+
+    expect(mock.swup.cache.set).toHaveBeenCalledWith('/target/', { url: '/target/', html: 'fetched' })
+
+    const reused = await mock.preloader.preload('/target/')
+    expect(reused).toEqual({ url: '/target/', html: 'cached' })
+    expect(mock.swup.fetchPage).toHaveBeenCalledTimes(1)
   })
 
   it('keeps only the fetching navigation target in releaseForNavigation', () => {

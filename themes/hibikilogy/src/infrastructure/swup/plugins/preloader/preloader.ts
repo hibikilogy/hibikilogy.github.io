@@ -181,7 +181,19 @@ export default class SwupPagePreloadPlugin extends Plugin implements PagePreload
 
   private async settle(url: string, entry: PreloadEntry): Promise<void> {
     try {
-      entry.resolve(await this.swup.fetchPage(url))
+      const page = await this.swup.fetchPage(url)
+
+      // Swup normally writes fetchPage results through the active visit's
+      // cache policy. A standalone preload can run outside that visit, so
+      // make the reuse contract explicit while avoiding redirect aliases.
+      if (
+        this.swup.resolveUrl(page.url) === this.swup.resolveUrl(url)
+        && !this.swup.cache.has(page.url)
+      ) {
+        this.swup.cache.set(page.url, page)
+      }
+
+      entry.resolve(page)
     }
     catch (error) {
       entry.reject(error)

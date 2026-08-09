@@ -166,32 +166,24 @@
 
   {% block prefetch %}{% endblock %}
 
-  {% if not config.mode == "serve" %}
-  <script type="speculationrules">
-  {
-    "prefetch": [
-      {
-        "where": { "href_matches": "/search" },
-        "eagerness": "eager"
-      },
-      {
-        "where": {
-          "and": [
-            { "href_matches": "/*" },
-            { "not": { "selector_matches": "[download]" } },
-            { "not": { "selector_matches": "[target=_blank]" } },
-            { "not": { "selector_matches": "[data-no-swup]" } }
-          ]
-        },
-        "eagerness": "moderate"
-      }
-    ]
-  }
-  </script>
-  {% endif %}
-
   {% block script %}
   {% endblock %}
+
+  {% if not config.mode == "serve" %}
+  {% set service_worker_scope = base_url_clean ~ '/' %}
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register(
+        {{ get_url(path='sw.js') | json_encode() | safe }},
+        {
+          scope: {{ service_worker_scope | json_encode() | safe }},
+          type: 'module',
+          updateViaCache: 'none'
+        },
+      ).catch(() => {})
+    }
+  </script>
+  {% endif %}
 </head>
 
 <body class="{% block class %}{% endblock class %}" {% block attribute %}{% endblock attribute %}>

@@ -32,6 +32,7 @@ export default defineConfig({
       input: {
         'components/index': themedir('components/index.ts'),
         'search/worker': themedir('src/features/search/runtime/worker.ts'),
+        'sw': themedir('src/infrastructure/service-worker/worker.ts'),
         'ui': themedir('src/ui/ui.ts'),
         ...globEntries(themedir('styles'), '.css', (rel, name) => {
           if (rel.startsWith('lib/') || rel.startsWith('base/'))
@@ -40,7 +41,7 @@ export default defineConfig({
         }),
       },
       output: {
-        entryFileNames: 'js/[name].js',
+        entryFileNames: chunk => chunk.name === 'sw' ? 'sw.js' : 'js/[name].js',
         chunkFileNames: 'js/chunks/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
           const name = assetInfo.names[0] ?? ''

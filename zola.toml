@@ -103,7 +103,6 @@ navbar_logo = "/logo.svg"
 default_cover = "/imgs/tags.svg"
 prefetch_urls = [
   "/imgs/tag-cloud.svg",
-  "/search",
 ]
 footer = [
   { code = "zh", tags_text = "相关标签", copyright = "本站收录文章著作权归原作者所有", count = "总查询数", frendlinks_text = "友情链接", list = [
