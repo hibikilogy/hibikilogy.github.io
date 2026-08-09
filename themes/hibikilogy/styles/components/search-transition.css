@@ -213,9 +213,7 @@
 
     @media (--max-tablet) {
       html[data-search-transition='active'] .NavBarSearch .SearchShell--compact,
-      html[data-search-transition='active'][data-search-transition-scope='enter-search']
-        #search
-        .SearchShell--page {
+      html[data-search-transition='active'][data-search-transition-scope='enter-search'] #search .SearchShell--page {
         view-transition-name: none !important;
       }
 
@@ -240,8 +238,8 @@
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-old(root) {
       z-index: 2;
       mix-blend-mode: normal;
-      animation: search-page-curtain-up var(--duration-curtain) var(--ease-curtain)
-        var(--duration-search-content-exit) both;
+      animation: search-page-curtain-up var(--duration-curtain) var(--ease-curtain) var(--duration-search-content-exit)
+        both;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-new(root) {
@@ -285,10 +283,9 @@
       mix-blend-mode: normal;
       transform-origin: top right;
       animation:
-        search-box-morph-out var(--duration-search-morph) var(--ease-out)
-        var(--duration-search-content-exit) both,
+        search-box-morph-out var(--duration-search-morph) var(--ease-out) var(--duration-search-content-exit) both,
         search-box-pop-out calc(var(--duration-search-morph) * 0.6) var(--ease-bounce)
-        var(--duration-search-content-exit) both;
+          var(--duration-search-content-exit) both;
     }
 
     html[data-search-transition='active'][data-search-transition-scope='leave-search']::view-transition-group(

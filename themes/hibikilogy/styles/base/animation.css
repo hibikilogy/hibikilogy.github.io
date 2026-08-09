@@ -117,8 +117,9 @@
       animation-timing-function: var(--ease-smooth-out);
       animation-fill-mode: both;
       animation-delay: calc(
-        var(--page-enter-stage, 0) * var(--page-enter-stagger)
-          - (var(--page-enter-stage, 0) * var(--page-enter-stage, 0) - var(--page-enter-stage, 0)) / 2 * var(--page-enter-stagger-step)
+        var(--page-enter-stage, 0) * var(--page-enter-stagger) -
+          (var(--page-enter-stage, 0) * var(--page-enter-stage, 0) - var(--page-enter-stage, 0)) / 2 *
+          var(--page-enter-stagger-step)
       );
     }
 
