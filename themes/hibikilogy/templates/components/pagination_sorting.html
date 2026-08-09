@@ -5,15 +5,15 @@
 <div class="sorting">
   <select id="{{ sorting_id }}" aria-label="{{ sort_control_label }}">
     {% if sorting_search %}
-    <option value="relevance">{{ sort_relevance }}</option>
-    <option value="title">{{ sort_title_asc }}</option>
+      <option value="relevance">{{ sort_relevance }}</option>
+      <option value="title">{{ sort_title_asc }}</option>
     {% else %}
-    <option value="date">{{ sort_date_asc }}</option>
-    {# <option value="update">更新日期正序</option>
-    <option value="title">文章标题正序</option>
-    <option value="date-reversed">发布日期倒序</option>
-    <option value="update-reversed">更新日期倒序</option>
-    <option value="title-reversed">文章标题倒序</option> #}
+      <option value="date">{{ sort_date_asc }}</option>
+      {# <option value="update">更新日期正序</option>
+      <option value="title">文章标题正序</option>
+      <option value="date-reversed">发布日期倒序</option>
+      <option value="update-reversed">更新日期倒序</option>
+      <option value="title-reversed">文章标题倒序</option> #}
     {% endif %}
   </select>
   <label for="{{ sorting_id }}"><i class="i-custom-down inline-block"></i></label>

@@ -5,7 +5,7 @@
 
 {% set stylesheets = config.extra.stylesheets | default(value=[
       "styles/uno.css",
-])%}
+]) %}
 
 {% if current_url %}
   {% set canonical_url = current_url | trim_end(pat="/") %}
@@ -20,7 +20,7 @@
 
 <head>
   <!-- {{ now() | date(format='%F %a %R') }} -->
-  <meta charset="utf-8" >
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="applicable-device" content="pc,mobile">
@@ -31,7 +31,7 @@
   <meta name="theme-color" content="{{ config.extra.theme_color }}">
   <meta name="color-scheme" content="dark light">
   <meta name="theme" content="Zola-Theme-Hibikilogy">
-  <link rel="alternate" hreflang="{{config.default_language}}" href="{{ base_url_clean }}/">
+  <link rel="alternate" hreflang="{{ config.default_language }}" href="{{ base_url_clean }}/">
   <link href="{{ canonical_url }}" rel="canonical">
 
   <title>{% block title %}{%- include 'title.html' -%}{% endblock title %}</title>
@@ -40,9 +40,9 @@
   {% set meta_keywords = config.extra.meta_keywords | default(value="") %}
   {% if page is defined %}
     {% if page.description %}
-    {% set meta_description = page.description %}
+      {% set meta_description = page.description %}
     {% elif page.extra.abstract %}
-    {% set meta_description = page.extra.abstract %}
+      {% set meta_description = page.extra.abstract %}
     {% endif %}
     {% if page.taxonomies.tags %}
       {% set page_keywords = page.taxonomies.tags | join(sep=", ") %}
@@ -80,19 +80,19 @@
   >
 
   {% if config.extra.favicon.webmanifest %}
-  <link href='{{ get_url(path=config.extra.favicon.webmanifest) | safe }}' rel="manifest">
+    <link href='{{ get_url(path=config.extra.favicon.webmanifest) | safe }}' rel="manifest">
   {% endif %}
   {% if config.extra.favicon.safari_pinned_tab %}
-  <link color="{{ config.extra.theme_color }}" href='{{ get_url(path=config.extra.favicon.safari_pinned_tab) | safe }}' rel="mask-icon">
+    <link color="{{ config.extra.theme_color }}" href='{{ get_url(path=config.extra.favicon.safari_pinned_tab) | safe }}' rel="mask-icon">
   {% endif %}
   {% if config.extra.favicon.small_icon %}
-  <link rel="icon" href='{{ get_url(path=config.extra.favicon.small_icon) | safe }}' sizes="48x48">
+    <link rel="icon" href='{{ get_url(path=config.extra.favicon.small_icon) | safe }}' sizes="48x48">
   {% endif %}
   {% if config.extra.favicon.svg_icon %}
-  <link rel="icon" href='{{ get_url(path=config.extra.favicon.svg_icon) | safe }}' sizes="any" type="image/svg+xml">
+    <link rel="icon" href='{{ get_url(path=config.extra.favicon.svg_icon) | safe }}' sizes="any" type="image/svg+xml">
   {% endif %}
   {% if config.extra.favicon.apple_touch_icon %}
-  <link href='{{ get_url(path=config.extra.favicon.apple_touch_icon) | safe }}' rel="apple-touch-icon" sizes="180x180">
+    <link href='{{ get_url(path=config.extra.favicon.apple_touch_icon) | safe }}' rel="apple-touch-icon" sizes="180x180">
   {% endif %}
 
   {{<build.css path="styles/critical.css" />}}
@@ -110,17 +110,17 @@
   {% endblock %}
 
   {% block search_config %}
-  {% if config.build_search_index %}
-  <script id="hibikilogy-runtime-config" type="application/json">
-  {
-    "baseUrl": {{ config.base_url | json_encode() | replace(from="<", to="\\u003c") | safe }},
-    "searchIndexUrl": {{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) | json_encode() | replace(from="<", to="\\u003c") | safe }},
-    "searchWorkerUrl": {{ get_url(path='js/search/worker.js', cachebust=true) | json_encode() | replace(from="<", to="\\u003c") | safe }},
-    "searchArticlesDataUrl": {{ get_url(path='search-articles/') | json_encode() | replace(from="<", to="\\u003c") | safe }},
-    "searchTagsDataUrl": {{ get_url(path='search-tags/') | json_encode() | replace(from="<", to="\\u003c") | safe }}
-  }
-  </script>
-  {% endif %}
+    {% if config.build_search_index %}
+      <script id="hibikilogy-runtime-config" type="application/json">
+      {
+        "baseUrl": {{ config.base_url | json_encode() | replace(from="<", to="\\u003c") | safe }},
+        "searchIndexUrl": {{ get_url(path='search_index.' ~ lang ~ '.json', cachebust=true) | json_encode() | replace(from="<", to="\\u003c") | safe }},
+        "searchWorkerUrl": {{ get_url(path='js/search/worker.js', cachebust=true) | json_encode() | replace(from="<", to="\\u003c") | safe }},
+        "searchArticlesDataUrl": {{ get_url(path='search-articles/') | json_encode() | replace(from="<", to="\\u003c") | safe }},
+        "searchTagsDataUrl": {{ get_url(path='search-tags/') | json_encode() | replace(from="<", to="\\u003c") | safe }}
+      }
+      </script>
+    {% endif %}
   {% endblock search_config %}
 
   {{<build.script path="js/components/index.js" module={true} serve={config.mode == "serve"} />}}
@@ -144,24 +144,24 @@
   <script>document.documentElement.classList.toggle("mac", /Mac|iPhone|iPod|iPad/i.test(navigator.platform));</script>
 
   {% block structured_data -%}
-	<script type="application/ld+json">
-		 {
-		   "@context": "https://schema.org",
-		   "@type": "WebPage",
-		   "name": "{%- include 'title.html' -%}",
-		   "potentialAction": {
-	       "@type": "SearchAction",
-	       "target": "{{ base_url_clean }}/search?q={search_term_string}",
-	       "query-input": "required name=search_term_string"
-	     }
-	  }
-	</script>
-	{%- endblock structured_data %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "{%- include 'title.html' -%}",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ base_url_clean }}/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+  {%- endblock structured_data %}
 
   <link rel="prefetch" href="{{ config.extra.default_cover }}" as="image">
 
   {% for url in config.extra.prefetch_urls %}
-  <link rel="prefetch" href="{{ url }}">
+    <link rel="prefetch" href="{{ url }}">
   {% endfor %}
 
   {% block prefetch %}{% endblock %}

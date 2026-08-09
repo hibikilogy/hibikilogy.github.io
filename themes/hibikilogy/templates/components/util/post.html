@@ -13,16 +13,16 @@
 <span class="article-authors">
   <span class="author-title">{{ author_label }}</span>
   {% if has_author %}
-  {% for author_name in authors %}
-  <a class="article-author" href="{{ get_taxonomy_url(kind='author', term=author_name) | trim_end(pat='/') }}">
-    <span class="author-name font-bold">{{ author_name }}</span>
-  </a>
-  {% if not loop.last %}
-  <span class="author-separator">、</span>
-  {% endif %}
-  {% endfor %}
+    {% for author_name in authors %}
+      <a class="article-author" href="{{ get_taxonomy_url(kind='author', term=author_name) | trim_end(pat='/') }}">
+        <span class="author-name font-bold">{{ author_name }}</span>
+      </a>
+      {% if not loop.last %}
+        <span class="author-separator">、</span>
+      {% endif %}
+    {% endfor %}
   {% else %}
-  <span class="author-name font-bold">{{ config.author | default(value=config.title) }}</span>
+    <span class="author-name font-bold">{{ config.author | default(value=config.title) }}</span>
   {% endif %}
 </span>
 {% endcomponent post.page_publish_metadata %}
@@ -30,11 +30,11 @@
 {% component post.post_tags_list(page) %}
 {% set tags = page.taxonomies.tags | default(value=[]) %}
 {% if tags | length > 0 %}
-{% for tag in tags %}
-<a href="{{ get_taxonomy_url(kind='tags', term=tag) | trim_end(pat='/') }}" class="joh-tag" title="{{ tag }}">
-  <span>{{ tag }}</span>
-</a>
-{% endfor %}
+  {% for tag in tags %}
+    <a href="{{ get_taxonomy_url(kind='tags', term=tag) | trim_end(pat='/') }}" class="joh-tag" title="{{ tag }}">
+      <span>{{ tag }}</span>
+    </a>
+  {% endfor %}
 {% endif %}
 {% endcomponent post.post_tags_list %}
 

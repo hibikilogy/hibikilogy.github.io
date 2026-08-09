@@ -25,17 +25,17 @@ tags
       {% set cat_order = config.extra.tag_category_order %}
       {% set default_category = config.extra.tag_category_default %}
       {% for cat in cat_order %}
-      <section class="tag-category">
-        <div class="tag-category-header"><h3>{{ cat }}</h3></div>
-        <div class="tag-category-list">
-          {% for tag in sorted_terms %}
-          {% set data = load_data(path="content/tags/" ~ tag.name ~ ".yml", required=false) %}
-          {% if (data and data.category == cat) or (not data and cat == default_category) %}
-          {{<tags.tag_link tag={tag} />}}
-          {% endif %}
-          {% endfor %}
-        </div>
-      </section>
+        <section class="tag-category">
+          <div class="tag-category-header"><h3>{{ cat }}</h3></div>
+          <div class="tag-category-list">
+            {% for tag in sorted_terms %}
+              {% set data = load_data(path="content/tags/" ~ tag.name ~ ".yml", required=false) %}
+              {% if (data and data.category == cat) or (not data and cat == default_category) %}
+                {{<tags.tag_link tag={tag} />}}
+              {% endif %}
+            {% endfor %}
+          </div>
+        </section>
       {% endfor %}
     </div>
   </section>
@@ -43,7 +43,7 @@ tags
   <section class="section tags-list-page">
     <div class="container" data-page-enter-content>
       {% for tag in sorted_terms %}
-      {{<tags.tag_link tag={tag} />}}
+        {{<tags.tag_link tag={tag} />}}
       {% endfor %}
     </div>
   </section>

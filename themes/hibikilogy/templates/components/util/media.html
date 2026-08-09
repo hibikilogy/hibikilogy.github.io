@@ -7,12 +7,12 @@
 
 {% component media.img(path: string, class: string = "", alt: string = "", caption: string = "", scale: integer = 1, quality: integer = 100, width: integer = 1, height: integer = 1) %}
 {% if path is starting_with(pat="./") %}
-{% set path_parts = page.relative_path | split(pat="/") %}
-{% set relative_path = path_parts[:-1] | join(sep="/") %}
-{% set img_path = path | trim_start(pat="./") %}
-{% set img_path = relative_path ~ "/" ~ img_path %}
+  {% set path_parts = page.relative_path | split(pat="/") %}
+  {% set relative_path = path_parts[:-1] | join(sep="/") %}
+  {% set img_path = path | trim_start(pat="./") %}
+  {% set img_path = relative_path ~ "/" ~ img_path %}
 {% else %}
-{% set img_path = path %}
+  {% set img_path = path %}
 {% endif %}
 
 {% set file_ext = path | split(pat=".") | last %}
@@ -29,7 +29,7 @@
       style="width: 100%; height: auto;" data-resolution-width="{{ width }}">
   </picture>
   {% if caption %}
-  <figcaption>{{ caption | safe }}</figcaption>
+    <figcaption>{{ caption | safe }}</figcaption>
   {% endif %}
 </figure>
 {% endcomponent media.img %}

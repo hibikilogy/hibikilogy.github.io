@@ -16,8 +16,8 @@
 {% if not pages %}
   {% if paginator %}
     {# Even-optimised balanced pagination.
-           Distributes articles in pairs so most pages end up with even
-           counts for the 2-column grid.  At most one page gets an odd size. #}
+       Distributes articles in pairs so most pages end up with even
+       counts for the 2-column grid. At most one page gets an odd size. #}
 
     {% if term %}
       {% set all_pages = term.pages %}
@@ -37,12 +37,12 @@
     {% elif total != paginator.total_pages %}
       {% set pages = paginator.pages %}
 
-    {% elif total <pager_count * 2 %}
+    {% elif total < pager_count * 2 %}
       {# Sparse — ordinary balanced distribution. #}
       {% set base = (total / pager_count) | round(method="floor") | int %}
       {% set extra = total % pager_count %}
 
-      {% if index <extra %}
+      {% if index < extra %}
         {% set page_size = base + 1 %}
         {% set start = index * page_size %}
       {% else %}
@@ -60,7 +60,7 @@
       {% set odd = total % 2 %}
       {% set base_size = pair_base * 2 %}
 
-      {% if index <pair_extra %}
+      {% if index < pair_extra %}
         {% set page_size = base_size + 2 %}
         {% set start = index * page_size %}
 
@@ -70,7 +70,8 @@
 
       {% else %}
         {% set page_size = base_size %}
-        {% set start = pair_extra * (base_size + 2) + odd * (base_size + 1) + (index - pair_extra - odd) * base_size %}
+        {% set start = pair_extra * (base_size + 2) + odd * (base_size + 1)
+          + (index - pair_extra - odd) * base_size %}
       {% endif %}
 
       {% set pages = all_pages[start:start + page_size] %}

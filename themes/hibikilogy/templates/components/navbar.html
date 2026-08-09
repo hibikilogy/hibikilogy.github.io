@@ -14,63 +14,91 @@
       </div>
       <div class="content">
         <div class="content-body">
-          <nav aria-labelledby="main-nav-aria-label" role="navigation" aria-label="section navigation"
-            class="NavBarMenu menu">
+          <nav
+            aria-labelledby="main-nav-aria-label"
+            role="navigation"
+            aria-label="section navigation"
+            class="NavBarMenu menu"
+          >
             <span id="main-nav-aria-label" class="visually-hidden">
               {{<i18n.t key="nav_aria_label" lang={lang} />}}
             </span>
             {% for item in config.extra.navbar %}
-            {% if lang == item.code %}
-            {% for nav in item.list %}
-            {% if nav.link %}
-            {% set nav_url = <data.config_link link={nav.link} base_url={config.base_url} /> %}
-            <a class="Link link NavBarMenuLink" aria-expanded="false" aria-label="menu" role="button"
-              href="{{ nav_url }}" tabindex="0">
-              <span>{{ nav.text }}</span>
-            </a>
-            {% else %}
-            <div class="NavBarMenuGroup">
-              <button type="button" class="button" aria-haspopup="true" aria-expanded="false">
-                <span class="text">
-                  <span>{{ nav.text }}</span>
-                  <span class="i-custom-down text-icon"></span>
-                </span>
-              </button>
-              <div class="menu">
-                <div class="Menu">
-                  <div class="items">
-                    {% for _nav in nav.items %}
-                    {% set subnav_url = <data.config_link link={_nav.link} base_url={config.base_url} /> %}
-                    <div class="MenuLink">
-                      <a class="Link" href="{{ subnav_url }}"
-                        target="_blank" rel="noreferrer">
-                        {{ _nav.text }}
-                      </a>
+              {% if lang == item.code %}
+                {% for nav in item.list %}
+                  {% if nav.link %}
+                    {% set nav_url = <data.config_link link={nav.link} base_url={config.base_url} /> %}
+                    <a
+                      class="Link link NavBarMenuLink"
+                      aria-expanded="false"
+                      aria-label="menu"
+                      role="button"
+                      href="{{ nav_url }}"
+                      tabindex="0"
+                    >
+                      <span>{{ nav.text }}</span>
+                    </a>
+                  {% else %}
+                    <div class="NavBarMenuGroup">
+                      <button type="button" class="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="text">
+                          <span>{{ nav.text }}</span>
+                          <span class="i-custom-down text-icon"></span>
+                        </span>
+                      </button>
+                      <div class="menu">
+                        <div class="Menu">
+                          <div class="items">
+                            {% for _nav in nav.items %}
+                              {% set subnav_url = <data.config_link link={_nav.link} base_url={config.base_url} /> %}
+                              <div class="MenuLink">
+                                <a
+                                  class="Link"
+                                  href="{{ subnav_url }}"
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  {{ _nav.text }}
+                                </a>
+                              </div>
+                            {% endfor %}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    {% endfor %}
-                  </div>
-                </div>
-              </div>
-            </div>
-            {% endif %}
-            {% endfor %}
-            {% endif %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
             {% endfor %}
           </nav>
-            {% for item in config.extra.slogan %}
+          {% for item in config.extra.slogan %}
             {% if lang == item.code %}
-          <a href="/" class="Link link NavBarMenuLink NavBarSocialLink no-hide" aria-expanded="false" aria-label="menu"
-            role="button" tabindex="0">
-            <span>{{ item.text }}</span>
-          </a>
+              <a
+                href="/"
+                class="Link link NavBarMenuLink NavBarSocialLink no-hide"
+                aria-expanded="false"
+                aria-label="menu"
+                role="button"
+                tabindex="0"
+              >
+                <span>{{ item.text }}</span>
+              </a>
             {% endif %}
-            {% endfor %}
+          {% endfor %}
           <div class="NavBarSearch search no-hide">
             <div id="docsearch">
               {% set search_placeholder = <i18n.t key="search_placeholder" lang={lang} /> %}
-              {{<search_shell.main compact={true} transition_name="site-search-trigger" readonly={true} show_keys={true}
-              placeholder={search_placeholder} title="Search" lang={lang}
-              extra_class="DocSearch-Button" value="" />}}
+              {{<search_shell.main
+                compact={true}
+                transition_name="site-search-trigger"
+                readonly={true}
+                show_keys={true}
+                placeholder={search_placeholder}
+                title="Search"
+                lang={lang}
+                extra_class="DocSearch-Button"
+                value=""
+              />}}
             </div>
           </div>
         </div>

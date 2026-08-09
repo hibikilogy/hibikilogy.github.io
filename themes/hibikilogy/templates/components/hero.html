@@ -1,5 +1,5 @@
 {% component hero.main(page, config, lang: string = "", isPost: bool = true, title: string = "", name: string = "", kind: string = "none", description: string = "", count: integer = 0, bg: string = "") %}
-<header class="Hero {% if page?.extra?.cover %} has-cover{% else %} no-cover {% endif %}">
+<header class="Hero {% if page?.extra?.cover %} has-cover{% else %} no-cover{% endif %}">
   <div class="container">
     {% if isPost %}
       {% set cover_url = <data.cover_url page={page} default={config.extra.default_cover} /> %}
@@ -54,7 +54,7 @@
               data-page-enter-item
               style="--page-enter-stage: 3"
             >
-                {{<post.page_publish_metadata page={page} config={config} lang={lang} />}}
+              {{<post.page_publish_metadata page={page} config={config} lang={lang} />}}
             </div>
           </div>
         </div>
