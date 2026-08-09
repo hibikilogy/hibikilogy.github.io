@@ -32,6 +32,8 @@ public/
 tmp_*/
 __pycache__
 themes/hibikilogy/static/js
+themes/hibikilogy/static/sw.js
+themes/hibikilogy/static/sw.js.map
 .eslintcache
 .codex
 .zcode/
