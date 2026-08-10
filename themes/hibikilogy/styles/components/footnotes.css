@@ -10,5 +10,9 @@
     a {
       font-variant-emoji: text;
     }
+
+    li[id^='fn-'] {
+      scroll-margin-top: calc(var(--joh-nav-height, 64px) + 16px);
+    }
   }
 }

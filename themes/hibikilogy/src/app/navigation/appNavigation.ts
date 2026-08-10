@@ -14,6 +14,7 @@ import {
   renderPostTitleTransitionTarget,
   setupTitleTransitionCoordinator,
 } from 'ui/post-title-transition/index.ts'
+import { isSamePageHashNavigation } from '../../infrastructure/swup/navigationRules.ts'
 import { createVisitSession } from './visitSession.ts'
 
 export function setupAppNavigation(swup: Swup, app: AppContext): void {
@@ -51,9 +52,31 @@ export function setupAppNavigation(swup: Swup, app: AppContext): void {
   }
   document.addEventListener('pointerover', preloadTitle, { passive: true })
   document.addEventListener('focusin', preloadTitle)
+
+  const handleAnchorClick = (event: MouseEvent): void => {
+    if (event.defaultPrevented || event.button !== 0
+      || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return
+    }
+    const link = (event.target as Element).closest?.('a[href]') as HTMLAnchorElement | null
+    if (!link || link.closest('[data-no-swup]')
+      || link.hasAttribute('download') || link.target === '_blank') {
+      return
+    }
+    const href = link.getAttribute('href')
+    if (!href || !isSamePageHashNavigation(href, window.location.href)) {
+      return
+    }
+    const { hash } = new URL(href, window.location.href)
+    event.preventDefault()
+    document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth' })
+  }
+  document.addEventListener('click', handleAnchorClick)
+
   onScopeDispose(() => {
     document.removeEventListener('pointerover', preloadTitle)
     document.removeEventListener('focusin', preloadTitle)
+    document.removeEventListener('click', handleAnchorClick)
   })
 
   function onVisitStart(visit: SwupVisit): void {

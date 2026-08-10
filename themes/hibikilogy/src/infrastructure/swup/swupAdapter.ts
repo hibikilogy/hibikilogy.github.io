@@ -5,7 +5,7 @@ import SwupScrollPlugin from '@swup/scroll-plugin'
 import Swup from 'swup'
 import { HIBIKILOGY_CONFIG } from 'virtual:hibikilogy-config'
 import { LruPageCache } from './lruPageCache.ts'
-import { isPageNavigationUrl } from './navigationRules.ts'
+import { isPageNavigationUrl, isSamePageHashNavigation } from './navigationRules.ts'
 
 export function createSwup(): Swup {
   const gaId = HIBIKILOGY_CONFIG.analyticsGoogle
@@ -22,6 +22,9 @@ export function createSwup(): Swup {
     linkSelector: 'a[href]:not([target="_blank"]):not([download]):not([href^="#"]):not([href^="mailto:"]):not([href^="tel:"]):not([href^="javascript:"])',
     ignoreVisit: (url, { el } = {}) => {
       if (el?.closest('[data-no-swup]'))
+        return true
+
+      if (isSamePageHashNavigation(url, window.location.href))
         return true
 
       return !isPageNavigationUrl(url, window.location.href)
