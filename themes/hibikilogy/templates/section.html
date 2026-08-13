@@ -10,7 +10,7 @@
         {% set pages = section.pages %}
       {% endif %}
       {% for page in pages %}
-        {{<article.main page={page} config={config} lang={lang} show_cover={false} />}}
+        {{ <article.main page={page} config={config} lang={lang} show_cover={false} /> }}
       {% endfor %}
     </section>
   </div>

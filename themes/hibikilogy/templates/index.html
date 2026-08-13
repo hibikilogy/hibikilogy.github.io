@@ -5,17 +5,17 @@ Home
 {% endblock %}
 
 {% block critical_css %}
-{{<build.css path="styles/components/journal.css" />}}
+{{ <build.css path="styles/components/journal.css" /> }}
 {% endblock critical_css %}
 
 {% block content %}
-{{<journal.main config={config} lang={lang} show_frontpage={true} paginator={paginator} term={false} section={section} />}}
+{{ <journal.main config={config} lang={lang} show_frontpage={true} paginator={paginator} term={false} section={section} /> }}
 {% endblock %}
 
 {% block footer %}
 {% if paginator %}
-  {{<footer.main config={config} lang={lang} show_tags={true} show_friendlinks={true} tag_pages={paginator.pages} />}}
+  {{ <footer.main config={config} lang={lang} show_tags={true} show_friendlinks={true} tag_pages={paginator.pages} /> }}
 {% else %}
-  {{<footer.main config={config} lang={lang} show_tags={true} show_friendlinks={true} tag_pages={section.pages} />}}
+  {{ <footer.main config={config} lang={lang} show_tags={true} show_friendlinks={true} tag_pages={section.pages} /> }}
 {% endif %}
 {% endblock %}

@@ -2,19 +2,17 @@
 <header class="NavBar top">
   <div class="wrapper">
     <div class="container">
-      {{  <hamburger.main />  }}
-      {{  <navScreen.main config={config} lang={lang} />  }}
+      {{ <hamburger.main /> }}
+      {{ <navScreen.main config={config} lang={lang} /> }}
       <div class="title">
         <div class="NavBarTitle">
           <a
             class="title"
-            href="/"
-          >
+            href="/">
             <img
               class="Image logo"
               src="{{ config.extra.navbar_logo }}"
-              alt
-            >
+              alt>
             <span>{{ config.title }}</span>
           </a>
         </div>
@@ -25,13 +23,11 @@
             aria-labelledby="main-nav-aria-label"
             role="navigation"
             aria-label="section navigation"
-            class="NavBarMenu menu"
-          >
+            class="NavBarMenu menu">
             <span
               id="main-nav-aria-label"
-              class="visually-hidden"
-            >
-              {{  <i18n.t key="nav_aria_label" lang={lang} />  }}
+              class="visually-hidden">
+              {{ <i18n.t key="nav_aria_label" lang={lang} /> }}
             </span>
             {% for item in config.extra.navbar %}
               {% if lang == item.code %}
@@ -44,8 +40,7 @@
                       aria-label="menu"
                       role="button"
                       href="{{ nav_url }}"
-                      tabindex="0"
-                    >
+                      tabindex="0">
                       <span>{{ nav.text }}</span>
                     </a>
                   {% else %}
@@ -54,8 +49,7 @@
                         type="button"
                         class="button"
                         aria-haspopup="true"
-                        aria-expanded="false"
-                      >
+                        aria-expanded="false">
                         <span class="text">
                           <span>{{ nav.text }}</span>
                           <span class="i-custom-down text-icon"></span>
@@ -71,8 +65,7 @@
                                   class="Link"
                                   href="{{ subnav_url }}"
                                   target="_blank"
-                                  rel="noreferrer"
-                                >
+                                  rel="noreferrer">
                                   {{ _nav.text }}
                                 </a>
                               </div>
@@ -94,8 +87,7 @@
                 aria-expanded="false"
                 aria-label="menu"
                 role="button"
-                tabindex="0"
-              >
+                tabindex="0">
                 <span>{{ item.text }}</span>
               </a>
             {% endif %}
@@ -103,7 +95,7 @@
           <div class="NavBarSearch search no-hide">
             <div id="docsearch">
               {% set search_placeholder = <i18n.t key="search_placeholder" lang={lang} /> %}
-              {{  <search_shell.main compact={true} transition_name="site-search-trigger" readonly={true} show_keys={true} placeholder={search_placeholder} title="Search" lang={lang} extra_class="DocSearch-Button" value="" />  }}
+              {{ <search_shell.main compact={true} transition_name="site-search-trigger" readonly={true} show_keys={true} placeholder={search_placeholder} title="Search" lang={lang} extra_class="DocSearch-Button" value="" /> }}
             </div>
           </div>
         </div>

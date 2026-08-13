@@ -4,8 +4,7 @@
 <a
   class="joh-tag"
   href="{{ get_taxonomy_url(kind='tags', term=tag.name) | trim_end(pat='/') }}"
-  title="{{ tag.name }}"
->
+  title="{{ tag.name }}">
   <span>{{ tag.name }}</span>
   <span class="tag-count">{{ tag.pages | length }}</span>
 </a>
@@ -18,8 +17,7 @@
   <a
     href="{{ get_taxonomy_url(kind='tags', term=tag.name) | trim_end(pat='/') }}"
     class="joh-tag"
-    title="{{ tag.name }}"
-  >
+    title="{{ tag.name }}">
     <span>{{ tag.name }}</span>
     {% if show_count %}
       <span class="tag-count">{{ tag.pages | length }}</span>
@@ -51,8 +49,7 @@
         <a
           href="{{ get_taxonomy_url(kind='tags', term=tag_name) | trim_end(pat='/') }}"
           class="joh-tag"
-          title="{{ tag_name }}"
-        >
+          title="{{ tag_name }}">
           <span>{{ tag_name }}</span>
           {% if show_count %}
             <span class="tag-count">{{ tag_count }}</span>

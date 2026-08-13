@@ -1,15 +1,13 @@
 {% component navScreen.main(config, lang: string = "") %}
 <div
   id="NavScreen"
-  class="NavScreen top"
->
+  class="NavScreen top">
   <div class="container">
     <nav
       aria-labelledby="main-nav-aria-label"
       role="navigation"
       aria-label="section navigation"
-      class="NavScreenMenu menu"
-    >
+      class="NavScreenMenu menu">
       {% for item in config.extra.navbar %}
         {% if lang == item.code %}
           {% for nav in item.list %}
@@ -21,8 +19,7 @@
                 aria-label="menu"
                 role="button"
                 href="{{ nav_url }}"
-                tabindex="0"
-              >
+                tabindex="0">
                 <span>{{ nav.text }}</span>
               </a>
             {% else %}
@@ -31,8 +28,7 @@
                   type="button"
                   class="button"
                   aria-haspopup="true"
-                  aria-expanded="false"
-                >
+                  aria-expanded="false">
                   <span class="text">
                     <span>{{ nav.text }}</span>
                     <span class="i-custom-down text-icon"></span>
@@ -48,8 +44,7 @@
                             class="Link NavScreenMenuLink"
                             href="{{ subnav_url }}"
                             target="_blank"
-                            rel="noreferrer"
-                          >
+                            rel="noreferrer">
                             {{ _nav.text }}
                           </a>
                         </div>
@@ -63,7 +58,7 @@
         {% endfor %}
     </nav>
     {% set nav_close = <i18n.t key="nav_close" lang={lang} /> %}
-    {{<hamburger.main extra_class="NavScreenClose" label={nav_close} />}}
+    {{ <hamburger.main extra_class="NavScreenClose" label={nav_close} /> }}
   </div>
 </div>
 {% endcomponent navScreen.main %}

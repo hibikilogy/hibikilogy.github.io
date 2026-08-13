@@ -2,10 +2,7 @@
 {%- set article_section = config.extra.article_section | default(value="articles/_index.md") -%}
 {%- set section = get_section(path=article_section) -%}
 {%- set author_taxonomy = get_taxonomy(kind="author") -%}
-{%-
-  set default_author_name = config.author
-  | default(value=config.extra.meta_author | default(value=anonymous_author))
--%}
+{%- set default_author_name = config.author | default(value=config.extra.meta_author | default(value=anonymous_author)) -%}
 {
 {%- for page in section.pages %}
   {%- set_global author_name = default_author_name -%}

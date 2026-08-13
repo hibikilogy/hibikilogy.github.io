@@ -3,20 +3,10 @@
 {% component build.css(path: string) %}
 <link
   rel="stylesheet"
-  href="{{ get_url(path=path, cachebust=true) }}"
->
+  href="{{ get_url(path=path, cachebust=true) }}">
 {% endcomponent build.css %}
 
-{%
-  component build.script(
-    path: string,
-    cachebust: bool = true,
-    module: bool = false,
-    async: bool = false,
-    defer: bool = false,
-    serve: bool = false
-  )
-%}
+{% component build.script(path: string, cachebust: bool = true, module: bool = false, async: bool = false, defer: bool = false, serve: bool = false) %}
 {% set is_serve = serve %}
 
 {% if is_serve %}

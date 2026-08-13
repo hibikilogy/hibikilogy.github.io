@@ -1,19 +1,4 @@
-{%
-  component search_shell.main(
-    input_id: string = "",
-    compact: bool = false,
-    transition_name: string = "",
-    readonly: bool = false,
-    autofocus: bool = false,
-    show_keys: bool = false,
-    show_submit: bool = false,
-    placeholder: string = "Search",
-    title: string = "Search",
-    value: string = "",
-    extra_class: string = "",
-    lang: string = ""
-  )
-%}
+{% component search_shell.main(input_id: string = "", compact: bool = false, transition_name: string = "", readonly: bool = false, autofocus: bool = false, show_keys: bool = false, show_submit: bool = false, placeholder: string = "Search", title: string = "Search", value: string = "", extra_class: string = "", lang: string = "") %}
 <form
   class="SearchShell SearchShell--{% if compact %}compact{% else %}page{% endif %}{% if extra_class %} {{ extra_class }}{% endif %}"
   role="search"
@@ -29,8 +14,7 @@
     {% if compact and readonly %}
       <span
         class="SearchShellLabel"
-        aria-hidden="true"
-      >
+        aria-hidden="true">
         {{ placeholder }}
       </span>
     {% else %}
@@ -64,8 +48,7 @@
     {% if show_keys %}
       <span
         class="SearchShellKeys"
-        aria-hidden="true"
-      >
+        aria-hidden="true">
         <kbd class="SearchShellKey SearchShellKeyModifier"></kbd>
         <kbd class="SearchShellKey">K</kbd>
       </span>
@@ -75,21 +58,18 @@
       <button
         class="SearchShellSubmit"
         type="submit"
-        aria-label="{{ title }}"
-      >
+        aria-label="{{ title }}">
         <span
           class="SearchShellIcon i-custom-search size-[1rem]"
-          aria-hidden="true"
-        ></span>
+          aria-hidden="true"></span>
         <span class="SearchShellSubmitText">
-          {{<i18n.t key="search_submit_text" lang={lang} />}}
+          {{ <i18n.t key="search_submit_text" lang={lang} /> }}
         </span>
       </button>
     {% else %}
       <span
         class="SearchShellIcon i-custom-search size-[1rem]"
-        aria-hidden="true"
-      ></span>
+        aria-hidden="true"></span>
     {% endif %}
   </div>
 </form>

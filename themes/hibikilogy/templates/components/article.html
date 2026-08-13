@@ -14,8 +14,7 @@
     <h2 class="article-title">
       <span
         class="PostTitleTransition"
-        data-post-title-key="{{ title_transition_name }}"
-      >
+        data-post-title-key="{{ title_transition_name }}">
         <span class="PostTitleTransitionText">{{ page.title }}</span>
       </span>
     </h2>
@@ -57,7 +56,7 @@
   </a>
 
   <div class="article-meta">
-    {{<post.page_publish_metadata page={page} config={config} lang={lang} />}}
+    {{ <post.page_publish_metadata page={page} config={config} lang={lang} /> }}
   </div>
 </article>
 {% endcomponent article.main %}

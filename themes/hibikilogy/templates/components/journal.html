@@ -7,22 +7,11 @@
     aria-describedby="search-message"
     data-page-enter-item
     data-page-enter-await-layout
-    style="--page-enter-stage: 1"
-  ></div>
+    style="--page-enter-stage: 1"></div>
 </div>
 {% endcomponent journal.search %}
 
-{%
-  component journal.main(
-    config,
-    lang: string = "",
-    show_frontpage: bool = false,
-    pages = None,
-    paginator = None,
-    term = None,
-    section = None
-  )
-%}
+{% component journal.main(config, lang: string = "", show_frontpage: bool = false, pages = None, paginator = None, term = None, section = None) %}
 {% if not pages %}
   {% if paginator %}
     {# Even-optimised balanced pagination.
@@ -96,14 +85,12 @@
     class="container"
     data-page-enter-item
     data-page-enter-await-layout
-    style="--page-enter-stage: 1"
-  >
+    style="--page-enter-stage: 1">
     {% if show_frontpage %}
       <a
         class="FrontPage Section"
         aria-label="Logo"
-        href="/"
-      >
+        href="/">
         {% if config.extra.journal_logo %}
           {% set logo_svg = load_data(path="static" ~ config.extra.journal_logo, required=false, format="plain") %}
           {% if logo_svg %}
@@ -132,12 +119,11 @@
         rel="preload"
         as="image"
         href="{{ cover_preload_src }}"
-        fetchpriority="high"
-      >
+        fetchpriority="high">
     {% endif %}
 
     {% for page in pages %}
-      {{<article.main page={page} config={config} lang={lang} show_cover={true} cover_eager={loop.index0 == cover_index} />}}
+      {{ <article.main page={page} config={config} lang={lang} show_cover={true} cover_eager={loop.index0 == cover_index} /> }}
     {% endfor %}
   </div>
 </div>

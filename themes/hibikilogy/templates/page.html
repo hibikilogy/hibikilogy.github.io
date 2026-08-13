@@ -12,7 +12,7 @@
 {% endblock vars %}
 
 {% block critical_css %}
-{{<build.css path="styles/layouts/page.css" />}}
+{{ <build.css path="styles/layouts/page.css" /> }}
 {% endblock critical_css %}
 
 {% block class %}
@@ -25,80 +25,67 @@ post
   rel="alternate"
   type="text/markdown"
   href="{{ markdown_url | safe }}.md"
-  title="Markdown version"
->
+  title="Markdown version">
 <meta
   property="og:type"
-  content="article"
->
+  content="article">
 <meta
   property="article:published_time"
-  content="{{ page.date }}"
->
+  content="{{ page.date }}">
 <meta
   property="og:updated_time"
-  content="{{ modified }}"
->
+  content="{{ modified }}">
 <meta
   property="article:modified_time"
-  content="{{ modified }}"
->
+  content="{{ modified }}">
 {% if has_author %}
   <meta
     property="article:author"
-    content="{{ authors | join(sep='、') }}"
-  >
+    content="{{ authors | join(sep='、') }}">
   <meta
     name="author"
-    content="{{ authors | join(sep='、') }}"
-  >
+    content="{{ authors | join(sep='、') }}">
 {% endif %}
 {% for tag in tags %}
   <meta
     property="article:tag"
-    content="{{ tag }}"
-  >
+    content="{{ tag }}">
 {% endfor %}
 {% if has_cover %}
   <meta
     property="og:image"
-    content="{{ cover_url }}"
-  >
+    content="{{ cover_url }}">
   <meta
     name="twitter:image"
-    content="{{ cover_url }}"
-  >
+    content="{{ cover_url }}">
   <meta
     property="og:image:alt"
-    content="{{ page.extra.cover_alt | default(value=page.title) }}"
-  >
+    content="{{ page.extra.cover_alt | default(value=page.title) }}">
   <meta
     name="twitter:image:alt"
-    content="{{ page.extra.cover_alt | default(value=page.title) }}"
-  >
+    content="{{ page.extra.cover_alt | default(value=page.title) }}">
   {% if page.extra.cover %}
     <link
       rel="preload"
       as="image"
       href="{{ cover_url }}"
-      fetchpriority="high"
-    >
+      fetchpriority="high">
   {% endif %}
 {% endif %}
 {% endblock meta %}
 
 {% block style %}
 {% if katex_enabled %}
-  {{<build.katex_css config={config} />}}
+  {{ <build.katex_css config={config} /> }}
 {% endif %}
 {% endblock %}
 
 {% block structured_data %}
-{{<post.article_json_ld page={page} config={config} current_url={current_url} lang={lang} cover_url={cover_url} />}}
+{{ <post.article_json_ld page={page} config={config} current_url={current_url} lang={lang} cover_url={cover_url} /> }}
 {% endblock structured_data %}
 
 {% block header %}
-{{<hero.main page={page} config={config} lang={lang} isPost={true} />}}
+{{ <hero.main page={page} config={config} lang={lang} isPost={true} /> }}
 {% endblock %}
 
 {% block content %}
@@ -114,5 +101,5 @@ post
 {% endblock %}
 
 {% block aside %}
-{{<aside.main page={page} lang={lang} />}}
+{{ <aside.main page={page} lang={lang} /> }}
 {% endblock %}

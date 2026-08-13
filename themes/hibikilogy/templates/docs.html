@@ -14,19 +14,18 @@ docs
   rel="alternate"
   type="text/markdown"
   href="{{ markdown_url | safe }}.md"
-  title="Markdown version"
->
+  title="Markdown version">
 {% if katex_enabled %}
-  {{<build.katex_css config={config} />}}
+  {{ <build.katex_css config={config} /> }}
 {% endif %}
 {% endblock %}
 
 {% block critical_css %}
-{{<build.css path="styles/layouts/page.css" />}}
+{{ <build.css path="styles/layouts/page.css" /> }}
 {% endblock critical_css %}
 
 {% block header %}
-{{<hero.main page={page} config={config} lang={lang} isPost={false} name={page.title} />}}
+{{ <hero.main page={page} config={config} lang={lang} isPost={false} name={page.title} /> }}
 {% endblock %}
 
 {% block content %}
@@ -42,5 +41,5 @@ docs
 {% endblock %}
 
 {% block aside %}
-{{<aside.main page={page} lang={lang} />}}
+{{ <aside.main page={page} lang={lang} /> }}
 {% endblock %}

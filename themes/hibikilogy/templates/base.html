@@ -16,53 +16,42 @@
 <!DOCTYPE html>
 <html
   lang="{{ lang }}"
-  data-page-enter="initial"
->
+  data-page-enter="initial">
 
 <head>
   <!-- {{ now() | date(format='%F %a %R') }} -->
   <meta charset="utf-8">
   <meta
     name="viewport"
-    content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"
-  >
+    content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
   <meta
     name="apple-mobile-web-app-status-bar-style"
-    content="black-translucent"
-  >
+    content="black-translucent">
   <meta
     name="applicable-device"
-    content="pc,mobile"
-  >
+    content="pc,mobile">
   <meta
     http-equiv="Permissions-Policy"
-    content="camera=(), microphone=(), geolocation=()"
-  >
+    content="camera=(), microphone=(), geolocation=()">
   <meta
     name="google"
-    content="notranslate"
-  >
+    content="notranslate">
   <meta
     name="theme-color"
-    content="{{ config.extra.theme_color }}"
-  >
+    content="{{ config.extra.theme_color }}">
   <meta
     name="color-scheme"
-    content="dark light"
-  >
+    content="dark light">
   <meta
     name="theme"
-    content="Zola-Theme-Hibikilogy"
-  >
+    content="Zola-Theme-Hibikilogy">
   <link
     rel="alternate"
     hreflang="{{ config.default_language }}"
-    href="{{ base_url_clean }}/"
-  >
+    href="{{ base_url_clean }}/">
   <link
     href="{{ canonical_url }}"
-    rel="canonical"
-  >
+    rel="canonical">
 
   <title>{% block title %}{%- include 'title.html' -%}{% endblock title %}</title>
 
@@ -82,53 +71,42 @@
 
   <meta
     name="referrer"
-    content="no-referrer-when-downgrade"
-  >
+    content="no-referrer-when-downgrade">
   <meta
     name="description"
-    content="{{ meta_description }}"
-  >
+    content="{{ meta_description }}">
   <meta
     name="keywords"
-    content="{{ meta_keywords }}"
-  >
+    content="{{ meta_keywords }}">
   <meta
     name="twitter:card"
-    content="{{ config.extra.twitter_card }}"
-  >
+    content="{{ config.extra.twitter_card }}">
   <meta
     name="twitter:description"
-    content="{{ meta_description }}"
-  >
+    content="{{ meta_description }}">
   <meta
     name="twitter:widgets:csp"
-    content="on"
-  >
+    content="on">
   <meta property="og:site_name" content="{%- include 'title.html' -%}">
   <meta
     property="og:locale"
-    content="{{ lang }}"
-  >
+    content="{{ lang }}">
   <meta property="og:title" content="{%- include 'title.html' -%}">
   <meta
     property="og:locale:alternate"
-    content="{{ lang }}"
-  >
+    content="{{ lang }}">
   {% set og_url = <data.clean_url url={current_url | default(value='/')} base_url={config.base_url} /> %}
   <meta
     property="og:url"
-    content="{{ og_url | safe }}"
-  >
+    content="{{ og_url | safe }}">
   <meta
     property="og:description"
-    content="{{ meta_description }}"
-  >
+    content="{{ meta_description }}">
 
   {% if page is defined and page.draft %}
     <meta
       name="robots"
-      content="noindex"
-    >
+      content="noindex">
   {% endif %}
 
   {% block meta %}
@@ -138,52 +116,45 @@
     rel="alternate"
     type="application/atom+xml"
     href="{{ get_url(path='atom.xml') | safe }}"
-    title="{{ config.title }} Atom Feed"
-  >
+    title="{{ config.title }} Atom Feed">
   <link
     rel="search"
     type="application/opensearchdescription+xml"
     title="{{ config.title }}"
-    href="{{ get_url(path='opensearch.xml') | safe }}"
-  >
+    href="{{ get_url(path='opensearch.xml') | safe }}">
 
   {% if config.extra.favicon.webmanifest %}
     <link
       href='{{ get_url(path=config.extra.favicon.webmanifest) | safe }}'
-      rel="manifest"
-    >
+      rel="manifest">
   {% endif %}
   {% if config.extra.favicon.safari_pinned_tab %}
     <link
       color="{{ config.extra.theme_color }}"
       href='{{ get_url(path=config.extra.favicon.safari_pinned_tab) | safe }}'
-      rel="mask-icon"
-    >
+      rel="mask-icon">
   {% endif %}
   {% if config.extra.favicon.small_icon %}
     <link
       rel="icon"
       href='{{ get_url(path=config.extra.favicon.small_icon) | safe }}'
-      sizes="48x48"
-    >
+      sizes="48x48">
   {% endif %}
   {% if config.extra.favicon.svg_icon %}
     <link
       rel="icon"
       href='{{ get_url(path=config.extra.favicon.svg_icon) | safe }}'
       sizes="any"
-      type="image/svg+xml"
-    >
+      type="image/svg+xml">
   {% endif %}
   {% if config.extra.favicon.apple_touch_icon %}
     <link
       href='{{ get_url(path=config.extra.favicon.apple_touch_icon) | safe }}'
       rel="apple-touch-icon"
-      sizes="180x180"
-    >
+      sizes="180x180">
   {% endif %}
 
-  {{<build.css path="styles/critical.css" />}}
+  {{ <build.css path="styles/critical.css" /> }}
 
   {% block critical_css %}
   {% endblock critical_css %}
@@ -192,8 +163,7 @@
   {% for stylesheet in stylesheets %}
     <link
       rel="stylesheet"
-      href="{{ get_url(path=stylesheet, cachebust=true) }}"
-    >
+      href="{{ get_url(path=stylesheet, cachebust=true) }}">
   {% endfor %}
   {% endblock stylesheets %}
 
@@ -214,8 +184,8 @@
   {% endif %}
   {% endblock search_config %}
 
-  {{<build.script path="js/components/index.js" module={true} serve={config.mode == "serve"} />}}
-  {{<build.script path="js/ui.js" cachebust={false} module={true} serve={config.mode == "serve"} />}}
+  {{ <build.script path="js/components/index.js" module={true} serve={config.mode == "serve"} /> }}
+  {{ <build.script path="js/ui.js" cachebust={false} module={true} serve={config.mode == "serve"} /> }}
 
   {% block analytics %}
   {% if config.extra.analytics.google and not config.mode == "serve" %}
@@ -252,14 +222,12 @@
   <link
     rel="prefetch"
     href="{{ config.extra.default_cover }}"
-    as="image"
-  >
+    as="image">
 
   {% for url in config.extra.prefetch_urls %}
     <link
       rel="prefetch"
-      href="{{ url }}"
-    >
+      href="{{ url }}">
   {% endfor %}
 
   {% block prefetch %}{% endblock %}
@@ -290,7 +258,7 @@
     <div class="Layout">
       <span class="joh-chevron-up visually-hidden"></span>
 
-      {{<navbar.main config={config} lang={lang} />}}
+      {{ <navbar.main config={config} lang={lang} /> }}
 
       {% block header %}
       {% endblock %}
@@ -302,14 +270,14 @@
             {% endblock %}
 
             {% block pagination %}
-            {{<pagination.main lang={lang} paginator={paginator} />}}
+            {{ <pagination.main lang={lang} paginator={paginator} /> }}
             {% endblock %}
           </main>
 
           {% block footer %}
           {% block slot %}{% endblock %}
           {% if not slot is defined %}
-            {{<footer.main config={config} lang={lang} />}}
+            {{ <footer.main config={config} lang={lang} /> }}
           {% endif %}
           {% endblock %}
         </div>
@@ -345,8 +313,7 @@
 
     <div
       class="text-#2076df opacity-30 pointer-events-none text-right font-bold fixed bottom-[10px] right-[10px] z-50"
-      aria-hidden="true"
-    >
+      aria-hidden="true">
       <div>开发预览版本不代表最终效果</div>
       <div class="text-[13px] font-normal">{{ prefix }}{% if branch %}{{ branch }} · {% endif %}{{ build_date }}</div>
     </div>

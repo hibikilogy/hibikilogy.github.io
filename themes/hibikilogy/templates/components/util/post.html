@@ -9,8 +9,7 @@
 {% set author_label = <i18n.t key="author_label" lang={lang} /> %}
 <time
   class="article-publish-date"
-  datetime="{{ page.date }}"
->
+  datetime="{{ page.date }}">
   {{ publish_label }} {{ formatted_date }}
 </time>
 <span class="article-authors">
@@ -19,8 +18,7 @@
     {% for author_name in authors %}
       <a
         class="article-author"
-        href="{{ get_taxonomy_url(kind='author', term=author_name) | trim_end(pat='/') }}"
-      >
+        href="{{ get_taxonomy_url(kind='author', term=author_name) | trim_end(pat='/') }}">
         <span class="author-name font-bold">{{ author_name }}</span>
       </a>
       {% if not loop.last %}
@@ -40,8 +38,7 @@
     <a
       href="{{ get_taxonomy_url(kind='tags', term=tag) | trim_end(pat='/') }}"
       class="joh-tag"
-      title="{{ tag }}"
-    >
+      title="{{ tag }}">
       <span>{{ tag }}</span>
     </a>
   {% endfor %}
