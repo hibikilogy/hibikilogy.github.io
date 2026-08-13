@@ -2,8 +2,8 @@
 <header class="NavBar top">
   <div class="wrapper">
     <div class="container">
-      {{<hamburger.main />}}
-      {{<navScreen.main config={config} lang={lang} />}}
+      {{  <hamburger.main />  }}
+      {{  <navScreen.main config={config} lang={lang} />  }}
       <div class="title">
         <div class="NavBarTitle">
           <a
@@ -31,7 +31,7 @@
               id="main-nav-aria-label"
               class="visually-hidden"
             >
-              {{<i18n.t key="nav_aria_label" lang={lang} />}}
+              {{  <i18n.t key="nav_aria_label" lang={lang} />  }}
             </span>
             {% for item in config.extra.navbar %}
               {% if lang == item.code %}
@@ -103,7 +103,7 @@
           <div class="NavBarSearch search no-hide">
             <div id="docsearch">
               {% set search_placeholder = <i18n.t key="search_placeholder" lang={lang} /> %}
-              {{<search_shell.main compact={true} transition_name="site-search-trigger" readonly={true} show_keys={true} placeholder={search_placeholder} title="Search" lang={lang} extra_class="DocSearch-Button" value="" />}}
+              {{  <search_shell.main compact={true} transition_name="site-search-trigger" readonly={true} show_keys={true} placeholder={search_placeholder} title="Search" lang={lang} extra_class="DocSearch-Button" value="" />  }}
             </div>
           </div>
         </div>
