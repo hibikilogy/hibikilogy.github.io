@@ -14,6 +14,10 @@ use write_fonts::read::{
 
 pub const HASH_HEX_LEN: usize = 16;
 
+/// WOFF2 brotli quality of every shipped font file (chunks, latin subset).
+/// Boundary probes use a cheaper quality — see `chunk::PROBE_QUALITY`.
+pub const FINAL_QUALITY: usize = 11;
+
 /// Layout features used only for vertical text. Subsets of horizontally
 /// rendered web fonts drop them, which also lets skera drop the vertical
 /// alternates that only those lookups reference.
@@ -240,6 +244,33 @@ pub struct PublishedSubset {
     pub cleanup: CleanupReport,
 }
 
+/// Verify that `subset` covers every requested codepoint the source font
+/// supports, failing on gaps. Requests the source font does not map only warn
+/// (they fall back to a later font in the stack).
+fn verify_subset(
+    requested: &[u32],
+    font_data: &[u8],
+    subset: &[u8],
+    what: &str,
+    missing_source_label: &str,
+) -> Result<()> {
+    let coverage = verify_subset_coverage(requested, font_data, subset)?;
+    if !coverage.missing_in_output.is_empty() {
+        return Err(anyhow!(
+            "{what} is missing codepoint(s) supported by the source font: {}",
+            format_codepoint_list(&coverage.missing_in_output)
+        ));
+    }
+    for &codepoint in &coverage.missing_in_source {
+        eprintln!(
+            "warning: {} {} but not supported by the source font; it will fall back to a later font",
+            describe_codepoint(codepoint),
+            missing_source_label
+        );
+    }
+    Ok(())
+}
+
 /// Subset `font_data` to `codepoints` (frequency order), split the result
 /// into chunks sized for lazy loading, verify coverage, and publish the
 /// chunks plus their `@font-face` CSS.
@@ -270,21 +301,14 @@ pub fn subset_and_publish(
         (None, None)
     } else {
         let latin_subset = subsetter.subset(options.latin_codepoints)?;
-        let coverage = verify_subset_coverage(options.latin_codepoints, font_data, &latin_subset)?;
-        if !coverage.missing_in_output.is_empty() {
-            return Err(anyhow!(
-                "latin subset is missing codepoint(s) supported by the source font: {}",
-                format_codepoint_list(&coverage.missing_in_output)
-            ));
-        }
-        for &codepoint in &coverage.missing_in_source {
-            eprintln!(
-                "warning: {} {} but not supported by the source font; it will fall back to a later font",
-                describe_codepoint(codepoint),
-                options.missing_source_label
-            );
-        }
-        let latin_bytes = woofwoof::compress(&latin_subset, "", 11, true)
+        verify_subset(
+            options.latin_codepoints,
+            font_data,
+            &latin_subset,
+            "latin subset",
+            options.missing_source_label,
+        )?;
+        let latin_bytes = woofwoof::compress(&latin_subset, "", FINAL_QUALITY, true)
             .context("failed to compress WOFF2 latin subset")?;
         let (stem, extension) = split_file_name(options.output_file);
         let file_name = hashed_output_file_name(&format!("{stem}-latin.{extension}"), &latin_bytes);
@@ -304,20 +328,13 @@ pub fn subset_and_publish(
             .collect();
         // Verify coverage against the union of all chunk subsets, not one chunk.
         let union_subset = subsetter.subset(&all)?;
-        let coverage = verify_subset_coverage(&all, font_data, &union_subset)?;
-        if !coverage.missing_in_output.is_empty() {
-            return Err(anyhow!(
-                "subset output is missing codepoint(s) supported by the source font: {}",
-                format_codepoint_list(&coverage.missing_in_output)
-            ));
-        }
-        for &codepoint in &coverage.missing_in_source {
-            eprintln!(
-                "warning: {} {} but not supported by the source font; it will fall back to a later font",
-                describe_codepoint(codepoint),
-                options.missing_source_label
-            );
-        }
+        verify_subset(
+            &all,
+            font_data,
+            &union_subset,
+            "subset output",
+            options.missing_source_label,
+        )?;
         subset_font_descriptors(&union_subset)?
     };
 
@@ -443,14 +460,12 @@ pub fn publish_chunked_font(
         if keep.contains(&file_name.as_ref()) {
             continue;
         }
-        // Chunk names are `<stem>-<n>.<16 hex>.<ext>`, the latin subset is
-        // `<stem>-latin.<16 hex>.<ext>`; the plain template and single-file
-        // hashed artifacts are also retired.
-        let is_chunk = is_hashed_chunk(&file_name, stem, extension);
-        let is_latin = is_latin_chunk(&file_name, stem, extension);
+        // Series files are `<stem>-<digits or latin>.<16 hex>.<ext>`; the
+        // plain template and single-file hashed artifacts are also retired.
+        let is_series = is_series_artifact(&file_name, stem, extension);
         let is_legacy =
             file_name == series_template || is_hashed_artifact(&file_name, stem, extension);
-        if !is_chunk && !is_latin && !is_legacy {
+        if !is_series && !is_legacy {
             continue;
         }
         match fs::remove_file(entry.path()) {
@@ -469,37 +484,22 @@ pub fn publish_chunked_font(
     Ok(report)
 }
 
-/// Whether `file_name` is `<stem>-<digits>.<exactly HASH_HEX_LEN hex>.<extension>`.
-fn is_hashed_chunk(file_name: &str, stem: &str, extension: &str) -> bool {
+/// Whether `file_name` is a series artifact, `<stem>-<series>.<exactly
+/// HASH_HEX_LEN hex>.<extension>`, where `<series>` is either the chunk
+/// number (`1`, `2`, …) or the consolidated `latin` subset.
+fn is_series_artifact(file_name: &str, stem: &str, extension: &str) -> bool {
     let Some(rest) = file_name.strip_prefix(stem) else {
         return false;
     };
     let Some(rest) = rest.strip_prefix('-') else {
         return false;
     };
-    let Some((number, rest)) = rest.split_once('.') else {
+    let Some((series, rest)) = rest.split_once('.') else {
         return false;
     };
-    if number.is_empty() || !number.bytes().all(|b| b.is_ascii_digit()) {
+    if series != "latin" && (series.is_empty() || !series.bytes().all(|b| b.is_ascii_digit())) {
         return false;
     }
-    let Some((hash, ext)) = rest.rsplit_once('.') else {
-        return false;
-    };
-    hash.len() == HASH_HEX_LEN
-        && hash.bytes().all(|byte| byte.is_ascii_hexdigit())
-        && ext == extension
-}
-
-/// Whether `file_name` is the consolidated latin subset
-/// `<stem>-latin.<exactly HASH_HEX_LEN hex>.<extension>`.
-fn is_latin_chunk(file_name: &str, stem: &str, extension: &str) -> bool {
-    let Some(rest) = file_name.strip_prefix(stem) else {
-        return false;
-    };
-    let Some(rest) = rest.strip_prefix("-latin.") else {
-        return false;
-    };
     let Some((hash, ext)) = rest.rsplit_once('.') else {
         return false;
     };

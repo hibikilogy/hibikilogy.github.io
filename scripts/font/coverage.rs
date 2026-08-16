@@ -94,6 +94,47 @@ pub fn is_cjk_codepoint(codepoint: u32) -> bool {
     )
 }
 
+/// Always-retained latin characters: printable ASCII plus common Western
+/// punctuation, so latin text never renders through fallback fonts even
+/// before a rebuild picks up new characters.
+pub const LATIN_RETAINED_RANGES: &[(u32, u32)] = &[(0x0020, 0x007E)];
+pub const LATIN_RETAINED_CODEPOINTS: &[u32] = &[
+    0x00A0, 0x00B7, 0x2014, 0x2018, 0x2019, 0x201C, 0x201D, 0x2026, 0x2022,
+];
+
+/// Collect the codepoints of `texts` that satisfy `keep` (control characters
+/// are always excluded), union the `retained` seeds, and return the result
+/// sorted and deduplicated. Shared by the font tools' extraction rules.
+pub fn collect_codepoints<I, S, F>(
+    texts: I,
+    retained_ranges: &[(u32, u32)],
+    retained_codepoints: &[u32],
+    mut keep: F,
+) -> Vec<u32>
+where
+    I: IntoIterator<Item = S>,
+    S: AsRef<str>,
+    F: FnMut(u32) -> bool,
+{
+    let mut codepoints: Vec<u32> = retained_ranges
+        .iter()
+        .flat_map(|&(start, end)| start..=end)
+        .collect();
+    codepoints.extend(retained_codepoints.iter().copied());
+    for text in texts {
+        codepoints.extend(
+            text.as_ref()
+                .chars()
+                .filter(|ch| !ch.is_control())
+                .map(|ch| ch as u32)
+                .filter(|&codepoint| keep(codepoint)),
+        );
+    }
+    codepoints.sort_unstable();
+    codepoints.dedup();
+    codepoints
+}
+
 /// Format a codepoint for diagnostics, appending the character itself when it
 /// is not a control character.
 pub fn describe_codepoint(codepoint: u32) -> String {

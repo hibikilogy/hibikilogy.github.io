@@ -19,6 +19,9 @@ use hibikilogy_tools::font::asset::{
     clear_preload_cache, publish_chunked_font, subset_and_publish, subset_font_descriptors,
     CleanupReport, PublishedChunk, SubsetPublishOptions,
 };
+use hibikilogy_tools::font::coverage::{
+    collect_codepoints, is_cjk_codepoint, LATIN_RETAINED_CODEPOINTS, LATIN_RETAINED_RANGES,
+};
 use hibikilogy_tools::{front_matter, managed_fs};
 
 #[derive(Debug, Parser)]
@@ -220,7 +223,7 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
     for fragment in &all_fragments {
         for ch in fragment.chars() {
             let codepoint = ch as u32;
-            if should_subset_body_codepoint(codepoint) {
+            if is_cjk_codepoint(codepoint) {
                 *site_counts.entry(codepoint).or_default() += 1;
             }
         }
@@ -246,9 +249,11 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
 
     // Remove the patch's codepoints from the chunk faces' unicode-range
     // declarations so every body character is declared by exactly one face.
-    let mut owned: Vec<u32> = patch_codepoints.clone();
-    owned.extend(latin_codepoints.iter().copied());
-    let owned: std::collections::BTreeSet<u32> = owned.into_iter().collect();
+    let owned: std::collections::BTreeSet<u32> = patch_codepoints
+        .iter()
+        .chain(latin_codepoints.iter())
+        .copied()
+        .collect();
     let reclaimed = subtract_codepoints_from_base_css(&base_css, &options.font_family, &owned);
     if reclaimed.changed {
         managed_fs::write_atomic_if_changed(&options.base_css_path, reclaimed.css.as_bytes())
@@ -322,43 +327,21 @@ fn collect_toml_string_fragments(config_path: &Path) -> Result<Vec<String>> {
 }
 
 fn collect_body_font_codepoints(fragments: &[String]) -> Vec<u32> {
-    let mut codepoints = Vec::new();
-
-    for fragment in fragments {
-        codepoints.extend(
-            fragment
-                .chars()
-                .map(|ch| ch as u32)
-                .filter(|&codepoint| should_subset_body_codepoint(codepoint)),
-        );
-    }
-
-    codepoints.sort_unstable();
-    codepoints.dedup();
-    codepoints
+    collect_codepoints(fragments, &[], &[], is_cjk_codepoint)
 }
 
-/// Codepoints shipped in the consolidated latin subset: the printable ASCII
-/// range plus every other non-CJK character the site uses (Latin extensions,
-/// Western punctuation, symbols). CJK-family characters stay in the chunk
-/// series ([`should_subset_body_codepoint`]).
+/// Codepoints shipped in the consolidated latin subset: the retained latin
+/// set (printable ASCII plus common Western punctuation) plus every other
+/// non-CJK character the site uses (Latin extensions, Western punctuation,
+/// symbols). CJK-family characters stay in the chunk series
+/// ([`collect_body_font_codepoints`]).
 fn collect_latin_codepoints(fragments: &[String]) -> Vec<u32> {
-    let mut codepoints: Vec<u32> = (0x20..=0x7E).collect();
-
-    for fragment in fragments {
-        codepoints.extend(fragment.chars().map(|ch| ch as u32).filter(|&codepoint| {
-            !should_subset_body_codepoint(codepoint)
-                && !char::from_u32(codepoint).is_some_and(|ch| ch.is_control())
-        }));
-    }
-
-    codepoints.sort_unstable();
-    codepoints.dedup();
-    codepoints
-}
-
-fn should_subset_body_codepoint(codepoint: u32) -> bool {
-    hibikilogy_tools::font::coverage::is_cjk_codepoint(codepoint)
+    collect_codepoints(
+        fragments,
+        LATIN_RETAINED_RANGES,
+        LATIN_RETAINED_CODEPOINTS,
+        |codepoint| !is_cjk_codepoint(codepoint),
+    )
 }
 
 #[cfg(test)]

@@ -13,7 +13,7 @@
 //! Fonts' CJK slicing where the tail of a frequency-ordered list is the
 //! rarest data.
 
-use crate::font::asset::{hashed_output_file_name, split_file_name, Subsetter};
+use crate::font::asset::{hashed_output_file_name, split_file_name, Subsetter, FINAL_QUALITY};
 use anyhow::{Context, Result};
 use rayon::prelude::*;
 
@@ -37,8 +37,6 @@ const LADDER_BATCH: usize = 6;
 /// quality for a few percent larger output, so the probe-quality boundary is
 /// always a fitting lower bound for the final-quality one.
 const PROBE_QUALITY: usize = 9;
-/// WOFF2 brotli quality of the shipped chunks.
-const FINAL_QUALITY: usize = 11;
 /// Cap on the first upward walk batch, which steps one codepoint at a time
 /// around the headroom estimate.
 const FIRST_WALK_REACH: usize = 16;
