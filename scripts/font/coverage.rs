@@ -235,4 +235,33 @@ mod tests {
         let few = format_codepoint_list(&[0x4E00]);
         assert_eq!(few, "U+4E00 (一)");
     }
+
+    #[test]
+    fn collect_codepoints_merges_retained_seeds_and_excludes_controls() {
+        use super::{
+            collect_codepoints, is_cjk_codepoint, LATIN_RETAINED_CODEPOINTS, LATIN_RETAINED_RANGES,
+        };
+
+        // CJK keep: control characters excluded, result sorted.
+        let cjk = collect_codepoints(&["中文B\nA中文".to_string()], &[], &[], is_cjk_codepoint);
+        assert_eq!(cjk, vec![0x4E2D, 0x6587]);
+
+        // Latin keep: retained seeds (ASCII range + Western punctuation)
+        // always present, control characters never.
+        let latin = collect_codepoints(
+            &["中文A\t".to_string()],
+            LATIN_RETAINED_RANGES,
+            LATIN_RETAINED_CODEPOINTS,
+            |cp| !is_cjk_codepoint(cp),
+        );
+        assert!(latin.contains(&('A' as u32)));
+        assert!(latin.contains(&0x20));
+        assert!(latin.contains(&0x2014));
+        assert!(!latin.contains(&('\t' as u32)));
+        assert!(!latin.contains(&0x4E2D));
+        let mut sorted = latin.clone();
+        sorted.sort_unstable();
+        sorted.dedup();
+        assert_eq!(latin, sorted);
+    }
 }

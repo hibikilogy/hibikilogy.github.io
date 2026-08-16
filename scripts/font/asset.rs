@@ -222,10 +222,11 @@ pub struct SubsetPublishOptions<'a> {
     /// instead of any chunk. May be empty; the chunks are then the whole
     /// series.
     pub latin_codepoints: &'a [u32],
-    /// Records the first chunk's served path as JSON for the template's
-    /// `<link rel="preload">` (read via Zola's `load_data`, which needs a
-    /// stable location while chunk names are content-hashed). The file is
-    /// removed again if the series ever publishes nothing.
+    /// Records the served paths of the latin subset and the first chunk as
+    /// JSON for the template's `<link rel="preload">` (read via Zola's
+    /// `load_data`, which needs a stable location while chunk names are
+    /// content-hashed). The file is removed again if the series ever
+    /// publishes nothing.
     pub preload_cache_file: Option<&'a Path>,
 }
 
