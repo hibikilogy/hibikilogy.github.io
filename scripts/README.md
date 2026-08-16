@@ -27,6 +27,30 @@
 实测收益（2026-08，serif 标题字体 / sans patch 正文字体）：竖排黑名单约 −1.4%/−0.3%，
 去掉 GID 保留约 −2%/−2%，quality 8→11 约 −8%/−8%，合计约 **−10.8% / −10.0%**。
 
+### 分块与排序
+
+两个工具按同一规则把子集拆成 chunk 系列（`scripts/font/chunk.rs` + `frequency.rs`）：
+
+- **排序**：站内码位按本站语料出现次数降序（正文语料 = 文章正文 + 非 title front
+  matter + `zola.toml` + `i18n/zh.toml` 的全部字符串；标题语料 = 文章 title）；语料外
+  的字按 Google 简体中文字体切片表（`scripts/data/font-slicing.config.json`，源自
+  googlefonts/nam-files，Apache-2.0，文件内附来源与校验和）的相对顺序补在后面，
+  仍不在表里的按码位升序收尾。
+- **切块**：在排好序的码位上取压缩后不超过 `CHUNK_TARGET_BYTES`（55 KiB）的最长
+  前缀；末尾不足 `CHUNK_MIN_BYTES`（28 KiB）的尾巴并入上一块。边界定位分两阶段：
+  先用 q9（比 q11 快约 15 倍、体积只大几个百分点）做倍增探测 + 扇出细化找到保守
+  边界，再按种子实测的字节余量估计还能容纳的字数，以 q11 单步探测精确收尾——每个
+  批次内部用 rayon 并行压缩，且胜出探测的字节直接成为最终块，不做二次压缩。
+- **文件名**：`<系列名>-<序号>.<16位哈希>.woff2`，内容寻址，配合 Vercel
+  `/fonts/*` 的 immutable 缓存；旧产物清理只匹配该模式与历史单文件产物。
+- **预载**：每个系列第 1 块（最高频）的服务路径写入
+  `static/_cache/font-preload-{body,title}.json`，`base.html` 用
+  `load_data(required=false)` 读出后输出 `<link rel="preload">`；缓存缺失（本地
+  未跑子集化）时跳过预载，不影响构建。
+- 正文字体的 L1/L2/L3 静态分块已于 2026-08 删除：patch 系列独占声明全部站内码位，
+  避免一个字同时触发两个字体文件加载；`source-han-sans-sc-vf.css` 只保留注释占位，
+  仍作为 `--base-css` 输入做重叠校验。
+
 两个工具生成的 `@font-face` 描述符从**子集输出字体**读取，而非硬编码：
 
 - 有 `fvar` 的 `wght` 轴 → `font-weight: <min> <max>`（思源 VF 实际是 `250 900`）；
@@ -38,13 +62,15 @@
 - 子集输出必须满足 `(请求字符 ∩ 源字体 cmap) ⊆ 输出 cmap`；源字体不支持的字符
   （如标题里的 emoji）只警告，不失败。
 - body 工具逐 `@font-face` 校验 base CSS：`(声明范围 ∩ 源 cmap) ⊆ chunk cmap`，
-  src 缺失/解压失败/缺字报错，chunk 含未声明码位报警告。base CSS 与 L1/L2 chunk
-  文件漂移时构建会失败——2026-08 曾借此发现并修复了 95 个「声明但任何 chunk 都不含」
-  的码位（其中 12 个实际出现在正文里，此前静默回退到系统字体）。
+  src 缺失/解压失败/缺字报错，chunk 含未声明码位报警告；同一 family 的
+  `font-weight` 描述符必须一致（混用会让 Chrome 按字重桶跳过部分 face）。base
+  CSS 与分块文件漂移时构建会失败——2026-08 曾借此发现并修复了 95 个「声明但任何
+  chunk 都不含」的码位（其中 12 个实际出现在正文里，此前静默回退到系统字体）。
+  旧 L1/L2/L3 表还另有 992 个码位被重复声明，浏览器取文档序最后一条匹配规则，
+  导致 L1 层整体被 L2 遮蔽、从未加载；新的单归属声明（patch 系列独占）从结构上
+  消除了这类问题。
 
-文件名哈希用 SHA-256 截断 64 位（16 个 hex）；旧产物清理只匹配
-`<stem>.<16位hex>.<扩展名>` 与精确的模板文件名，不会误删同名前缀文件。字体与 CSS
-写入幂等：内容不变时不落盘，避免 mtime 抖动。
+字体与 CSS 写入幂等：内容不变时不落盘，避免 mtime 抖动。
 
 通过 pnpm 调用：
 
@@ -66,6 +92,7 @@ pnpm build:markdown
 - `bin/<tool>/` — 每个工具自己的代码。大工具里 `main.rs` 启动，`app.rs` 编排流程。
 - `bin/<tool>/tests/` — 工具单元测试。
 - `integration/` — CLI 冒烟测试。
+- `benchmarks/` — 基准测试记录（方法 + 数据），供后续改动对照。
 
 原则：跨工具共享的放 `shared/`，单工具专属的放 `bin/<tool>/`。
 
