@@ -83,7 +83,6 @@ production_base_url = "https://hibikilogy.github.io/"
 stylesheets = [
   "styles/uno.css",
   "styles/source-han-serif-cn-vf.css",
-  "styles/source-han-sans-sc-vf.css",
   "styles/source-han-sans-sc-vf.patch.css",
 ]
 busuanzi = true

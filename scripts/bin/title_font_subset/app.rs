@@ -10,7 +10,9 @@ use walkdir::WalkDir;
 
 use crate::codepoints::collect_title_codepoints;
 use crate::markdown::extract_title;
-use hibikilogy_tools::font::asset::{subset_and_publish, CleanupReport, SubsetPublishOptions};
+use hibikilogy_tools::font::asset::{
+    subset_and_publish, CleanupReport, PublishedChunk, SubsetPublishOptions,
+};
 
 #[derive(Debug, Parser)]
 #[command(about = "Subset a title font from markdown front matter titles.")]
@@ -35,6 +37,11 @@ struct Args {
 
     #[arg(long)]
     output_file: String,
+
+    /// Where to record the first chunk's served path for template preloading
+    /// (e.g. `static/_cache/font-preload-title.json`).
+    #[arg(long)]
+    preload_cache_file: Option<PathBuf>,
 }
 
 #[derive(Debug, Clone)]
@@ -46,6 +53,7 @@ struct GenerateOptions {
     css_file: String,
     font_family: String,
     output_file: String,
+    preload_cache_file: Option<PathBuf>,
 }
 
 impl From<Args> for GenerateOptions {
@@ -58,22 +66,16 @@ impl From<Args> for GenerateOptions {
             css_file: args.css_file,
             font_family: args.font_family,
             output_file: args.output_file,
+            preload_cache_file: args.preload_cache_file,
         }
     }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct GeneratedFont {
-    file_name: String,
-    codepoints: Vec<u32>,
-    bytes: u64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct GenerateReport {
     titles: usize,
     codepoints: usize,
-    font: GeneratedFont,
+    chunks: Vec<PublishedChunk>,
     css_path: PathBuf,
     cleanup: CleanupReport,
 }
@@ -82,15 +84,14 @@ pub fn run() -> Result<()> {
     let report = generate_title_font_subset(&GenerateOptions::from(Args::parse()))?;
 
     println!(
-        "generated {} from {} title(s), {} unique codepoint(s)",
-        report.font.file_name, report.titles, report.codepoints
+        "generated {} chunk(s) from {} title(s), {} unique codepoint(s)",
+        report.chunks.len(),
+        report.titles,
+        report.codepoints
     );
-    println!(
-        "{}: {} bytes, {} codepoint(s)",
-        report.font.file_name,
-        report.font.bytes,
-        report.font.codepoints.len()
-    );
+    for chunk in &report.chunks {
+        println!("  {}: {} bytes", chunk.file_name, chunk.bytes);
+    }
     report.cleanup.print_summary();
     println!("css: {}", report.css_path.display());
 
@@ -107,6 +108,13 @@ fn generate_title_font_subset(options: &GenerateOptions) -> Result<GenerateRepor
     }
     let codepoints = collect_title_codepoints(&titles);
 
+    let mut site_counts: std::collections::HashMap<u32, u64> = std::collections::HashMap::new();
+    for title in &titles {
+        for ch in title.chars() {
+            *site_counts.entry(ch as u32).or_default() += 1;
+        }
+    }
+
     let font_data = fs::read(&options.font_path)
         .with_context(|| format!("failed to read font {}", options.font_path.display()))?;
     let published = subset_and_publish(
@@ -120,17 +128,16 @@ fn generate_title_font_subset(options: &GenerateOptions) -> Result<GenerateRepor
             css_file: &options.css_file,
             output_file: &options.output_file,
             missing_source_label: "requested by titles",
+            site_counts: &site_counts,
+            slicing_config: Path::new("scripts/data/font-slicing.config.json"),
+            preload_cache_file: options.preload_cache_file.as_deref(),
         },
     )?;
 
     Ok(GenerateReport {
         titles: titles.len(),
         codepoints: codepoints.len(),
-        font: GeneratedFont {
-            file_name: published.file_name,
-            codepoints,
-            bytes: published.bytes,
-        },
+        chunks: published.chunks,
         css_path: published.css_path,
         cleanup: published.cleanup,
     })

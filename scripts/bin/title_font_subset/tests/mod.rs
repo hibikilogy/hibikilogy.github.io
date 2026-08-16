@@ -20,6 +20,7 @@ fn generate_options(content_dir: PathBuf, temp: &Path) -> GenerateOptions {
         css_file: "title-font.css".to_string(),
         font_family: "Test Title Font".to_string(),
         output_file: "title-font.woff2".to_string(),
+        preload_cache_file: None,
     }
 }
 
@@ -124,8 +125,34 @@ fn generates_subset_font_and_css_from_content_titles() {
         report.codepoints >= 4,
         "expected the four hanzi, got: {report:?}"
     );
-    assert!(font_output_dir.join(&report.font.file_name).exists());
-    assert!(report.font.bytes > 0);
+    assert!(!report.chunks.is_empty());
+    for chunk in &report.chunks {
+        assert!(font_output_dir.join(&chunk.file_name).exists());
+        assert!(chunk.bytes > 0);
+    }
     let css = fs::read_to_string(css_output_dir.join("title-font.css")).unwrap();
     assert!(css.contains("Test Title Font"));
+}
+
+#[test]
+fn writes_preload_cache_pointing_at_the_first_chunk() {
+    let temp = tempfile::tempdir().unwrap();
+    let content_dir = temp.path().join("content");
+    let cache_file = temp.path().join("cache").join("font-preload.json");
+    fs::create_dir_all(&content_dir).unwrap();
+    write_file(
+        &content_dir,
+        "2026-01-01-hello.md",
+        "+++\ntitle = \"你好世界\"\n+++\n正文\n",
+    );
+
+    let mut options = generate_options(content_dir, temp.path());
+    options.preload_cache_file = Some(cache_file.clone());
+    let report = generate_title_font_subset(&options).unwrap();
+
+    let cache = fs::read_to_string(&cache_file).unwrap();
+    assert_eq!(
+        cache,
+        format!("{{\"path\": \"fonts/{}\"}}\n", report.chunks[0].file_name)
+    );
 }

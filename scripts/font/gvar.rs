@@ -37,21 +37,62 @@ const GVAR_HEADER_LEN: u32 = 20;
 /// stored values are real offsets divided by two, so `2 * 0xFFFF`.
 const SHORT_OFFSET_LIMIT: usize = 0x1_FFFE;
 
+/// Source-font side of a gvar repair, computed once and reused across many
+/// subsets of the same font: the parsed `gvar` table, per-glyph `glyf`
+/// outline spans, and the outline digest index. Building the index hashes
+/// every source outline, so subsetting loops must not redo it per subset.
+pub struct GvarSource<'a> {
+    gvar: Option<Gvar<'a>>,
+    spans: Vec<&'a [u8]>,
+    by_digest: HashMap<u64, Vec<u32>>,
+}
+
+impl<'a> GvarSource<'a> {
+    /// Index `source`'s outlines for repair. A source without `gvar` yields a
+    /// pass-through source.
+    pub fn new(source: &FontRef<'a>) -> Result<Self> {
+        let Some(gvar) = source.gvar().ok() else {
+            return Ok(Self {
+                gvar: None,
+                spans: Vec::new(),
+                by_digest: HashMap::new(),
+            });
+        };
+        let spans = glyph_spans(source).context("failed to read source glyf/loca")?;
+        let mut by_digest: HashMap<u64, Vec<u32>> = HashMap::new();
+        for (gid, span) in spans.iter().enumerate() {
+            by_digest
+                .entry(outline_digest(unpadded(span)))
+                .or_default()
+                .push(gid as u32);
+        }
+        Ok(Self {
+            gvar: Some(gvar),
+            spans,
+            by_digest,
+        })
+    }
+}
+
 /// Return `subset_data` with its `gvar` table rebuilt from `source_data`.
 /// Fonts without `gvar` (either side) pass through unchanged.
 pub fn repair_subset_gvar(source_data: &[u8], subset_data: &[u8]) -> Result<Vec<u8>> {
     let source = FontRef::new(source_data).context("failed to parse source font")?;
-    let subset = FontRef::new(subset_data).context("failed to parse subset font")?;
+    repair_with_source(&GvarSource::new(&source)?, subset_data)
+}
 
-    let (Ok(source_gvar), Ok(_)) = (source.gvar(), subset.gvar()) else {
+/// [`repair_subset_gvar`] with a prebuilt [`GvarSource`], for callers
+/// subsetting the same font repeatedly.
+pub fn repair_with_source(source: &GvarSource, subset_data: &[u8]) -> Result<Vec<u8>> {
+    let subset = FontRef::new(subset_data).context("failed to parse subset font")?;
+    let (Some(source_gvar), Ok(_)) = (source.gvar.as_ref(), subset.gvar()) else {
         return Ok(subset_data.to_vec());
     };
 
-    let source_spans = glyph_spans(&source).context("failed to read source glyf/loca")?;
     let subset_spans = glyph_spans(&subset).context("failed to read subset glyf/loca")?;
-    let blobs = resolve_source_blobs(&source_gvar, &source_spans, &subset_spans)?;
+    let blobs = resolve_source_blobs(source_gvar, &source.spans, &source.by_digest, &subset_spans)?;
 
-    let rebuilt = serialize_gvar(&source_gvar, &blobs)?;
+    let rebuilt = serialize_gvar(source_gvar, &blobs)?;
 
     // Rebuild the font with the repaired table. `FontBuilder` re-sorts the
     // directory and recomputes table checksums and `checkSumAdjustment`.
@@ -71,22 +112,16 @@ pub fn repair_subset_gvar(source_data: &[u8], subset_data: &[u8]) -> Result<Vec<
 }
 
 /// Resolve each subset glyph to its source glyph's variation blob by
-/// matching `glyf` outline bytes. skera builds `new_to_old_gid_list` from an
-/// `IntSet` iterated ascending, so matched old gids must strictly increase
-/// with the new gid; that order also disambiguates identical outlines.
+/// matching `glyf` outline bytes against the prebuilt digest index. skera
+/// builds `new_to_old_gid_list` from an `IntSet` iterated ascending, so
+/// matched old gids must strictly increase with the new gid; that order also
+/// disambiguates identical outlines.
 fn resolve_source_blobs<'a>(
     source_gvar: &Gvar<'a>,
     source_spans: &[&'a [u8]],
+    by_digest: &HashMap<u64, Vec<u32>>,
     subset_spans: &[&[u8]],
 ) -> Result<Vec<&'a [u8]>> {
-    let mut by_digest: HashMap<u64, Vec<u32>> = HashMap::new();
-    for (gid, span) in source_spans.iter().enumerate() {
-        by_digest
-            .entry(outline_digest(unpadded(span)))
-            .or_default()
-            .push(gid as u32);
-    }
-
     let mut blobs: Vec<&[u8]> = Vec::with_capacity(subset_spans.len());
     let mut prev_old_gid: i64 = -1;
     for (new_gid, span) in subset_spans.iter().enumerate() {

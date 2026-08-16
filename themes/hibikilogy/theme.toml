@@ -13,7 +13,6 @@ article_section = "articles/_index.md"
 stylesheets = [
   "styles/uno.css",
   "styles/source-han-serif-cn-vf.css",
-  "styles/source-han-sans-sc-vf.css",
   "styles/source-han-sans-sc-vf.patch.css",
 ]
 busuanzi = false

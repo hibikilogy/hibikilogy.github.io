@@ -134,37 +134,61 @@ fn horizontal_layout_features(font: &FontRef) -> Result<IntSet<Tag>> {
     Ok(features)
 }
 
+/// A source font prepared for repeated subsetting: parsed once, with the
+/// horizontal layout-feature list and the gvar repair index precomputed, so
+/// chunk-size probes don't redo that work per probe.
+pub struct Subsetter<'a> {
+    font: FontRef<'a>,
+    layout_features: IntSet<Tag>,
+    gvar_source: crate::font::gvar::GvarSource<'a>,
+}
+
+impl<'a> Subsetter<'a> {
+    pub fn new(font_data: &'a [u8]) -> Result<Self> {
+        let font = FontRef::new(font_data).context("failed to parse input font")?;
+        let layout_features = horizontal_layout_features(&font)?;
+        let gvar_source = crate::font::gvar::GvarSource::new(&font)?;
+        Ok(Self {
+            font,
+            layout_features,
+            gvar_source,
+        })
+    }
+
+    pub fn subset(&self, codepoints: &[u32]) -> Result<Vec<u8>> {
+        let unicodes = codepoints.iter().copied().collect::<IntSet<u32>>();
+        let gids = IntSet::empty();
+        let drop_tables = IntSet::<Tag>::empty();
+        let layout_scripts = inverted_set::<Tag>();
+        let name_ids = inverted_set::<NameId>();
+        let name_languages = inverted_set::<u16>();
+        let flags = SubsetFlags::SUBSET_FLAGS_PASSTHROUGH_UNRECOGNIZED
+            | SubsetFlags::SUBSET_FLAGS_GLYPH_NAMES
+            | SubsetFlags::SUBSET_FLAGS_NOTDEF_OUTLINE;
+
+        let plan = Plan::new(
+            &gids,
+            &unicodes,
+            &self.font,
+            flags,
+            &drop_tables,
+            &layout_scripts,
+            &self.layout_features,
+            &name_ids,
+            &name_languages,
+        );
+
+        let subset = subset_font(&self.font, &plan)
+            .map_err(|error| anyhow!("skera subset failed: {error}"))?;
+        // skera corrupts the gvar offset array whenever subsetting compacts
+        // glyph IDs (see the gvar module docs); rebuild the table before it
+        // reaches a renderer.
+        crate::font::gvar::repair_with_source(&self.gvar_source, &subset)
+    }
+}
+
 pub fn subset_with_skera(font_data: &[u8], codepoints: &[u32]) -> Result<Vec<u8>> {
-    let font = FontRef::new(font_data).context("failed to parse input font")?;
-    let unicodes = codepoints.iter().copied().collect::<IntSet<u32>>();
-    let gids = IntSet::empty();
-    let drop_tables = IntSet::<Tag>::empty();
-    let layout_scripts = inverted_set::<Tag>();
-    let layout_features = horizontal_layout_features(&font)?;
-    let name_ids = inverted_set::<NameId>();
-    let name_languages = inverted_set::<u16>();
-    let flags = SubsetFlags::SUBSET_FLAGS_PASSTHROUGH_UNRECOGNIZED
-        | SubsetFlags::SUBSET_FLAGS_GLYPH_NAMES
-        | SubsetFlags::SUBSET_FLAGS_NOTDEF_OUTLINE;
-
-    let plan = Plan::new(
-        &gids,
-        &unicodes,
-        &font,
-        flags,
-        &drop_tables,
-        &layout_scripts,
-        &layout_features,
-        &name_ids,
-        &name_languages,
-    );
-
-    let subset =
-        subset_font(&font, &plan).map_err(|error| anyhow!("skera subset failed: {error}"))?;
-    // skera corrupts the gvar offset array whenever subsetting compacts
-    // glyph IDs (see the gvar module docs); rebuild the table before it
-    // reaches a renderer.
-    crate::font::gvar::repair_subset_gvar(font_data, &subset)
+    Subsetter::new(font_data)?.subset(codepoints)
 }
 
 /// Where and how [`subset_and_publish`] writes its artifacts.
@@ -176,23 +200,43 @@ pub struct SubsetPublishOptions<'a> {
     pub font_output_dir: &'a Path,
     pub css_output_dir: &'a Path,
     pub css_file: &'a str,
+    /// Series stem for content-hashed chunk names, e.g.
+    /// `source-han-sans-sc-vf.patch.woff2`.
     pub output_file: &'a str,
     /// Noun phrase used in the fallback warning for codepoints the source
     /// font does not map, e.g. "required by content".
     pub missing_source_label: &'a str,
+    /// Per-codepoint usage counts from the site; drives the first frequency
+    /// layer of chunk ordering (the rest fall back to the Google slicing
+    /// table at `slicing_config`).
+    pub site_counts: &'a std::collections::HashMap<u32, u64>,
+    /// `scripts/data/font-slicing.config.json`.
+    pub slicing_config: &'a Path,
+    /// Records the first chunk's served path as JSON for the template's
+    /// `<link rel="preload">` (read via Zola's `load_data`, which needs a
+    /// stable location while chunk names are content-hashed). The file is
+    /// removed again if the series ever publishes nothing.
+    pub preload_cache_file: Option<&'a Path>,
+}
+
+/// One published chunk: file name plus compressed size.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PublishedChunk {
+    pub file_name: String,
+    pub bytes: u64,
 }
 
 /// Artifacts written by [`subset_and_publish`].
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PublishedSubset {
-    pub file_name: String,
-    pub bytes: u64,
+    pub chunks: Vec<PublishedChunk>,
     pub css_path: PathBuf,
     pub cleanup: CleanupReport,
 }
 
-/// Subset `font_data` to `codepoints`, verify coverage, and publish the
-/// WOFF2 plus its `@font-face` CSS.
+/// Subset `font_data` to `codepoints` (frequency order), split the result
+/// into chunks sized for lazy loading, verify coverage, and publish the
+/// chunks plus their `@font-face` CSS.
 ///
 /// Missing codepoints the source font supports fail the build; codepoints
 /// the source font itself does not map only warn (they fall back to a later
@@ -202,9 +246,25 @@ pub fn subset_and_publish(
     codepoints: &[u32],
     options: &SubsetPublishOptions,
 ) -> Result<PublishedSubset> {
-    let subset = subset_with_skera(font_data, codepoints)?;
+    let model =
+        crate::font::frequency::FrequencyModel::new(options.site_counts, options.slicing_config)?;
+    let ordered = model.order(codepoints);
+    let subsetter = Subsetter::new(font_data)?;
+    let chunks = crate::font::chunk::chunk_font(&subsetter, &ordered, options.output_file)?;
+    if chunks.is_empty() {
+        return Err(anyhow!(
+            "no codepoints to subset for {}",
+            options.font_family
+        ));
+    }
 
-    let coverage = verify_subset_coverage(codepoints, font_data, &subset)?;
+    let all: Vec<u32> = chunks
+        .iter()
+        .flat_map(|c| c.codepoints.iter().copied())
+        .collect();
+    // Verify coverage against the union of all chunk subsets, not one chunk.
+    let union_subset = subsetter.subset(&all)?;
+    let coverage = verify_subset_coverage(&all, font_data, &union_subset)?;
     if !coverage.missing_in_output.is_empty() {
         return Err(anyhow!(
             "subset output is missing codepoint(s) supported by the source font: {}",
@@ -219,34 +279,52 @@ pub fn subset_and_publish(
         );
     }
 
-    let woff2 = woofwoof::compress(&subset, "", 11, true).context("failed to compress WOFF2")?;
-
-    let descriptors = subset_font_descriptors(&subset)?;
-    let file_name = hashed_output_file_name(options.output_file, &woff2);
-    let font_url = font_url_for_css(
-        options.css_output_dir,
-        &options.font_output_dir.join(&file_name),
-    )?;
-    let css = write_font_css(
+    let descriptors = subset_font_descriptors(&union_subset)?;
+    let css_chunks: Vec<(String, &[u32])> = chunks
+        .iter()
+        .map(|chunk| {
+            font_url_for_css(
+                options.css_output_dir,
+                &options.font_output_dir.join(&chunk.file_name),
+            )
+            .map(|url| (url, chunk.codepoints.as_slice()))
+        })
+        .collect::<Result<_>>()?;
+    let css_refs: Vec<(&str, &[u32])> = css_chunks
+        .iter()
+        .map(|(url, cps)| (url.as_str(), *cps))
+        .collect();
+    let css = write_chunked_font_css(
         options.generator_name,
         options.font_family,
-        &font_url,
-        codepoints,
         "swap",
-        descriptors,
+        &descriptors,
+        &css_refs,
     );
     let css_path = options.css_output_dir.join(options.css_file);
-    let cleanup = publish_font_artifacts(
+    let publish_chunks: Vec<(&str, &[u8])> = chunks
+        .iter()
+        .map(|c| (c.file_name.as_str(), c.bytes.as_slice()))
+        .collect();
+    let cleanup = publish_chunked_font(
         options.font_output_dir,
         options.output_file,
-        Some((&file_name, &woff2)),
+        &publish_chunks,
         &css_path,
         &css,
     )?;
+    if let Some(cache_path) = options.preload_cache_file {
+        write_preload_cache(cache_path, options.font_output_dir, &chunks[0].file_name)?;
+    }
 
     Ok(PublishedSubset {
-        file_name,
-        bytes: woff2.len() as u64,
+        chunks: chunks
+            .iter()
+            .map(|c| PublishedChunk {
+                file_name: c.file_name.clone(),
+                bytes: c.bytes.len() as u64,
+            })
+            .collect(),
         css_path,
         cleanup,
     })
@@ -256,55 +334,6 @@ pub fn hashed_output_file_name(file_name: &str, bytes: &[u8]) -> String {
     let hash = sha256_hex64(bytes);
     let (stem, extension) = split_file_name(file_name);
     format!("{stem}.{hash}.{extension}")
-}
-
-pub fn remove_old_font_outputs(
-    output_dir: &Path,
-    template_file: &str,
-    keep_file: Option<&str>,
-) -> Result<CleanupReport> {
-    let (stem, extension) = split_file_name(template_file);
-    let mut report = CleanupReport::default();
-
-    for entry in fs::read_dir(output_dir)
-        .with_context(|| format!("failed to read {}", output_dir.display()))?
-    {
-        let entry = entry.with_context(|| format!("failed to read {}", output_dir.display()))?;
-        if !entry.file_type()?.is_file() {
-            continue;
-        }
-
-        let file_name = entry.file_name();
-        let file_name = file_name.to_string_lossy();
-        if keep_file.is_some_and(|keep| file_name == keep) {
-            continue;
-        }
-
-        // Only exact matches are removed: the plain template file (historical
-        // un-hashed artifacts) and `<stem>.<16 hex digits>.<extension>` hashed
-        // artifacts. Anything else, such as `<stem>.foo.<extension>` or
-        // `<stem>.manual-backup.<extension>`, is left alone.
-        let matches_plain = file_name == template_file;
-        let matches_hashed = is_hashed_artifact(&file_name, stem, extension);
-        if !matches_plain && !matches_hashed {
-            continue;
-        }
-
-        match fs::remove_file(entry.path()) {
-            Ok(()) => report.removed.push(file_name.into_owned()),
-            Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied => {
-                report.skipped.push(file_name.into_owned());
-            }
-            Err(error) => {
-                return Err(error)
-                    .with_context(|| format!("failed to remove {}", entry.path().display()));
-            }
-        }
-    }
-
-    report.removed.sort();
-    report.skipped.sort();
-    Ok(report)
 }
 
 /// Whether `file_name` is `<stem>.<exactly HASH_HEX_LEN hex digits>.<extension>`.
@@ -323,60 +352,151 @@ fn is_hashed_artifact(file_name: &str, stem: &str, extension: &str) -> bool {
         && ext == extension
 }
 
-pub fn publish_font_artifacts(
+/// Publish a chunked font series plus its `@font-face` CSS. `template_file`
+/// is the series stem (e.g. `font.patch.woff2`); every previous chunk of the
+/// series not in `chunks` is removed. Chunks publish in frequency order, so
+/// the first rule in the CSS is the highest-frequency chunk. An empty
+/// `chunks` list publishes the CSS alone and retires all previous artifacts.
+pub fn publish_chunked_font(
     font_output_dir: &Path,
-    template_file: &str,
-    font: Option<(&str, &[u8])>,
+    series_template: &str,
+    chunks: &[(&str, &[u8])],
     css_path: &Path,
     css: &str,
 ) -> Result<CleanupReport> {
-    // The cleanup below lists this directory, so it must exist even when no
-    // font is published.
     ensure_directory(font_output_dir)?;
-    let keep_file = if let Some((file_name, bytes)) = font {
+    for (file_name, bytes) in chunks {
         let output_path = font_output_dir.join(file_name);
         write_atomic_if_changed(&output_path, bytes)
             .with_context(|| format!("failed to publish {}", output_path.display()))?;
-        Some(file_name)
-    } else {
-        None
-    };
-
+    }
     write_atomic_if_changed(css_path, css.as_bytes())
         .with_context(|| format!("failed to publish {}", css_path.display()))?;
-    remove_old_font_outputs(font_output_dir, template_file, keep_file)
+
+    let (stem, extension) = split_file_name(series_template);
+    let keep: Vec<&str> = chunks.iter().map(|(name, _)| *name).collect();
+    let mut report = CleanupReport::default();
+    for entry in fs::read_dir(font_output_dir)
+        .with_context(|| format!("failed to read {}", font_output_dir.display()))?
+    {
+        let entry =
+            entry.with_context(|| format!("failed to read {}", font_output_dir.display()))?;
+        if !entry.file_type()?.is_file() {
+            continue;
+        }
+        let file_name = entry.file_name();
+        let file_name = file_name.to_string_lossy();
+        if keep.contains(&file_name.as_ref()) {
+            continue;
+        }
+        // Chunk names are `<stem>-<n>.<16 hex>.<ext>`; the plain template and
+        // single-file hashed artifacts are also retired.
+        let is_chunk = is_hashed_chunk(&file_name, stem, extension);
+        let is_legacy =
+            file_name == series_template || is_hashed_artifact(&file_name, stem, extension);
+        if !is_chunk && !is_legacy {
+            continue;
+        }
+        match fs::remove_file(entry.path()) {
+            Ok(()) => report.removed.push(file_name.into_owned()),
+            Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied => {
+                report.skipped.push(file_name.into_owned());
+            }
+            Err(error) => {
+                return Err(error)
+                    .with_context(|| format!("failed to remove {}", entry.path().display()));
+            }
+        }
+    }
+    report.removed.sort();
+    report.skipped.sort();
+    Ok(report)
 }
 
-pub fn write_font_css(
+/// Whether `file_name` is `<stem>-<digits>.<exactly HASH_HEX_LEN hex>.<extension>`.
+fn is_hashed_chunk(file_name: &str, stem: &str, extension: &str) -> bool {
+    let Some(rest) = file_name.strip_prefix(stem) else {
+        return false;
+    };
+    let Some(rest) = rest.strip_prefix('-') else {
+        return false;
+    };
+    let Some((number, rest)) = rest.split_once('.') else {
+        return false;
+    };
+    if number.is_empty() || !number.bytes().all(|b| b.is_ascii_digit()) {
+        return false;
+    }
+    let Some((hash, ext)) = rest.rsplit_once('.') else {
+        return false;
+    };
+    hash.len() == HASH_HEX_LEN
+        && hash.bytes().all(|byte| byte.is_ascii_hexdigit())
+        && ext == extension
+}
+
+/// Record the first chunk's served path as `{"path": "<dir>/<file>"}` for the
+/// template's preload links. The served prefix is the font directory's own
+/// name (`themes/hibikilogy/static/fonts` is served at `/fonts/`).
+fn write_preload_cache(cache_path: &Path, font_output_dir: &Path, first_chunk: &str) -> Result<()> {
+    let served_dir = font_output_dir
+        .file_name()
+        .with_context(|| format!("{} has no directory name", font_output_dir.display()))?
+        .to_string_lossy();
+    let json = format!("{{\"path\": \"{served_dir}/{first_chunk}\"}}\n");
+    if let Some(parent) = cache_path.parent() {
+        ensure_directory(parent)?;
+    }
+    write_atomic_if_changed(cache_path, json.as_bytes())
+        .with_context(|| format!("failed to write {}", cache_path.display()))?;
+    Ok(())
+}
+
+/// Remove the preload cache when the series publishes no chunks, so a stale
+/// entry cannot preload a deleted font file.
+pub fn clear_preload_cache(cache_path: &Path) -> Result<()> {
+    match fs::remove_file(cache_path) {
+        Ok(()) => Ok(()),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(()),
+        Err(error) => {
+            Err(error).with_context(|| format!("failed to remove {}", cache_path.display()))
+        }
+    }
+}
+
+/// Render one `@font-face` rule per chunk, in order. `descriptors` apply to
+/// every rule (a chunk series is one logical face, split for lazy loading).
+pub fn write_chunked_font_css(
     generator_name: &str,
     font_family: &str,
-    font_url: &str,
-    codepoints: &[u32],
     font_display: &str,
-    descriptors: FontFaceDescriptors,
+    descriptors: &FontFaceDescriptors,
+    chunks: &[(&str, &[u32])],
 ) -> String {
     let mut css = format!("/* Generated by {generator_name}. Do not edit by hand. */\n\n");
-    css.push_str("@font-face {\n");
-    css.push_str(&format!(
-        "  font-family: \"{}\";\n",
-        escape_css_string(font_family)
-    ));
-    if let Some(style) = descriptors.style {
-        css.push_str(&format!("  font-style: {};\n", style));
+    for (font_url, codepoints) in chunks {
+        css.push_str("@font-face {\n");
+        css.push_str(&format!(
+            "  font-family: \"{}\";\n",
+            escape_css_string(font_family)
+        ));
+        if let Some(style) = &descriptors.style {
+            css.push_str(&format!("  font-style: {style};\n"));
+        }
+        if let Some(weight) = &descriptors.weight {
+            css.push_str(&format!("  font-weight: {weight};\n"));
+        }
+        css.push_str(&format!("  font-display: {font_display};\n"));
+        css.push_str(&format!(
+            "  src: url(\"{}\") format(\"woff2\");\n",
+            escape_css_string(font_url)
+        ));
+        css.push_str(&format!(
+            "  unicode-range: {};\n",
+            css_unicode_range(codepoints)
+        ));
+        css.push_str("}\n\n");
     }
-    if let Some(weight) = descriptors.weight {
-        css.push_str(&format!("  font-weight: {};\n", weight));
-    }
-    css.push_str(&format!("  font-display: {};\n", font_display));
-    css.push_str(&format!(
-        "  src: url(\"{}\") format(\"woff2\");\n",
-        escape_css_string(font_url)
-    ));
-    css.push_str(&format!(
-        "  unicode-range: {};\n",
-        css_unicode_range(codepoints)
-    ));
-    css.push_str("}\n");
     css
 }
 
@@ -405,7 +525,9 @@ where
     set
 }
 
-fn split_file_name(file_name: &str) -> (&str, &str) {
+/// Split a file name into stem and extension at the last dot, defaulting the
+/// extension to `woff2` (the only font format these tools publish).
+pub(crate) fn split_file_name(file_name: &str) -> (&str, &str) {
     file_name.rsplit_once('.').unwrap_or((file_name, "woff2"))
 }
 
@@ -500,10 +622,7 @@ fn relative_path(from_dir: &Path, to_path: &Path) -> Option<PathBuf> {
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        css_unicode_range, hashed_output_file_name, remove_old_font_outputs, subset_with_skera,
-        CleanupReport,
-    };
+    use super::{css_unicode_range, hashed_output_file_name, subset_with_skera};
     use crate::font::coverage::{classify_coverage, font_codepoints};
     use std::collections::BTreeSet;
     use std::fs;
@@ -522,67 +641,31 @@ mod tests {
         ))
     }
 
-    fn touch(dir: &std::path::Path, name: &str) {
-        fs::write(dir.join(name), b"x").unwrap();
-    }
-
-    fn cleanup_report(template_file: &str, names: &[&str]) -> Vec<String> {
-        let dir = unique_dir("cleanup");
+    #[test]
+    fn publish_chunked_font_retires_previous_chunks() {
+        let dir = unique_dir("retire");
         fs::create_dir_all(&dir).unwrap();
-        for name in names {
-            touch(&dir, name);
-        }
-        let report = remove_old_font_outputs(&dir, template_file, None).unwrap();
-        fs::remove_dir_all(dir).unwrap();
-        report.removed
-    }
-
-    #[test]
-    fn cleanup_removes_only_plain_template_and_exact_hashed_artifacts() {
-        let removed = cleanup_report(
-            "font.woff2",
-            &[
-                "font.woff2",                   // plain template: removed
-                "font.1234567890abcdef.woff2",  // 16 hex digits: removed
-                "font.foo.woff2",               // non-hash middle: kept
-                "font.manual-backup.woff2",     // non-hash middle: kept
-                "font.1234567890abcde.woff2",   // 15 hex digits: kept
-                "font.1234567890abcdefg.woff2", // 17 hex digits: kept
-                "font.1234567890abcdef.ttf",    // wrong extension: kept
-                "other.1234567890abcdef.woff2", // other stem: kept
-            ],
-        );
-        assert_eq!(removed, vec!["font.1234567890abcdef.woff2", "font.woff2"]);
-    }
-
-    #[test]
-    fn cleanup_handles_stems_containing_dots() {
-        let removed = cleanup_report(
+        let css_path = dir.join("font.css");
+        let chunk = "font.patch-1.1234567890abcdef.woff2";
+        super::publish_chunked_font(
+            &dir,
             "font.patch.woff2",
-            &[
-                "font.patch.woff2",                  // plain template: removed
-                "font.patch.abcdef1234567890.woff2", // 16 hex digits: removed
-                "font.patch.foo.woff2",              // non-hash middle: kept
-                "font.patch.woff2.bak",              // unrelated: kept
-            ],
-        );
-        assert_eq!(
-            removed,
-            vec!["font.patch.abcdef1234567890.woff2", "font.patch.woff2"]
-        );
-    }
+            &[(chunk, b"one")],
+            &css_path,
+            "/* one */",
+        )
+        .unwrap();
+        assert!(dir.join(chunk).exists());
 
-    #[test]
-    fn cleanup_keeps_the_newly_published_file() {
-        let dir = unique_dir("keep");
-        fs::create_dir_all(&dir).unwrap();
-        touch(&dir, "font.aaaaaaaaaaaaaaaa.woff2");
-        touch(&dir, "font.1234567890abcdef.woff2");
-        let report: CleanupReport =
-            remove_old_font_outputs(&dir, "font.woff2", Some("font.aaaaaaaaaaaaaaaa.woff2"))
+        // Publishing an empty series must remove the previous chunk files, or
+        // stale hashed artifacts would linger in the served directory.
+        let report =
+            super::publish_chunked_font(&dir, "font.patch.woff2", &[], &css_path, "/* empty */")
                 .unwrap();
+        assert_eq!(report.removed, vec![chunk]);
+        assert!(!dir.join(chunk).exists());
+        assert_eq!(fs::read_to_string(&css_path).unwrap(), "/* empty */");
         fs::remove_dir_all(dir).unwrap();
-        assert_eq!(report.removed, vec!["font.1234567890abcdef.woff2"]);
     }
 
     #[test]
@@ -645,27 +728,6 @@ mod tests {
         let descriptors = subset_font_descriptors(&serif).expect("font should parse");
         assert_eq!(descriptors.style.as_deref(), Some("normal"));
         assert_eq!(descriptors.weight.as_deref(), Some("250 900"));
-    }
-
-    #[test]
-    fn write_font_css_emits_owned_descriptors() {
-        use super::{write_font_css, FontFaceDescriptors};
-        let css = write_font_css(
-            "test",
-            "Fam",
-            "../fonts/f.woff2",
-            &[0x4E00],
-            "swap",
-            FontFaceDescriptors {
-                style: Some("normal".to_string()),
-                weight: Some("250 900".to_string()),
-            },
-        );
-        assert!(css.contains("font-family: \"Fam\";"));
-        assert!(css.contains("font-style: normal;"));
-        assert!(css.contains("font-weight: 250 900;"));
-        assert!(css.contains("font-display: swap;"));
-        assert!(css.contains("unicode-range: U+4E00;"));
     }
 
     fn layout_feature_tags(feature_list: &FeatureList) -> BTreeSet<String> {

@@ -2,16 +2,17 @@
 //! the per-`@font-face` base CSS parser.
 
 use super::{
-    collect_body_font_codepoints, collect_body_text_from_config, collect_body_text_from_content,
+    collect_body_font_codepoints, collect_body_text_from_content, collect_toml_string_fragments,
 };
 use crate::css_coverage::{
-    check_weight_consistency, filter_uncovered_codepoints, parse_unicode_range_value,
-    validate_font_faces_with_source, CssUnicodeRanges, ParsedFontFaces,
+    check_weight_consistency, parse_unicode_range_value, subtract_codepoints_from_base_css,
+    validate_font_faces_with_source, ParsedFontFaces,
 };
-use hibikilogy_tools::font::asset::css_unicode_range;
+use hibikilogy_tools::font::asset::{css_unicode_range, subset_with_skera};
 use hibikilogy_tools::font::coverage::font_codepoints;
 use std::collections::BTreeSet;
 use std::fs;
+use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 // ---------------------------------------------------------------------------
@@ -80,7 +81,7 @@ fn collects_strings_from_config_toml() {
     )
     .unwrap();
 
-    let strings = collect_body_text_from_config(&path).unwrap();
+    let strings = collect_toml_string_fragments(&path).unwrap();
     assert!(strings.iter().any(|text| text == "https://example.com"));
     assert!(strings.iter().any(|text| text == "站点说明"));
 
@@ -131,27 +132,6 @@ fn parses_faces_with_comments_and_case_variants() {
 }
 
 #[test]
-fn covered_ranges_filters_by_family_and_merges() {
-    let faces = ParsedFontFaces::parse(BASE_CSS).unwrap();
-    assert_eq!(
-        faces.covered_ranges("Source Han Sans SC VF"),
-        vec![(0x4E00, 0x4E00), (0x662F, 0x662F), (0x7684, 0x7684)]
-    );
-    // Other families do not contribute coverage.
-    assert_eq!(
-        faces.covered_ranges("Missing Family"),
-        Vec::<(u32, u32)>::new()
-    );
-}
-
-#[test]
-fn unrestricted_rule_covers_everything() {
-    let css = "@font-face { font-family: 'F'; src: url('f.woff2'); }";
-    let faces = ParsedFontFaces::parse(css).unwrap();
-    assert_eq!(faces.covered_ranges("F"), vec![(0, 0x10FFFF)]);
-}
-
-#[test]
 fn empty_unicode_range_declaration_is_an_error() {
     let css = "@font-face { font-family: 'F'; unicode-range: ; }";
     let error = ParsedFontFaces::parse(css).expect_err("empty declaration must fail");
@@ -181,30 +161,39 @@ fn wildcards_expand_low_bits() {
     assert!(parse_unicode_range_value("U+???????").is_err());
 }
 
+/// Subset the committed source font to `codepoints` and write it as a real
+/// WOFF2 at `<temp>/fonts/chunk.woff2`, so validation tests resolve the CSS
+/// `src` against an actual file.
+fn write_chunk_fixture(temp: &Path, codepoints: &[u32]) {
+    let font_data = fs::read("themes/hibikilogy/static/fonts/SourceHanSansSC-VF.ttf")
+        .expect("committed source font should exist");
+    let subset = subset_with_skera(&font_data, codepoints).expect("subset should succeed");
+    let woff2 = woofwoof::compress(&subset, "", 11, true).expect("compress should succeed");
+    let fonts_dir = temp.join("fonts");
+    fs::create_dir_all(&fonts_dir).unwrap();
+    fs::write(fonts_dir.join("chunk.woff2"), woff2).unwrap();
+}
+
 #[test]
 fn validation_checks_declared_against_chunk_cmap() {
     // A rule declaring exactly the chunk's real codepoints validates
     // clean, with no missing characters and no undeclared warnings.
-    let chunk = fs::read("themes/hibikilogy/static/fonts/L1_7684_256.woff2")
-        .expect("committed L1 chunk should exist");
+    let temp = tempfile::tempdir().unwrap();
+    write_chunk_fixture(temp.path(), &[0x4E00, 0x662F, 0x7684]);
+    let chunk = fs::read(temp.path().join("fonts/chunk.woff2")).unwrap();
     let codepoints: Vec<u32> = font_codepoints(&chunk)
         .expect("chunk should parse")
         .into_iter()
         .collect();
     let css = format!(
-        "@font-face {{ font-family: 'F'; src: url('../fonts/L1_7684_256.woff2'); unicode-range: {}; }}",
+        "@font-face {{ font-family: 'F'; src: url('../fonts/chunk.woff2'); unicode-range: {}; }}",
         css_unicode_range(&codepoints)
     );
     let faces = ParsedFontFaces::parse(&css).unwrap();
     let source: BTreeSet<u32> = codepoints.into_iter().collect();
 
-    let warnings = validate_font_faces_with_source(
-        &faces,
-        std::path::Path::new("themes/hibikilogy/static/styles"),
-        "F",
-        &source,
-    )
-    .unwrap();
+    let warnings =
+        validate_font_faces_with_source(&faces, &temp.path().join("styles"), "F", &source).unwrap();
     assert!(warnings.is_empty());
 }
 
@@ -212,34 +201,29 @@ fn validation_checks_declared_against_chunk_cmap() {
 fn validation_fails_on_chunk_missing_declared_characters() {
     // 、(U+3001) is supported by the source font but absent from this
     // hanzi-only chunk.
-    let css = "@font-face { font-family: 'F'; src: url('../fonts/L1_7684_256.woff2'); unicode-range: U+7684, U+3001; }";
+    let temp = tempfile::tempdir().unwrap();
+    write_chunk_fixture(temp.path(), &[0x7684]);
+    let css = "@font-face { font-family: 'F'; src: url('../fonts/chunk.woff2'); unicode-range: U+7684, U+3001; }";
     let faces = ParsedFontFaces::parse(css).unwrap();
     let source: BTreeSet<u32> = [0x7684, 0x3001].into_iter().collect();
 
-    let error = validate_font_faces_with_source(
-        &faces,
-        std::path::Path::new("themes/hibikilogy/static/styles"),
-        "F",
-        &source,
-    )
-    .expect_err("missing declared characters must fail");
+    let error = validate_font_faces_with_source(&faces, &temp.path().join("styles"), "F", &source)
+        .expect_err("missing declared characters must fail");
     assert!(error.to_string().contains("U+3001"));
 }
 
 #[test]
 fn validation_warns_on_undeclared_chunk_codepoints() {
-    // Declare only 的; the chunk contains many more codepoints.
-    let css = "@font-face { font-family: 'F'; src: url('../fonts/L1_7684_256.woff2'); unicode-range: U+7684; }";
+    // Declare only 的; the chunk contains two more codepoints.
+    let temp = tempfile::tempdir().unwrap();
+    write_chunk_fixture(temp.path(), &[0x4E00, 0x662F, 0x7684]);
+    let css =
+        "@font-face { font-family: 'F'; src: url('../fonts/chunk.woff2'); unicode-range: U+7684; }";
     let faces = ParsedFontFaces::parse(css).unwrap();
     let source: BTreeSet<u32> = [0x7684].into_iter().collect();
 
-    let warnings = validate_font_faces_with_source(
-        &faces,
-        std::path::Path::new("themes/hibikilogy/static/styles"),
-        "F",
-        &source,
-    )
-    .unwrap();
+    let warnings =
+        validate_font_faces_with_source(&faces, &temp.path().join("styles"), "F", &source).unwrap();
     assert_eq!(warnings.len(), 1);
     assert!(warnings[0].contains("not declared"));
 }
@@ -262,17 +246,6 @@ fn validation_skips_other_families_and_missing_src_is_an_error() {
         validate_font_faces_with_source(&faces, std::path::Path::new("styles"), "F", &source)
             .expect_err("missing src must fail");
     assert!(error.to_string().contains("src"));
-}
-
-#[test]
-fn covered_ranges_feed_patch_calculation() {
-    let faces = ParsedFontFaces::parse(BASE_CSS).unwrap();
-    let covered = CssUnicodeRanges::from_ranges(faces.covered_ranges("Source Han Sans SC VF"));
-    assert!(covered.contains(0x7684));
-    assert!(!covered.contains(0x4E01));
-
-    let uncovered = filter_uncovered_codepoints([0x7684, 0x4E01, 0x9FFF], &covered);
-    assert_eq!(uncovered, vec![0x4E01, 0x9FFF]);
 }
 
 #[test]
@@ -305,4 +278,37 @@ fn weight_consistency_defaults_missing_weight_to_400() {
     assert!(check_weight_consistency(&faces, "F", Some("250 900")).is_err());
     // Rules for other families are ignored.
     check_weight_consistency(&faces, "Other", Some("250 900")).unwrap();
+}
+
+#[test]
+fn subtract_removes_codepoints_from_matching_family_only() {
+    let css = "@font-face {\n  font-family: 'F';\n  unicode-range: U+4E00-4E10;\n}\n\n@font-face {\n  font-family: 'G';\n  unicode-range: U+4E00-4E10;\n}\n";
+    let removed: BTreeSet<u32> = [0x4E02, 0x4E05, 0x4E06].into_iter().collect();
+    let result = subtract_codepoints_from_base_css(css, "F", &removed);
+
+    assert_eq!(result.removed, 3);
+    assert!(result.changed);
+    assert!(result
+        .css
+        .contains("U+4E00-4E01, U+4E03-4E04, U+4E07-4E10;"));
+    // The other family's declaration is untouched.
+    assert!(result.css.matches("U+4E00-4E10").count() == 1);
+}
+
+#[test]
+fn subtract_drops_a_fully_reclaimed_declaration() {
+    let css = "@font-face {\n  font-family: 'F';\n  unicode-range: U+4E00;\n}\n";
+    let removed: BTreeSet<u32> = [0x4E00].into_iter().collect();
+    let result = subtract_codepoints_from_base_css(css, "F", &removed);
+    assert_eq!(result.removed, 1);
+    assert!(!result.css.contains("unicode-range"));
+}
+
+#[test]
+fn subtract_is_a_noop_when_nothing_matches() {
+    let css = "@font-face { font-family: 'F'; unicode-range: U+4E00; }";
+    let removed: BTreeSet<u32> = [0x9FFF].into_iter().collect();
+    let result = subtract_codepoints_from_base_css(css, "F", &removed);
+    assert!(!result.changed);
+    assert_eq!(result.css, css);
 }

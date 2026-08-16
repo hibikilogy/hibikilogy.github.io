@@ -9,17 +9,17 @@ use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
 use crate::css_coverage::{
-    check_weight_consistency, filter_uncovered_codepoints, validate_font_faces,
-    write_comment_only_css, CssUnicodeRanges, ParsedFontFaces,
+    check_weight_consistency, subtract_codepoints_from_base_css, validate_font_faces,
+    write_comment_only_css, ParsedFontFaces,
 };
 use crate::text::{
     collect_all_toml_strings, collect_non_title_front_matter_strings, extract_markdown_body,
 };
 use hibikilogy_tools::font::asset::{
-    publish_font_artifacts, subset_and_publish, subset_font_descriptors, CleanupReport,
-    SubsetPublishOptions,
+    clear_preload_cache, publish_chunked_font, subset_and_publish, subset_font_descriptors,
+    CleanupReport, PublishedChunk, SubsetPublishOptions,
 };
-use hibikilogy_tools::front_matter;
+use hibikilogy_tools::{front_matter, managed_fs};
 
 #[derive(Debug, Parser)]
 #[command(
@@ -32,11 +32,21 @@ struct Args {
     #[arg(long)]
     config: PathBuf,
 
+    /// Theme i18n file (`themes/hibikilogy/i18n/zh.toml`); UI strings render
+    /// in the body font, so their characters must be covered too.
+    #[arg(long)]
+    i18n: Option<PathBuf>,
+
     #[arg(long)]
     font: PathBuf,
 
     #[arg(long)]
     base_css: PathBuf,
+
+    /// Where to record the first chunk's served path for template preloading
+    /// (e.g. `static/_cache/font-preload-body.json`).
+    #[arg(long)]
+    preload_cache_file: Option<PathBuf>,
 
     #[arg(long)]
     font_output_dir: PathBuf,
@@ -58,8 +68,10 @@ struct Args {
 struct GenerateOptions {
     content_dir: PathBuf,
     config_path: PathBuf,
+    i18n_path: Option<PathBuf>,
     font_path: PathBuf,
     base_css_path: PathBuf,
+    preload_cache_file: Option<PathBuf>,
     font_output_dir: PathBuf,
     css_output_dir: PathBuf,
     css_file: String,
@@ -72,8 +84,10 @@ impl From<Args> for GenerateOptions {
         Self {
             content_dir: args.content_dir,
             config_path: args.config,
+            i18n_path: args.i18n,
             font_path: args.font,
             base_css_path: args.base_css,
+            preload_cache_file: args.preload_cache_file,
             font_output_dir: args.font_output_dir,
             css_output_dir: args.css_output_dir,
             css_file: args.css_file,
@@ -84,46 +98,45 @@ impl From<Args> for GenerateOptions {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct GeneratedFont {
-    file_name: String,
-    codepoints: Vec<u32>,
-    bytes: u64,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
 struct GenerateReport {
     markdown_files: usize,
     config_strings: usize,
     extracted_codepoints: usize,
-    uncovered_codepoints: usize,
-    font: Option<GeneratedFont>,
+    chunks: Vec<PublishedChunk>,
     css_path: PathBuf,
     cleanup: CleanupReport,
+    /// Characters handed back from chunk faces to the patch series in the
+    /// base CSS (already covered characters now served by the patch).
+    reclaimed_codepoints: usize,
 }
 
 pub fn run() -> Result<()> {
     let report = generate_body_font_subset(&GenerateOptions::from(Args::parse()))?;
 
     println!(
-        "scanned {} markdown file(s), {} extracted codepoint(s), {} uncovered codepoint(s)",
-        report.markdown_files, report.extracted_codepoints, report.uncovered_codepoints
+        "scanned {} markdown file(s), {} extracted codepoint(s)",
+        report.markdown_files, report.extracted_codepoints
     );
     if report.config_strings > 0 {
         println!(
-            "included {} string fragment(s) from config",
+            "included {} string fragment(s) from config/i18n",
             report.config_strings
         );
     }
-    match &report.font {
-        Some(font) => {
+    if report.chunks.is_empty() {
+        println!("no supplemental font generated");
+    } else {
+        let total: u64 = report.chunks.iter().map(|c| c.bytes).sum();
+        println!("{} chunk(s), {} bytes total:", report.chunks.len(), total);
+        for chunk in &report.chunks {
+            println!("  {}: {} bytes", chunk.file_name, chunk.bytes);
+        }
+        if report.reclaimed_codepoints > 0 {
             println!(
-                "{}: {} bytes, {} codepoint(s)",
-                font.file_name,
-                font.bytes,
-                font.codepoints.len()
+                "reclaimed {} codepoint(s) from chunk unicode-ranges",
+                report.reclaimed_codepoints
             );
         }
-        None => println!("no supplemental font generated"),
     }
     report.cleanup.print_summary();
     println!("css: {}", report.css_path.display());
@@ -133,9 +146,16 @@ pub fn run() -> Result<()> {
 
 fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport> {
     let collected = collect_body_text_from_content(&options.content_dir)?;
-    let config_fragments = collect_body_text_from_config(&options.config_path)?;
+    let config_fragments = collect_toml_string_fragments(&options.config_path)?;
+    let i18n_fragments = options
+        .i18n_path
+        .as_deref()
+        .map(collect_toml_string_fragments)
+        .transpose()?
+        .unwrap_or_default();
     let mut all_fragments = collected.fragments;
     all_fragments.extend(config_fragments.iter().cloned());
+    all_fragments.extend(i18n_fragments.iter().cloned());
     let extracted_codepoints = collect_body_font_codepoints(&all_fragments);
 
     let base_css = fs::read_to_string(&options.base_css_path)
@@ -159,39 +179,53 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
     let weight = subset_font_descriptors(&font_data)?.weight;
     check_weight_consistency(&faces, &options.font_family, weight.as_deref())?;
 
-    let covered = CssUnicodeRanges::from_ranges(faces.covered_ranges(&options.font_family));
-    let uncovered_codepoints =
-        filter_uncovered_codepoints(extracted_codepoints.iter().copied(), &covered);
-
+    // The patch series must own every body codepoint in the family, not just
+    // those the chunks miss: a character declared by both a chunk and the
+    // patch would be served by whichever rule comes last, and stale chunk
+    // declarations silently shadow content patches.
+    let patch_codepoints = extracted_codepoints;
     let css_path = options.css_output_dir.join(&options.css_file);
 
-    if uncovered_codepoints.is_empty() {
+    if patch_codepoints.is_empty() {
         let css = write_comment_only_css(
             "body-font-subset",
             "No supplemental body glyphs were required.",
         );
-        let cleanup = publish_font_artifacts(
+        let cleanup = publish_chunked_font(
             &options.font_output_dir,
             &options.output_file,
-            None,
+            &[],
             &css_path,
             &css,
         )?;
+        if let Some(cache_path) = &options.preload_cache_file {
+            clear_preload_cache(cache_path)?;
+        }
 
         return Ok(GenerateReport {
             markdown_files: collected.markdown_files,
-            config_strings: config_fragments.len(),
-            extracted_codepoints: extracted_codepoints.len(),
-            uncovered_codepoints: 0,
-            font: None,
+            config_strings: config_fragments.len() + i18n_fragments.len(),
+            extracted_codepoints: 0,
+            chunks: Vec::new(),
             css_path,
             cleanup,
+            reclaimed_codepoints: 0,
         });
+    }
+
+    let mut site_counts: std::collections::HashMap<u32, u64> = std::collections::HashMap::new();
+    for fragment in &all_fragments {
+        for ch in fragment.chars() {
+            let codepoint = ch as u32;
+            if should_subset_body_codepoint(codepoint) {
+                *site_counts.entry(codepoint).or_default() += 1;
+            }
+        }
     }
 
     let published = subset_and_publish(
         &font_data,
-        &uncovered_codepoints,
+        &patch_codepoints,
         &SubsetPublishOptions {
             generator_name: "body-font-subset",
             font_family: &options.font_family,
@@ -200,21 +234,29 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
             css_file: &options.css_file,
             output_file: &options.output_file,
             missing_source_label: "required by content",
+            site_counts: &site_counts,
+            slicing_config: Path::new("scripts/data/font-slicing.config.json"),
+            preload_cache_file: options.preload_cache_file.as_deref(),
         },
     )?;
 
+    // Remove the patch's codepoints from the chunk faces' unicode-range
+    // declarations so every body character is declared by exactly one face.
+    let patch_set: std::collections::BTreeSet<u32> = patch_codepoints.iter().copied().collect();
+    let reclaimed = subtract_codepoints_from_base_css(&base_css, &options.font_family, &patch_set);
+    if reclaimed.changed {
+        managed_fs::write_atomic_if_changed(&options.base_css_path, reclaimed.css.as_bytes())
+            .with_context(|| format!("failed to rewrite {}", options.base_css_path.display()))?;
+    }
+
     Ok(GenerateReport {
         markdown_files: collected.markdown_files,
-        config_strings: config_fragments.len(),
-        extracted_codepoints: extracted_codepoints.len(),
-        uncovered_codepoints: uncovered_codepoints.len(),
-        font: Some(GeneratedFont {
-            file_name: published.file_name,
-            codepoints: uncovered_codepoints,
-            bytes: published.bytes,
-        }),
+        config_strings: config_fragments.len() + i18n_fragments.len(),
+        extracted_codepoints: patch_codepoints.len(),
+        chunks: published.chunks,
         css_path: published.css_path,
         cleanup: published.cleanup,
+        reclaimed_codepoints: reclaimed.removed,
     })
 }
 
@@ -261,7 +303,9 @@ fn collect_body_text_from_content(content_dir: &Path) -> Result<CollectedBodyTex
     Ok(collected)
 }
 
-fn collect_body_text_from_config(config_path: &Path) -> Result<Vec<String>> {
+/// Every string in a TOML document (`zola.toml`, theme i18n files), so
+/// config/UI text is covered by the same subset as article bodies.
+fn collect_toml_string_fragments(config_path: &Path) -> Result<Vec<String>> {
     let document = fs::read_to_string(config_path)
         .with_context(|| format!("failed to read {}", config_path.display()))?;
     let value = document

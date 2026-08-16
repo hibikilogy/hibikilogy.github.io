@@ -1,5 +1,4 @@
 export const PREVIEW_FONT_STYLES = [
-  '/styles/source-han-sans-sc-vf.css',
   '/styles/source-han-sans-sc-vf.patch.css',
 ] as const
 

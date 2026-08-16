@@ -137,12 +137,15 @@ mod tests {
 
     #[test]
     fn font_codepoints_reads_woff2_and_ttf_equivalently() {
-        // The committed L1 chunk is a small real WOFF2 font.
-        let woff2 = fs::read("themes/hibikilogy/static/fonts/L1_7684_256.woff2")
-            .expect("committed L1 chunk should exist");
+        // Build a small real WOFF2 from the committed source font.
+        let font_data = fs::read("themes/hibikilogy/static/fonts/SourceHanSansSC-VF.ttf")
+            .expect("committed source font should exist");
+        let subset = crate::font::asset::subset_with_skera(&font_data, &[0x4E00, 0x7684])
+            .expect("subset should succeed");
+        let woff2 = woofwoof::compress(&subset, "", 11, true).expect("woff2 should compress");
         let from_woff2 = font_codepoints(&woff2).expect("woff2 should parse");
 
-        // 的 is the leading codepoint of this chunk.
+        // 的 survives the subset round-trip.
         assert!(from_woff2.contains(&0x7684));
 
         let ttf = woofwoof::decompress(&woff2).expect("woff2 should decompress");
@@ -152,10 +155,11 @@ mod tests {
 
     #[test]
     fn font_codepoints_excludes_noncharacters() {
-        // This chunk's cmap maps U+FFFF to .notdef as a sentinel.
-        let chunk = fs::read("themes/hibikilogy/static/fonts/L2_6940_128.woff2")
-            .expect("committed L2 chunk should exist");
-        let codepoints = font_codepoints(&chunk).expect("chunk should parse");
+        // Source Han maps U+FFFF to .notdef as a sentinel; the filter must
+        // drop it even when it survives subsetting.
+        let font_data = fs::read("themes/hibikilogy/static/fonts/SourceHanSansSC-VF.ttf")
+            .expect("committed source font should exist");
+        let codepoints = font_codepoints(&font_data).expect("source font should parse");
         assert!(!codepoints.contains(&0xFFFF));
         assert!(!codepoints.contains(&0xFFFE));
         assert!(!codepoints.contains(&0xFDD0));
