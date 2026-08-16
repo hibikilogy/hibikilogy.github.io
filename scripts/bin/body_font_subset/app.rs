@@ -102,6 +102,7 @@ struct GenerateReport {
     markdown_files: usize,
     config_strings: usize,
     extracted_codepoints: usize,
+    latin_codepoints: usize,
     chunks: Vec<PublishedChunk>,
     css_path: PathBuf,
     cleanup: CleanupReport,
@@ -114,8 +115,8 @@ pub fn run() -> Result<()> {
     let report = generate_body_font_subset(&GenerateOptions::from(Args::parse()))?;
 
     println!(
-        "scanned {} markdown file(s), {} extracted codepoint(s)",
-        report.markdown_files, report.extracted_codepoints
+        "scanned {} markdown file(s), {} extracted codepoint(s), {} latin codepoint(s)",
+        report.markdown_files, report.extracted_codepoints, report.latin_codepoints
     );
     if report.config_strings > 0 {
         println!(
@@ -157,6 +158,7 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
     all_fragments.extend(config_fragments.iter().cloned());
     all_fragments.extend(i18n_fragments.iter().cloned());
     let extracted_codepoints = collect_body_font_codepoints(&all_fragments);
+    let latin_codepoints = collect_latin_codepoints(&all_fragments);
 
     let base_css = fs::read_to_string(&options.base_css_path)
         .with_context(|| format!("failed to read {}", options.base_css_path.display()))?;
@@ -186,7 +188,7 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
     let patch_codepoints = extracted_codepoints;
     let css_path = options.css_output_dir.join(&options.css_file);
 
-    if patch_codepoints.is_empty() {
+    if patch_codepoints.is_empty() && latin_codepoints.is_empty() {
         let css = write_comment_only_css(
             "body-font-subset",
             "No supplemental body glyphs were required.",
@@ -206,6 +208,7 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
             markdown_files: collected.markdown_files,
             config_strings: config_fragments.len() + i18n_fragments.len(),
             extracted_codepoints: 0,
+            latin_codepoints: 0,
             chunks: Vec::new(),
             css_path,
             cleanup,
@@ -236,14 +239,17 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
             missing_source_label: "required by content",
             site_counts: &site_counts,
             slicing_config: Path::new("scripts/data/font-slicing.config.json"),
+            latin_codepoints: &latin_codepoints,
             preload_cache_file: options.preload_cache_file.as_deref(),
         },
     )?;
 
     // Remove the patch's codepoints from the chunk faces' unicode-range
     // declarations so every body character is declared by exactly one face.
-    let patch_set: std::collections::BTreeSet<u32> = patch_codepoints.iter().copied().collect();
-    let reclaimed = subtract_codepoints_from_base_css(&base_css, &options.font_family, &patch_set);
+    let mut owned: Vec<u32> = patch_codepoints.clone();
+    owned.extend(latin_codepoints.iter().copied());
+    let owned: std::collections::BTreeSet<u32> = owned.into_iter().collect();
+    let reclaimed = subtract_codepoints_from_base_css(&base_css, &options.font_family, &owned);
     if reclaimed.changed {
         managed_fs::write_atomic_if_changed(&options.base_css_path, reclaimed.css.as_bytes())
             .with_context(|| format!("failed to rewrite {}", options.base_css_path.display()))?;
@@ -253,6 +259,7 @@ fn generate_body_font_subset(options: &GenerateOptions) -> Result<GenerateReport
         markdown_files: collected.markdown_files,
         config_strings: config_fragments.len() + i18n_fragments.len(),
         extracted_codepoints: patch_codepoints.len(),
+        latin_codepoints: latin_codepoints.len(),
         chunks: published.chunks,
         css_path: published.css_path,
         cleanup: published.cleanup,
@@ -331,17 +338,27 @@ fn collect_body_font_codepoints(fragments: &[String]) -> Vec<u32> {
     codepoints
 }
 
+/// Codepoints shipped in the consolidated latin subset: the printable ASCII
+/// range plus every other non-CJK character the site uses (Latin extensions,
+/// Western punctuation, symbols). CJK-family characters stay in the chunk
+/// series ([`should_subset_body_codepoint`]).
+fn collect_latin_codepoints(fragments: &[String]) -> Vec<u32> {
+    let mut codepoints: Vec<u32> = (0x20..=0x7E).collect();
+
+    for fragment in fragments {
+        codepoints.extend(fragment.chars().map(|ch| ch as u32).filter(|&codepoint| {
+            !should_subset_body_codepoint(codepoint)
+                && !char::from_u32(codepoint).is_some_and(|ch| ch.is_control())
+        }));
+    }
+
+    codepoints.sort_unstable();
+    codepoints.dedup();
+    codepoints
+}
+
 fn should_subset_body_codepoint(codepoint: u32) -> bool {
-    matches!(
-        codepoint,
-        0x3000..=0x303F
-            | 0x3400..=0x4DBF
-            | 0x4E00..=0x9FFF
-            | 0xF900..=0xFAFF
-            | 0xFE10..=0xFE1F
-            | 0xFE30..=0xFE6B
-            | 0xFF01..=0xFF65
-    )
+    hibikilogy_tools::font::coverage::is_cjk_codepoint(codepoint)
 }
 
 #[cfg(test)]

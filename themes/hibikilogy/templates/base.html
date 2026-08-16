@@ -159,19 +159,22 @@
   {% block critical_css %}
   {% endblock critical_css %}
 
-  {# First font chunk of each family, written by the subset tools (content
-     hashes make the names unreferenceable from config). Missing caches mean
-     the subset pipeline has not run yet — the fonts then simply lazy-load. #}
+  {# Latin subset and first chunk of each family, written by the subset tools
+     (content hashes make the names unreferenceable from config). Missing
+     caches mean the subset pipeline has not run yet — the fonts then simply
+     lazy-load. #}
   {% set font_preload_body = load_data(path="static/_cache/font-preload-body.json", required=false) %}
   {% set font_preload_title = load_data(path="static/_cache/font-preload-title.json", required=false) %}
   {% for preload in [font_preload_body, font_preload_title] %}
     {% if preload %}
+      {% for path in preload.paths %}
     <link
       rel="preload"
       as="font"
       type="font/woff2"
       crossorigin
-      href="{{ get_url(path=preload.path) }}">
+      href="{{ get_url(path=path) }}">
+      {% endfor %}
     {% endif %}
   {% endfor %}
 

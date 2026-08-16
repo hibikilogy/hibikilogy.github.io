@@ -8,7 +8,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
-use crate::codepoints::collect_title_codepoints;
+use crate::codepoints::{collect_latin_title_codepoints, collect_title_codepoints};
 use crate::markdown::extract_title;
 use hibikilogy_tools::font::asset::{
     subset_and_publish, CleanupReport, PublishedChunk, SubsetPublishOptions,
@@ -75,6 +75,7 @@ impl From<Args> for GenerateOptions {
 struct GenerateReport {
     titles: usize,
     codepoints: usize,
+    latin_codepoints: usize,
     chunks: Vec<PublishedChunk>,
     css_path: PathBuf,
     cleanup: CleanupReport,
@@ -84,10 +85,11 @@ pub fn run() -> Result<()> {
     let report = generate_title_font_subset(&GenerateOptions::from(Args::parse()))?;
 
     println!(
-        "generated {} chunk(s) from {} title(s), {} unique codepoint(s)",
+        "generated {} chunk(s) from {} title(s), {} unique codepoint(s), {} latin codepoint(s)",
         report.chunks.len(),
         report.titles,
-        report.codepoints
+        report.codepoints,
+        report.latin_codepoints
     );
     for chunk in &report.chunks {
         println!("  {}: {} bytes", chunk.file_name, chunk.bytes);
@@ -107,6 +109,7 @@ fn generate_title_font_subset(options: &GenerateOptions) -> Result<GenerateRepor
         ));
     }
     let codepoints = collect_title_codepoints(&titles);
+    let latin_codepoints = collect_latin_title_codepoints(&titles);
 
     let mut site_counts: std::collections::HashMap<u32, u64> = std::collections::HashMap::new();
     for title in &titles {
@@ -130,6 +133,7 @@ fn generate_title_font_subset(options: &GenerateOptions) -> Result<GenerateRepor
             missing_source_label: "requested by titles",
             site_counts: &site_counts,
             slicing_config: Path::new("scripts/data/font-slicing.config.json"),
+            latin_codepoints: &latin_codepoints,
             preload_cache_file: options.preload_cache_file.as_deref(),
         },
     )?;
@@ -137,6 +141,7 @@ fn generate_title_font_subset(options: &GenerateOptions) -> Result<GenerateRepor
     Ok(GenerateReport {
         titles: titles.len(),
         codepoints: codepoints.len(),
+        latin_codepoints: latin_codepoints.len(),
         chunks: published.chunks,
         css_path: published.css_path,
         cleanup: published.cleanup,

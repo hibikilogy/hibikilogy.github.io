@@ -10,8 +10,8 @@ preloaded).
 
 | | Old (`7ecdcbd`) | New |
 | --- | --- | --- |
-| Body patch | 1 file, 425,460 B / 768 codepoints | 37 chunks, 2,088,616 B total; chunk 1 = 56,308 B (preloaded) |
-| Title patch | 1 file, 274,772 B / 709 codepoints | 5 chunks, 276,436 B total; chunk 1 = 55,972 B (preloaded) |
+| Body patch | 1 file, 425,460 B / 768 codepoints | 38 chunks, 2,122,104 B total + latin subset 52,852 B / 162 codepoints; chunk 1 = 56,308 B (preloaded) |
+| Title patch | 1 file, 274,772 B / 709 codepoints | 4 chunks, 224,344 B total + latin subset 66,980 B / 104 codepoints; chunk 1 = 56,232 B (preloaded) |
 | Base slices | `L1/L2/L3` loaded on demand; 992 codepoints double-declared with the patch (L1 fully shadowed by L2 — last matching `@font-face` wins — and never actually loaded) | none; every codepoint is declared by exactly one `@font-face` |
 | Chunk naming | `stem.<hash>.woff2` | `stem-<n>.<hash>.woff2`, content-hashed, served with `immutable` |
 
@@ -71,37 +71,44 @@ How the frequency-ordered chunks cover real site text, measured over
 `content/` against the generated chunk CSS (characters counted with
 repetition; "chunks per page" = distinct chunks a page's text touches).
 
-Title font (5 chunks, 709 codepoints, 166 titles):
+Title font (4 chunks + latin subset, 709 codepoints, 166 titles):
 
-| Chunk | Share of title chars |
+| File | Share of title chars |
 | --- | --- |
-| 1 (preloaded) | 72.4% |
-| 2 | 14.1% |
-| 3 | 7.1% |
-| 4 | 4.7% |
-| 5 | 1.6% |
+| latin (preloaded, 66,980 B) | 7.4% |
+| 1 (preloaded) | 69.9% |
+| 2 | 12.4% |
+| 3 | 6.2% |
+| 4 | 4.1% |
 
-- Distinct chunks per title: 1→7, 2→47, 3→55, 4→39, 5→18 titles (avg 3.1 of 5).
-- A page showing the latest 12 titles needs all 5 chunks (270 KB of the 276 KB
-  series); a page with a single title needs chunks 1–3 (164 KB).
+- Distinct files per title: 1→4, 2→45, 3→59, 4→42, 5→16 titles (avg 3.1).
+- A page showing the latest 12 titles needs all 4 chunks + latin (291 KB of
+  the 291 KB series); a page with a single title needs chunks 1–3 + latin.
 
-Body font (37 chunks, 3,716 codepoints, 167 articles, 721,108 chars):
+Body font (38 chunks + latin subset, 3,988 codepoints, 167 articles,
+942,023 chars):
 
-| Chunks | Share of body chars |
+| Files | Share of body chars |
 | --- | --- |
-| 1 (preloaded) | 58.8% |
-| 1–3 | 80.9% |
-| 1–5 | 89.2% |
-| 6–37 (tail) | 10.8% |
+| latin (preloaded, 52,852 B) | 23.3% |
+| 1 (preloaded) | 45.0% |
+| 1–3 | 61.9% |
+| 1–5 | 68.3% |
+| 6–38 (tail) | 8.4% |
 
-- Average article touches 27.1 of 37 chunks; distribution is broad (7–37).
+- The latin subset carries 23.3% of character occurrences (digits, Latin
+  letters, Western punctuation are extremely frequent), all served by one
+  preloaded 52 KB file. The hanzi chunks are untouched by the split — chunk 1
+  still carries 424,244 of 942,023 occurrences — so the frequency ordering
+  was not perturbed; kana (added to the CJK range) land in the tail chunks.
+- Average article touches 28.5 of 39 files; distribution is broad.
 
-Reading: title text is far more correlated than body text (72% vs 59%
-chunk-1 coverage; 3/5 vs 27/37 chunks per page), so the title series stays
+Reading: title text is far more correlated than body text (70% vs 45%
+chunk-1 coverage; 3/4 vs 28/39 files per page), so the title series stays
 useful as chunks even though listing pages eventually load them all. The title
 character set is also nearly closed — new articles mostly reuse the existing
-709 glyphs — so title chunk hashes are stable across content updates and the
-`immutable` cache headers pay off.
+605 CJK + 104 latin glyphs — so title chunk hashes are stable across content
+updates and the `immutable` cache headers pay off.
 
 ## Build-time cost
 
@@ -118,8 +125,8 @@ Measured on the developer machine (32 logical cores, debug profile):
 
 | Pipeline | Sequential q11 | Two-phase parallel |
 | --- | --- | --- |
-| `build:subset-titlefont` (5 chunks) | ~46 s | ~27 s |
-| `build:subset-bodyfont` (37 chunks, 3,716 codepoints) | ~5 min 5 s | ~3 min 10 s |
+| `build:subset-titlefont` (4 chunks + latin) | ~46 s | ~27 s |
+| `build:subset-bodyfont` (38 chunks + latin) | ~5 min 5 s | ~3 min 10 s |
 | nextest title end-to-end tests | ~23 s each | ~11 s each |
 
 Probe cost breakdown (100-hanzi body probe): skera subset + gvar repair

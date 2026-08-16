@@ -75,6 +75,25 @@ pub fn verify_subset_coverage(
     Ok(classify_coverage(&requested, &source, &output))
 }
 
+/// Whether `codepoint` is a CJK-family character: the CJK punctuation,
+/// kana, unified ideographs, compatibility ideographs, and the fullwidth
+/// forms. Every other character (printable ASCII, Latin extensions, Western
+/// punctuation, symbols, emoji) ships in the consolidated latin subset
+/// instead of the frequency chunks.
+pub fn is_cjk_codepoint(codepoint: u32) -> bool {
+    matches!(
+        codepoint,
+        0x3000..=0x303F
+            | 0x3040..=0x30FF
+            | 0x3400..=0x4DBF
+            | 0x4E00..=0x9FFF
+            | 0xF900..=0xFAFF
+            | 0xFE10..=0xFE1F
+            | 0xFE30..=0xFE6B
+            | 0xFF01..=0xFF65
+    )
+}
+
 /// Format a codepoint for diagnostics, appending the character itself when it
 /// is not a control character.
 pub fn describe_codepoint(codepoint: u32) -> String {

@@ -1,5 +1,5 @@
 use super::{collect_titles_from_content, generate_title_font_subset, GenerateOptions};
-use crate::codepoints::collect_title_codepoints;
+use crate::codepoints::{collect_latin_title_codepoints, collect_title_codepoints};
 use crate::markdown::extract_title;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -37,21 +37,30 @@ fn collects_titles_from_front_matter_only() {
 }
 
 #[test]
-fn codepoints_retain_ascii_punctuation_and_title_characters() {
-    let codepoints = collect_title_codepoints(["中文标题!"]);
-    // Always-retained ASCII range and CJK punctuation.
-    assert!(codepoints.contains(&0x20));
-    assert!(codepoints.contains(&('A' as u32)));
-    assert!(codepoints.contains(&0x3001));
-    assert!(codepoints.contains(&0xFF01));
-    // Title characters.
-    assert!(codepoints.contains(&('中' as u32)));
-    assert!(codepoints.contains(&('!' as u32)));
-    // Deduplicated and sorted.
-    let mut sorted = codepoints.clone();
-    sorted.sort_unstable();
-    sorted.dedup();
-    assert_eq!(codepoints, sorted);
+fn codepoints_split_into_latin_and_cjk_groups() {
+    let cjk = collect_title_codepoints(["中文标题! A"]);
+    // CJK group: title characters and retained CJK punctuation only.
+    assert!(cjk.contains(&('中' as u32)));
+    assert!(cjk.contains(&0x3001));
+    assert!(cjk.contains(&0xFF01));
+    assert!(!cjk.contains(&('A' as u32)));
+    assert!(!cjk.contains(&0x20));
+
+    let latin = collect_latin_title_codepoints(["中文标题! A"]);
+    // Latin group: retained ASCII range, Western punctuation, latin chars.
+    assert!(latin.contains(&0x20));
+    assert!(latin.contains(&('A' as u32)));
+    assert!(latin.contains(&('!' as u32)));
+    assert!(latin.contains(&0x2014));
+    assert!(!latin.contains(&('中' as u32)));
+
+    // Both groups are deduplicated and sorted.
+    for codepoints in [&cjk, &latin] {
+        let mut sorted = codepoints.clone();
+        sorted.sort_unstable();
+        sorted.dedup();
+        assert_eq!(codepoints, &sorted);
+    }
 }
 
 #[test]
@@ -60,6 +69,11 @@ fn codepoints_skip_control_characters() {
     assert!(!codepoints.contains(&0));
     assert!(!codepoints.contains(&1));
     assert!(codepoints.contains(&('标' as u32)));
+
+    let latin = collect_latin_title_codepoints(["\u{0000}\u{0001}A"]);
+    assert!(!latin.contains(&0));
+    assert!(!latin.contains(&1));
+    assert!(latin.contains(&('A' as u32)));
 }
 
 // ---------------------------------------------------------------------------
@@ -151,8 +165,13 @@ fn writes_preload_cache_pointing_at_the_first_chunk() {
     let report = generate_title_font_subset(&options).unwrap();
 
     let cache = fs::read_to_string(&cache_file).unwrap();
-    assert_eq!(
-        cache,
-        format!("{{\"path\": \"fonts/{}\"}}\n", report.chunks[0].file_name)
-    );
+    let value: serde_json::Value = serde_json::from_str(&cache).unwrap();
+    let paths = value["paths"].as_array().unwrap();
+    assert_eq!(paths.len(), 2);
+    // The latin subset preloads first, then the first chunk.
+    assert!(paths[0]
+        .as_str()
+        .unwrap()
+        .starts_with("fonts/title-font-latin."));
+    assert_eq!(paths[1], format!("fonts/{}", report.chunks[0].file_name));
 }

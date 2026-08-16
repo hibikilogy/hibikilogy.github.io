@@ -2,7 +2,8 @@
 //! the per-`@font-face` base CSS parser.
 
 use super::{
-    collect_body_font_codepoints, collect_body_text_from_content, collect_toml_string_fragments,
+    collect_body_font_codepoints, collect_body_text_from_content, collect_latin_codepoints,
+    collect_toml_string_fragments,
 };
 use crate::css_coverage::{
     check_weight_consistency, parse_unicode_range_value, subtract_codepoints_from_base_css,
@@ -50,7 +51,7 @@ fn collects_body_and_non_title_front_matter_text() {
 }
 
 #[test]
-fn body_subset_filters_out_ascii_and_kana() {
+fn body_subset_covers_cjk_including_kana_but_not_ascii() {
     let codepoints = collect_body_font_codepoints(&[
         "中文ABC".to_string(),
         "かなカナ".to_string(),
@@ -59,11 +60,28 @@ fn body_subset_filters_out_ascii_and_kana() {
 
     assert!(codepoints.contains(&('中' as u32)));
     assert!(codepoints.contains(&('文' as u32)));
+    assert!(codepoints.contains(&('か' as u32)));
+    assert!(codepoints.contains(&('カ' as u32)));
     assert!(codepoints.contains(&('，' as u32)));
     assert!(codepoints.contains(&('「' as u32)));
     assert!(!codepoints.contains(&('A' as u32)));
-    assert!(!codepoints.contains(&('か' as u32)));
-    assert!(!codepoints.contains(&('カ' as u32)));
+    assert!(!codepoints.contains(&0x20));
+}
+
+#[test]
+fn latin_codepoints_cover_ascii_and_site_non_cjk() {
+    let codepoints = collect_latin_codepoints(&["中文ABC — é".to_string()]);
+
+    // Printable ASCII is always retained; site non-CJK characters (Western
+    // punctuation, Latin-1) are collected too.
+    assert!(codepoints.contains(&('A' as u32)));
+    assert!(codepoints.contains(&0x20));
+    assert!(codepoints.contains(&0x2014));
+    assert!(codepoints.contains(&0x00E9));
+    // CJK characters and control characters stay out of the latin subset.
+    assert!(!codepoints.contains(&('中' as u32)));
+    assert!(!codepoints.contains(&0x0A));
+    assert!(!codepoints.contains(&0x3001));
 }
 
 #[test]

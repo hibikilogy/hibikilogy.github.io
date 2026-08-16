@@ -212,6 +212,12 @@ pub struct SubsetPublishOptions<'a> {
     pub site_counts: &'a std::collections::HashMap<u32, u64>,
     /// `scripts/data/font-slicing.config.json`.
     pub slicing_config: &'a Path,
+    /// Non-CJK codepoints (printable ASCII, Latin extensions, Western
+    /// punctuation, symbols) shipped as one consolidated subset file ahead of
+    /// the frequency chunks, so e.g. Latin text loads a single small file
+    /// instead of any chunk. May be empty; the chunks are then the whole
+    /// series.
+    pub latin_codepoints: &'a [u32],
     /// Records the first chunk's served path as JSON for the template's
     /// `<link rel="preload">` (read via Zola's `load_data`, which needs a
     /// stable location while chunk names are content-hashed). The file is
@@ -251,45 +257,90 @@ pub fn subset_and_publish(
     let ordered = model.order(codepoints);
     let subsetter = Subsetter::new(font_data)?;
     let chunks = crate::font::chunk::chunk_font(&subsetter, &ordered, options.output_file)?;
-    if chunks.is_empty() {
+    if chunks.is_empty() && options.latin_codepoints.is_empty() {
         return Err(anyhow!(
             "no codepoints to subset for {}",
             options.font_family
         ));
     }
 
-    let all: Vec<u32> = chunks
-        .iter()
-        .flat_map(|c| c.codepoints.iter().copied())
-        .collect();
-    // Verify coverage against the union of all chunk subsets, not one chunk.
-    let union_subset = subsetter.subset(&all)?;
-    let coverage = verify_subset_coverage(&all, font_data, &union_subset)?;
-    if !coverage.missing_in_output.is_empty() {
-        return Err(anyhow!(
-            "subset output is missing codepoint(s) supported by the source font: {}",
-            format_codepoint_list(&coverage.missing_in_output)
-        ));
-    }
-    for &codepoint in &coverage.missing_in_source {
-        eprintln!(
-            "warning: {} {} but not supported by the source font; it will fall back to a later font",
-            describe_codepoint(codepoint),
-            options.missing_source_label
-        );
-    }
+    // The consolidated latin subset ships first, so its rule leads the CSS
+    // and its file preloads ahead of the chunk series.
+    let (latin_file_name, latin_subset) = if options.latin_codepoints.is_empty() {
+        (None, None)
+    } else {
+        let latin_subset = subsetter.subset(options.latin_codepoints)?;
+        let coverage = verify_subset_coverage(options.latin_codepoints, font_data, &latin_subset)?;
+        if !coverage.missing_in_output.is_empty() {
+            return Err(anyhow!(
+                "latin subset is missing codepoint(s) supported by the source font: {}",
+                format_codepoint_list(&coverage.missing_in_output)
+            ));
+        }
+        for &codepoint in &coverage.missing_in_source {
+            eprintln!(
+                "warning: {} {} but not supported by the source font; it will fall back to a later font",
+                describe_codepoint(codepoint),
+                options.missing_source_label
+            );
+        }
+        let latin_bytes = woofwoof::compress(&latin_subset, "", 11, true)
+            .context("failed to compress WOFF2 latin subset")?;
+        let (stem, extension) = split_file_name(options.output_file);
+        let file_name = hashed_output_file_name(&format!("{stem}-latin.{extension}"), &latin_bytes);
+        (Some((file_name, latin_bytes)), Some(latin_subset))
+    };
 
-    let descriptors = subset_font_descriptors(&union_subset)?;
-    let css_chunks: Vec<(String, &[u32])> = chunks
-        .iter()
-        .map(|chunk| {
-            font_url_for_css(
-                options.css_output_dir,
-                &options.font_output_dir.join(&chunk.file_name),
-            )
-            .map(|url| (url, chunk.codepoints.as_slice()))
-        })
-        .collect::<Result<_>>()?;
+    let descriptors = if chunks.is_empty() {
+        subset_font_descriptors(
+            latin_subset
+                .as_deref()
+                .expect("latin subset exists when chunks are empty"),
+        )?
+    } else {
+        let all: Vec<u32> = chunks
+            .iter()
+            .flat_map(|c| c.codepoints.iter().copied())
+            .collect();
+        // Verify coverage against the union of all chunk subsets, not one chunk.
+        let union_subset = subsetter.subset(&all)?;
+        let coverage = verify_subset_coverage(&all, font_data, &union_subset)?;
+        if !coverage.missing_in_output.is_empty() {
+            return Err(anyhow!(
+                "subset output is missing codepoint(s) supported by the source font: {}",
+                format_codepoint_list(&coverage.missing_in_output)
+            ));
+        }
+        for &codepoint in &coverage.missing_in_source {
+            eprintln!(
+                "warning: {} {} but not supported by the source font; it will fall back to a later font",
+                describe_codepoint(codepoint),
+                options.missing_source_label
+            );
+        }
+        subset_font_descriptors(&union_subset)?
+    };
+
+    // Publish the latin file first, then the chunks; the css lists the latin
+    // rule before the chunk rules.
+    let mut publish: Vec<(&str, &[u8])> = Vec::new();
+    let mut css_chunks: Vec<(String, &[u32])> = Vec::new();
+    if let Some((file_name, bytes)) = &latin_file_name {
+        let url = font_url_for_css(
+            options.css_output_dir,
+            &options.font_output_dir.join(file_name),
+        )?;
+        publish.push((file_name, bytes));
+        css_chunks.push((url, options.latin_codepoints));
+    }
+    for chunk in &chunks {
+        let url = font_url_for_css(
+            options.css_output_dir,
+            &options.font_output_dir.join(&chunk.file_name),
+        )?;
+        publish.push((chunk.file_name.as_str(), chunk.bytes.as_slice()));
+        css_chunks.push((url, chunk.codepoints.as_slice()));
+    }
     let css_refs: Vec<(&str, &[u32])> = css_chunks
         .iter()
         .map(|(url, cps)| (url.as_str(), *cps))
@@ -302,19 +353,22 @@ pub fn subset_and_publish(
         &css_refs,
     );
     let css_path = options.css_output_dir.join(options.css_file);
-    let publish_chunks: Vec<(&str, &[u8])> = chunks
-        .iter()
-        .map(|c| (c.file_name.as_str(), c.bytes.as_slice()))
-        .collect();
     let cleanup = publish_chunked_font(
         options.font_output_dir,
         options.output_file,
-        &publish_chunks,
+        &publish,
         &css_path,
         &css,
     )?;
     if let Some(cache_path) = options.preload_cache_file {
-        write_preload_cache(cache_path, options.font_output_dir, &chunks[0].file_name)?;
+        let mut paths: Vec<&str> = Vec::with_capacity(chunks.len().min(1) + 1);
+        if let Some((file_name, _)) = &latin_file_name {
+            paths.push(file_name);
+        }
+        if let Some(first_chunk) = chunks.first() {
+            paths.push(&first_chunk.file_name);
+        }
+        write_preload_cache(cache_path, options.font_output_dir, &paths)?;
     }
 
     Ok(PublishedSubset {
@@ -389,12 +443,14 @@ pub fn publish_chunked_font(
         if keep.contains(&file_name.as_ref()) {
             continue;
         }
-        // Chunk names are `<stem>-<n>.<16 hex>.<ext>`; the plain template and
-        // single-file hashed artifacts are also retired.
+        // Chunk names are `<stem>-<n>.<16 hex>.<ext>`, the latin subset is
+        // `<stem>-latin.<16 hex>.<ext>`; the plain template and single-file
+        // hashed artifacts are also retired.
         let is_chunk = is_hashed_chunk(&file_name, stem, extension);
+        let is_latin = is_latin_chunk(&file_name, stem, extension);
         let is_legacy =
             file_name == series_template || is_hashed_artifact(&file_name, stem, extension);
-        if !is_chunk && !is_legacy {
+        if !is_chunk && !is_latin && !is_legacy {
             continue;
         }
         match fs::remove_file(entry.path()) {
@@ -435,15 +491,38 @@ fn is_hashed_chunk(file_name: &str, stem: &str, extension: &str) -> bool {
         && ext == extension
 }
 
-/// Record the first chunk's served path as `{"path": "<dir>/<file>"}` for the
-/// template's preload links. The served prefix is the font directory's own
-/// name (`themes/hibikilogy/static/fonts` is served at `/fonts/`).
-fn write_preload_cache(cache_path: &Path, font_output_dir: &Path, first_chunk: &str) -> Result<()> {
+/// Whether `file_name` is the consolidated latin subset
+/// `<stem>-latin.<exactly HASH_HEX_LEN hex>.<extension>`.
+fn is_latin_chunk(file_name: &str, stem: &str, extension: &str) -> bool {
+    let Some(rest) = file_name.strip_prefix(stem) else {
+        return false;
+    };
+    let Some(rest) = rest.strip_prefix("-latin.") else {
+        return false;
+    };
+    let Some((hash, ext)) = rest.rsplit_once('.') else {
+        return false;
+    };
+    hash.len() == HASH_HEX_LEN
+        && hash.bytes().all(|byte| byte.is_ascii_hexdigit())
+        && ext == extension
+}
+
+/// Record the served paths of the preload candidates (the latin subset, then
+/// the first chunk) as `{"paths": ["<dir>/<file>", ...]}` for the template's
+/// preload links. The served prefix is the font directory's own name
+/// (`themes/hibikilogy/static/fonts` is served at `/fonts/`).
+fn write_preload_cache(cache_path: &Path, font_output_dir: &Path, paths: &[&str]) -> Result<()> {
     let served_dir = font_output_dir
         .file_name()
         .with_context(|| format!("{} has no directory name", font_output_dir.display()))?
         .to_string_lossy();
-    let json = format!("{{\"path\": \"{served_dir}/{first_chunk}\"}}\n");
+    let inner = paths
+        .iter()
+        .map(|path| format!("\"{served_dir}/{path}\""))
+        .collect::<Vec<_>>()
+        .join(", ");
+    let json = format!("{{\"paths\": [{inner}]}}\n");
     if let Some(parent) = cache_path.parent() {
         ensure_directory(parent)?;
     }
