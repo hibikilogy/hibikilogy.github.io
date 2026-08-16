@@ -190,6 +190,10 @@ fn write_chunk_fixture(temp: &Path, codepoints: &[u32]) {
     let fonts_dir = temp.join("fonts");
     fs::create_dir_all(&fonts_dir).unwrap();
     fs::write(fonts_dir.join("chunk.woff2"), woff2).unwrap();
+    // Validation resolves `src` against the CSS directory; on POSIX the `..`
+    // component cannot be traversed unless that directory exists (Windows
+    // normalizes the path first, which is why this only fails on CI).
+    fs::create_dir_all(temp.join("styles")).unwrap();
 }
 
 #[test]
