@@ -160,6 +160,8 @@ describe('i18n key consistency', () => {
   })
 
   it('zh.toml 键与 CMS i18n 字段名一致（无缺失、无孤儿）', () => {
+    // 手写解析器在 config.yml 结构调整时会静默返回空列表，使本用例形同虚设。
+    expect(cmsFields.length).toBeGreaterThan(0)
     const cmsNames = cmsFields.map(field => field.name)
     const missing = tomlKeys.filter(key => !cmsNames.includes(key))
     const orphaned = cmsNames.filter(name => !tomlKeys.includes(name))

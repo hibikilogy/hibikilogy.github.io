@@ -197,6 +197,10 @@ export function generateModule(tomlPath: string, rootDir: string): string {
 export function hibikilogyConfigPlugin(rootDir: string): Plugin {
   const tomlPath = resolve(rootDir, 'zola.toml')
   const normalizedTomlPath = normalizePath(tomlPath)
+  // Resolved once: changing `theme`/`default_language` requires a dev-server
+  // restart anyway, so there is no need to re-parse zola.toml per event.
+  const i18nPath = getConfiguredThemeI18nPath(tomlPath, rootDir)
+  const normalizedI18nPath = i18nPath ? normalizePath(i18nPath) : ''
 
   return {
     name: 'hibikilogy-config',
@@ -213,7 +217,6 @@ export function hibikilogyConfigPlugin(rootDir: string): Plugin {
 
       this.addWatchFile(tomlPath)
 
-      const i18nPath = getConfiguredThemeI18nPath(tomlPath, rootDir)
       if (i18nPath)
         this.addWatchFile(i18nPath)
 
@@ -222,8 +225,6 @@ export function hibikilogyConfigPlugin(rootDir: string): Plugin {
 
     async handleHotUpdate({ file, server }) {
       const normalizedFile = normalizePath(file)
-      const i18nPath = getConfiguredThemeI18nPath(tomlPath, rootDir)
-      const normalizedI18nPath = i18nPath ? normalizePath(i18nPath) : ''
       if (normalizedFile !== normalizedTomlPath && normalizedFile !== normalizedI18nPath)
         return
 
