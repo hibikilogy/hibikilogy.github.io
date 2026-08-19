@@ -34,34 +34,27 @@ describe('useScroll', () => {
     frames.shift()?.(0)
     expect(scroll.y.value).toBe(20)
     expect(scroll.atTop.value).toBe(false)
-    expect(scroll.directions.bottom).toBe(true)
+    expect(scroll.directions.down).toBe(true)
 
     scope.stop()
   })
 
-  it('supports element scroll targets and manual measurement', () => {
-    stubAnimationFrames()
-    const target = document.createElement('div')
-    let scrollLeft = 0
-    let scrollTop = 0
-    Object.defineProperties(target, {
-      scrollLeft: { configurable: true, get: () => scrollLeft },
-      scrollTop: { configurable: true, get: () => scrollTop },
-    })
+  it('updates position immediately but direction only past the tolerance', () => {
+    const frames = stubAnimationFrames()
     const scope = effectScope()
-    const scroll = scope.run(() => useScroll(target, { directionTolerance: 6 }))!
+    const scroll = scope.run(() => useScroll({ directionTolerance: 6 }))!
 
-    scrollTop = 4
-    scroll.measure()
-    expect(scroll.directions.bottom).toBe(false)
+    Object.defineProperty(window, 'scrollY', { configurable: true, value: 4 })
+    window.dispatchEvent(new Event('scroll'))
+    frames.shift()?.(0)
+    expect(scroll.y.value).toBe(4)
+    expect(scroll.directions.down).toBe(false)
 
-    scrollLeft = 12
-    scrollTop = 24
-    scroll.measure()
-    expect(scroll.x.value).toBe(12)
+    Object.defineProperty(window, 'scrollY', { configurable: true, value: 24 })
+    window.dispatchEvent(new Event('scroll'))
+    frames.shift()?.(0)
     expect(scroll.y.value).toBe(24)
-    expect(scroll.directions.right).toBe(true)
-    expect(scroll.directions.bottom).toBe(true)
+    expect(scroll.directions.down).toBe(true)
 
     scope.stop()
   })

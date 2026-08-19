@@ -1,4 +1,3 @@
-import type { ZoomBinding } from 'components/lazy-image/zoom.ts'
 import { onScopeDispose } from '@vue/reactivity'
 import { createZoomBinding } from 'components/lazy-image/zoom.ts'
 import { pageDom } from 'shared/selectors.ts'
@@ -18,12 +17,11 @@ export function setupArticlePage(): void {
   const zoom = createZoomBinding()
   onScopeDispose(() => {
     disposed = true
-    zoom.close()
     zoom.detachAll()
   })
 
   void renderArticleMath(article, () => disposed).catch(() => {})
-  bindArticleZoom(article, zoom)
+  zoom.attachAll(article.querySelectorAll<HTMLImageElement>(':where(img)'))
   void applyHetiSpacing(article, () => disposed).catch(() => {})
 }
 
@@ -44,16 +42,6 @@ async function renderArticleMath(article: HTMLElement, isDisposed: () => boolean
     ],
     throwOnError: false,
   })
-}
-
-function bindArticleZoom(article: HTMLElement, zoom: ZoomBinding): void {
-  const images = article.querySelectorAll<HTMLImageElement>(':where(img)')
-  if (!images.length)
-    return
-
-  zoom.close()
-  zoom.detachAll()
-  zoom.attachAll(images)
 }
 
 async function applyHetiSpacing(article: HTMLElement, isDisposed: () => boolean): Promise<void> {

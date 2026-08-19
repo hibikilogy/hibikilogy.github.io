@@ -1,4 +1,4 @@
-export function parseCssTime(value: string): number | null {
+function parseCssTime(value: string): number | null {
   const trimmed = value.trim()
   if (!trimmed)
     return null
@@ -17,12 +17,6 @@ export function parseCssTime(value: string): number | null {
 
 /** Registry of animation-duration CSS custom properties consumed from JS. */
 export const DURATION_VARS = {
-  quick: '--duration-quick',
-  fast: '--duration-fast',
-  verySlow: '--duration-very-slow',
-  reveal: '--duration-reveal',
-  hamburgerMorph: '--duration-hamburger-morph',
-  pageFlip: '--duration-page-flip',
   mediumZoom: '--duration-medium-zoom',
   searchTransition: '--duration-search-transition',
   searchCover: '--duration-search-cover',

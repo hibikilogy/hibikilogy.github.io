@@ -1,4 +1,3 @@
-import type { WaterfallController } from './types.ts'
 import { onScopeDispose } from '@vue/reactivity'
 import { pageDom } from 'shared/selectors.ts'
 import { createWaterfallController } from './waterfallController.ts'
@@ -11,6 +10,3 @@ export function setupWaterfalls(root: ParentNode): void {
 
   onScopeDispose(() => controllers.forEach(controller => controller.dispose()))
 }
-
-export { createWaterfallController }
-export type { WaterfallController }

@@ -71,7 +71,7 @@ const REG_BD_HALF_START = `${REG_BD_HALF_OPEN}${REG_BD_HALF_CLOSE}`
 
 // ── Heti class ──────────────────────────────────────────────────
 
-export class Heti {
+class Heti {
   private rootSelector: string
   private REG_FULL: RegExp
   private REG_START: RegExp

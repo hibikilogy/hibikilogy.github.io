@@ -15,7 +15,3 @@ export function startApp(): void {
 
   scheduleIdleSearchPreload(app.searchService)
 }
-
-export { createAppContext } from './appContext.ts'
-export { createPageContext } from './pageContext.ts'
-export type { AppContext, PageContext } from './types.ts'

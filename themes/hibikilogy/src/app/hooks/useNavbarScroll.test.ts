@@ -5,25 +5,18 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useNavbarScroll } from './useNavbarScroll.ts'
 
 function createScrollModel(): {
-  directions: { left: boolean, right: boolean, top: boolean, bottom: boolean }
+  directions: { down: boolean }
   model: ScrollModel
   scrollY: Ref<number>
 } {
   const scrollY = ref(0)
-  const directions = {
-    left: false,
-    right: false,
-    top: false,
-    bottom: false,
-  }
+  const directions = { down: false }
   return {
     directions,
     model: {
-      x: ref(0),
       y: scrollY,
       atTop: computed(() => scrollY.value === 0),
       directions,
-      measure: vi.fn(),
     },
     scrollY,
   }
@@ -46,11 +39,10 @@ describe('useNavbarScroll', () => {
     const scope = effectScope()
     const navbarScroll = scope.run(() => useNavbarScroll(root, scroll.model))!
 
-    scroll.directions.bottom = true
+    scroll.directions.down = true
     scroll.scrollY.value = 20
     expect(navbarScroll.scrollingDown.value).toBe(true)
-    scroll.directions.bottom = false
-    scroll.directions.top = true
+    scroll.directions.down = false
     scroll.scrollY.value = 10
     expect(navbarScroll.scrollingDown.value).toBe(false)
 

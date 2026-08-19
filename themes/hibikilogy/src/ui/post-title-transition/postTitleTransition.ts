@@ -293,10 +293,6 @@ export function renderPostTitleTransitionTarget(): void {
   activeSession?.renderTarget()
 }
 
-export function clearPostTitleTransition(owner?: symbol): void {
-  activeSession?.clear(owner)
-}
-
 function cancelActivePreparation(): void {
   const preparation = activePreparation
   if (!preparation)

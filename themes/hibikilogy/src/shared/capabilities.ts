@@ -41,10 +41,6 @@ export function deviceSupportsHover(): boolean {
   return matchesMedia('(hover: hover)')
 }
 
-export function hasCoarsePointer(): boolean {
-  return matchesMedia('(pointer: coarse)')
-}
-
 export function supportsIntersectionObserver(): boolean {
   return typeof IntersectionObserver === 'function'
 }
@@ -83,5 +79,5 @@ function hasLowResourceSignal(): boolean {
 export function isLowPerformanceMobileDevice(): boolean {
   return hasLowResourceSignal()
     && isMaxTabletViewport()
-    && hasCoarsePointer()
+    && matchesMedia('(pointer: coarse)')
 }

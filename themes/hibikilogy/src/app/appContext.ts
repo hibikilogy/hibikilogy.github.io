@@ -1,4 +1,5 @@
 import type Swup from 'swup'
+import type { RouteModel } from './hooks/index.ts'
 import type { AppContext } from './types.ts'
 import { effectScope, onScopeDispose } from '@vue/reactivity'
 import { createSearchService, getSearchBootstrap, useSearchNavigation } from '../features/search/index.ts'
@@ -12,9 +13,7 @@ import { useNavigationPriority, useNavigationProgress, usePaginationNavigation, 
 export function createAppContext(swup: Swup): AppContext {
   const scope = effectScope(true)
   const config = getRuntimeConfig()
-  const route = scope.run(() => useRoute(swup))
-  if (!route)
-    throw new Error('Unable to create application route scope')
+  const route = scope.run(() => useRoute(swup)) as RouteModel
 
   const searchService = createSearchService({
     workerUrl: config.searchWorkerUrl,

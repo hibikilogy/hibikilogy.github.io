@@ -6,11 +6,7 @@ const SECTION_SELECTOR = '.Section, .FrontPage'
 const DEFAULT_CHILD_SELECTOR = `:scope > ${SECTION_SELECTOR}`
 
 function queryChildren(container: Element, childSelector: string): HTMLElement[] {
-  const [children] = catchError(() => (
-    [...container.querySelectorAll<HTMLElement>(childSelector)]
-  ))
-  // Fall back to the unscoped selector when `:scope` is unsupported.
-  return children ?? [...container.querySelectorAll<HTMLElement>(SECTION_SELECTOR)]
+  return [...container.querySelectorAll<HTMLElement>(childSelector)]
 }
 
 export function createWaterfallController(
@@ -22,48 +18,27 @@ export function createWaterfallController(
   let disposed = false
   let lastSignature = ''
   let lastItems: HTMLElement[] = []
-  let pendingLayout: Promise<void> | null = null
-  let resolvePending: (() => void) | null = null
 
-  const observedImages = new WeakSet<HTMLImageElement>()
   const observedItems = new WeakSet<Element>()
   const resizeObserver = window.ResizeObserver
     ? new ResizeObserver(() => {
-        void scheduleLayout()
+        scheduleLayout()
       })
     : null
   const mutationObserver = window.MutationObserver
     ? new MutationObserver(() => {
-        void scheduleLayout()
+        scheduleLayout()
       })
     : null
 
-  function scheduleLayout(): Promise<void> {
-    if (disposed)
-      return Promise.resolve()
-    if (pendingLayout)
-      return pendingLayout
+  function scheduleLayout(): void {
+    if (disposed || animationFrame)
+      return
 
-    pendingLayout = new Promise((resolve) => {
-      resolvePending = resolve
-      animationFrame = requestAnimationFrame(() => {
-        animationFrame = 0
-        try {
-          applyLayout()
-        }
-        finally {
-          pendingLayout = null
-          resolvePending = null
-          resolve()
-        }
-      })
+    animationFrame = requestAnimationFrame(() => {
+      animationFrame = 0
+      applyLayout()
     })
-
-    return pendingLayout
-  }
-
-  function scheduleLayoutEvent(): void {
-    void scheduleLayout()
   }
 
   function observeDynamicContent(items: Element[]): void {
@@ -73,32 +48,13 @@ export function createWaterfallController(
       resizeObserver.observe(item)
       observedItems.add(item)
     })
-
-    journal.querySelectorAll('img').forEach((img) => {
-      if (observedImages.has(img))
-        return
-
-      observedImages.add(img)
-      if (!img.complete) {
-        img.addEventListener('load', scheduleLayout, { once: true })
-        img.addEventListener('error', scheduleLayout, { once: true })
-      }
-    })
   }
 
   function applyLayout(): void {
     const items = queryChildren(journal, childSelector)
     observeDynamicContent(items)
 
-    if (!items.length) {
-      lastSignature = ''
-      lastItems = []
-      resetLayout(items)
-      markLayoutReady()
-      return
-    }
-
-    if (!isWaterfallLayout(items)) {
+    if (!items.length || !isWaterfallLayout(items)) {
       // Clear the signature: resetLayout strips spans, so a later identical
       // signature must not bail — the spans have to be written again.
       lastSignature = ''
@@ -186,19 +142,19 @@ export function createWaterfallController(
   // <lazy-image> loads inside shadow DOM — invisible to img listeners and,
   // once a span pins the card, to the ResizeObserver. Its composed
   // image-load/image-error events are the only reliable growth signal.
-  journal.addEventListener('image-load', scheduleLayoutEvent)
-  journal.addEventListener('image-error', scheduleLayoutEvent)
+  journal.addEventListener('image-load', scheduleLayout)
+  journal.addEventListener('image-error', scheduleLayout)
   resizeObserver?.observe(journal)
   mutationObserver?.observe(journal, {
     childList: true,
     subtree: true,
-    // lit patches reused result cards via text-node writes; without
-    // characterData those swaps never schedule a relayout.
+    // lit patches reused result cards via text-node writes; a span-pinned card
+    // keeps its height, so only characterData catches those swaps.
     characterData: true,
   })
 
   if (document.fonts)
-    void document.fonts.ready.then(scheduleLayout)
+    void document.fonts.ready.then(() => scheduleLayout())
 
   // Run the first layout synchronously so scroll restoration (which the
   // scroll plugin defers by one frame) measures the laid-out document.
@@ -212,15 +168,12 @@ export function createWaterfallController(
       if (animationFrame)
         cancelAnimationFrame(animationFrame)
       animationFrame = 0
-      resolvePending?.()
-      resolvePending = null
-      pendingLayout = null
       resizeObserver?.disconnect()
       mutationObserver?.disconnect()
       window.removeEventListener('resize', scheduleLayout)
       window.removeEventListener('load', scheduleLayout)
-      journal.removeEventListener('image-load', scheduleLayoutEvent)
-      journal.removeEventListener('image-error', scheduleLayoutEvent)
+      journal.removeEventListener('image-load', scheduleLayout)
+      journal.removeEventListener('image-error', scheduleLayout)
     },
   }
 }

@@ -1,4 +1,4 @@
-import type { HeaderItem, OutlineOptions } from './types.ts'
+import type { OutlineOptions } from './types.ts'
 import { onScopeDispose } from '@vue/reactivity'
 import { throttle } from 'lodash-es'
 import { catchError } from 'shared/result.ts'
@@ -6,9 +6,14 @@ import { safeDecodeURIComponent } from 'shared/url.ts'
 import { useEventListener } from 'shared/useEventListener.ts'
 import { outlineDom } from './config.ts'
 
+/** An h1/h2 heading tracked for active-link highlighting, in document order. */
+interface OutlineAnchor {
+  element: HTMLElement
+  link: string
+}
+
 interface OutlineState {
-  /** Level-filtered headings, in document order, for active-link tracking. */
-  anchors: Array<Pick<HeaderItem, 'element' | 'link'>>
+  anchors: OutlineAnchor[]
   activeHash: { value: string | null }
 }
 
@@ -17,42 +22,13 @@ interface OutlineState {
 const MARKER_ACTIVE_OFFSET = 8
 const MARKER_HIDDEN_TOP = 40
 
-function getHeaders(range: number | [number, number] | 'deep' | false): OutlineState['anchors'] {
-  const headers = [...document.querySelectorAll<HTMLElement>(outlineDom.headings)]
-    .filter(el => el.id && el.hasChildNodes())
-    .map(el => ({
-      element: el,
-      title: serializeHeader(el),
-      link: `#${el.id}`,
-      level: Number(el.tagName[1]),
-    }))
-
-  return filterHeadersByLevel(headers, range)
-    .map(({ element, link }) => ({ element, link }))
-}
-
-function serializeHeader(header: HTMLElement): string {
-  let text = ''
-  for (const node of header.childNodes) {
-    if (node.nodeType === Node.ELEMENT_NODE || node.nodeType === Node.TEXT_NODE) {
-      text += node.textContent || ''
-    }
-  }
-  return text.trim()
-}
-
-function filterHeadersByLevel(headers: HeaderItem[], range: number | [number, number] | 'deep' | false): HeaderItem[] {
-  if (range === false)
-    return []
-
-  const levelsRange = range || 2
-  const [high, low] = typeof levelsRange === 'number'
-    ? [levelsRange, levelsRange]
-    : levelsRange === 'deep'
-      ? [2, 6]
-      : levelsRange
-
-  return headers.filter(header => header.level >= high && header.level <= low)
+function collectOutlineAnchors(): OutlineAnchor[] {
+  return [...document.querySelectorAll<HTMLElement>(outlineDom.headings)]
+    .filter(el =>
+      el.id
+      && el.hasChildNodes()
+      && (el.tagName === 'H1' || el.tagName === 'H2'))
+    .map(el => ({ element: el, link: `#${el.id}` }))
 }
 
 function findOutlineLink(hash: string): Element | null {
@@ -177,7 +153,7 @@ export function setupOutline(options: OutlineOptions): void {
   if (!marker)
     return
 
-  const anchors = getHeaders([1, 2])
+  const anchors = collectOutlineAnchors()
   const state: OutlineState = { anchors, activeHash: { value: null } }
   useActiveAnchor(marker, options, state)
 

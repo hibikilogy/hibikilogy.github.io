@@ -35,7 +35,7 @@ export function waitForSearchTransition(
   return undefined
 }
 
-export async function waitForSearchVeilCover(isCached: boolean): Promise<void> {
+async function waitForSearchVeilCover(isCached: boolean): Promise<void> {
   if (!shouldHoldSearchVeilCover(isCached))
     return
 

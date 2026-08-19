@@ -1,3 +1,4 @@
+import type { LayoutModel, PageData } from './hooks/index.ts'
 import type { AppContext, PageContext } from './types.ts'
 import { effectScope } from '@vue/reactivity'
 import { resolvePageData, useLayout } from './hooks/index.ts'
@@ -7,9 +8,7 @@ export function createPageContext(app: AppContext, root: HTMLElement): PageConte
   const value = scope.run(() => ({
     data: resolvePageData(root),
     layout: useLayout(root, app.route),
-  }))
-  if (!value)
-    throw new Error('Unable to create page scope')
+  })) as { data: PageData, layout: LayoutModel }
 
   return {
     scope,

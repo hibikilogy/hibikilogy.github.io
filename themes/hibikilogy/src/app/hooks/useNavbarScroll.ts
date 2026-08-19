@@ -83,7 +83,7 @@ export function useNavbarScroll(root: ParentNode, scroll: ScrollModel) {
     if (postHero && nextScrollY === 0)
       postHeroPassed.value = false
     if (nativeDirection !== 'supported')
-      scrollingDown.value = nextScrollY > 0 && scroll.directions.bottom
+      scrollingDown.value = nextScrollY > 0 && scroll.directions.down
     if (nativeDirection === 'pending')
       probeNativeDirection()
     syncPostHeroBackground()
