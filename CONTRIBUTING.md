@@ -37,7 +37,7 @@ pnpm dev:all     # Zola + Vite
 ├─ content/                         # Markdown 内容
 ├─ static/                          # 站点静态资源、CMS 产物
 ├─ cms/                             # Sveltia CMS 预览源码
-├─ scripts/                         # Rust/TypeScript 构建工具
+├─ scripts/                         # 构建工具（TS + scripts/rust/ 下的 Rust crate）
 ├─ themes/hibikilogy/
 │  ├─ templates/                    # Tera 模板和 shortcode
 │  ├─ styles/                       # CSS 源码
