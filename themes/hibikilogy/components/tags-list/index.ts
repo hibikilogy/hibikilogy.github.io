@@ -52,7 +52,7 @@ export class TagsList extends LitElement {
 
   /** Replace the rendered tag list (called by the search page). */
   setItems(items: TagItem[]): void {
-    this.items = Array.isArray(items) ? items : []
+    this.items = items
   }
 
   override render() {
@@ -70,8 +70,6 @@ export class TagsList extends LitElement {
   }
 
   private renderTag(item: TagItem) {
-    const count = item.count
-
     return html`
       <a
         class="joh-tag mr-2 font-700 text-inherit no-underline"
@@ -79,14 +77,7 @@ export class TagsList extends LitElement {
         title=${item.name}
       >
         <span>${item.name}</span>
-        ${typeof count === 'number' && Number.isFinite(count) && count > 0
-          ? html`<span class="hidden text-[0.8rem] text-[var(--joh-c-text-muted)]">
-              ${String(count)}
-            </span>`
-          : nothing}
       </a>
     `
   }
 }
-
-export type { TagItem }

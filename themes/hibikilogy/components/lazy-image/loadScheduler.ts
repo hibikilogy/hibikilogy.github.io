@@ -1,48 +1,26 @@
-export class FrameLoadScheduler {
-  private frameHandle?: number
-  private scheduleToken = 0
-  private scheduled = false
+export function scheduleAfterUpdate(
+  updateComplete: Promise<unknown>,
+  isActive: () => boolean,
+  callback: () => void,
+): () => void {
+  let cancelled = false
+  let frameHandle: number | undefined
 
-  schedule(
-    updateComplete: Promise<unknown>,
-    isActive: () => boolean,
-    callback: () => void,
-  ): void {
-    if (this.scheduled)
+  void updateComplete.then(() => {
+    if (cancelled || !isActive())
       return
 
-    this.scheduled = true
-    const token = ++this.scheduleToken
-
-    void updateComplete.then(() => {
-      if (!this.isCurrent(token) || !isActive())
+    frameHandle = window.requestAnimationFrame(() => {
+      if (cancelled || !isActive())
         return
 
-      this.frameHandle = window.requestAnimationFrame(() => {
-        this.frameHandle = undefined
-        if (!this.isCurrent(token) || !isActive()) {
-          this.scheduled = false
-          return
-        }
-
-        this.scheduled = false
-        callback()
-      })
+      callback()
     })
-  }
+  })
 
-  cancel(): void {
-    this.scheduleToken += 1
-    this.scheduled = false
-
-    if (this.frameHandle === undefined)
-      return
-
-    window.cancelAnimationFrame(this.frameHandle)
-    this.frameHandle = undefined
-  }
-
-  private isCurrent(token: number): boolean {
-    return this.scheduled && token === this.scheduleToken
+  return () => {
+    cancelled = true
+    if (frameHandle !== undefined)
+      window.cancelAnimationFrame(frameHandle)
   }
 }

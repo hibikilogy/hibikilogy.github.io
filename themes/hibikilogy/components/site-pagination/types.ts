@@ -1,7 +1,5 @@
 /** Shared types for the `<site-pagination>` component. */
 
-export type PaginationMode = 'link' | 'event'
-
 /** A single item produced by {@link getPaginationItems}. */
 export type PaginationItem
   = | { type: 'ellipsis' }

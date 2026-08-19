@@ -1,7 +1,6 @@
 import { resolveDurationMs } from 'shared/animation.ts'
 
 const openHandlers = new WeakMap<HTMLImageElement, EventListener>()
-const attachedImages = new Set<HTMLImageElement>()
 const originalVisibility = new WeakMap<HTMLImageElement, string>()
 const VIEWPORT_PADDING = 24
 
@@ -33,7 +32,6 @@ export function attachToZoom(image: HTMLImageElement): void {
 
   image.addEventListener('click', openHandler)
   openHandlers.set(image, openHandler)
-  attachedImages.add(image)
 }
 
 export function detachFromZoom(image: HTMLImageElement): void {
@@ -43,8 +41,6 @@ export function detachFromZoom(image: HTMLImageElement): void {
     openHandlers.delete(image)
   }
 
-  attachedImages.delete(image)
-
   if (activeSession?.source === image)
     closeZoom()
 }
@@ -52,7 +48,6 @@ export function detachFromZoom(image: HTMLImageElement): void {
 export interface ZoomBinding {
   attachAll: (images: Iterable<HTMLImageElement> | ArrayLike<HTMLImageElement>) => void
   detachAll: () => void
-  close: () => void
 }
 
 /**
@@ -74,7 +69,6 @@ export function createZoomBinding(): ZoomBinding {
         detachFromZoom(image)
       bound.clear()
     },
-    close: () => closeZoom(),
   }
 }
 
@@ -110,8 +104,6 @@ function openZoom(source: HTMLImageElement): void {
 
   const zoomed = source.cloneNode(false) as HTMLImageElement
   zoomed.className = `${source.className} zoom-image--opened`
-  zoomed.removeAttribute('srcset')
-  zoomed.removeAttribute('sizes')
   zoomed.src = source.currentSrc || source.src
   // Dialog semantics; the source alt doubles as the localized accessible name.
   zoomed.tabIndex = -1
@@ -186,11 +178,7 @@ function closeSession(session: ZoomSession): void {
     return
 
   session.closing = true
-  window.removeEventListener('keydown', session.keydownHandler)
-  window.removeEventListener('resize', session.resizeHandler)
-  window.removeEventListener('scroll', session.scrollHandler)
-  window.removeEventListener('wheel', session.wheelHandler)
-  window.removeEventListener('touchmove', session.touchMoveHandler)
+  removeSessionListeners(session)
 
   session.overlay.style.opacity = '0'
   const sourceRect = session.source.isConnected
@@ -211,11 +199,7 @@ function closeSession(session: ZoomSession): void {
 }
 
 function destroySession(session: ZoomSession): void {
-  window.removeEventListener('keydown', session.keydownHandler)
-  window.removeEventListener('resize', session.resizeHandler)
-  window.removeEventListener('scroll', session.scrollHandler)
-  window.removeEventListener('wheel', session.wheelHandler)
-  window.removeEventListener('touchmove', session.touchMoveHandler)
+  removeSessionListeners(session)
 
   if (session.cleanupTimer !== undefined)
     window.clearTimeout(session.cleanupTimer)
@@ -229,6 +213,14 @@ function destroySession(session: ZoomSession): void {
     activeSession = undefined
     document.body.classList.remove('zoom--opened')
   }
+}
+
+function removeSessionListeners(session: ZoomSession): void {
+  window.removeEventListener('keydown', session.keydownHandler)
+  window.removeEventListener('resize', session.resizeHandler)
+  window.removeEventListener('scroll', session.scrollHandler)
+  window.removeEventListener('wheel', session.wheelHandler)
+  window.removeEventListener('touchmove', session.touchMoveHandler)
 }
 
 function restoreFocus(session: ZoomSession): void {
@@ -255,12 +247,10 @@ function computeTargetRect(image: HTMLImageElement): DOMRect {
 
 function hideSourceImage(image: HTMLImageElement): void {
   originalVisibility.set(image, image.style.visibility)
-  image.classList.add('zoom-image--hidden')
   image.style.visibility = 'hidden'
 }
 
 function restoreSourceImage(image: HTMLImageElement): void {
-  image.classList.remove('zoom-image--hidden')
   image.style.visibility = originalVisibility.get(image) ?? ''
   originalVisibility.delete(image)
 }

@@ -1,13 +1,11 @@
-import type { PaginationItem, PaginationMode } from './types'
+import type { PaginationItem } from './types'
 import { css, html, LitElement, nothing } from 'lit'
 
 import { customElement, property } from 'lit/decorators.js'
 import { cn } from '../utils'
 import {
-  clampPage,
   COMPACT_PAGE_LIMIT,
   getPaginationItems,
-  normalizePageNumber,
 } from './utils'
 
 const DIRECTION_LINK_CLASS = [
@@ -25,7 +23,6 @@ const DIRECTION_ICON_CLASS = 'inline-block h-[1.5em] w-[1.5em] align-sub'
 @customElement('site-pagination')
 export class SitePagination extends LitElement {
   getHref?: (page: number) => string
-  onPageChange?: (page: number) => void
 
   static override readonly styles = css`
     @unocss-placeholder
@@ -71,10 +68,6 @@ export class SitePagination extends LitElement {
 
   @property({ attribute: 'mobile-page-template' })
   mobilePageTemplate = 'Page {page}'
-
-  /** @attr mode - `"link"` (navigate) or `"event"` (dispatch page-change). */
-  @property()
-  mode: PaginationMode = 'link'
 
   override render() {
     const items = getPaginationItems(this.currentPage, this.totalPages)
@@ -188,24 +181,18 @@ export class SitePagination extends LitElement {
     page: number,
     isCurrent: boolean,
   ): void {
-    if (isCurrent) {
-      event.preventDefault()
-      return
-    }
+    event.preventDefault()
 
-    const href = this.getPageHref(page)
-    if (this.mode === 'event' || this.onPageChange) {
-      event.preventDefault()
-    }
+    if (isCurrent)
+      return
 
     this.dispatchEvent(
       new CustomEvent<{ page: number, href: string }>('page-change', {
         bubbles: true,
         composed: true,
-        detail: { page, href },
+        detail: { page, href: this.getPageHref(page) },
       }),
     )
-    this.onPageChange?.(page)
   }
 
   private getPageHref(page: number): string {
@@ -235,7 +222,3 @@ export class SitePagination extends LitElement {
     return (template || '{page}').replaceAll('{page}', String(page))
   }
 }
-
-export const Pagination = SitePagination
-export { clampPage, getPaginationItems, normalizePageNumber }
-export type { PaginationItem, PaginationMode }

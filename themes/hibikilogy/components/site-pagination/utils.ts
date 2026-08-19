@@ -1,5 +1,3 @@
-/** Pure pagination-window logic, ported verbatim from the original JS. */
-
 import type { PaginationItem } from './types'
 
 export const COMPACT_PAGE_LIMIT = 10
@@ -51,14 +49,8 @@ function getWindowedPages(
 ): WindowPage[] {
   const availableLeft = currentPage - 1
   const availableRight = totalPages - currentPage
-  const leftCount = Math.min(
-    SIBLING_COUNT,
-    availableLeft + Math.max(0, SIBLING_COUNT - availableRight),
-  )
-  const rightCount = Math.min(
-    SIBLING_COUNT,
-    availableRight + Math.max(0, SIBLING_COUNT - availableLeft),
-  )
+  const leftCount = Math.min(SIBLING_COUNT, availableLeft)
+  const rightCount = Math.min(SIBLING_COUNT, availableRight)
   const remainingBudget = NEIGHBOR_PAGE_BUDGET - leftCount - rightCount
   const extraLeftCount = Math.min(
     remainingBudget,
