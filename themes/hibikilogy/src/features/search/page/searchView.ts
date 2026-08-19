@@ -6,7 +6,6 @@ import { serializeUrl } from 'shared/url.ts'
 import { searchMessages } from '../config.ts'
 import { searchDom } from '../searchDom.ts'
 import { getSearchHighlightTerms, renderSearchArticle } from './articleView.ts'
-import { resolveSearchLoadingMessage } from './loadingMessage.ts'
 import {
   transitionSearchJournalResults,
   updateSearchMessage,
@@ -35,11 +34,7 @@ export function createSearchView(root: ParentNode, model: SearchModel): SearchVi
       if (state.phase === 'idle') {
         renderEmptyState(results, controls, pagination, root)
         const text = state.count === undefined
-          ? resolveSearchLoadingMessage({
-              status: model.indexStatus.value,
-              hasSearchTerm: false,
-              messages: searchMessages,
-            })
+          ? searchMessages.indexLoading
           : searchMessages.idle(state.count)
         if (message) {
           await updateSearchMessage(message, text, {
@@ -88,7 +83,6 @@ export function createSearchView(root: ParentNode, model: SearchModel): SearchVi
               : url.searchParams.delete('p')
             return serializeUrl(url)
           },
-          onPageChange: model.setPage,
         }, root)
         setSearchRelatedTags(model.relatedTags.value, root)
       })

@@ -8,18 +8,18 @@ import { SEARCH_FOCUS_INTENT_KEY } from '../config.ts'
 import { focusSearchInput, searchDom } from '../searchDom.ts'
 import { preloadSearchPage } from '../searchPage.ts'
 
-export function scheduleIdleSearchPreload(service: SearchService): void {
-  const preload = (): void => {
-    void Promise.all([
-      preloadSearchPage(),
-      service.preload(),
-    ]).catch(() => {})
-  }
+function preloadSearchAssets(service: SearchService): void {
+  void Promise.all([
+    preloadSearchPage(),
+    service.preload(),
+  ]).catch(() => {})
+}
 
+export function scheduleIdleSearchPreload(service: SearchService): void {
   if (supportsIdleCallback())
-    requestIdleCallback(preload)
+    requestIdleCallback(() => preloadSearchAssets(service))
   else
-    preload()
+    preloadSearchAssets(service)
 }
 
 export function useSearchNavigation(
@@ -29,10 +29,7 @@ export function useSearchNavigation(
 ): void {
   function preloadSearch(): void {
     route.preload(SEARCH_PATH)
-    void Promise.all([
-      preloadSearchPage(),
-      service.preload(),
-    ]).catch(() => {})
+    preloadSearchAssets(service)
   }
 
   function openSearch(focusIntent = 'pointer'): void {
@@ -59,8 +56,11 @@ export function useSearchNavigation(
   })
 
   useEventListener(document, 'focusin', (event) => {
-    if ((event.target as Element | null)?.closest(searchDom.openTrigger))
+    const target = event.target as Element | null
+    if (target?.closest(searchDom.openTrigger))
       preloadSearch()
+    else if (route.isSearchPage.value && target?.closest(searchDom.form))
+      void service.preload().catch(() => {})
   })
 
   useEventListener(document, 'click', (event) => {
@@ -98,10 +98,5 @@ export function useSearchNavigation(
       else
         openSearch('keyboard')
     }
-  })
-
-  useEventListener(document, 'focusin', (event) => {
-    if (route.isSearchPage.value && (event.target as Element | null)?.closest(searchDom.form))
-      void service.preload().catch(() => {})
   })
 }

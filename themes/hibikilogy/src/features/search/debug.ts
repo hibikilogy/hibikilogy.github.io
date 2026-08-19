@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import type {
   SearchBuildReport,
-  SearchEngineBootstrapData,
 } from './types.ts'
 import { catchError } from 'shared/result.ts'
 
@@ -10,10 +9,6 @@ export const SEARCH_DEBUG_STORAGE_KEY = 'hibikilogy:search-debug'
 export function isSearchDebugEnabled(): boolean {
   const [enabled] = catchError(() => globalThis.localStorage?.getItem(SEARCH_DEBUG_STORAGE_KEY) === '1')
   return enabled ?? false
-}
-
-export function getSearchDebugFlag(bootstrap: SearchEngineBootstrapData): boolean {
-  return Boolean(bootstrap.debug || isSearchDebugEnabled())
 }
 
 export function nowMs(): number {

@@ -18,11 +18,6 @@ describe('useSearch', () => {
       preload: vi.fn(async () => {}),
       count: vi.fn(async () => 0),
       search: vi.fn(query => query.term === 'first' ? first.promise : second.promise),
-      getStatus: () => 'ready',
-      subscribeStatus: (listener) => {
-        listener('ready')
-        return () => {}
-      },
       dispose: vi.fn(),
     }
 
@@ -42,13 +37,11 @@ describe('useSearch', () => {
       records: Array.from({ length: 13 }, (_, index) => (
         makeRecord(index, index === 12 ? 'page-two' : 'page-one')
       )),
-      engineDurationMs: 2,
     })
     await flushPromises()
 
     first.resolve({
       records: [makeRecord(99, 'stale')],
-      engineDurationMs: 10,
     })
     await flushPromises()
 

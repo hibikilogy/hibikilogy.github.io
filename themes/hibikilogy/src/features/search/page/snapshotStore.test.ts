@@ -10,7 +10,7 @@ describe('search snapshot store', () => {
     store.commit({
       key: '/search?q=hello&p=2',
       query: { term: 'hello', page: 2, sort: 'relevance' },
-      response: { records, engineDurationMs: 1 },
+      response: { records },
     })
     records.push({} as SearchResponse['records'][number])
 

@@ -81,9 +81,7 @@ function createService(): SearchService {
   return {
     preload: vi.fn(() => Promise.resolve()),
     count: vi.fn(() => Promise.resolve(0)),
-    search: vi.fn(() => Promise.resolve({ records: [], engineDurationMs: 0 })),
-    getStatus: vi.fn(() => 'ready' as const),
-    subscribeStatus: vi.fn(() => () => {}),
+    search: vi.fn(() => Promise.resolve({ records: [] })),
     dispose: vi.fn(),
   }
 }

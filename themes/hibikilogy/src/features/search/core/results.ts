@@ -43,6 +43,5 @@ function mergeSearchResult(currentResult: FuseSearchResult, nextResult: FuseSear
       body: bodyExcerptResult.item.body,
       bodyMatchExcerpt: true,
     },
-    matches: betterRankedResult.matches || bodyExcerptResult.matches,
   }
 }

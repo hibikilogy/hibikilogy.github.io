@@ -121,8 +121,9 @@ function renderMeta(result: SearchResultRecord) {
 
 /**
  * Stable per-page key for the post-title transition. Must stay in sync with
- * `post_title_transition_name` in templates/macros/data.html — server-rendered
- * titles use that macro, search results generate the same shape here.
+ * `post_title_transition_name` in templates/components/util/data.html —
+ * server-rendered titles use that component, search results generate the
+ * same shape here.
  */
 function getPostTitleTransitionName(href: string): string {
   const path = href.replace(/[?#].*$/, '').replace(/^\/|\/$/g, '').replace(/[/.]/g, '-')

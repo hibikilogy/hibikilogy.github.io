@@ -11,12 +11,7 @@ import type {
 } from '../types.ts'
 import { catchAsyncError } from 'shared/result.ts'
 import { createSearchEngine, normalizeSearchRecords } from '../core/engine.ts'
-import {
-  getDurationMs,
-  getSearchDebugFlag,
-  logSearchBuildReport,
-  nowMs,
-} from '../debug.ts'
+import { getDurationMs, logSearchBuildReport, nowMs } from '../debug.ts'
 import {
   createSearchCacheKey,
   disableIndexedDbSearchCacheStorage,
@@ -27,7 +22,6 @@ import { fetchJsonIndex } from './load.ts'
 
 interface SearchEngineBuildOptions {
   cacheStorage?: SearchEngineCacheStorage | null
-  onStatus?: (status: import('../types.ts').SearchIndexBuildStatus) => void
   onReport?: (report: SearchBuildReport) => void
 }
 export async function buildSearchEngine(
@@ -35,15 +29,12 @@ export async function buildSearchEngine(
   options: SearchEngineBuildOptions = {},
 ): Promise<SearchEngine> {
   const indexUrl = bootstrap.indexUrl
-  const debug = getSearchDebugFlag(bootstrap)
+  const debug = Boolean(bootstrap.debug)
   const phases: SearchTimingPhase[] = []
-  const onStatus = options.onStatus || (() => {})
   const onReport = options.onReport || (() => {})
   const cacheStorage = options.cacheStorage === undefined
     ? getIndexedDbSearchCacheStorage()
     : options.cacheStorage
-
-  onStatus('fetch')
   const metadataStart = nowMs()
   const [articleMetadata, tagIndex] = await Promise.all([
     resolveArticleMetadataIndex(bootstrap),
@@ -64,8 +55,6 @@ export async function buildSearchEngine(
     articleMetadataIndex: articleMetadata,
     tagIndex,
   })
-
-  onStatus('cache-read')
   const cachedEntry = await readSearchEngineCache(cacheStorage, cacheKey, phases)
   if (cachedEntry) {
     const start = nowMs()
@@ -94,8 +83,6 @@ export async function buildSearchEngine(
         extendedFuseIndexRecordCount: cachedEntry.extendedFuseIndexJson.records.length,
         phases,
       })
-      onStatus('cache-hit')
-      onStatus('ready')
       return engine
     }
     catch (error) {
@@ -109,8 +96,6 @@ export async function buildSearchEngine(
       })
     }
   }
-
-  onStatus('fetch')
   const fetchStart = nowMs()
   const rawIndex = await fetchJsonIndex<RawSearchIndexEntry[]>(indexUrl)
   phases.push({
@@ -120,8 +105,6 @@ export async function buildSearchEngine(
       rawEntries: rawIndex.length,
     },
   })
-
-  onStatus('normalize')
   const normalizeStart = nowMs()
   const records = normalizeSearchRecords(rawIndex, articleMetadata, tagIndex)
   phases.push({
@@ -131,8 +114,6 @@ export async function buildSearchEngine(
       records: records.length,
     },
   })
-
-  onStatus('index-build')
   const fuseStart = nowMs()
   const engine = createSearchEngine(records)
   const cacheEntry = cacheStorage ? createSearchEngineCacheEntry(cacheKey, engine) : null
@@ -148,7 +129,6 @@ export async function buildSearchEngine(
   })
 
   if (cacheStorage && cacheEntry) {
-    onStatus('cache-write')
     await writeSearchEngineCache(cacheStorage, () => cacheEntry, debug, phases)
   }
   reportSearchEngineBuild(debug, onReport, {
@@ -163,7 +143,6 @@ export async function buildSearchEngine(
     extendedFuseIndexRecordCount: extendedIndexRecords,
     phases,
   })
-  onStatus('ready')
   return engine
 }
 

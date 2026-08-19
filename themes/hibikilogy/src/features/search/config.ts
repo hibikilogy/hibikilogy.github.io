@@ -7,8 +7,6 @@ export const SEARCH_PAGE_SIZE = HIBIKILOGY_CONFIG.searchPageSize
 export const SEARCH_FOCUS_INTENT_KEY = 'search-focus-intent'
 export const searchMessages = {
   indexLoading: HIBIKILOGY_TRANSLATIONS.searchIndexLoading,
-  cacheReading: HIBIKILOGY_TRANSLATIONS.searchCacheReading,
-  indexBuilding: HIBIKILOGY_TRANSLATIONS.searchIndexBuilding,
   loading: (term: string) => fmt(HIBIKILOGY_TRANSLATIONS.searchLoading, term),
   failed: HIBIKILOGY_TRANSLATIONS.searchFailed,
   empty: (term: string) => fmt(HIBIKILOGY_TRANSLATIONS.searchEmpty, term),

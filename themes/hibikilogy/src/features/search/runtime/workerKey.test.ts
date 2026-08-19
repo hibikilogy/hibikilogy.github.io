@@ -7,8 +7,8 @@ import type {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('comlink', () => ({ expose: vi.fn() }))
-vi.mock('./index.ts', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('./index.ts')>()
+vi.mock('./engineBuilder.ts', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./engineBuilder.ts')>()
   return { ...actual, buildSearchEngine: vi.fn() }
 })
 
@@ -18,7 +18,7 @@ beforeEach(() => {
 
 describe('search worker initialize key', () => {
   it('reuses one engine build for identical bootstrap data', async () => {
-    const { buildSearchEngine } = await import('./index.ts')
+    const { buildSearchEngine } = await import('./engineBuilder.ts')
     const buildMock = vi.mocked(buildSearchEngine)
     buildMock.mockResolvedValue({ records: [] } as unknown as SearchEngine)
 

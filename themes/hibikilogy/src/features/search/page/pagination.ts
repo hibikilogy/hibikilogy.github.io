@@ -10,9 +10,7 @@ export function renderSearchPagination(options: SearchPaginationOptions, root: P
   pagination.setAttribute('total-pages', String(options.totalPages))
   const controller = pagination as HTMLElement & {
     getHref?: (page: number) => string
-    onPageChange?: (page: number) => void
   }
 
   controller.getHref = options.getHref
-  controller.onPageChange = options.onPageChange
 }

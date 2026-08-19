@@ -1,4 +1,4 @@
-import type { AppContext, PageContext } from 'app/index.ts'
+import type { AppContext, PageContext } from 'app/types.ts'
 import { onScopeDispose, watch } from '@vue/reactivity'
 import { useEventListener } from 'shared/useEventListener.ts'
 import { SEARCH_FOCUS_INTENT_KEY } from '../config.ts'
@@ -14,15 +14,18 @@ export function mountSearchPage(app: AppContext, page: PageContext): void {
   if (!root)
     return
 
-  useEventListener(root, 'page-change', (event) => {
-    event.stopPropagation()
-  })
-
   const model = useSearch(app.route, app.searchService, retainedSnapshot)
   const view = createSearchView(root, model)
   const input = root.querySelector<HTMLInputElement>(searchDom.input)
   const form = root.querySelector<HTMLFormElement>(searchDom.form)
   const sorting = root.querySelector<HTMLSelectElement>(searchDom.sorting)
+
+  // page-change must not reach the document-level navigation handler;
+  // the search page swaps results in place instead of navigating.
+  useEventListener(root, 'page-change', (event) => {
+    event.stopPropagation()
+    model.setPage((event as CustomEvent<{ page: number }>).detail.page)
+  })
 
   const stopView = watch(
     () => model.state.value,

@@ -176,7 +176,7 @@ function stubFetch(responses: Record<string, unknown>) {
       throw body || new Error(`Unexpected fetch: ${url}`)
     return {
       ok: true,
-      text: async () => JSON.stringify(body),
+      json: async () => body,
     } as Response
   })
   vi.stubGlobal('fetch', fetchMock)

@@ -1,24 +1,16 @@
 import type { FuseSearchResult, SearchRecord } from '../types.ts'
 import { normalizeSearchText } from '../utils.ts'
 
-const MIN_EXACT_BODY_QUERY_LENGTH = 2
 const BODY_EXCERPT_RADIUS = 90
 const MAX_SCORED_BODY_OCCURRENCES = 4
 const normalizedBodyCache = new WeakMap<object, string>()
 
-export function hasExactSearchBodyMatch(record: Pick<SearchRecord, 'body'>, normalizedTerm: string): boolean {
-  if (!shouldUseExactBodySearch(normalizedTerm))
-    return false
-
-  return normalizedTextIncludes(getNormalizedBody(record), normalizedTerm)
-}
-
 export function buildExactBodySearchResults(
   records: SearchRecord[],
   normalizedTerm: string,
-  minimumQueryLength = MIN_EXACT_BODY_QUERY_LENGTH,
+  minimumQueryLength: number,
 ): FuseSearchResult[] {
-  if (!Array.isArray(records) || normalizedTerm.length < minimumQueryLength)
+  if (normalizedTerm.length < minimumQueryLength)
     return []
 
   return records
@@ -42,17 +34,7 @@ function buildExactBodySearchResult(record: SearchRecord, normalizedTerm: string
       bodyMatchExcerpt: true,
     },
     score: getExactBodyScore(occurrenceCount, positionRatio),
-    matches: [
-      {
-        key: 'bodySearch',
-        value: record.body || '',
-      },
-    ],
-  } as FuseSearchResult
-}
-
-function shouldUseExactBodySearch(normalizedTerm: string): boolean {
-  return normalizedTerm.length >= MIN_EXACT_BODY_QUERY_LENGTH
+  }
 }
 
 function countOccurrences(value: string, needle: string, limit = Number.POSITIVE_INFINITY): number {
@@ -113,10 +95,6 @@ function getNormalizedBody(record: Pick<SearchRecord, 'body'>): string {
   const normalized = normalizeSearchText(record.body || '')
   normalizedBodyCache.set(record, normalized)
   return normalized
-}
-
-function normalizedTextIncludes(value: string, needle: string): boolean {
-  return findNormalizedMatchIndex(value, needle) !== -1
 }
 
 function findNormalizedMatchIndex(value: string, needle: string): number {

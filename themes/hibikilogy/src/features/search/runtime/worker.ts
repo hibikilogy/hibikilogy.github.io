@@ -2,19 +2,16 @@ import type {
   SearchBuildReport,
   SearchEngine,
   SearchEngineBootstrapData,
-  SearchExecutionResult,
-  SearchIndexBuildStatus,
+  SearchResponse,
   SearchWorkerApi,
 } from '../types.ts'
 import { expose } from 'comlink'
 import { createSingleFlight } from 'shared/singleFlight.ts'
 import { searchRecordsInEngine } from '../core/engine.ts'
-import { getDurationMs, nowMs } from '../debug.ts'
-import { buildSearchEngine } from './index.ts'
+import { buildSearchEngine } from './engineBuilder.ts'
 
 let currentBootstrap: SearchEngineBootstrapData | null = null
 let currentKey = ''
-let statusListener: ((status: SearchIndexBuildStatus) => void) | undefined
 let reportListener: ((report: SearchBuildReport) => void) | undefined
 const engine = createSingleFlight<SearchEngine>(() => {
   if (!currentBootstrap)
@@ -22,21 +19,19 @@ const engine = createSingleFlight<SearchEngine>(() => {
   return buildSearchEngine(
     currentBootstrap,
     {
-      onStatus: status => statusListener?.(status),
       onReport: report => reportListener?.(report),
     },
   )
 })
 
 const api: SearchWorkerApi = {
-  async initialize(bootstrap, onStatus, onReport) {
+  async initialize(bootstrap, onReport) {
     const nextKey = JSON.stringify({
       indexUrl: bootstrap.indexUrl,
       articlesDataUrl: bootstrap.articlesDataUrl,
       tagsDataUrl: bootstrap.tagsDataUrl,
     })
 
-    statusListener = onStatus
     reportListener = onReport
     if (currentKey !== nextKey) {
       currentKey = nextKey
@@ -49,13 +44,9 @@ const api: SearchWorkerApi = {
   async count() {
     return (await requireEngine()).records.length
   },
-  async search(term: string): Promise<SearchExecutionResult> {
+  async search(term: string): Promise<SearchResponse> {
     const instance = await requireEngine()
-    const start = nowMs()
-    return {
-      records: searchRecordsInEngine(instance, term),
-      engineDurationMs: getDurationMs(start),
-    }
+    return { records: searchRecordsInEngine(instance, term) }
   },
 }
 

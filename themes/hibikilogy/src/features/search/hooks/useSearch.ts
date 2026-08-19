@@ -11,7 +11,6 @@ import type {
 import {
   computed,
   onScopeDispose,
-  ref,
   shallowRef,
   watch,
 } from '@vue/reactivity'
@@ -35,13 +34,7 @@ export function useSearch(
     phase: 'idle',
     query: initialQuery,
   })
-  const indexStatus = ref(service.getStatus())
   let requestId = 0
-
-  const unsubscribeStatus = service.subscribeStatus((status) => {
-    indexStatus.value = status
-  })
-  onScopeDispose(unsubscribeStatus)
 
   const results = computed(() => {
     if (state.value.phase !== 'ready')
@@ -162,12 +155,8 @@ export function useSearch(
     results,
     relatedTags,
     pagination,
-    indexStatus,
     setTerm,
     setSort,
     setPage,
-    retry: () => {
-      void synchronize(state.value.query, route.current.value.href)
-    },
   }
 }

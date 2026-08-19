@@ -1,4 +1,4 @@
-import type { AppContext, PageContext } from '../../app/index.ts'
+import type { AppContext, PageContext } from '../../app/types.ts'
 import { createSingleFlight } from 'shared/singleFlight.ts'
 
 type SearchPageModule = typeof import('./page/index.ts')

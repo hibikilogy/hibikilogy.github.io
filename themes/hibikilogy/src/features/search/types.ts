@@ -1,4 +1,4 @@
-import type { ComputedRef, Ref, ShallowRef } from '@vue/reactivity'
+import type { ComputedRef, ShallowRef } from '@vue/reactivity'
 import type Fuse from 'fuse.js'
 import type { FuseIndex } from 'fuse.js'
 
@@ -62,34 +62,24 @@ export interface SearchRecord {
   bodyMatchExcerpt?: boolean
 }
 
-type SearchResultPresentationFields
-  = | 'url'
-    | 'path'
-    | 'title'
-    | 'description'
-    | 'subtitle'
-    | 'coverSrc'
-    | 'coverAlt'
-    | 'coverWidth'
-    | 'coverHeight'
-    | 'coverThumbhash'
-    | 'publishDateValue'
-    | 'body'
-    | 'date'
-    | 'slug'
-    | 'authorName'
-    | 'authorHref'
-    | 'tags'
+type SearchResultPresentationFields = Omit<
+  SearchRecord,
+  | 'titleSearch'
+  | 'descriptionSearch'
+  | 'slugSearch'
+  | 'authorSearch'
+  | 'tagSearch'
+  | 'bodyMatchExcerpt'
+>
 
-export interface SearchResultRecord extends Pick<SearchRecord, SearchResultPresentationFields> {
+export interface SearchResultRecord extends SearchResultPresentationFields {
   bodyMatchExcerpt?: boolean
   searchRank: number
   searchScore: number
 }
 
-export interface SearchExecutionResult {
+export interface SearchResponse {
   records: SearchResultRecord[]
-  engineDurationMs: number
 }
 
 export interface SearchEngine {
@@ -117,19 +107,6 @@ export interface SearchBuildReport {
   phases: SearchTimingPhase[]
 }
 
-export interface SearchRuntimeReport {
-  status: 'success' | 'failed'
-  totalDurationMs: number
-  termLength: number
-  queryMode: ParsedSearchQuery['mode']
-  clauseCount: number
-  fieldClauseCount: number
-  negativeClauseCount: number
-  resultCount: number
-  page: number
-  phases: SearchTimingPhase[]
-}
-
 export interface SearchFuse {
   search: Fuse<SearchRecord>['search']
   getIndex: Fuse<SearchRecord>['getIndex']
@@ -138,11 +115,6 @@ export interface SearchFuse {
 export interface FuseSearchResult {
   item: SearchRecord
   score?: number
-  matches?: ReadonlyArray<{
-    key?: string
-    value?: string
-    indices?: ReadonlyArray<[number, number]>
-  }>
 }
 
 export type SearchField = 'author' | 'tag' | 'title' | 'body' | 'description' | 'slug'
@@ -167,15 +139,6 @@ export type FuseLogicalQuery
   = | Record<string, string>
     | { $and: FuseLogicalQuery[] }
     | { $or: FuseLogicalQuery[] }
-
-export type SearchIndexBuildStatus
-  = | 'cache-read'
-    | 'cache-hit'
-    | 'fetch'
-    | 'normalize'
-    | 'index-build'
-    | 'cache-write'
-    | 'ready'
 
 export interface SearchEngineBootstrapData {
   indexUrl: string
@@ -206,8 +169,6 @@ export interface SearchQuery {
   readonly sort: SearchSort
 }
 
-export type SearchResponse = SearchExecutionResult
-
 export interface SearchPagination {
   readonly currentPage: number
   readonly totalPages: number
@@ -220,35 +181,29 @@ export type SearchPageState
     | { phase: 'ready', query: SearchQuery, response: SearchResponse }
     | { phase: 'error', query: SearchQuery, error: Error }
 
-export type SearchStatusListener = (status: SearchIndexBuildStatus) => void
 export type SearchReportListener = (report: SearchBuildReport) => void
 
 export interface SearchService {
   preload: () => Promise<void>
   count: () => Promise<number>
   search: (query: SearchQuery) => Promise<SearchResponse>
-  getStatus: () => SearchIndexBuildStatus
-  subscribeStatus: (listener: SearchStatusListener) => () => void
   dispose: () => void
 }
 
 export interface SearchWorkerApi {
   initialize: (
     bootstrap: SearchEngineBootstrapData,
-    onStatus?: SearchStatusListener,
     onReport?: SearchReportListener,
   ) => Promise<void>
   count: () => Promise<number>
-  search: (term: string) => Promise<SearchExecutionResult>
+  search: (term: string) => Promise<SearchResponse>
 }
 export interface SearchModel {
   readonly state: Readonly<ShallowRef<SearchPageState>>
   readonly results: Readonly<ComputedRef<SearchResultRecord[]>>
   readonly relatedTags: Readonly<ComputedRef<SearchTagItem[]>>
   readonly pagination: Readonly<ComputedRef<SearchPagination>>
-  readonly indexStatus: Readonly<Ref<SearchIndexBuildStatus>>
   setTerm: (term: string) => void
   setSort: (sort: SearchSort) => void
   setPage: (page: number) => void
-  retry: () => void
 }

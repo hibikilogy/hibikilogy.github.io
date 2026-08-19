@@ -1,25 +1,12 @@
-import type {
-  SearchIndexBuildStatus,
-  SearchService,
-  SearchStatusListener,
-  SearchWorkerApi,
-} from '../types.ts'
+import type { SearchReportListener, SearchService, SearchWorkerApi } from '../types.ts'
 import type { SearchClient, SearchServiceOptions } from './types.ts'
 import { catchError } from 'shared/result.ts'
 import { createSingleFlight } from 'shared/singleFlight.ts'
 import { logSearchBuildReport } from '../debug.ts'
 
 export function createSearchService(options: SearchServiceOptions): SearchService {
-  const listeners = new Set<SearchStatusListener>()
-  let status: SearchIndexBuildStatus = 'cache-read'
   let disposed = false
   const client = createSingleFlight(() => createClient())
-
-  function emit(next: SearchIndexBuildStatus): void {
-    status = next
-    options.onStatus?.(next)
-    listeners.forEach(listener => listener(next))
-  }
 
   function getClient(): Promise<SearchClient> {
     return client.run()
@@ -27,15 +14,16 @@ export function createSearchService(options: SearchServiceOptions): SearchServic
 
   async function createClient(): Promise<SearchClient> {
     const bootstrap = options.getBootstrap()
-    const workerClient = await createWorkerClient(options.workerUrl, bootstrap, emit, (report) => {
+    const onReport: SearchReportListener = (report) => {
       options.onReport?.(report)
       logSearchBuildReport(Boolean(bootstrap.debug), report)
-    })
+    }
+    const workerClient = await createWorkerClient(options.workerUrl, bootstrap, onReport)
 
     if (workerClient)
-      return createResilientClient(workerClient, () => createFallbackClient(bootstrap, emit, options.onReport))
+      return createResilientClient(workerClient, () => createFallbackClient(bootstrap, onReport))
 
-    return createFallbackClient(bootstrap, emit, options.onReport)
+    return createFallbackClient(bootstrap, onReport)
   }
 
   return {
@@ -44,15 +32,8 @@ export function createSearchService(options: SearchServiceOptions): SearchServic
     },
     count: async () => (await getClient()).count(),
     search: async query => (await getClient()).search(query.term),
-    getStatus: () => status,
-    subscribeStatus: (listener) => {
-      listeners.add(listener)
-      listener(status)
-      return () => listeners.delete(listener)
-    },
     dispose: () => {
       disposed = true
-      listeners.clear()
       void client.peek()?.then(instance => instance.dispose())
       client.reset()
     },
@@ -61,8 +42,7 @@ export function createSearchService(options: SearchServiceOptions): SearchServic
   async function createWorkerClient(
     workerUrl: string,
     bootstrap: ReturnType<SearchServiceOptions['getBootstrap']>,
-    onStatus: SearchStatusListener,
-    onReport: NonNullable<SearchServiceOptions['onReport']>,
+    onReport: SearchReportListener,
   ): Promise<SearchClient | null> {
     if (disposed || typeof Worker === 'undefined')
       return null
@@ -74,7 +54,7 @@ export function createSearchService(options: SearchServiceOptions): SearchServic
     try {
       const { proxy, wrap } = await import('comlink')
       const remote = wrap<SearchWorkerApi>(worker)
-      await remote.initialize(bootstrap, proxy(onStatus), proxy(onReport))
+      await remote.initialize(bootstrap, proxy(onReport))
 
       return {
         preload: async () => {},
@@ -133,9 +113,8 @@ function createResilientClient(
 
 async function createFallbackClient(
   bootstrap: Parameters<typeof import('./mainThreadClient.ts')['createMainThreadClient']>[0],
-  onStatus?: Parameters<typeof import('./mainThreadClient.ts')['createMainThreadClient']>[1],
-  onReport?: Parameters<typeof import('./mainThreadClient.ts')['createMainThreadClient']>[2],
+  onReport?: Parameters<typeof import('./mainThreadClient.ts')['createMainThreadClient']>[1],
 ): Promise<SearchClient> {
   const { createMainThreadClient } = await import('./mainThreadClient.ts')
-  return createMainThreadClient(bootstrap, onStatus, onReport)
+  return createMainThreadClient(bootstrap, onReport)
 }

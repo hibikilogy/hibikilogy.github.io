@@ -15,7 +15,6 @@ export interface SearchPaginationOptions {
   readonly currentPage: number
   readonly totalPages: number
   readonly getHref: (page: number) => string
-  readonly onPageChange: (page: number) => void
 }
 
 export interface SearchView {
