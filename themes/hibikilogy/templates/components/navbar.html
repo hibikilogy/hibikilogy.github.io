@@ -83,7 +83,7 @@
             {% if lang == item.code %}
               <a
                 href="/"
-                class="Link link NavBarMenuLink NavBarSocialLink no-hide"
+                class="Link link NavBarMenuLink NavBarSocialLink"
                 aria-expanded="false"
                 aria-label="menu"
                 role="button"
@@ -92,11 +92,10 @@
               </a>
             {% endif %}
           {% endfor %}
-          <div class="NavBarSearch search no-hide">
-            <div id="docsearch">
-              {% set search_placeholder = <i18n.t key="search_placeholder" lang={lang} /> %}
-              {{ <search_shell.main compact={true} transition_name="site-search-trigger" readonly={true} show_keys={true} placeholder={search_placeholder} title="Search" lang={lang} extra_class="DocSearch-Button" value="" /> }}
-            </div>
+          <div class="NavBarSearch search">
+            {% set search_placeholder = <i18n.t key="search_placeholder" lang={lang} /> %}
+            {% set search_title = <i18n.t key="search_title" lang={lang} /> %}
+            {{ <search_shell.main compact={true} transition_name="site-search-trigger" readonly={true} show_keys={true} placeholder={search_placeholder} title={search_title} lang={lang} /> }}
           </div>
         </div>
       </div>

@@ -665,6 +665,10 @@ singletons:
             label: 搜索提交文字
             widget: string
             default: 搜索
+          - name: search_title
+            label: 搜索标题
+            widget: string
+            default: 搜索
           - name: search_related_tags
             label: 相关标签
             widget: string
@@ -757,14 +761,6 @@ singletons:
             label: 加载索引提示
             widget: string
             default: 正在加载索引数据中
-          - name: search_cache_reading
-            label: 读取缓存提示
-            widget: string
-            default: 正在读取搜索序列化索引缓存中
-          - name: search_index_building
-            label: 构建索引提示
-            widget: string
-            default: 正在构建搜索序列化索引数据中
           - name: search_loading
             label: 搜索中提示
             widget: string
