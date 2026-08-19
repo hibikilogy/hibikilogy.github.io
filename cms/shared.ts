@@ -2,6 +2,7 @@ export const PREVIEW_FONT_STYLES = [
   '/styles/source-han-sans-sc-vf.patch.css',
 ] as const
 
+// Mirrors `default_cover` in zola.toml — the CMS bundle cannot read site config at runtime.
 export const DEFAULT_COVER = '/imgs/tags.svg'
 export const DEFAULT_AVATAR = 'https://random-kumiko.interknot.site/api/v1/image/random'
 

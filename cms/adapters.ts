@@ -1,8 +1,8 @@
 import type { ApiAsset, CustomPreviewTemplateProps } from '@sveltia/cms'
 
 export type PreviewProps = CustomPreviewTemplateProps
-export type Entry = PreviewProps['entry']
-export type GetAsset = PreviewProps['getAsset']
+type Entry = PreviewProps['entry']
+type GetAsset = PreviewProps['getAsset']
 
 export function getField<T>(entry: Entry, path: string | string[], fallback: T): T {
   const keys = Array.isArray(path) ? path : [path]
