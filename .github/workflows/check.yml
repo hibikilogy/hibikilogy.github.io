@@ -89,8 +89,8 @@ jobs:
               - 'rust-toolchain.toml'
               - 'nextest.toml'
               - 'rustfmt.toml'
-              - 'scripts/**/*.rs'
-              - 'scripts/**/Cargo.toml'
+              - 'scripts/rust/**/*.rs'
+              - 'scripts/rust/**/Cargo.toml'
               - '.github/workflows/check.yml'
               - '.github/actions/setup-tools/action.yml'
 

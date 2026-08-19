@@ -63,14 +63,14 @@ jobs:
           for attempt in 1 2 3; do
             cargo run --locked --bin article-short-links -- \
               --content-dir content/articles \
-              --reservations scripts/data/short-link-reservations.json
+              --reservations scripts/rust/data/short-link-reservations.json
 
-            if [[ -z "$(git status --porcelain -- content/articles scripts/data/short-link-reservations.json)" ]]; then
+            if [[ -z "$(git status --porcelain -- content/articles scripts/rust/data/short-link-reservations.json)" ]]; then
               echo "Short-link aliases are already in sync."
               exit 0
             fi
 
-            git add -- content/articles scripts/data/short-link-reservations.json
+            git add -- content/articles scripts/rust/data/short-link-reservations.json
             git commit -m "chore(content): sync short links"
 
             if git push origin "HEAD:${TARGET_BRANCH}"; then

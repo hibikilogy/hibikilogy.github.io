@@ -11,8 +11,8 @@ on:
       - 'Cargo.lock'
       - 'rust-toolchain.toml'
       - 'nextest.toml'
-      - 'scripts/**/*.rs'
-      - 'scripts/**/Cargo.toml'
+      - 'scripts/rust/**/*.rs'
+      - 'scripts/rust/**/Cargo.toml'
       - '.github/workflows/rust-coverage.yml'
   pull_request:
     branches: [next, main, dev]
@@ -22,8 +22,8 @@ on:
       - 'Cargo.lock'
       - 'rust-toolchain.toml'
       - 'nextest.toml'
-      - 'scripts/**/*.rs'
-      - 'scripts/**/Cargo.toml'
+      - 'scripts/rust/**/*.rs'
+      - 'scripts/rust/**/Cargo.toml'
       - '.github/workflows/rust-coverage.yml'
   workflow_dispatch:
 

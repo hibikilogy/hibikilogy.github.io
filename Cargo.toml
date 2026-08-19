@@ -4,34 +4,34 @@ version = "0.1.0"
 edition = "2021"
 
 [lib]
-path = "scripts/lib.rs"
+path = "scripts/rust/lib.rs"
 
 [[bin]]
 name = "title-font-subset"
-path = "scripts/bin/title_font_subset/main.rs"
+path = "scripts/rust/bin/title_font_subset/main.rs"
 required-features = [ "font-tools" ]
 
 [[bin]]
 name = "site-artifact-rewrite"
-path = "scripts/bin/site_artifact_rewrite/main.rs"
+path = "scripts/rust/bin/site_artifact_rewrite/main.rs"
 required-features = [ "artifact-rewrite" ]
 
 [[bin]]
 name = "article-short-links"
-path = "scripts/bin/article_short_links/main.rs"
+path = "scripts/rust/bin/article_short_links/main.rs"
 
 [[bin]]
 name = "body-font-subset"
-path = "scripts/bin/body_font_subset/main.rs"
+path = "scripts/rust/bin/body_font_subset/main.rs"
 required-features = [ "font-tools" ]
 
 [[bin]]
 name = "deploy-markdown"
-path = "scripts/bin/deploy_markdown/main.rs"
+path = "scripts/rust/bin/deploy_markdown/main.rs"
 
 [[test]]
 name = "cli_smoke"
-path = "scripts/integration/cli_smoke.rs"
+path = "scripts/rust/integration/cli_smoke.rs"
 required-features = [
   "font-tools",
   "artifact-rewrite"
