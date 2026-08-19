@@ -284,12 +284,6 @@
       @media (--tablet) {
         .SearchShellLabel,
         .SearchShellInput {
-          display: inline-block;
-          max-width: calc(100% - 56px);
-        }
-
-        .SearchShellLabel,
-        .SearchShellInput {
           display: contents;
           color: var(--joh-c-text-2);
         }

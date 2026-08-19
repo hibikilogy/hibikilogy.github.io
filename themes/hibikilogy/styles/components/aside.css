@@ -24,19 +24,6 @@
       display: none;
     }
 
-    .content {
-      position: relative;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    @media (--laptop) {
-      .content {
-        order: 1;
-        margin: 0;
-      }
-    }
-
     @media (--max-laptop) {
       & {
         display: none;

@@ -11,73 +11,71 @@
 </div>
 {% endcomponent journal.search %}
 
-{% component journal.main(config, lang: string = "", show_frontpage: bool = false, pages = None, paginator = None, term = None, section = None) %}
-{% if not pages %}
-  {% if paginator %}
-    {# Even-optimised balanced pagination.
-       Distributes articles in pairs so most pages end up with even
-       counts for the 2-column grid. At most one page gets an odd size. #}
+{% component journal.main(config, lang: string = "", show_frontpage: bool = false, paginator = None, term = None, section = None) %}
+{% if paginator %}
+  {# Even-optimised balanced pagination.
+     Distributes articles in pairs so most pages end up with even
+     counts for the 2-column grid. At most one page gets an odd size. #}
 
-    {% if term %}
-      {% set all_pages = term.pages %}
+  {% if term %}
+    {% set all_pages = term.pages %}
+  {% else %}
+    {% set section_path = config.extra.article_section | default(value="articles/_index.md") %}
+    {% set articles_section = get_section(path=section_path, lang=lang) %}
+    {% set all_pages = articles_section.pages %}
+  {% endif %}
+
+  {% set total = all_pages | length %}
+  {% set pager_count = paginator.number_pagers %}
+  {% set index = paginator.current_index - 1 %}
+
+  {% if pager_count <= 1 %}
+    {% set pages = all_pages %}
+
+  {% elif total != paginator.total_pages %}
+    {% set pages = paginator.pages %}
+
+  {% elif total < pager_count * 2 %}
+    {# Sparse — ordinary balanced distribution. #}
+    {% set base = (total / pager_count) | round(method="floor") | int %}
+    {% set extra = total % pager_count %}
+
+    {% if index < extra %}
+      {% set page_size = base + 1 %}
+      {% set start = index * page_size %}
     {% else %}
-      {% set section_path = config.extra.article_section | default(value="articles/_index.md") %}
-      {% set articles_section = get_section(path=section_path, lang=lang) %}
-      {% set all_pages = articles_section.pages %}
+      {% set page_size = base %}
+      {% set start = extra * (base + 1) + (index - extra) * base %}
     {% endif %}
 
-    {% set total = all_pages | length %}
-    {% set pager_count = paginator.number_pagers %}
-    {% set index = paginator.current_index - 1 %}
-
-    {% if pager_count <= 1 %}
-      {% set pages = all_pages %}
-
-    {% elif total != paginator.total_pages %}
-      {% set pages = paginator.pages %}
-
-    {% elif total < pager_count * 2 %}
-      {# Sparse — ordinary balanced distribution. #}
-      {% set base = (total / pager_count) | round(method="floor") | int %}
-      {% set extra = total % pager_count %}
-
-      {% if index < extra %}
-        {% set page_size = base + 1 %}
-        {% set start = index * page_size %}
-      {% else %}
-        {% set page_size = base %}
-        {% set start = extra * (base + 1) + (index - extra) * base %}
-      {% endif %}
-
-      {% set pages = all_pages[start:start + page_size] %}
-
-    {% else %}
-      {# Dense — distribute articles in 2-article pairs. #}
-      {% set pair_total = (total / 2) | round(method="floor") | int %}
-      {% set pair_base = (pair_total / pager_count) | round(method="floor") | int %}
-      {% set pair_extra = pair_total % pager_count %}
-      {% set odd = total % 2 %}
-      {% set base_size = pair_base * 2 %}
-
-      {% if index < pair_extra %}
-        {% set page_size = base_size + 2 %}
-        {% set start = index * page_size %}
-
-      {% elif odd == 1 and index == pair_extra %}
-        {% set page_size = base_size + 1 %}
-        {% set start = pair_extra * (base_size + 2) %}
-
-      {% else %}
-        {% set page_size = base_size %}
-        {% set start = pair_extra * (base_size + 2) + odd * (base_size + 1) + (index - pair_extra - odd) * base_size %}
-      {% endif %}
-
-      {% set pages = all_pages[start:start + page_size] %}
-    {% endif %}
+    {% set pages = all_pages[start:start + page_size] %}
 
   {% else %}
-    {% set pages = section.pages %}
+    {# Dense — distribute articles in 2-article pairs. #}
+    {% set pair_total = (total / 2) | round(method="floor") | int %}
+    {% set pair_base = (pair_total / pager_count) | round(method="floor") | int %}
+    {% set pair_extra = pair_total % pager_count %}
+    {% set odd = total % 2 %}
+    {% set base_size = pair_base * 2 %}
+
+    {% if index < pair_extra %}
+      {% set page_size = base_size + 2 %}
+      {% set start = index * page_size %}
+
+    {% elif odd == 1 and index == pair_extra %}
+      {% set page_size = base_size + 1 %}
+      {% set start = pair_extra * (base_size + 2) %}
+
+    {% else %}
+      {% set page_size = base_size %}
+      {% set start = pair_extra * (base_size + 2) + odd * (base_size + 1) + (index - pair_extra - odd) * base_size %}
+    {% endif %}
+
+    {% set pages = all_pages[start:start + page_size] %}
   {% endif %}
+
+{% else %}
+  {% set pages = section.pages %}
 {% endif %}
 
 <div class="Journal">

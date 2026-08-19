@@ -13,9 +13,5 @@ Home
 {% endblock %}
 
 {% block footer %}
-{% if paginator %}
-  {{ <footer.main config={config} lang={lang} show_tags={true} show_friendlinks={true} tag_pages={paginator.pages} /> }}
-{% else %}
-  {{ <footer.main config={config} lang={lang} show_tags={true} show_friendlinks={true} tag_pages={section.pages} /> }}
-{% endif %}
+{{ <footer.main config={config} lang={lang} show_tags={true} show_friendlinks={true} tag_pages={paginator.pages} /> }}
 {% endblock %}

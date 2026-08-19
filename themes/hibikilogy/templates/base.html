@@ -275,8 +275,6 @@
 
   <div id="app">
     <div class="Layout">
-      <span class="joh-chevron-up visually-hidden"></span>
-
       {{ <navbar.main config={config} lang={lang} /> }}
 
       {% block header %}
@@ -284,7 +282,7 @@
 
       <div class="PageFrame{% if has_aside %} has-aside{% endif %}">
         <div class="PageMain">
-          <main class="Content{% if has_aside %} has-aside{% endif %}">
+          <main class="Content">
             {% block content %}
             {% endblock %}
 
@@ -294,10 +292,7 @@
           </main>
 
           {% block footer %}
-          {% block slot %}{% endblock %}
-          {% if not slot is defined %}
-            {{ <footer.main config={config} lang={lang} /> }}
-          {% endif %}
+          {{ <footer.main config={config} lang={lang} /> }}
           {% endblock %}
         </div>
 

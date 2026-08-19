@@ -1,8 +1,0 @@
-{
-  "name": "{{ config.title }}",
-  "description": "{{ config.description }}",
-  "start_url": "{{ config.base_url | safe }}",
-  "lang": "{{ config.default_language }}",
-  "theme_color": "{{ config.extra.theme_color | default(value='#ffffff') }}",
-  "display": "standalone"
-}

@@ -6,7 +6,7 @@
   href="{{ get_url(path=path, cachebust=true) }}">
 {% endcomponent build.css %}
 
-{% component build.script(path: string, cachebust: bool = true, module: bool = false, async: bool = false, defer: bool = false, serve: bool = false) %}
+{% component build.script(path: string, cachebust: bool = true, module: bool = false, serve: bool = false) %}
 {% set is_serve = serve %}
 
 {% if is_serve %}
@@ -18,8 +18,6 @@
 <script
   src="{{ src | safe }}"
   {% if module %}type="module"{% endif %}
-  {% if async %}async{% endif %}
-  {% if defer %}defer{% endif %}
   {% if not is_serve %}
     integrity="sha384-{{ get_hash(path=path, sha_type=384, base64=true) | safe }}"
   {% endif %}

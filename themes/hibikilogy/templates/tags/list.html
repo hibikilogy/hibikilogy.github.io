@@ -43,15 +43,5 @@ tags
       {% endfor %}
     </div>
   </section>
-{% else %}
-  <section class="section tags-list-page">
-    <div
-      class="container"
-      data-page-enter-content>
-      {% for tag in sorted_terms %}
-        {{ <tags.tag_link tag={tag} /> }}
-      {% endfor %}
-    </div>
-  </section>
 {% endif %}
 {% endblock content %}

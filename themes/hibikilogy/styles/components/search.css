@@ -191,13 +191,6 @@
       site-pagination[hidden] {
         display: none;
       }
-
-      .pagination-previous[disabled],
-      .pagination-next[disabled] {
-        cursor: default;
-        opacity: 0.4;
-        pointer-events: none;
-      }
     }
 
     .SearchRelatedTags {

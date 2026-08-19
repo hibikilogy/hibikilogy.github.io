@@ -1,6 +1,6 @@
-{% component search_shell.main(input_id: string = "", compact: bool = false, transition_name: string = "", readonly: bool = false, autofocus: bool = false, show_keys: bool = false, show_submit: bool = false, placeholder: string = "Search", title: string = "Search", value: string = "", extra_class: string = "", lang: string = "") %}
+{% component search_shell.main(input_id: string = "", compact: bool = false, transition_name: string = "", readonly: bool = false, show_keys: bool = false, show_submit: bool = false, placeholder: string = "Search", title: string = "Search", lang: string = "") %}
 <form
-  class="SearchShell SearchShell--{% if compact %}compact{% else %}page{% endif %}{% if extra_class %} {{ extra_class }}{% endif %}"
+  class="SearchShell SearchShell--{% if compact %}compact{% else %}page{% endif %}"
   role="search"
   aria-label="{{ title }}"
   {% if transition_name %}
@@ -30,17 +30,11 @@
         autocapitalize="none"
         enterkeyhint="search"
         autocomplete="off"
-        {% if value %}
-          value="{{ value }}"
-        {% endif %}
         {% if readonly %}
           readonly
           {% if compact %}
             tabindex="-1"
           {% endif %}
-        {% endif %}
-        {% if autofocus and not readonly %}
-          autofocus
         {% endif %}
       >
     {% endif %}
