@@ -13,7 +13,7 @@
 - **[Node.js](https://nodejs.org/en/download)** >= 24
 - **[pnpm](https://pnpm.io/installation)** >= 10
 - **[Rust](https://rust-lang.org/tools/install/)** >= 1.97.1(仓库通过 `rust-toolchain.toml` 固定版本)
-- **[Zola](https://www.getzola.org/)** >= 0.23.3
+- **[Zola](https://www.getzola.org/)** >= 0.23.4
 
 ```bash
 git clone https://github.com/hibikilogy/hibikilogy.github.io.git
