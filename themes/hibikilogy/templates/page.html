@@ -51,28 +51,19 @@ post
     property="article:tag"
     content="{{ tag }}">
 {% endfor %}
-{% if has_cover %}
-  <meta
-    property="og:image"
-    content="{{ cover_url }}">
-  <meta
-    name="twitter:image"
-    content="{{ cover_url }}">
-  <meta
-    property="og:image:alt"
-    content="{{ page.extra.cover_alt | default(value=page.title) }}">
-  <meta
-    name="twitter:image:alt"
-    content="{{ page.extra.cover_alt | default(value=page.title) }}">
-  {% if page.extra.cover %}
-    <link
-      rel="preload"
-      as="image"
-      href="{{ cover_url }}"
-      fetchpriority="high">
-  {% endif %}
+{% if has_cover and page.extra.cover %}
+  <link
+    rel="preload"
+    as="image"
+    href="{{ cover_url }}"
+    fetchpriority="high">
 {% endif %}
 {% endblock meta %}
+
+{% block og_image %}
+{% set og_slug = page.permalink | trim_end(pat='/') | split(pat='/') | last %}
+{{ <ogMeta.main image_url={get_url(path='og/articles/' ~ og_slug ~ '.jpg')} card="summary_large_image" alt={page.extra.cover_alt | default(value=page.title)} /> }}
+{% endblock og_image %}
 
 {% block style %}
 {% if katex_enabled %}

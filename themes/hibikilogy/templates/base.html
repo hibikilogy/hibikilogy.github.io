@@ -19,7 +19,6 @@
   data-page-enter="initial">
 
 <head>
-  <!-- {{ now() | date(format='%F %a %R') }} -->
   <meta charset="utf-8">
   <meta
     name="viewport"
@@ -79,9 +78,6 @@
     name="keywords"
     content="{{ meta_keywords }}">
   <meta
-    name="twitter:card"
-    content="{{ config.extra.twitter_card }}">
-  <meta
     name="twitter:description"
     content="{{ meta_description }}">
   <meta
@@ -102,6 +98,18 @@
   <meta
     property="og:description"
     content="{{ meta_description }}">
+
+  {% block og_image %}
+  {% set og_image_url = get_url(path='og/logo-square.png') %}
+  {% set og_alt %}{%- include 'title.html' -%}{% endset %}
+  {{ <ogMeta.main image_url={og_image_url} card={config.extra.twitter_card} alt={og_alt} /> }}
+  {% endblock og_image %}
+
+  {% if page is not defined %}
+    <meta
+      property="og:type"
+      content="website">
+  {% endif %}
 
   {% if page is defined and page.draft %}
     <meta
@@ -220,7 +228,6 @@
   {% endif %}
   {% endblock analytics %}
 
-  {# <script>(() => { const e = localStorage.getItem("theme-appearance") || "auto", a = window.matchMedia("(prefers-color-scheme: dark)").matches; (!e || e === "auto" ? a : e === "dark") && document.documentElement.classList.add("dark") })();</script> #}
   <script>document.documentElement.classList.toggle("mac", /Mac|iPhone|iPod|iPad/i.test(navigator.platform));</script>
 
   {% block structured_data -%}
@@ -236,6 +243,21 @@
     }
   }
   </script>
+  {% if canonical_url == base_url_clean ~ "/" %}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "{{ config.title }}",
+    "url": "{{ base_url_clean }}/",
+    "description": "{{ config.description }}",
+    "logo": "{{ get_url(path=config.extra.navbar_logo) | safe }}",
+    "sameAs": [
+      "https://github.com/hibikilogy"
+    ]
+  }
+  </script>
+  {% endif %}
   {%- endblock structured_data %}
 
   <link

@@ -8,6 +8,12 @@ Home
 {{ <build.css path="styles/components/journal.css" /> }}
 {% endblock critical_css %}
 
+{% block og_image %}
+{% set og_image_url = get_url(path='hibikilogy-og-white-1200x630.png') %}
+{% set og_alt %}{%- include 'title.html' -%}{% endset %}
+{{ <ogMeta.main image_url={og_image_url} card="summary_large_image" alt={og_alt} /> }}
+{% endblock og_image %}
+
 {% block content %}
 {{ <journal.main config={config} lang={lang} show_frontpage={true} paginator={paginator} term={false} section={section} /> }}
 {% endblock %}

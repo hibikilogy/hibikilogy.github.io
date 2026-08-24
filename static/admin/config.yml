@@ -745,6 +745,34 @@ singletons:
             label: 404 标题
             widget: string
             default: 404 Not Found
+          - name: not_found_intro
+            label: 404 引导语
+            widget: string
+            default: 页面不存在或已被移动。可以从下面的入口继续浏览：
+          - name: not_found_home_link
+            label: 404 首页链接
+            widget: string
+            default: 返回首页
+          - name: not_found_search_link
+            label: 404 搜索链接
+            widget: string
+            default: 搜索文章
+          - name: not_found_tags_link
+            label: 404 标签链接
+            widget: string
+            default: 标签索引
+          - name: not_found_sitemap_link
+            label: 404 站点地图链接
+            widget: string
+            default: 站点地图（sitemap.xml）
+          - name: not_found_llms_link
+            label: 404 llms.txt 链接
+            widget: string
+            default: 机器可读站点索引（llms.txt）
+          - name: not_found_feed_link
+            label: 404 订阅链接
+            widget: string
+            default: Atom 订阅
           - name: tag_category_people
             label: 人物分类名
             widget: string

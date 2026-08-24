@@ -9,6 +9,9 @@ docs
 {% endblock %}
 
 {% block meta %}
+<meta
+  property="og:type"
+  content="website">
 {% set markdown_url = page.permalink | trim_end(pat="/") %}
 <link
   rel="alternate"
