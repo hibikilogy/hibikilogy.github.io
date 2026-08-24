@@ -100,6 +100,19 @@ jobs:
       - name: Build body font subset
         run: pnpm build:subset-bodyfont
 
+      - name: Restore OG card cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            static/og/articles
+            static/_cache/og-render-manifest.json
+          key: og-cards-${{ runner.os }}
+          restore-keys: |
+            og-cards-
+
+      - name: Render OG cards
+        run: pnpm build:og
+
       - name: Set commit info
         run: |
           echo "GIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV

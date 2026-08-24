@@ -1,5 +1,30 @@
 {
   "cleanUrls": true,
+  "redirects": [{
+    "source": "/page/1",
+    "destination": "/",
+    "statusCode": 301
+  }, {
+    "source": "/page/1/",
+    "destination": "/",
+    "statusCode": 301
+  }, {
+    "source": "/tags/:tag/page/1",
+    "destination": "/tags/:tag",
+    "statusCode": 301
+  }, {
+    "source": "/tags/:tag/page/1/",
+    "destination": "/tags/:tag",
+    "statusCode": 301
+  }, {
+    "source": "/author/:author/page/1",
+    "destination": "/author/:author",
+    "statusCode": 301
+  }, {
+    "source": "/author/:author/page/1/",
+    "destination": "/author/:author",
+    "statusCode": 301
+  }],
   "headers": [
     {
       "source": "/sw.js",
