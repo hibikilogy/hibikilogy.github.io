@@ -191,19 +191,15 @@ function runParsedSearch(engine: SearchEngine, query: ReturnType<typeof parseSea
     return buildRecordCandidates(engine.records)
   }
 
-  if (shouldUsePositiveClauseUnion(query)) {
-    return dedupeSearchResults(query.clauses
-      .filter((clause): clause is Exclude<SearchClause, { type: 'not' }> => clause.type !== 'not')
-      .flatMap(clause => runClauseSearch(engine, clause)))
+  // or 模式与多正向子句的 and 模式共用「逐子句检索后合并」策略。
+  const positiveClauses = query.clauses.filter(
+    (clause): clause is Exclude<SearchClause, { type: 'not' }> => clause.type !== 'not',
+  )
+  if (query.mode === 'or' || positiveClauses.length > 1) {
+    return dedupeSearchResults(positiveClauses.flatMap(clause => runClauseSearch(engine, clause)))
   }
 
   const fuse = hasExplicitFieldSearch(query) ? engine.extendedFuse : engine.defaultFuse
-
-  if (query.mode === 'or') {
-    return dedupeSearchResults(query.clauses
-      .filter(clause => clause.type !== 'not')
-      .flatMap(clause => runClauseSearch(engine, clause)))
-  }
 
   const logicalQuery = toFuseLogicalFieldQuery(query)
   if (logicalQuery)
@@ -350,14 +346,6 @@ function shouldUseFullCorpusCandidates(query: ReturnType<typeof parseSearchQuery
   return query.clauses.some((clause) => {
     return clause.type === 'field' && clause.field === 'body' && /\s/.test(clause.value)
   })
-}
-
-function shouldUsePositiveClauseUnion(query: ReturnType<typeof parseSearchQuery>): boolean {
-  if (query.mode === 'or')
-    return false
-
-  const positiveClauses = query.clauses.filter(clause => clause.type !== 'not')
-  return positiveClauses.length > 1
 }
 
 function searchTextIncludes(corpus: string, needle: string): boolean {
