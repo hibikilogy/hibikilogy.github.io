@@ -8,33 +8,3 @@
 {% set not_found_title = <i18n.t key="not_found_title" lang={lang} /> %}
 {{ <hero.main page="" config={config} lang={lang} isPost={false} name={not_found_title} /> }}
 {% endblock %}
-
-{% block content %}
-<div class="container">
-  <div class="content">
-    <section class="content-container NotFound">
-      <p>{{ <i18n.t key="not_found_intro" lang={lang} /> }}</p>
-      <ul>
-        <li>
-          <a href="{{ base_url_clean }}/">{{ <i18n.t key="not_found_home_link" lang={lang} /> }}</a>
-        </li>
-        <li>
-          <a href="{{ base_url_clean }}/search">{{ <i18n.t key="not_found_search_link" lang={lang} /> }}</a>
-        </li>
-        <li>
-          <a href="{{ base_url_clean }}/tags">{{ <i18n.t key="not_found_tags_link" lang={lang} /> }}</a>
-        </li>
-        <li>
-          <a href="{{ base_url_clean }}/sitemap.xml">{{ <i18n.t key="not_found_sitemap_link" lang={lang} /> }}</a>
-        </li>
-        <li>
-          <a href="{{ base_url_clean }}/llms.txt">{{ <i18n.t key="not_found_llms_link" lang={lang} /> }}</a>
-        </li>
-        <li>
-          <a href="{{ base_url_clean }}/atom.xml">{{ <i18n.t key="not_found_feed_link" lang={lang} /> }}</a>
-        </li>
-      </ul>
-    </section>
-  </div>
-</div>
-{% endblock %}
