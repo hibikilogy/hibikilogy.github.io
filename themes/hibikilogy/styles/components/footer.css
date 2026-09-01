@@ -31,15 +31,16 @@
         a {
           margin-right: 8px;
           font-size: 18px;
-          line-height: 24px;
+          line-height: 30px;
         }
       }
     }
 
     .footer-siteinfo-nav {
-      a {
+      a:not(.footer-contact-link) {
         --padding: 16px;
         padding-right: var(--padding);
+        line-height: 30px;
         &::after {
           content: '/';
           position: relative;
@@ -70,11 +71,13 @@
 
     .footer-siteinfo-meta {
       color: var(--joh-c-text-muted);
+      line-height: 30px;
     }
 
     .footer-contact-link {
       display: inline-block;
       width: 100%;
+      line-height: 26px;
     }
 
     .footer-siteinfo-meta,
