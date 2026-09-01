@@ -1,4 +1,7 @@
 import type { PaginationItem } from './types'
+import { clampPage, normalizePageNumber } from 'shared/number.ts'
+
+export { clampPage, normalizePageNumber } from 'shared/number.ts'
 
 export const COMPACT_PAGE_LIMIT = 10
 const SIBLING_COUNT = 4
@@ -106,17 +109,4 @@ function range(start: number, end: number): number[] {
     values.push(page)
   }
   return values
-}
-
-export function clampPage(page: number | string | null, totalPages: number): number {
-  const total = normalizePageNumber(totalPages)
-  const parsed = normalizePageNumber(page)
-  if (total <= 1)
-    return 1
-  return Math.min(Math.max(parsed, 1), total)
-}
-
-export function normalizePageNumber(value: number | string | null): number {
-  const parsed = Number.parseInt(String(value ?? ''), 10)
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : 1
 }

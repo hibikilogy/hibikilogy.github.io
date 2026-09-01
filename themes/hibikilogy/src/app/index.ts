@@ -1,4 +1,4 @@
-import { scheduleIdleSearchPreload } from '../features/search/hooks/useSearchNavigation.ts'
+import { scheduleIdleSearchPreload } from '../features/search/index.ts'
 import { createSwup } from '../infrastructure/swup/index.ts'
 import { onFinalPageHide } from '../shared/pageLifecycle.ts'
 import { createAppContext } from './appContext.ts'

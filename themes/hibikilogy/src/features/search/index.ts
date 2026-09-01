@@ -1,4 +1,5 @@
 export { useSearchNavigation } from './hooks/useSearchNavigation.ts'
+export { scheduleIdleSearchPreload } from './navigation.ts'
 export { getSearchBootstrap } from './runtime/searchBootstrap.ts'
 export { createSearchService } from './runtime/searchService.ts'
 export { mountSearchPage, preloadSearchPage } from './searchPage.ts'

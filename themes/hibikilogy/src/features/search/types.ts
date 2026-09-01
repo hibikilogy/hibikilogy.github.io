@@ -1,4 +1,4 @@
-import type { ComputedRef, ShallowRef } from '@vue/reactivity'
+import type { ComputedRef, Ref, ShallowRef } from '@vue/reactivity'
 import type Fuse from 'fuse.js'
 import type { FuseIndex } from 'fuse.js'
 
@@ -182,6 +182,25 @@ export type SearchPageState
     | { phase: 'error', query: SearchQuery, error: Error }
 
 export type SearchReportListener = (report: SearchBuildReport) => void
+
+type SearchNavigationKind = 'initial' | 'navigate' | 'popstate' | 'replace'
+
+/** 搜索特性对路由的最小依赖面（由 app 的 RouteModel 结构化满足，避免反向依赖）。 */
+export interface SearchNavigation {
+  readonly current: Readonly<ShallowRef<{ readonly href: string }>>
+  readonly isSearchPage: Readonly<ComputedRef<boolean>>
+  readonly navigationKind: Readonly<Ref<SearchNavigationKind>>
+  preload: (url: string) => void
+  navigate: (url: string) => void
+  replace: (url: string) => void
+  back: (fallback?: string) => void
+}
+
+export interface SearchPageScope {
+  readonly root: HTMLElement
+  readonly isActive: boolean
+  run: <T>(callback: () => T) => T
+}
 
 export interface SearchService {
   preload: () => Promise<void>

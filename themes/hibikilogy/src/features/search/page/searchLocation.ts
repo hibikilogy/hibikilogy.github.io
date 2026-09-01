@@ -1,5 +1,5 @@
 import type { SearchQuery, SearchSort } from '../types.ts'
-import { normalizePageNumber } from 'components/site-pagination/utils.ts'
+import { normalizePageNumber } from 'shared/number.ts'
 import { serializeUrl } from 'shared/url.ts'
 
 export function parseSearchLocation(href: string): SearchQuery {

@@ -1,29 +1,13 @@
-import type { RouteModel } from 'app/hooks/index.ts'
-import type { SearchService } from '../types.ts'
-import { supportsIdleCallback } from 'shared/capabilities.ts'
+import type { SearchNavigation, SearchService } from '../types.ts'
 import { isEditableTarget, shouldIgnoreKeyEvent } from 'shared/keyboard.ts'
 import { SEARCH_PATH } from 'shared/url.ts'
 import { useEventListener } from 'shared/useEventListener.ts'
 import { SEARCH_FOCUS_INTENT_KEY } from '../config.ts'
+import { preloadSearchAssets } from '../navigation.ts'
 import { focusSearchInput, searchDom } from '../searchDom.ts'
-import { preloadSearchPage } from '../searchPage.ts'
-
-function preloadSearchAssets(service: SearchService): void {
-  void Promise.all([
-    preloadSearchPage(),
-    service.preload(),
-  ]).catch(() => {})
-}
-
-export function scheduleIdleSearchPreload(service: SearchService): void {
-  if (supportsIdleCallback())
-    requestIdleCallback(() => preloadSearchAssets(service))
-  else
-    preloadSearchAssets(service)
-}
 
 export function useSearchNavigation(
-  route: RouteModel,
+  route: SearchNavigation,
   service: SearchService,
   prepareSourceCapture?: () => void,
 ): void {

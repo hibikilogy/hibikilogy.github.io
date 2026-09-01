@@ -1,4 +1,4 @@
-import type { AppContext, PageContext } from 'app/types.ts'
+import type { SearchNavigation, SearchService } from '../types.ts'
 import { onScopeDispose, watch } from '@vue/reactivity'
 import { useEventListener } from 'shared/useEventListener.ts'
 import { SEARCH_FOCUS_INTENT_KEY } from '../config.ts'
@@ -9,20 +9,24 @@ import { createSearchSnapshotStore } from './snapshotStore.ts'
 
 const retainedSnapshot = createSearchSnapshotStore()
 
-export function mountSearchPage(app: AppContext, page: PageContext): void {
-  const root = page.root.querySelector<HTMLElement>(searchDom.root)
-  if (!root)
+export function mountSearchPage(
+  nav: SearchNavigation,
+  service: SearchService,
+  root: HTMLElement,
+): void {
+  const searchRoot = root.querySelector<HTMLElement>(searchDom.root)
+  if (!searchRoot)
     return
 
-  const model = useSearch(app.route, app.searchService, retainedSnapshot)
-  const view = createSearchView(root, model)
-  const input = root.querySelector<HTMLInputElement>(searchDom.input)
-  const form = root.querySelector<HTMLFormElement>(searchDom.form)
-  const sorting = root.querySelector<HTMLSelectElement>(searchDom.sorting)
+  const model = useSearch(nav, service, retainedSnapshot)
+  const view = createSearchView(searchRoot, model)
+  const input = searchRoot.querySelector<HTMLInputElement>(searchDom.input)
+  const form = searchRoot.querySelector<HTMLFormElement>(searchDom.form)
+  const sorting = searchRoot.querySelector<HTMLSelectElement>(searchDom.sorting)
 
   // page-change must not reach the document-level navigation handler;
   // the search page swaps results in place instead of navigating.
-  useEventListener(root, 'page-change', (event) => {
+  useEventListener(searchRoot, 'page-change', (event) => {
     event.stopPropagation()
     model.setPage((event as CustomEvent<{ page: number }>).detail.page)
   })
@@ -49,7 +53,7 @@ export function mountSearchPage(app: AppContext, page: PageContext): void {
 
   if (input) {
     useEventListener(input, 'input', () => {
-      void app.searchService.preload().catch(() => {})
+      void service.preload().catch(() => {})
     })
   }
 
@@ -60,9 +64,9 @@ export function mountSearchPage(app: AppContext, page: PageContext): void {
   }
 
   if (consumeSearchFocusIntent() || !model.state.value.query.term)
-    focusSearchInput(root)
+    focusSearchInput(searchRoot)
 
-  void app.searchService.preload().catch(() => {})
+  void service.preload().catch(() => {})
 }
 
 function consumeSearchFocusIntent(): boolean {

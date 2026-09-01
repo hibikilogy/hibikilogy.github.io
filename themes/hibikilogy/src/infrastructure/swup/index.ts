@@ -1,4 +1,4 @@
-export { isPageNavigationUrl } from './navigationRules.ts'
+export { isPageNavigationUrl, isSamePageHashNavigation } from './navigationRules.ts'
 export { SwupPagePreloadPlugin } from './plugins/preloader/index.ts'
 export type {
   PagePreloader,

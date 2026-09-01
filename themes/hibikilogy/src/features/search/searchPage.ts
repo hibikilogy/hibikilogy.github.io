@@ -1,4 +1,4 @@
-import type { AppContext, PageContext } from '../../app/types.ts'
+import type { SearchNavigation, SearchPageScope, SearchService } from './types.ts'
 import { createSingleFlight } from 'shared/singleFlight.ts'
 
 type SearchPageModule = typeof import('./page/index.ts')
@@ -10,12 +10,13 @@ export async function preloadSearchPage(): Promise<void> {
 }
 
 export async function mountSearchPage(
-  app: AppContext,
-  page: PageContext,
+  nav: SearchNavigation,
+  service: SearchService,
+  scope: SearchPageScope,
 ): Promise<void> {
   const module = await loadSearchPage.run()
-  if (!page.scope.active || !page.root.isConnected)
+  if (!scope.isActive || !scope.root.isConnected)
     return
 
-  page.run(() => module.mountSearchPage(app, page))
+  scope.run(() => module.mountSearchPage(nav, service, scope.root))
 }

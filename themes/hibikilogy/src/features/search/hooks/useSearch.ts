@@ -1,7 +1,7 @@
-import type { RouteModel } from 'app/hooks/index.ts'
 import type { SearchSnapshotStore } from '../page/types.ts'
 import type {
   SearchModel,
+  SearchNavigation,
   SearchPageState,
   SearchQuery,
   SearchResponse,
@@ -25,7 +25,7 @@ import {
 import { getSearchTitle } from '../utils.ts'
 
 export function useSearch(
-  route: RouteModel,
+  route: SearchNavigation,
   service: SearchService,
   snapshots: SearchSnapshotStore,
 ): SearchModel {

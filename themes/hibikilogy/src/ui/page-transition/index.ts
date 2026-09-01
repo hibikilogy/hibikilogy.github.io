@@ -1,4 +1,5 @@
 export { shouldKeepNativeTransition } from './nativeTransition.ts'
+export { startPageEnter, stopPageEnter } from './pageEnter.ts'
 export { shouldDisableNativeTransition, waitForSearchTransition } from './searchBoxTransition.ts'
 export { getSearchTransitionScope } from './searchTransition.ts'
 export type { SearchTransitionScope } from './searchTransition.ts'

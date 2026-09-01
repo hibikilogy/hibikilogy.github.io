@@ -6,15 +6,14 @@ import { mountPageModules } from 'app/page-modules/index.ts'
 import { createPageContext } from 'app/pageContext.ts'
 import { pageDom } from 'shared/selectors.ts'
 import { Location } from 'swup'
-import { setTransitionState, waitForSearchTransition } from 'ui/page-transition/index.ts'
-import { startPageEnter, stopPageEnter } from 'ui/page-transition/pageEnter.ts'
+import { setTransitionState, startPageEnter, stopPageEnter, waitForSearchTransition } from 'ui/page-transition/index.ts'
 import {
   playPostTitleExitAnimation,
   preloadPostTitleTransition,
   renderPostTitleTransitionTarget,
   setupTitleTransitionCoordinator,
 } from 'ui/post-title-transition/index.ts'
-import { isSamePageHashNavigation } from '../../infrastructure/swup/navigationRules.ts'
+import { isSamePageHashNavigation } from '../../infrastructure/swup/index.ts'
 import { createVisitSession } from './visitSession.ts'
 
 export function setupAppNavigation(swup: Swup, app: AppContext): void {

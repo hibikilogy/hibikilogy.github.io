@@ -1,5 +1,5 @@
-import type { RouteModel } from 'app/hooks/index.ts'
-import type { SearchService } from '../types.ts'
+import type { SearchNavigation, SearchService } from '../types.ts'
+
 import { computed, effectScope, ref, shallowRef } from '@vue/reactivity'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { preloadSearchPage } from '../searchPage.ts'
@@ -57,7 +57,7 @@ describe('useSearchNavigation', () => {
   })
 })
 
-function createRoute(): RouteModel {
+function createRoute(): SearchNavigation {
   const current = shallowRef({
     href: 'https://example.test/',
     pathname: '/',
@@ -67,7 +67,6 @@ function createRoute(): RouteModel {
 
   return {
     current,
-    isNavigating: ref(false),
     isSearchPage: computed(() => false),
     navigationKind: ref('initial'),
     preload: vi.fn(),

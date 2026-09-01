@@ -6,7 +6,11 @@ import { mountArticlePage } from './articlePage.ts'
 import { mountJournalPage } from './journalPage.ts'
 
 const mountSearchPageModule: PageModule = ({ app, page }) => (
-  mountSearchPage(app, page)
+  mountSearchPage(app.route, app.searchService, {
+    root: page.root,
+    isActive: page.scope.active,
+    run: callback => page.run(callback),
+  })
 )
 
 const modulesByPageKind = {
