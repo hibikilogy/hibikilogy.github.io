@@ -9,7 +9,7 @@
 - `beasties/` — 关键 CSS 内联（`pnpm build:beasties`，在 `pnpm build:all` 中于 Zola 构建后运行）。`stylesheetPublicPath.ts` 决定样式表 href 如何映射到 `public/` 下的文件。
 - `benchmark-search/` — 搜索运行时基准（`pnpm benchmark:search`）。
 - `dev-cms/` — 监听 `static/` 并把变更同步到 `public/`（`pnpm dev:cms`），供 CMS 配置开发。
-- `og-render/` — 构建期 OG 卡片图渲染器（`pnpm build:og`，在 Zola 构建前运行）：遍历 `content/articles/` 的 front matter，用仓库内 Source Han VF 实例化+子集化的本地静态字体渲染 1200×630 卡片到 `static/og/articles/`；按内容摘要增量渲染（跳过未变更文章），清单缓存于 `static/_cache/og-render-manifest.json`。资产与字体在同目录 `assets/`、`fonts/` 下（字体为本地 Source Han VF 一次性实例化+子集化产物，配方见 docs/og-image-notes.md §4.6；渲染器自带缺字形检查）。
+- `og-render/` — 构建期 OG 卡片图渲染器（`pnpm build:og`，在 Zola 构建前运行）：遍历 `content/articles/` 的 front matter，用仓库内 Source Han VF 实例化+子集化的本地静态字体渲染 1200×630 `.jpg` 卡片到 `static/og/articles/`；按内容摘要 + 渲染器指纹增量渲染（字体/素材/渲染器源码任一变化都会全量失效），清单缓存于 `static/_cache/og-render-manifest.json`。资产与字体在同目录 `assets/`、`fonts/` 下（字体为本地 Source Han VF 一次性实例化+子集化产物；渲染器自带缺字形检查）。
 - `verify-commit/` — commit-msg 钩子校验（Angular 约定式提交）。
 - `vite/` — Vite 插件：`hibikilogy-config`（站点/i18n 配置烘焙为 `virtual:hibikilogy-config`）、`entries`、`sync-build-output`。
 - `checkI18nKeys.test.ts` — 校验模板 i18n key、JS 翻译引用与 CMS `config.yml` 字段同 `i18n/zh.toml` 保持同步（随 `pnpm test:ts` 运行）。

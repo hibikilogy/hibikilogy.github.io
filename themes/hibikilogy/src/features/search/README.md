@@ -47,8 +47,8 @@ features/search/
 | 数据 | 生成位置 | 用途 |
 | --- | --- | --- |
 | `search_index.zh.json` | Zola `build_search_index` | 标题、描述、正文、路径和日期 |
-| `hibikilogy-search-articles-data` | `templates/search-articles.html` | 副标题、封面、作者和发布日期 |
-| `hibikilogy-search-tags-data` | `templates/search-tags.html` | 标签检索与当前页相关标签 |
+| `searchArticlesDataUrl`（`search-articles/`） | `templates/search-articles.html` | 副标题、封面、作者和发布日期 |
+| `searchTagsDataUrl`（`search-tags/`） | `templates/search-tags.html` | 标签检索与当前页相关标签 |
 
 索引 URL 和 Worker URL 来自 `hibikilogy-runtime-config` JSON 节点。旧的 `window.__HIBIKILOGY_*` 配置和 `window.navigateToSearch` 已删除。
 

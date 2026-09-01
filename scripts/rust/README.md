@@ -141,7 +141,7 @@ cargo run --locked --features artifact-rewrite --bin site-artifact-rewrite -- --
    pnpm test:rust
    ```
 
-   `pnpm test:rust` 用 nextest 并行跑全部 feature（CI 不开 fail-fast，一次看全所有失败）。之后单独跑 `cargo test --doc`（nextest 不执行 doctest）。
+   `pnpm test:rust` 用 nextest 并行跑全部 feature（CI 不开 fail-fast，一次看全所有失败），并顺带执行 doctest。
 
 3. 新增已发布文章时先跑 `pnpm sync:short-links`；构建只运行 `check:short-links`，不会暗中修改文章。
 4. 涉及产物的改动还要跑对应的 `pnpm build:*`，跨工具改动跑 `pnpm build:all`。

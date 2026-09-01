@@ -34,7 +34,7 @@ This repository is a Zola static site using the built-in `hibikilogy` theme. The
 - `scripts/rust/integration/` — Rust smoke tests (run via nextest)
 - Heavy dependencies are optional, gated behind the `font-tools` and `artifact-rewrite` cargo features (default = none)
 
-`plans/` holds numbered implementation plans; read `plans/README.md` for their execution order. `dist/` is gitignored Vite output. Tests live with the code they cover: Vitest suites at `themes/hibikilogy/src/**/*.test.ts` and `scripts/**/*.test.ts` (run via `pnpm test:ts`), Rust unit tests as inline `#[cfg(test)]` modules plus `scripts/rust/integration/cli_smoke.rs` (run via nextest).
+`dist/` is gitignored Vite output. Tests live with the code they cover: Vitest suites at `themes/hibikilogy/src/**/*.test.ts` and `scripts/**/*.test.ts` (run via `pnpm test:ts`), Rust unit tests as inline `#[cfg(test)]` modules plus `scripts/rust/integration/cli_smoke.rs` (run via nextest).
 
 ### Sveltia CMS (`static/admin/` + `cms/`)
 
@@ -65,7 +65,7 @@ The site includes a Sveltia CMS setup at `/admin/` for visual content editing. T
 - `zola build --drafts`: match the GitHub Pages workflow build behavior.
 - Search index (`search_index.zh.json`) is generated automatically by Zola during `zola build` via `build_search_index = true` and `index_format = "fuse_json"` in `zola.toml`. The client-side search engine (Fuse.js + Web Worker + IndexedDB cache) lives at `themes/hibikilogy/src/features/search/`.
 - `zola check --skip-external-links`: validate pages, internal links, templates, and configuration without producing a deployment artifact. The `--skip-external-links` flag skips external link verification for significantly faster checks; use plain `zola check` only when you've added or changed external links.
-- `pnpm build:all`: full production pipeline — Vite bundle → CMS admin bundle → title/body font subsetting → short-link check → Zola build → beasties inlining → artifact rewrite → markdown export (exact chain in `package.json`).
+- `pnpm build:all`: full production pipeline — Vite bundle → CMS admin bundle → OG cards → title/body font subsetting → short-link check → Zola build → beasties inlining → artifact rewrite → markdown export (exact chain in `package.json`).
 - `pnpm dev:all`: start dev servers in parallel (Zola + Vite watch).
 - `pnpm build:admin`: build the Sveltia CMS admin bundle to `static/admin/admin.js`.
 - `pnpm dev:admin`: start the CMS admin dev server with HMR.
