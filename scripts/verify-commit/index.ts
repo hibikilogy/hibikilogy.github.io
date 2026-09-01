@@ -10,10 +10,12 @@ const msgPath = process.argv[2]
   || execSync('git rev-parse --git-path COMMIT_EDITMSG', { encoding: 'utf-8' }).trim()
 const msg = readFileSync(msgPath, 'utf-8').trim()
 
+// 50 字符上限只约束 subject（首行），先切出首行再锚定。
+const subjectLine = msg.split('\n', 1)[0] ?? ''
 const commitRE
-  = /^(?:revert: )?(?:feat|fix|docs|dx|style|refactor|perf|test|workflow|build|ci|chore|types|wip|post)(?:\((?:theme|themes|script|scripts|content|docs|build|template|templates|search|ui|component|components|i18n|static|cms|article|articles)\))?: .{1,50}/
+  = /^(?:revert: )?(?:feat|fix|docs|dx|style|refactor|perf|test|workflow|build|ci|chore|types|wip|post)(?:\((?:theme|themes|script|scripts|content|docs|build|template|templates|search|ui|component|components|i18n|static|cms|article|articles)\))?: .{1,50}$/
 
-if (!commitRE.test(msg)) {
+if (!commitRE.test(subjectLine)) {
   console.log()
   console.error(
     `  ${pc.white(pc.bgRed(' ERROR '))} ${pc.red(
