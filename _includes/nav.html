@@ -115,6 +115,7 @@
         if(e.target == $toggle) return;
         if(e.target.className == 'icon-bar') return;
         if(e.target.className.indexOf("form") >= 0) return;
+        if(e.target.closest('.dropdown-toggle, .dropdown-menu')) return;
         __HuxNav__.close();
         document.getElementById('searchResults').innerHTML=''
     })
