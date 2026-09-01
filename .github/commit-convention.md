@@ -1,91 +1,57 @@
-## Git Commit Message Convention
+# Git Commit Message Convention
 
-> This is adapted from [Angular's commit convention](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular).
+> 基于 [Angular 的提交约定](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular) 精简。
 
-#### TL;DR:
-
-Messages must be matched by the following regex:
-
-```js
-;/^(?:revert: )?(?:feat|fix|docs|dx|style|refactor|perf|test|workflow|build|ci|chore|types|wip|post)(?:\((?:theme|themes|script|scripts|content|docs|build|template|templates|search|ui|component|components|i18n|static|cms|article|articles)\))?: .{1,50}/
-```
-
-#### Examples
-
-Appears under "Features" header, `compiler` subheader:
-
-```
-feat(compiler): add 'comments' option
-```
-
-Appears under "Bug Fixes" header, `v-model` subheader, with a link to issue #28:
-
-```
-fix(v-model): handle events on blur
-
-close #28
-```
-
-Appears under "Performance Improvements" header, and under "Breaking Changes" with the breaking change explanation:
-
-```
-perf(core): improve vdom diffing by removing 'foo' option
-
-BREAKING CHANGE: The 'foo' option has been removed.
-```
-
-The following commit and commit `667ecc1` do not appear in the changelog if they are under the same release. If not, the revert commit appears under the "Reverts" header.
-
-```
-revert: feat(compiler): add 'comments' option
-
-This reverts commit 667ecc1654a317a13331b17617d973392f415f02.
-```
-
-### Full Message Format
-
-A commit message consists of a **header**, **body** and **footer**. The header has a **type**, **scope** and **subject**:
+## 格式
 
 ```
 <type>(<scope>): <subject>
-<BLANK LINE>
+
 <body>
-<BLANK LINE>
-<footer>
 ```
 
-The **header** is mandatory and the **scope** of the header is optional.
+header 必填，scope 可选。`commit-msg` 钩子（`scripts/verify-commit/index.ts`）按下面这个正则校验：subject 取**首行**，长度 ≤ 50。
 
-### Revert
+```js
+/^(?:revert: )?(?:feat|fix|docs|dx|style|refactor|perf|test|workflow|build|ci|chore|types|wip|post)(?:\((?:theme|themes|script|scripts|content|docs|build|template|templates|search|ui|component|components|i18n|static|cms|article|articles)\))?: .{1,50}$/
+```
 
-If the commit reverts a previous commit, it should begin with `revert: `, followed by the header of the reverted commit. In the body, it should say: `This reverts commit <hash>.`, where the hash is the SHA of the commit being reverted.
+## Type
 
-### Type
+- `feat` — 新功能
+- `fix` — 缺陷修复
+- `refactor` — 重构（不改变行为）
+- `docs` — 文档
+- `build` / `ci` — 构建与 CI
+- `style`、`test`、`chore` — 格式、测试、杂务
+- `dx`、`perf`、`workflow`、`types`、`wip`、`post` 按需使用
 
-If the prefix is `feat`, `fix` or `perf`, it will appear in the changelog. However, if there is any [BREAKING CHANGE](#footer), the commit will always appear in the changelog.
+## Scope
 
-Other prefixes are up to your discretion. Suggested prefixes are `docs`, `chore`, `style`, `refactor`, and `test` for non-changelog related tasks.
+允许的 scope：`theme`、`script`、`content`、`docs`、`build`、`template`、`search`、`ui`、`component`、`i18n`、`static`、`cms`、`article`，每个也接受复数形式（`themes`、`scripts`、`templates`、`components`、`articles`）。
 
-### Scope
+## Subject
 
-The scope could be anything specifying the place of the commit change. For example `core`, `compiler`, `ssr`, `v-model`, `transition` etc...
+- 祈使句、动词原形（"change" 而非 "changed"）
+- 首字母小写，句尾不加句号
+- 尽量 ≤ 50 字符
 
-### Subject
+## Body / Footer
 
-The subject contains a succinct description of the change:
+- 说明动机，并与改动前行为做对比
+- 破坏性变更以 `BREAKING CHANGE:` 开头
+- 关联 issue 用 `close #<n>` 收尾
 
-- use the imperative, present tense: "change" not "changed" nor "changes"
-- don't capitalize the first letter
-- no dot (.) at the end
+## Revert
 
-### Body
+`revert: <被回退提交的 header>`，正文注明 `This reverts commit <hash>.`。
 
-Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes".
-The body should include the motivation for the change and contrast this with previous behavior.
+## 示例
 
-### Footer
+```
+feat(theme): add dark mode support
+fix(scripts): correct build cache path
+docs(content): add article guide
 
-The footer should contain any information about **Breaking Changes** and is also the place to
-reference GitHub issues that this commit **Closes**.
-
-**Breaking Changes** should start with the word `BREAKING CHANGE:` with a space or two newlines. The rest of the commit message is then used for this.
+close #12
+```
