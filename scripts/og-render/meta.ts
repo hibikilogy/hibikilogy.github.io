@@ -1,8 +1,6 @@
 import { createHash } from 'node:crypto'
 import { parse } from 'smol-toml'
 
-export const RENDERER_VERSION = '4'
-
 export interface ManifestRecord {
   digest: string
   output: string
@@ -10,6 +8,7 @@ export interface ManifestRecord {
 
 export interface OgManifest {
   version: number
+  fingerprint: string
   records: Record<string, ManifestRecord>
 }
 
@@ -18,7 +17,6 @@ export interface ArticleMeta {
   title: string
   description: string
   cover: string
-  coverAlt: string
 }
 
 export interface ArticleFront {
@@ -64,8 +62,7 @@ export function describeArticle(
   const title = front.title?.trim() || fileName.replace(/\.md$/i, '')
   const description = front.description?.trim() || (extra.abstract as string | undefined)?.trim() || ''
   const cover = (extra.cover as string | undefined) ?? ''
-  const coverAlt = (extra.cover_alt as string | undefined)?.trim() || title
-  return { route, title, description, cover, coverAlt }
+  return { route, title, description, cover }
 }
 
 export function computeDigest(
@@ -73,8 +70,6 @@ export function computeDigest(
   coverByteDigest: string | null,
 ): string {
   return createHash('sha256')
-    .update(RENDERER_VERSION)
-    .update('\0')
     .update(meta.title)
     .update('\0')
     .update(meta.description)
@@ -108,9 +103,14 @@ export function decideRender(
   coverByteDigest: string | null,
   manifest: OgManifest,
   output: string,
+  fingerprint: string,
+  outputExists: boolean,
 ): RenderDecision {
   const digest = computeDigest(meta, coverByteDigest)
   const record = manifest.records[meta.route]
-  const cached = record?.digest === digest && record.output === output
+  const cached = manifest.fingerprint === fingerprint
+    && record?.digest === digest
+    && record.output === output
+    && outputExists
   return { render: !cached, digest, output }
 }

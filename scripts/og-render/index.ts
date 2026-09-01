@@ -2,7 +2,7 @@ import type { ReactElement } from 'react'
 import type { ArticleMeta, OgManifest } from './meta.ts'
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
-import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { access, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
@@ -88,49 +88,91 @@ async function loadAssets(): Promise<Assets> {
   }
 }
 
-interface CoverData {
-  dataUri: string
-  byteDigest: string
-}
+const COVER_FETCH_TIMEOUT_MS = 10_000
 
-async function resolveCover(cover: string): Promise<CoverData | null> {
+async function loadCoverBytes(cover: string): Promise<Buffer | null> {
   if (!cover)
     return null
-  let data: Buffer
   if (/^https?:\/\//.test(cover)) {
-    const response = await fetch(cover)
-    if (!response.ok) {
-      console.warn(`og-render: cover fetch failed (${response.status}): ${cover}`)
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), COVER_FETCH_TIMEOUT_MS)
+    try {
+      const response = await fetch(cover, { signal: controller.signal })
+      if (!response.ok) {
+        console.warn(`og-render: cover fetch failed (${response.status}): ${cover}`)
+        return null
+      }
+      return Buffer.from(await response.arrayBuffer())
+    }
+    catch (error) {
+      console.warn(`og-render: cover fetch failed: ${cover}`, error)
       return null
     }
-    data = Buffer.from(await response.arrayBuffer())
+    finally {
+      clearTimeout(timer)
+    }
   }
-  else if (cover.startsWith('/')) {
+  if (cover.startsWith('/')) {
     try {
-      data = await readFile(resolve(STATIC_DIR, cover.slice(1)))
+      return await readFile(resolve(STATIC_DIR, cover.slice(1)))
     }
     catch {
       console.warn(`og-render: cover not found: ${cover}`)
       return null
     }
   }
-  else {
-    return null
+  return null
+}
+
+function hashBytes(data: Buffer): string {
+  return createHash('sha256').update(data).digest('hex')
+}
+
+const coverDataUriCache = new Map<string, Promise<string | null>>()
+
+function normalizeCover(cover: string, data: Buffer): Promise<string | null> {
+  let pending = coverDataUriCache.get(cover)
+  if (!pending) {
+    pending = sharp(data)
+      .rotate()
+      .resize(1200, 630, { fit: 'cover' })
+      .png()
+      .toBuffer()
+      .then(normalized => `data:image/png;base64,${normalized.toString('base64')}`)
+      .catch((error: unknown) => {
+        console.warn(`og-render: cover decode failed: ${cover}`, error)
+        return null
+      })
+    coverDataUriCache.set(cover, pending)
   }
-  // 等比缩放 + 居中裁剪到卡片尺寸（cover 填充），避免 satori 硬拉伸失真
-  const normalized = await sharp(data)
-    .rotate()
-    .resize(1200, 630, { fit: 'cover' })
-    .png()
-    .toBuffer()
-    .catch((error: unknown) => {
-      console.warn(`og-render: cover decode failed: ${cover}`, error)
-      return null
-    })
-  if (normalized === null)
-    return null
-  const byteDigest = createHash('sha256').update(data).digest('hex')
-  return { dataUri: `data:image/png;base64,${normalized.toString('base64')}`, byteDigest }
+  return pending
+}
+
+async function fileExists(path: string): Promise<boolean> {
+  try {
+    await access(path)
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
+/** 字体、素材与渲染器源码任一变化都会失效全部缓存，替代手工版本号。 */
+async function computeRendererFingerprint(): Promise<string> {
+  const [serif, sans, wordmarkDark, wordmarkWhite, tagsCloud, indexSource, metaSource] = await Promise.all([
+    readFile(SERIF_PATH),
+    readFile(SANS_PATH),
+    readFile(resolve(ASSET_DIR, 'logo-wordmark-dark.png')),
+    readFile(resolve(ASSET_DIR, 'logo-wordmark.png')),
+    readFile(resolve(ASSET_DIR, 'tags-cloud.png')),
+    readFile(resolve(import.meta.dirname, 'index.ts')),
+    readFile(resolve(import.meta.dirname, 'meta.ts')),
+  ])
+  const hash = createHash('sha256')
+  for (const chunk of [serif, sans, wordmarkDark, wordmarkWhite, tagsCloud, indexSource, metaSource])
+    hash.update(chunk)
+  return hash.digest('hex')
 }
 
 function renderCard(meta: ArticleMeta, cover: string, assets: Assets, fonts: FontSet): Response {
@@ -246,13 +288,19 @@ function renderCard(meta: ArticleMeta, cover: string, assets: Assets, fonts: Fon
 async function loadManifest(): Promise<OgManifest> {
   try {
     const raw = JSON.parse(await readFile(MANIFEST_PATH, 'utf8')) as OgManifest
-    if (raw.version === 1 && typeof raw.records === 'object')
-      return raw
+    if (raw.version === 1 && typeof raw.records === 'object') {
+      return {
+        version: 1,
+        // 旧 manifest 无 fingerprint：空串永不匹配，等价全量重渲。
+        fingerprint: typeof raw.fingerprint === 'string' ? raw.fingerprint : '',
+        records: raw.records,
+      }
+    }
   }
   catch {
     // first run or corrupted cache — start fresh
   }
-  return { version: 1, records: {} }
+  return { version: 1, fingerprint: '', records: {} }
 }
 
 async function main(): Promise<void> {
@@ -271,12 +319,20 @@ async function main(): Promise<void> {
       throw new Error(`duplicate route: ${meta.route}`)
     metas.push(meta)
   }
+  for (const meta of metas) {
+    if (meta.route.includes('/')) {
+      throw new Error(
+        `og route must be a single path segment (page.html 按 URL 末段取图): ${meta.route}`,
+      )
+    }
+  }
 
   const [assets, fonts, manifest] = await Promise.all([loadAssets(), loadFonts(), loadManifest()])
+  const fingerprint = await computeRendererFingerprint()
   const serifChars = new Set(openSync(SERIF_PATH).characterSet)
   const sansChars = new Set(openSync(SANS_PATH).characterSet)
   const missing = new Map<string, Set<string>>()
-  const nextManifest: OgManifest = { version: 1, records: {} }
+  const nextManifest: OgManifest = { version: 1, fingerprint, records: {} }
   let rendered = 0
   let skipped = 0
 
@@ -289,17 +345,20 @@ async function main(): Promise<void> {
         missing.set(char, routes)
       }
     }
-    const cover = await resolveCover(meta.cover)
+    const coverBytes = await loadCoverBytes(meta.cover)
+    const coverDigest = coverBytes ? hashBytes(coverBytes) : null
     const output = `og/articles/${meta.route}.jpg`
-    await rm(resolve(OUTPUT_DIR, `${meta.route}.png`), { force: true })
-    const decision = decideRender(meta, cover?.byteDigest ?? null, manifest, output)
+    const outPath = resolve(OUTPUT_DIR, `${meta.route}.jpg`)
+    const outputExists = await fileExists(outPath)
+    const decision = decideRender(meta, coverDigest, manifest, output, fingerprint, outputExists)
     if (decision.render) {
-      const response = await renderCard(meta, cover?.dataUri ?? '', assets, fonts)
+      const coverDataUri = coverBytes ? await normalizeCover(meta.cover, coverBytes) : null
+      const response = await renderCard(meta, coverDataUri ?? '', assets, fonts)
       const png = Buffer.from(await response.arrayBuffer())
       const jpeg = await sharp(png)
         .jpeg({ quality: 85, mozjpeg: true, chromaSubsampling: '4:2:0' })
         .toBuffer()
-      const outPath = resolve(OUTPUT_DIR, `${meta.route}.jpg`)
+      await rm(resolve(OUTPUT_DIR, `${meta.route}.png`), { force: true })
       await writeFile(outPath, jpeg)
       rendered += 1
       console.log(`og-render: ${meta.route} ${jpeg.length} bytes`)
@@ -316,13 +375,14 @@ async function main(): Promise<void> {
     if (currentRoutes.has(route))
       continue
     await rm(resolve(OUTPUT_DIR, `${route}.jpg`), { force: true })
+    await rm(resolve(OUTPUT_DIR, `${route}.png`), { force: true })
     removed += 1
   }
 
   await writeFile(MANIFEST_PATH, `${JSON.stringify(nextManifest, null, 2)}\n`, 'utf8')
   if (missing.size > 0) {
     const sample = [...missing.entries()].slice(0, 8).map(([char, routes]) => `"${char}"(U+${char.codePointAt(0)?.toString(16).toUpperCase()}) → ${[...routes].slice(0, 3).join(',')}`).join('; ')
-    console.warn(`og-render: 字体子集缺少 ${missing.size} 个字符: ${sample} — 按 docs/og-image-notes.md §4.6 重建 scripts/og-render/fonts/`)
+    console.warn(`og-render: 字体子集缺少 ${missing.size} 个字符: ${sample} — 请更新 scripts/og-render/fonts/ 下的子集字体后重新构建`)
   }
   console.log(`og-render: rendered ${rendered}, skipped ${skipped}, removed ${removed}, routes ${metas.length}`)
 }

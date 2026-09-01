@@ -66,14 +66,6 @@ describe('describeArticle', () => {
       extra: { abstract: '摘要文字' },
     })
     expect(meta.description).toBe('摘要文字')
-    expect(meta.coverAlt).toBe('T')
-  })
-
-  it('cover_alt 默认标题', () => {
-    // front matter 字段为蛇形命名（TOML 契约）
-    // eslint-disable-next-line ts/naming-convention
-    const meta = describeArticle('a.md', { title: 'T', extra: { cover_alt: '图' } })
-    expect(meta.coverAlt).toBe('图')
   })
 
   it('缺 title 时使用文件名', () => {
@@ -105,8 +97,8 @@ describe('computeDigest / decideRender', () => {
     title: '标题',
     description: '摘要',
     cover: '/imgs/x.png',
-    coverAlt: '标题',
   }
+  const fingerprint = 'f1'
 
   it('摘要稳定且随内容变化', () => {
     const first = computeDigest(meta, 'abc')
@@ -119,12 +111,13 @@ describe('computeDigest / decideRender', () => {
     const digest = computeDigest(meta, null)
     const manifest: OgManifest = {
       version: 1,
+      fingerprint,
       records: { a: { digest, output: 'og/articles/a.png' } },
     }
-    const hit = decideRender(meta, null, manifest, 'og/articles/a.png')
+    const hit = decideRender(meta, null, manifest, 'og/articles/a.png', fingerprint, true)
     expect(hit.render).toBe(false)
 
-    const miss = decideRender({ ...meta, title: '新' }, null, manifest, 'og/articles/a.png')
+    const miss = decideRender({ ...meta, title: '新' }, null, manifest, 'og/articles/a.png', fingerprint, true)
     expect(miss.render).toBe(true)
   })
 
@@ -132,8 +125,35 @@ describe('computeDigest / decideRender', () => {
     const digest = computeDigest(meta, null)
     const manifest: OgManifest = {
       version: 1,
+      fingerprint,
       records: { a: { digest, output: 'og/articles/old.png' } },
     }
-    expect(decideRender(meta, null, manifest, 'og/articles/new.png').render).toBe(true)
+    expect(
+      decideRender(meta, null, manifest, 'og/articles/new.png', fingerprint, true).render,
+    ).toBe(true)
+  })
+
+  it('输出文件缺失时视为缓存失效', () => {
+    const digest = computeDigest(meta, null)
+    const manifest: OgManifest = {
+      version: 1,
+      fingerprint,
+      records: { a: { digest, output: 'og/articles/a.jpg' } },
+    }
+    expect(
+      decideRender(meta, null, manifest, 'og/articles/a.jpg', fingerprint, false).render,
+    ).toBe(true)
+  })
+
+  it('渲染器指纹变化时全部失效', () => {
+    const digest = computeDigest(meta, null)
+    const manifest: OgManifest = {
+      version: 1,
+      fingerprint,
+      records: { a: { digest, output: 'og/articles/a.jpg' } },
+    }
+    expect(
+      decideRender(meta, null, manifest, 'og/articles/a.jpg', 'f2', true).render,
+    ).toBe(true)
   })
 })
