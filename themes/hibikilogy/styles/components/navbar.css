@@ -257,7 +257,7 @@
         white-space: nowrap;
         font-size: 13px;
         font-weight: 500;
-        color: var(--joh-c-text-2);
+        color: var(--joh-c-text-muted);
         opacity: 0.9;
         transition:
           opacity var(--duration-fast) var(--ease-out),
@@ -285,7 +285,7 @@
         .SearchShellLabel,
         .SearchShellInput {
           display: contents;
-          color: var(--joh-c-text-2);
+          color: var(--joh-c-text-muted);
         }
       }
 
@@ -311,7 +311,7 @@
         width: auto;
         height: 22px;
         line-height: 22px;
-        color: var(--joh-c-text-2);
+        color: var(--joh-c-text-muted);
         background-color: var(--joh-c-bg-alt);
         font-family: var(--joh-font-family-base);
         font-size: 12px;
@@ -337,7 +337,7 @@
         content: var(--joh-search-shell-key-modifier);
         font-size: 12px;
         letter-spacing: normal;
-        color: var(--joh-c-text-2);
+        color: var(--joh-c-text-muted);
       }
 
       .SearchShellKeyModifier > * {
