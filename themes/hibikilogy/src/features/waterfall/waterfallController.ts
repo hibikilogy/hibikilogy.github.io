@@ -1,6 +1,5 @@
 import type { WaterfallController } from './types.ts'
 import { supportsGridLanes } from 'shared/capabilities.ts'
-import { catchError } from 'shared/result.ts'
 
 const SECTION_SELECTOR = '.Section, .FrontPage'
 const DEFAULT_CHILD_SELECTOR = `:scope > ${SECTION_SELECTOR}`
@@ -158,9 +157,7 @@ export function createWaterfallController(
 
   // Run the first layout synchronously so scroll restoration (which the
   // scroll plugin defers by one frame) measures the laid-out document.
-  catchError(() => {
-    applyLayout()
-  })
+  applyLayout()
 
   return {
     dispose() {
