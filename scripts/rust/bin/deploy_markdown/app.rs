@@ -10,7 +10,7 @@ use hibikilogy_tools::content_routes::{
 #[cfg(test)]
 use hibikilogy_tools::managed_fs::atomic_sidecar_path as manifest_sidecar_path;
 use hibikilogy_tools::managed_fs::{
-    ensure_directory_beneath, recover_atomic_file, reject_symlink_or_directory,
+    ensure_directory_beneath, recover_atomic_file, write_atomic_if_changed,
 };
 use hibikilogy_tools::managed_json;
 use hibikilogy_tools::url_encoding::encode_path;
@@ -439,7 +439,8 @@ fn render_export(
         encode_path(&source.source_relative),
     );
     let page_url = format!("{}/{}", base_url.trim_end_matches('/'), source.route);
-    let annotated = annotate_markdown(&markdown, &source_url, &page_url);
+    let annotated = annotate_markdown(&markdown, &source_url, &page_url)
+        .with_context(|| format!("failed to annotate {}", source.source_path.display()))?;
     Ok(annotated)
 }
 
@@ -449,19 +450,26 @@ fn write_export(source: &ExportSource, site_root: &Path, markdown: &str) -> Resu
     if let Some(parent) = output_path.parent() {
         ensure_directory_beneath(site_root, parent)?;
     }
-    reject_symlink_or_directory(&output_path)?;
-    fs::write(&output_path, markdown)
-        .with_context(|| format!("failed to write {}", output_path.display()))
+    // write_atomic 内部会拒绝符号链接/目录并保证原子替换；保留
+    // ensure_directory_beneath 以维持「输出必须在托管根之内」的约束。
+    write_atomic_if_changed(&output_path, markdown.as_bytes())
+        .with_context(|| format!("failed to write {}", output_path.display()))?;
+    Ok(())
 }
 
-fn annotate_markdown(markdown: &str, source_url: &str, page_url: &str) -> String {
+fn annotate_markdown(markdown: &str, source_url: &str, page_url: &str) -> Result<String> {
     match hibikilogy_tools::front_matter::locate_toml_front_matter(markdown) {
         Ok(Some(span)) => {
             let (head, rest) = markdown.split_at(span.content_start);
             let newline = span.newline;
-            format!("{head}# Source: {source_url}{newline}# Page: {page_url}{newline}{rest}")
+            Ok(format!(
+                "{head}# Source: {source_url}{newline}# Page: {page_url}{newline}{rest}"
+            ))
         }
-        _ => format!("<!-- Source: {source_url} -->\n<!-- Page: {page_url} -->\n\n{markdown}"),
+        Ok(None) => Ok(format!(
+            "<!-- Source: {source_url} -->\n<!-- Page: {page_url} -->\n\n{markdown}"
+        )),
+        Err(error) => Err(error).context("failed to locate front matter for export annotation"),
     }
 }
 

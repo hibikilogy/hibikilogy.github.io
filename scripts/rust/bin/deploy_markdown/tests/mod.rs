@@ -16,7 +16,8 @@ fn inserts_comments_inside_front_matter_without_changing_body() {
         markdown,
         "https://github.com/owner/repo/blob/sha/content/page.md",
         "https://example.com/docs/page",
-    );
+    )
+    .unwrap();
     assert!(annotated.starts_with("+++\n# Source: https://github.com/"));
     assert!(annotated.contains("# Page: https://example.com/docs/page\ntitle = \"标题\""));
     assert!(annotated.ends_with("+++\n\n正文\n"));
