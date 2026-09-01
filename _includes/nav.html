@@ -22,11 +22,19 @@
                     <li>
                         <a href="/tags">标签</a>
                     </li>
-                    <li>
-                        <a href="/test">高考试卷</a>
-                    </li>
-                    <li>
-                        <a href="/assessment">能力鉴定</a>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">选拔考试</a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="/assessment">能力鉴定</a>
+                            </li>
+                            <li>
+                                <a href="/exam2020">2020高考试卷</a>
+                            </li>
+                            <li>
+                                <a href="/exam2026">2026高考试卷</a>
+                            </li>
+                        </ul>
                     </li>
                     <li>
                         <a href="/contribute">我要投稿</a>
@@ -180,6 +188,46 @@
 }
 .search-pc:focus  {
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px #007fff;
+}
+
+.navbar-nav .dropdown-menu {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+    border-radius: 4px;
+    padding: 8px 0;
+    margin-top: 0;
+}
+
+.navbar-nav .dropdown-menu > li > a {
+    color: #404040;
+    padding: 10px 20px;
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.navbar-nav .dropdown-menu > li > a:hover,
+.navbar-nav .dropdown-menu > li > a:focus {
+    background-color: rgba(0, 133, 161, 0.08);
+    color: #0085a1;
+}
+
+[data-theme="dark"] .navbar-nav .dropdown-menu {
+    background: rgba(45, 27, 78, 0.96);
+    border-color: rgba(196, 181, 253, 0.25);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.36);
+}
+
+[data-theme="dark"] .navbar-nav .dropdown-menu > li > a {
+    color: #e8dff5;
+}
+
+[data-theme="dark"] .navbar-nav .dropdown-menu > li > a:hover,
+[data-theme="dark"] .navbar-nav .dropdown-menu > li > a:focus {
+    background-color: rgba(167, 139, 250, 0.18);
+    color: #c4b5fd;
 }
 
 </style>
