@@ -167,7 +167,6 @@ Hash 链接使用原生滚动并绕过 Swup。无滚动 hash 同步由 Route/His
 pnpm verify:ts       # typecheck、测试、TS lint、Vite、Admin
 pnpm lint            # Vite + zola check
 zola build
-cargo test --locked
 ```
 
 Route、Search、Outline、Navbar、Waterfall 和页面过渡还需验证直接加载、Swup 导航、前进/后退、hash 滚动和重复 listener。

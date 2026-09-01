@@ -8,7 +8,7 @@ W.I.P.
 
 ## 简介
 
-本站为广大吹学爱好者记录吹学著作所用，使用 [Zola](https://www.getzola.org/themes/) 在 [GitHub Pages](https://hibikilogy.github.io/) 上部署。
+本站为广大吹学爱好者记录吹学著作所用，使用 [Zola](https://www.getzola.org/) 构建，正式站点部署在 [GitHub Pages](https://hibikilogy.github.io/)，开发分支的实时预览部署在 [Vercel](https://hibikilogy.vercel.app/)。
 
 ## 如何贡献
 

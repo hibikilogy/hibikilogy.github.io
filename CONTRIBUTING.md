@@ -1,6 +1,6 @@
 # 贡献指南
 
-《京吹学报》网站使用 [Zola](https://www.getzola.org/) 构建，部署在 [GitHub Pages](https://hibikilogy.github.io/)。其内容以 Markdown 格式编写，存放在 content 目录中。对于简单的修改，你可以直接在 GitHub 上编辑相应文件并创建 Pull Request。
+《京吹学报》网站使用 [Zola](https://www.getzola.org/) 构建，正式站点部署在 [GitHub Pages](https://hibikilogy.github.io/)，开发分支的实时预览部署在 [Vercel](https://hibikilogy.vercel.app/)。其内容以 Markdown 格式编写，存放在 content 目录中。对于简单的修改，你可以直接在 GitHub 上编辑相应文件并创建 Pull Request。
 
 ## 内容贡献
 
@@ -39,7 +39,7 @@ pnpm dev:all     # Zola + Vite
 ├─ cms/                             # Sveltia CMS 预览源码
 ├─ scripts/                         # 构建工具（TS + scripts/rust/ 下的 Rust crate）
 ├─ themes/hibikilogy/
-│  ├─ templates/                    # Tera 模板和 shortcode
+│  ├─ templates/                    # Tera 模板（`{% component %}`）
 │  ├─ styles/                       # CSS 源码
 │  ├─ components/                   # Lit Web Components
 │  ├─ src/
@@ -65,7 +65,6 @@ TypeScript 分层和 review 规则见 [themes/hibikilogy/src/README.md](./themes
 | `app` | `themes/hibikilogy/src/app` |
 | `ui` | `themes/hibikilogy/src/ui` |
 | `features` | `themes/hibikilogy/src/features` |
-| `infra` | `themes/hibikilogy/src/infrastructure` |
 | `components` | `themes/hibikilogy/components` |
 
 ## 验证
@@ -100,10 +99,10 @@ pnpm build:all
 
 ## 提交与 PR
 
-- `main`：GitHub Pages 部署。
-- `dev`、`Refactor/zola`：Vercel Development 部署。
+- `main`：GitHub Pages 正式部署。
+- `dev`、`Refactor/zola`：Vercel 实时预览部署。
 - 提交格式见 [commit convention](./.github/commit-convention.md)。
-- scope 使用 `theme`、`scripts`、`content`、`docs`、`build`。
+- scope 常用 `theme`、`scripts`、`content`、`docs`、`build`，完整清单见上文约定。
 
 ```text
 refactor(theme): simplify search state flow
