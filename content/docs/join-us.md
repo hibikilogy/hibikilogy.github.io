@@ -2,6 +2,7 @@
 title = "加入我们"
 template = "docs.html"
 in_search_index = false
+aliases = ["about/"]
 
 [extra]
 toc=false

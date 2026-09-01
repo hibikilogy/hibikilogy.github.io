@@ -2,6 +2,7 @@
 title = "我要投稿"
 template = "docs.html"
 in_search_index = false
+aliases = ["contribute/"]
 
 [extra]
 toc=false
@@ -38,5 +39,5 @@ toc=false
 
 &emsp;&emsp;感谢您的理解与支持！
 <div style="text-align:right">
-    <span>《京吹学报》编辑部</span>
+<span>《京吹学报》编辑部</span>
 </div>

@@ -28,7 +28,15 @@ docs
 {% endblock critical_css %}
 
 {% block header %}
-{{ <hero.main page={page} config={config} lang={lang} isPost={false} name={page.title} /> }}
+{% if page.extra.hero | default(value=true) %}
+  {% set hero_title = page.extra.hero_title | default(value="") %}
+  {% if hero_title %}
+    {% set hero_name = hero_title %}
+  {% else %}
+    {% set hero_name = page.title %}
+  {% endif %}
+  {{ <hero.main page={page} config={config} lang={lang} isPost={false} name={hero_name} /> }}
+{% endif %}
 {% endblock %}
 
 {% block content %}
