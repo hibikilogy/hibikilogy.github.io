@@ -26,9 +26,9 @@
         </h3>
         <tags-list class="footer-list TagsList">
           {% if tag_pages %}
-            {{ <tags.tags_list_for_pages pages={tag_pages} show_count={true} /> }}
+            {{ <tags.tags_list_for_pages pages={tag_pages} /> }}
           {% else %}
-            {{ <tags.tags_list show_count={true} /> }}
+            {{ <tags.tags_list /> }}
           {% endif %}
         </tags-list>
       </section>

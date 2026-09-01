@@ -121,12 +121,7 @@ navbar = [
 ]
 slogan = [ { code = "zh", text = "吹学著作集锦", link = "$BASE_URL" }, ]
 
-medium_zoom.enabled = true
-
-chart.enabled = true
-
 katex.enabled = true
-katex.auto_render = true
 katex.css_cdn = "https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css"
 katex.css_integrity = "sha384-vlBdW0r3AcZO/HboRPznQNowvexd3fY8qHOWkBi5q7KGgqJ+F48+DceybYmrVbmB"
 

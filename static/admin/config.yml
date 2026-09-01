@@ -467,10 +467,6 @@ singletons:
                         label: 启用 KaTeX
                         widget: boolean
                         default: true
-                      - name: auto_render
-                        label: 自动渲染
-                        widget: boolean
-                        default: true
                 - name: analytics
                   label: Google Analytics
                   widget: object
@@ -745,18 +741,6 @@ singletons:
             label: 404 标题
             widget: string
             default: 404 Not Found
-          - name: tag_category_people
-            label: 人物分类名
-            widget: string
-            default: 人物
-          - name: tag_category_section
-            label: 版块分类名
-            widget: string
-            default: 版块
-          - name: tag_category_misc
-            label: 杂类分类名
-            widget: string
-            default: 杂类
           - name: search_index_loading
             label: 加载索引提示
             widget: string

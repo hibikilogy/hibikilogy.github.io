@@ -34,29 +34,26 @@
   {% endfor %}
 {% endfor %}
 
-{% set page_count = pages | length %}
-{% for relevance in range(end=page_count + 1) | reverse %}
-  {% if relevance > 0 %}
-    {% for tag_name in page_tag_names | unique %}
-      {% set_global tag_count = 0 %}
-      {% for page in pages %}
-        {% set current_page_tags = page.taxonomies.tags | default(value=[]) %}
-        {% if tag_name in current_page_tags %}
-          {% set_global tag_count = tag_count + 1 %}
-        {% endif %}
-      {% endfor %}
-      {% if tag_count == relevance %}
-        <a
-          href="{{ get_taxonomy_url(kind='tags', term=tag_name) | trim_end(pat='/') }}"
-          class="joh-tag"
-          title="{{ tag_name }}">
-          <span>{{ tag_name }}</span>
-          {% if show_count %}
-            <span class="tag-count">{{ tag_count }}</span>
-          {% endif %}
-        </a>
-      {% endif %}
-    {% endfor %}
-  {% endif %}
+{% set_global decorated_tags = [] %}
+{% for tag_name in page_tag_names | unique %}
+  {% set_global tag_count = 0 %}
+  {% for page in pages %}
+    {% if tag_name in page.taxonomies.tags | default(value=[]) %}
+      {% set_global tag_count = tag_count + 1 %}
+    {% endif %}
+  {% endfor %}
+  {% set_global decorated_tags = [...decorated_tags, [tag_count, tag_name]] %}
+{% endfor %}
+
+{% for pair in decorated_tags | sort(attribute="0") | reverse %}
+  <a
+    href="{{ get_taxonomy_url(kind='tags', term=pair[1]) | trim_end(pat='/') }}"
+    class="joh-tag"
+    title="{{ pair[1] }}">
+    <span>{{ pair[1] }}</span>
+    {% if show_count %}
+      <span class="tag-count">{{ pair[0] }}</span>
+    {% endif %}
+  </a>
 {% endfor %}
 {% endcomponent tags.tags_list_for_pages %}
