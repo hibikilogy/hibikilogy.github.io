@@ -177,6 +177,7 @@ function stubFetch(responses: Record<string, unknown>) {
     return {
       ok: true,
       json: async () => body,
+      text: async () => JSON.stringify(body),
     } as Response
   })
   vi.stubGlobal('fetch', fetchMock)

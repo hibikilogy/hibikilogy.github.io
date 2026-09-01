@@ -72,7 +72,7 @@
       ]
     },
     {
-      "source": "search_index.zh.json",
+      "source": "/search_index.zh.json",
       "headers": [
         {
           "key": "Cache-Control",
