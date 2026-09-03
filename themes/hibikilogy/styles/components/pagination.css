@@ -117,6 +117,10 @@
         pointer-events: none;
         transform: translateY(-50%);
         transition: color var(--duration-fast);
+
+        @media (--max-tablet) {
+          color: #3d3d3d;
+        }
       }
 
       &:hover,
