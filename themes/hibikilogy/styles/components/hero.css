@@ -71,6 +71,19 @@
             height: 100%;
           }
         }
+
+        @media (--tablet) {
+          &::before {
+            content: '';
+            position: absolute;
+            inset-inline: 0;
+            top: 0;
+            height: 200px;
+            background: linear-gradient(180deg, #ffffff 0%, #d8d8d800 100%);
+            opacity: 0.8;
+            z-index: 3;
+          }
+        }
         .post-heading-gradient-overlay,
         .post-heading-dark-overlay {
           z-index: 2;
@@ -274,9 +287,11 @@
 
       .taxonomies-meta {
         position: absolute;
+        text-align: center;
 
         h2 {
           font-size: 2.25rem;
+          line-height: 60px;
           color: var(--joh-c-neutral-inverse);
           font-weight: bold;
           &::before {
@@ -290,7 +305,6 @@
           line-height: 30px;
           color: var(--joh-c-text-muted);
           text-align: center;
-          margin-top: 1rem;
         }
 
         .banner-title {

@@ -64,6 +64,20 @@
     }
   }
 
+  @media (--tablet) {
+    .post > #app > .Layout > .NavBar:not(.post-hero-passed):has(+ .has-cover):not(.open) {
+      .NavBarTitle > .title,
+      a.NavBarMenuLink.Link {
+        color: var(--joh-c-text-1);
+      }
+
+      .NavBarTitle .logo {
+        filter: none;
+        transition: filter var(--duration-very-slow) var(--ease-out);
+      }
+    }
+  }
+
   @supports (animation-timeline: view()) {
     @keyframes post-navbar-background {
       from {
