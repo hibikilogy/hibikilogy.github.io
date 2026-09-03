@@ -1,20 +1,6 @@
 import type { NavbarViewState } from './types.ts'
 import { navbarDom } from './config.ts'
 
-function syncNavScreenItems(screen: HTMLElement): void {
-  const menu = screen.querySelector<HTMLElement>('.NavScreenMenu')
-  const items = menu ? Array.from(menu.children) : []
-  items.forEach((item, index) => {
-    if (item instanceof HTMLElement) {
-      item.style.setProperty('--navscreen-item-index', String(index))
-      item.style.setProperty('--navscreen-item-reverse-index', String(items.length - index))
-    }
-  })
-  const close = screen.querySelector<HTMLElement>(navbarDom.close)
-  close?.style.setProperty('--navscreen-item-index', String(items.length))
-  close?.style.setProperty('--navscreen-item-reverse-index', '0')
-}
-
 function syncNavScreenScrollLock(open: boolean): void {
   const root = document.documentElement
   if (open) {
@@ -46,7 +32,5 @@ export function syncNavbarView(root: ParentNode, state: NavbarViewState): void {
   close?.classList.toggle('open', state.open)
   close?.setAttribute('aria-expanded', String(state.open))
 
-  if (screen && state.open)
-    syncNavScreenItems(screen)
   syncNavScreenScrollLock(state.open)
 }

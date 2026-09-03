@@ -74,19 +74,6 @@
     }
 
     .NavScreen {
-      /* Per-item cascade tokens; indexes are injected from JS (navbarView). */
-      --cascade-park-offset: -56px;
-      --cascade-park-step: 4px;
-      --cascade-enter-opacity-dur: 460ms;
-      --cascade-enter-transform-dur: 520ms;
-      --cascade-enter-opacity-delay: 30ms;
-      --cascade-enter-transform-delay: 20ms;
-      --cascade-exit-opacity-dur: 440ms;
-      --cascade-exit-opacity-step: 14ms;
-      --cascade-exit-transform-dur: 520ms;
-      --cascade-exit-transform-step: 8ms;
-      --cascade-exit-delay: 30ms;
-
       z-index: -1;
       position: fixed;
       top: calc(-1 * var(--joh-nav-floating-offset));
@@ -117,49 +104,6 @@
           visibility 0s linear;
       }
 
-      .NavScreenMenu > a.NavScreenMenuLink,
-      .NavScreenMenu > div.NavScreenMenuGroupLink,
-      .NavScreenClose {
-        opacity: 0;
-        transform: translateY(
-          calc(var(--cascade-park-offset) + var(--navscreen-item-index, 0) * var(--cascade-park-step))
-        );
-        transition:
-          opacity
-            calc(
-              var(--cascade-exit-opacity-dur) + var(--navscreen-item-reverse-index, 0) *
-                var(--cascade-exit-opacity-step)
-            )
-            var(--ease-curtain)
-            calc(var(--cascade-exit-delay) + var(--navscreen-item-reverse-index, 0) * var(--duration-curtain-stagger)),
-          transform
-            calc(
-              var(--cascade-exit-transform-dur) + var(--navscreen-item-reverse-index, 0) *
-                var(--cascade-exit-transform-step)
-            )
-            var(--ease-curtain)
-            calc(var(--cascade-exit-delay) + var(--navscreen-item-reverse-index, 0) * var(--duration-curtain-stagger)),
-          color var(--duration-fast),
-          border-color var(--duration-fast);
-      }
-
-      &.open .NavScreenMenu > a.NavScreenMenuLink,
-      &.open .NavScreenMenu > div.NavScreenMenuGroupLink,
-      &.open .NavScreenClose {
-        opacity: 1;
-        transform: translateY(0);
-        transition:
-          opacity calc(var(--cascade-enter-opacity-dur) + var(--navscreen-item-index, 0) * 7ms) var(--ease-cascade)
-            calc(var(--cascade-enter-opacity-delay) + var(--navscreen-item-index, 0) * var(--duration-curtain-stagger)),
-          transform calc(var(--cascade-enter-transform-dur) + var(--navscreen-item-index, 0) * 16ms) var(--ease-cascade)
-            calc(
-              var(--cascade-enter-transform-delay) + var(--navscreen-item-index, 0) * var(--duration-curtain-stagger)
-            ),
-          color var(--duration-fast),
-          border-color var(--duration-fast);
-      }
-
-      > .container,
       .NavScreenMenu {
         display: flex;
         flex-direction: column;
@@ -193,6 +137,13 @@
       }
 
       > .container {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        max-width: 288px;
         max-height: 100%;
         margin: auto 0;
         gap: 12px;
@@ -209,6 +160,20 @@
       .NavScreenClose {
         flex-shrink: 0;
         height: 44px;
+      }
+
+      .NavScreenMenu > a.NavScreenMenuLink,
+      .NavScreenMenu > div.NavScreenMenuGroupLink,
+      .NavScreenClose {
+        opacity: 0;
+        transition: opacity var(--duration-slow) var(--ease-out);
+      }
+
+      &.open .NavScreenMenu > a.NavScreenMenuLink,
+      &.open .NavScreenMenu > div.NavScreenMenuGroupLink,
+      &.open .NavScreenClose {
+        opacity: 1;
+        transition: none;
       }
     }
 
@@ -264,8 +229,6 @@
     .NavBar .NavScreen.open .NavScreenMenu > div.NavScreenMenuGroupLink,
     .NavBar .NavScreen.open .NavScreenClose {
       transition-duration: 120ms;
-      transition-delay: 0ms;
-      transform: none;
     }
 
     .NavBar .NavBarHamburger .container > span,
