@@ -7,6 +7,7 @@
     z-index: var(--joh-z-index-footer);
     padding: 8px 20px 32px;
     background-color: var(--joh-c-bg);
+    font-weight: 500;
 
     .container {
       margin: 0 auto;
@@ -89,6 +90,11 @@
       padding-top: 24px;
       display: grid;
       grid-row-gap: 24px;
+    }
+
+    @media (--max-tablet) {
+      margin-top: 24px;
+      margin-bottom: 48px;
     }
   }
 }
