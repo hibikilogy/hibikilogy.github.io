@@ -1,4 +1,5 @@
 search_placeholder = "搜索"
+search_page_placeholder = "输入关键词"
 search_submit_text = "搜索"
 search_title = "搜索"
 search_related_tags = "相关标签"

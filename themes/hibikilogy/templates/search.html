@@ -36,7 +36,7 @@ search
   <div class="container">
     <div class="content">
       <div class="content-container">
-        {% set search_placeholder = <i18n.t key="search_placeholder" lang={lang} /> %}
+        {% set search_placeholder = <i18n.t key="search_page_placeholder" lang={lang} /> %}
         {% set search_title = <i18n.t key="search_title" lang={lang} /> %}
         {{ <search_shell.main input_id="search-input" transition_name="site-search-trigger" show_submit={true} placeholder={search_placeholder} title={search_title} lang={lang} /> }}
       </div>

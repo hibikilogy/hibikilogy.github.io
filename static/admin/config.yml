@@ -657,6 +657,10 @@ singletons:
             label: 搜索框占位符
             widget: string
             default: 搜索
+          - name: search_page_placeholder
+            label: 搜索页占位符
+            widget: string
+            default: 输入关键词
           - name: search_submit_text
             label: 搜索提交文字
             widget: string
