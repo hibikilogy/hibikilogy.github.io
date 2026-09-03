@@ -275,10 +275,17 @@
         pointer-events: none;
       }
 
-      .SearchShell--compact:hover .SearchShellIcon,
+      .SearchShell--compact:hover .SearchShellIcon {
+        color: var(--joh-c-text-1);
+      }
+
       .SearchShell--compact:hover .SearchShellLabel,
       .SearchShell--compact:hover .SearchShellInput {
-        color: var(--joh-c-text-1);
+        color: var(--joh-c-text-2);
+      }
+
+      .SearchShell--compact:hover .SearchShellKeys {
+        opacity: 0;
       }
 
       @media (--tablet) {
@@ -293,6 +300,7 @@
         display: none;
         align-items: center;
         flex: 0 0 auto;
+        transition: opacity var(--duration-fast) var(--ease-out);
       }
 
       @media (--tablet) {
@@ -303,28 +311,20 @@
 
       .SearchShellKey {
         display: block;
-        border: 1px solid var(--joh-c-divider);
-        border-right: none;
-        border-radius: 4px 0 0 4px;
         padding-left: 6px;
         min-width: 0;
         width: auto;
         height: 22px;
         line-height: 22px;
         color: var(--joh-c-text-muted);
-        background-color: var(--joh-c-bg-alt);
+        background-color: transparent;
         font-family: var(--joh-font-family-base);
         font-size: 12px;
         font-weight: 500;
-        transition:
-          color var(--duration-very-slow),
-          border-color var(--duration-very-slow);
+        transition: color var(--duration-very-slow);
       }
 
       .SearchShellKey + .SearchShellKey {
-        border-right: 1px solid var(--joh-c-divider);
-        border-left: none;
-        border-radius: 0 4px 4px 0;
         padding-left: 2px;
         padding-right: 6px;
       }
