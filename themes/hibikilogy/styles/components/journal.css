@@ -152,6 +152,7 @@
       .article-content {
         margin-top: 6px;
         text-indent: 2em;
+        line-height: 20px;
       }
 
       .article-cover {
@@ -168,6 +169,7 @@
         line-height: 1.75rem;
         font-weight: 900;
         font-family: var(--joh-font-family-serif);
+        color: #111111;
 
         &:hover > span {
           text-decoration: underline;
@@ -181,6 +183,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        color: #111111;
       }
 
       .article-meta {
@@ -247,6 +250,11 @@
 
     @media (--max-tablet) {
       padding: 0px;
+
+      .Article .article-title {
+        font-size: 20px;
+        line-height: 24px;
+      }
     }
   }
 
