@@ -9,6 +9,19 @@
       margin-bottom: var(--joh-nav-height);
     }
 
+    @media (--tablet) {
+      &.has-cover .container .post-heading::before {
+        content: '';
+        position: absolute;
+        inset-inline: 0;
+        top: 0;
+        height: 200px;
+        background: linear-gradient(180deg, #ffffff 0%, #d8d8d800 100%);
+        opacity: 0.8;
+        z-index: 3;
+      }
+    }
+
     .container {
       width: 100%;
       height: 100%;
@@ -69,19 +82,6 @@
 
           @media (--tablet) {
             height: 100%;
-          }
-        }
-
-        @media (--tablet) {
-          &::before {
-            content: '';
-            position: absolute;
-            inset-inline: 0;
-            top: 0;
-            height: 200px;
-            background: linear-gradient(180deg, #ffffff 0%, #d8d8d800 100%);
-            opacity: 0.8;
-            z-index: 3;
           }
         }
         .post-heading-gradient-overlay,
