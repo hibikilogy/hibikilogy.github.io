@@ -24,7 +24,7 @@
     "test:rust": "cargo nextest run --locked --all-features --config-file nextest.toml && cargo test --locked --all-features --doc",
     "coverage:rust": "cargo llvm-cov nextest --locked --all-features --config-file nextest.toml --html",
     "verify:rust": "cargo fmt --all -- --check && cargo clippy --locked --all-targets --all-features -- -D warnings && pnpm test:rust",
-    "test:ts": "vitest run --environment happy-dom",
+    "test:ts": "vitest run",
     "lint:ts": "eslint --cache themes/hibikilogy/src themes/hibikilogy/components cms scripts vite.config.ts vite.admin.config.ts vitest.config.ts",
     "verify:ts": "pnpm typecheck && pnpm test:ts && pnpm lint:ts && pnpm build:vite && pnpm build:admin",
     "build:subset-titlefont": "cargo run --release --locked --features font-tools --bin title-font-subset -- --content-dir content --font themes/hibikilogy/static/fonts/SourceHanSerifCN-VF.ttf --font-output-dir themes/hibikilogy/static/fonts --css-output-dir themes/hibikilogy/static/styles --css-file source-han-serif-cn-vf.css --font-family \"Source Han Serif CN VF\" --output-file source-han-serif-cn-vf.woff2 --preload-cache-file static/_cache/font-preload-title.json",
@@ -89,7 +89,7 @@
     "typescript": "^6.0.0",
     "unocss": "^66.7.2",
     "vite": "^8.0.0",
-    "vitest": "^4.1.10"
+    "vitest": "^5.0.0"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged",
