@@ -224,7 +224,7 @@
 
         .SearchShellIcon {
           position: relative;
-          margin-left: 80px;
+          margin-left: auto;
           right: 0;
         }
       }
@@ -255,7 +255,7 @@
         overflow: hidden;
         text-align: left;
         white-space: nowrap;
-        font-size: 13px;
+        font-size: 16px;
         font-weight: 500;
         color: var(--joh-c-text-muted);
         opacity: 0.9;
