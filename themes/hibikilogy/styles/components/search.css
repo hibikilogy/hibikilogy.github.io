@@ -194,7 +194,7 @@
       box-sizing: border-box;
       width: 100%;
       max-width: var(--joh-layout-max-width);
-      margin: 24px auto;
+      margin: 12px auto 0;
       padding-right: 24px;
 
       h3 {
