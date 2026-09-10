@@ -203,7 +203,7 @@
           padding: 0 10px 0 12px;
           width: 205px;
           height: 35px;
-          background-color: var(--joh-c-bg-alt);
+          background-color: var(--joh-c-bg);
         }
 
         .SearchShell--compact:hover {
