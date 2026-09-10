@@ -684,7 +684,7 @@ singletons:
           - name: publish_prefix
             label: 发布前缀
             widget: string
-            default: 发布于
+            default: 发表于
           - name: date_format
             label: 日期格式
             widget: string
@@ -760,15 +760,15 @@ singletons:
           - name: search_empty
             label: 搜索无结果
             widget: string
-            default: 没有找到与「{0}」相关的搜索结果
+            default: 未找到任何相关搜索结果
           - name: search_found
             label: 搜索结果
             widget: string
-            default: 共找到 {0} 条与「{1}」相关的结果
+            default: 找到 {0} 篇相关文章
           - name: search_idle
             label: 搜索待机
             widget: string
-            default: 当前共 {0} 篇文章
+            default: 共 {0} 篇文章
           - name: untitled
             label: 无标题
             widget: string
@@ -792,7 +792,7 @@ singletons:
           - name: author_count_suffix
             label: 作者计数后缀
             widget: string
-            default: ' 个作者'
+            default: ' 名作者'
           - name: article_count_suffix
             label: 文章计数后缀
             widget: string

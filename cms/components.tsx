@@ -112,7 +112,7 @@ export function PostHero({ title, description, date, cover, coverAlt, authors, t
               </h1>
               {description && <p className="post-heading-subtitle">{description}</p>}
               <div className="post-heading-meta">
-                <time className="article-publish-date" dateTime={date}>发布于 {formatDate(date)}</time>
+                <time className="article-publish-date" dateTime={date}>发表于 {formatDate(date)}</time>
                 <Authors authors={authors} />
               </div>
             </div>

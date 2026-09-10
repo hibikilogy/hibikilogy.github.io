@@ -6,7 +6,7 @@ import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import { generateModule, prepareRoot, resolveTranslations } from './index.ts'
 
-const THEME_I18N = 'search_placeholder = "搜索"\nsearch_found = "共找到 {0} 条"\n'
+const THEME_I18N = 'search_placeholder = "搜索"\nsearch_found = "找到 {0} 篇相关文章"\n'
 
 function makeRootDir(): string {
   return mkdtempSync(join(tmpdir(), 'hibikilogy-config-'))
@@ -54,7 +54,7 @@ describe('resolveTranslations', () => {
     const translations = resolveTranslations(prepareRoot(parsed), rootDir)
 
     expect(translations.searchPlaceholder).toBe('搜索')
-    expect(translations.searchFound).toBe('共找到 {0} 条')
+    expect(translations.searchFound).toBe('找到 {0} 篇相关文章')
   })
 
   it('顶层 [translations] 覆盖主题', () => {
@@ -70,7 +70,7 @@ describe('resolveTranslations', () => {
 
     expect(translations.searchPlaceholder).toBe('自定义搜索')
     // 未覆盖键保留主题基线
-    expect(translations.searchFound).toBe('共找到 {0} 条')
+    expect(translations.searchFound).toBe('找到 {0} 篇相关文章')
   })
 
   it('[languages.zh.translations] 覆盖主题', () => {
@@ -87,7 +87,7 @@ describe('resolveTranslations', () => {
     const translations = resolveTranslations(prepareRoot(parsed), rootDir)
 
     expect(translations.searchPlaceholder).toBe('语言级搜索')
-    expect(translations.searchFound).toBe('共找到 {0} 条')
+    expect(translations.searchFound).toBe('找到 {0} 篇相关文章')
   })
 
   it('两种默认语言翻译同时存在时抛错', () => {
