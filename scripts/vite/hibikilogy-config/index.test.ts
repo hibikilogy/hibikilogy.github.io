@@ -147,7 +147,7 @@ describe('resolveTranslations', () => {
     expect(translations.searchPlaceholder).toBe('搜索')
   })
 
-  it('主题 i18n 文件不存在时仅返回站点翻译', () => {
+  it('没有主题翻译来源时仅烘焙站点翻译', () => {
     rootDir = makeRootDir()
 
     const parsed: TomlObject = {
@@ -155,46 +155,36 @@ describe('resolveTranslations', () => {
       default_language: 'zh',
       translations: { search_placeholder: '自定义搜索' },
     }
-    const translations = resolveTranslations(prepareRoot(parsed), rootDir)
+    // 主题 i18n 文件缺失
+    expect(resolveTranslations(prepareRoot(parsed), rootDir))
+      .toEqual({ searchPlaceholder: '自定义搜索' })
 
-    expect(translations).toEqual({ searchPlaceholder: '自定义搜索' })
-  })
-
-  it('无 theme 配置时仅烘焙站点翻译', () => {
-    rootDir = makeRootDir()
+    // 未配置 theme
     writeThemeI18n(rootDir, 'zh', THEME_I18N)
-
-    const parsed: TomlObject = {
+    const withoutTheme: TomlObject = {
       default_language: 'zh',
       translations: { search_placeholder: '自定义搜索' },
     }
-    const translations = resolveTranslations(prepareRoot(parsed), rootDir)
-
-    expect(translations).toEqual({ searchPlaceholder: '自定义搜索' })
+    expect(resolveTranslations(prepareRoot(withoutTheme), rootDir))
+      .toEqual({ searchPlaceholder: '自定义搜索' })
   })
 
-  it('非字符串翻译值抛错', () => {
+  it('非法翻译表抛错：非字符串值与 camelCase 冲突', () => {
     rootDir = makeRootDir()
     writeThemeI18n(rootDir, 'zh', THEME_I18N)
 
-    const parsed: TomlObject = {
+    const nonString: TomlObject = {
       theme: 'hibikilogy',
       default_language: 'zh',
       translations: { search_page_size: 12 },
     }
-
-    expect(() => resolveTranslations(prepareRoot(parsed), rootDir)).toThrow(
+    expect(() => resolveTranslations(prepareRoot(nonString), rootDir)).toThrow(
       'must be a string',
     )
-  })
 
-  it('snake_case 转 camelCase 冲突抛错', () => {
-    rootDir = makeRootDir()
     writeThemeI18n(rootDir, 'zh', 'foo_bar = "a"\nfoo-bar = "b"\n')
-
-    const parsed: TomlObject = { theme: 'hibikilogy', default_language: 'zh' }
-
-    expect(() => resolveTranslations(prepareRoot(parsed), rootDir)).toThrow(
+    const collision: TomlObject = { theme: 'hibikilogy', default_language: 'zh' }
+    expect(() => resolveTranslations(prepareRoot(collision), rootDir)).toThrow(
       'Duplicate property',
     )
   })

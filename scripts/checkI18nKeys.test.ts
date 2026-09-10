@@ -115,10 +115,6 @@ function normalizeScalar(value: string): string {
   return value
 }
 
-function unique(values: string[]): Set<string> {
-  return new Set(values)
-}
-
 describe('i18n key consistency', () => {
   const templateFiles = collectFiles(
     join(ROOT, 'themes/hibikilogy/templates'),
@@ -133,9 +129,9 @@ describe('i18n key consistency', () => {
     readFileSync(join(ROOT, 'themes/hibikilogy/i18n/zh.toml'), 'utf8'),
   ) as Record<string, unknown>
   const tomlKeys = Object.keys(themeI18n)
-  const tomlCamelKeys = unique(tomlKeys.map(camelCase))
-  const templateKeys = unique(extractTemplateKeys(templateFiles))
-  const jsRefs = unique(extractJsTranslationRefs(jsFiles))
+  const tomlCamelKeys = new Set(tomlKeys.map(camelCase))
+  const templateKeys = new Set(extractTemplateKeys(templateFiles))
+  const jsRefs = new Set(extractJsTranslationRefs(jsFiles))
   const cmsFields = extractCmsI18nFields(
     readFileSync(join(ROOT, 'static/admin/config.yml'), 'utf8'),
   )
@@ -150,23 +146,19 @@ describe('i18n key consistency', () => {
     expect(missing).toEqual([])
   })
 
-  it('zh.toml 键转 camelCase 无冲突', () => {
+  it('zh.toml 是键唯一、值全为字符串的扁平表', () => {
     expect(tomlCamelKeys.size).toBe(tomlKeys.length)
-  })
-
-  it('zh.toml 所有值必须是字符串', () => {
     const nonStrings = tomlKeys.filter(key => typeof themeI18n[key] !== 'string')
     expect(nonStrings).toEqual([])
   })
 
-  it('zh.toml 键与 CMS i18n 字段名一致（无缺失、无孤儿）', () => {
+  it('zh.toml 键与 CMS i18n 字段名一一对应', () => {
     // 手写解析器在 config.yml 结构调整时会静默返回空列表，使本用例形同虚设。
     expect(cmsFields.length).toBeGreaterThan(0)
     const cmsNames = cmsFields.map(field => field.name)
-    const missing = tomlKeys.filter(key => !cmsNames.includes(key))
-    const orphaned = cmsNames.filter(name => !tomlKeys.includes(name))
-    expect(missing).toEqual([])
-    expect(orphaned).toEqual([])
+    expect(new Set(cmsNames).size).toBe(cmsNames.length)
+    expect(tomlKeys.filter(key => !cmsNames.includes(key))).toEqual([])
+    expect(cmsNames.filter(name => !tomlKeys.includes(name))).toEqual([])
   })
 
   it('atom.xml 的 theme_i18n 键都在 zh.toml 中', () => {
@@ -179,11 +171,6 @@ describe('i18n key consistency', () => {
     expect(atomKeys.length).toBeGreaterThan(0)
     const missing = atomKeys.filter(key => !tomlKeys.includes(key))
     expect(missing).toEqual([])
-  })
-
-  it('cms i18n 字段名不重复', () => {
-    const cmsNames = cmsFields.map(field => field.name)
-    expect(new Set(cmsNames).size).toBe(cmsNames.length)
   })
 
   it('cms i18n 字段默认值与 zh.toml 值一致', () => {
