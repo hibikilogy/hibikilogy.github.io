@@ -91,7 +91,6 @@
       color: var(--joh-c-text-1);
       font-family: var(--joh-search-ui-font);
       font-size: 18px;
-      font-weight: 700;
 
       &::placeholder {
         opacity: 0.2;
