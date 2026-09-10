@@ -39,10 +39,8 @@ describe('useLayout', () => {
     const scope = effectScope()
     scope.run(() => useLayout(root, route))
 
+    // 挂载时把路由/滚动状态同步到导航栏视图；具体类名契约见 navbarView.test.ts。
     expect(root.querySelector('.NavBar')?.classList.contains('top')).toBe(true)
-    expect(root.querySelector('.NavBarHamburger')?.classList.contains('open')).toBe(true)
-    expect(root.querySelector('.NavBarHamburger')?.classList.contains('top')).toBe(true)
-    expect(root.querySelector('.NavBarHamburger')?.getAttribute('aria-expanded')).toBe('false')
     expect(root.querySelector('.NavScreen')?.classList.contains('top')).toBe(true)
 
     scope.stop()

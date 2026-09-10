@@ -6,11 +6,16 @@ afterEach(() => {
 })
 
 describe('fetchJsonIndex', () => {
-  it('解析纯 JSON 响应', async () => {
+  it('解析 JSON，且可解析文本内的 <script 字样完整保留', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => (
       new Response('[{"name":"a"}]', { status: 200 })
     )))
     await expect(fetchJsonIndex<{ name: string }[]>('/x')).resolves.toEqual([{ name: 'a' }])
+
+    vi.stubGlobal('fetch', vi.fn(async () => (
+      new Response('[{"name":"<script>警示"}]', { status: 200 })
+    )))
+    await expect(fetchJsonIndex<{ name: string }[]>('/plain')).resolves.toEqual([{ name: '<script>警示' }])
   })
 
   it('裁剪 zola serve 注入的 livereload script 尾段后解析', async () => {
@@ -19,14 +24,6 @@ describe('fetchJsonIndex', () => {
       new Response(body, { status: 200 })
     )))
     await expect(fetchJsonIndex<{ name: string }[]>('/search-tags/')).resolves.toEqual([{ name: 'a' }])
-  })
-
-  it('可解析的文本完整保留（含字符串内的 <script 字样）', async () => {
-    const body = '[{"name":"<script>警示"}]'
-    vi.stubGlobal('fetch', vi.fn(async () => (
-      new Response(body, { status: 200 })
-    )))
-    await expect(fetchJsonIndex<{ name: string }[]>('/plain')).resolves.toEqual([{ name: '<script>警示' }])
   })
 
   it('非 2xx 响应抛错', async () => {

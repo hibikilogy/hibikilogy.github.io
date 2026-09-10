@@ -16,32 +16,22 @@ describe('useRoute.back', () => {
     window.history.replaceState(null, '', '/search')
   })
 
-  it('navigates to the fallback in a fresh session (external referrer)', () => {
-    window.history.replaceState({ source: 'swup', index: 1 }, '', '/search')
-    const swup = createSwupMock()
-    const historyBack = vi.spyOn(window.history, 'back').mockImplementation(() => {})
+  it('navigates to the fallback when the session has no prior same-site page', () => {
+    // 外部来源进入（history.state 无 swup 记录）与全新会话走同一条回退路径。
+    for (const state of [{ source: 'swup', index: 1 }, null]) {
+      window.history.replaceState(state, '', '/search')
+      const swup = createSwupMock()
+      const historyBack = vi.spyOn(window.history, 'back').mockImplementation(() => {})
 
-    const scope = effectScope()
-    const route = scope.run(() => useRoute(swup))!
-    route.back('/')
+      const scope = effectScope()
+      const route = scope.run(() => useRoute(swup))!
+      route.back('/')
 
-    expect(historyBack).not.toHaveBeenCalled()
-    expect(swup.navigate).toHaveBeenCalledWith('/')
-    scope.stop()
-  })
-
-  it('navigates to the fallback when history.state carries no swup record', () => {
-    window.history.replaceState(null, '', '/search')
-    const swup = createSwupMock()
-    const historyBack = vi.spyOn(window.history, 'back').mockImplementation(() => {})
-
-    const scope = effectScope()
-    const route = scope.run(() => useRoute(swup))!
-    route.back('/')
-
-    expect(historyBack).not.toHaveBeenCalled()
-    expect(swup.navigate).toHaveBeenCalledWith('/')
-    scope.stop()
+      expect(historyBack).not.toHaveBeenCalled()
+      expect(swup.navigate).toHaveBeenCalledWith('/')
+      scope.stop()
+      historyBack.mockRestore()
+    }
   })
 
   it('goes back in history when a prior same-site page exists this session', () => {

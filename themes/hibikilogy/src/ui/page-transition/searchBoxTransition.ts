@@ -45,7 +45,7 @@ async function waitForSearchVeilCover(isCached: boolean): Promise<void> {
   await wait(resolveDurationMs(duration) + VEIL_COVER_GRACE_MS)
 }
 
-export async function waitForSearchBoxExit(): Promise<void> {
+async function waitForSearchBoxExit(): Promise<void> {
   if (!shouldHoldSearchOutPhase())
     return
 

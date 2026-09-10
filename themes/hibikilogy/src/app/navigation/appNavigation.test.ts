@@ -1,6 +1,6 @@
 import type Swup from 'swup'
 import type { AppContext } from '../types.ts'
-import { effectScope } from '@vue/reactivity'
+import { effectScope, ref } from '@vue/reactivity'
 import { clearTransitionState } from 'ui/page-transition/index.ts'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { setupAppNavigation } from './appNavigation.ts'
@@ -65,13 +65,24 @@ function createFakeApp(): { app: AppContext, scope: ReturnType<typeof effectScop
   const app = {
     scope,
     route: {
-      isSearchPage: { value: false },
+      isSearchPage: ref(false),
       replace: vi.fn(),
     },
     searchService: {},
     dispose: vi.fn(),
   } as unknown as AppContext
   return { app, scope }
+}
+
+function visitTo(to: string, from = '/') {
+  return {
+    id: 1,
+    animation: { native: true, wait: false },
+    trigger: {},
+    from: { url: from },
+    to: { url: to },
+    history: { popstate: false },
+  }
 }
 
 beforeEach(() => {
@@ -142,14 +153,7 @@ describe('setupAppNavigation', () => {
 
     await swup.trigger('visit:abort', { id: 1, history: { popstate: false } })
 
-    const visit = {
-      id: 2,
-      animation: { native: true, wait: false },
-      trigger: {},
-      from: { url: '/' },
-      to: { url: '/article' },
-      history: { popstate: false },
-    }
+    const visit = visitTo('/article')
     await swup.trigger('visit:start', visit)
 
     expect(visit.animation.native).toBe(false)
@@ -173,46 +177,10 @@ describe('setupAppNavigation', () => {
       },
     })
 
-    const visit = {
-      id: 1,
-      animation: { native: true, wait: false },
-      trigger: {},
-      from: { url: '/' },
-      to: { url: '/article' },
-      history: { popstate: false },
-    }
+    const visit = visitTo('/article')
     await swup.trigger('visit:start', visit)
 
     expect(visit.animation.native).toBe(false)
-
-    Reflect.deleteProperty(document, 'getAnimations')
-  })
-
-  it('keeps the native transition for search crossings while the page-enter cascade is still running', async () => {
-    const swup = createFakeSwup()
-    const { app, scope } = createFakeApp()
-    scope.run(() => setupAppNavigation(swup as unknown as Swup, app))
-
-    const animations = [
-      { animationName: 'page-enter', playState: 'running' },
-    ] as unknown as Animation[]
-    Object.defineProperty(document, 'getAnimations', {
-      configurable: true,
-      value: () => animations,
-    })
-
-    // 搜索过渡有自己的幕布/morph 编排，不应被中断检测强制成瞬间交换。
-    const visit = {
-      id: 1,
-      animation: { native: true, wait: false },
-      trigger: {},
-      from: { url: '/search' },
-      to: { url: '/article' },
-      history: { popstate: false },
-    }
-    await swup.trigger('visit:start', visit)
-
-    expect(visit.animation.native).toBe(true)
 
     Reflect.deleteProperty(document, 'getAnimations')
   })
@@ -224,14 +192,7 @@ describe('setupAppNavigation', () => {
 
     document.documentElement.dataset.pageEnter = 'navigation'
 
-    await swup.trigger('visit:start', {
-      id: 1,
-      animation: { native: true, wait: false },
-      trigger: {},
-      from: { url: '/' },
-      to: { url: '/article' },
-      history: { popstate: false },
-    })
+    await swup.trigger('visit:start', visitTo('/article'))
 
     // visit:start 不再打断上一页的入场动画（避免页面突然弹成全显）。
     expect(document.documentElement.dataset.pageEnter).toBe('navigation')

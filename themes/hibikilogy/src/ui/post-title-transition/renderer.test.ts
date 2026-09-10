@@ -38,25 +38,50 @@ function mountTitleDom(): HTMLElement {
   return document.querySelector<HTMLElement>('.PostTitleTransition')!
 }
 
+interface MountOptions {
+  titleRect?: DOMRect
+  glyphRect?: DOMRect | (() => DOMRect)
+}
+
+function mountRenderableTitle({ titleRect, glyphRect }: MountOptions = {}): HTMLElement {
+  const title = mountTitleDom()
+  Object.defineProperty(title, 'getBoundingClientRect', {
+    configurable: true,
+    value: () => titleRect ?? rect(0, 0, 500, 60),
+  })
+
+  const nextGlyphRect = typeof glyphRect === 'function'
+    ? glyphRect
+    : () => glyphRect ?? rect(10, 20, 12, 14)
+  vi.spyOn(Range.prototype, 'getBoundingClientRect').mockImplementation(nextGlyphRect)
+
+  return title
+}
+
+function textElement(title: HTMLElement): HTMLElement {
+  return title.querySelector<HTMLElement>(`:scope > ${postTitleDom.titleTextSelector}`)!
+}
+
+function overlay(title: HTMLElement): HTMLElement | null {
+  return title.querySelector<HTMLElement>(`:scope > .${postTitleDom.overlayClass}`)
+}
+
 afterEach(() => {
   document.body.replaceChildren()
 })
 
 describe('renderTitle', () => {
   it('renders one positioned glyph layer per grapheme', () => {
-    const title = mountTitleDom()
-    Object.defineProperty(title, 'getBoundingClientRect', {
-      configurable: true,
-      value: () => rect(10, 20, 500, 60),
-    })
     const rangeRects = [
       rect(100, 200, 12, 14),
       rect(114, 200, 12, 14),
       rect(128, 200, 12, 14),
       rect(142, 200, 12, 14),
     ]
-    vi.spyOn(Range.prototype, 'getBoundingClientRect')
-      .mockImplementation(() => rangeRects.shift()!)
+    const title = mountRenderableTitle({
+      titleRect: rect(10, 20, 500, 60),
+      glyphRect: () => rangeRects.shift()!,
+    })
 
     const rendered = renderTitle(title)
 
@@ -68,10 +93,10 @@ describe('renderTitle', () => {
       { text: '果', x: 132, y: 180, width: 12, height: 14 },
     ])
 
-    const overlay = title.querySelector<HTMLElement>(`:scope > .${postTitleDom.overlayClass}`)!
-    expect(overlay.getAttribute('aria-hidden')).toBe('true')
+    const layer = overlay(title)!
+    expect(layer.getAttribute('aria-hidden')).toBe('true')
 
-    const glyphs = overlay.querySelectorAll<HTMLElement>(`.${postTitleDom.glyphClass}`)
+    const glyphs = layer.querySelectorAll<HTMLElement>(`.${postTitleDom.glyphClass}`)
     expect(glyphs).toHaveLength(4)
     expect(glyphs[0].style.left).toBe('90px')
     expect(glyphs[0].style.top).toBe('180px')
@@ -86,51 +111,30 @@ describe('renderTitle', () => {
   })
 
   it('applies the final view-transition name when requested', () => {
-    const title = mountTitleDom()
-    Object.defineProperty(title, 'getBoundingClientRect', {
-      configurable: true,
-      value: () => rect(0, 0, 500, 60),
-    })
-    vi.spyOn(Range.prototype, 'getBoundingClientRect')
-      .mockImplementation(() => rect(10, 20, 12, 14))
+    const title = mountRenderableTitle()
 
     renderTitle(title, { finalViewTransitionName: 'hero-title' })
 
-    const textElement = title.querySelector<HTMLElement>(`:scope > ${postTitleDom.titleTextSelector}`)!
-    expect(textElement.style.getPropertyValue('view-transition-name')).toBe('hero-title')
+    expect(textElement(title).style.getPropertyValue('view-transition-name')).toBe('hero-title')
     expect(title.classList.contains(postTitleDom.finalTargetClass)).toBe(true)
   })
 
   it('returns null for a zero-sized element', () => {
-    const title = mountTitleDom()
-    Object.defineProperty(title, 'getBoundingClientRect', {
-      configurable: true,
-      value: () => rect(0, 0, 0, 0),
-    })
+    const title = mountRenderableTitle({ titleRect: rect(0, 0, 0, 0) })
 
     expect(renderTitle(title)).toBeNull()
-    expect(title.querySelector(`:scope > .${postTitleDom.overlayClass}`)).toBeNull()
+    expect(overlay(title)).toBeNull()
   })
 
   it('returns null when no visible text node exists', () => {
-    const title = mountTitleDom()
-    Object.defineProperty(title, 'getBoundingClientRect', {
-      configurable: true,
-      value: () => rect(0, 0, 500, 60),
-    })
-    title.querySelector<HTMLElement>(`:scope > ${postTitleDom.titleTextSelector}`)!.replaceChildren('  ')
+    const title = mountRenderableTitle()
+    textElement(title).replaceChildren('  ')
 
     expect(renderTitle(title)).toBeNull()
   })
 
   it('returns null when every glyph measures zero', () => {
-    const title = mountTitleDom()
-    Object.defineProperty(title, 'getBoundingClientRect', {
-      configurable: true,
-      value: () => rect(0, 0, 500, 60),
-    })
-    vi.spyOn(Range.prototype, 'getBoundingClientRect')
-      .mockImplementation(() => rect(0, 0, 0, 0))
+    const title = mountRenderableTitle({ glyphRect: rect(0, 0, 0, 0) })
 
     expect(renderTitle(title)).toBeNull()
   })
@@ -138,49 +142,30 @@ describe('renderTitle', () => {
 
 describe('rendered title teardown', () => {
   it('discards glyph layers and their transition names', () => {
-    const title = mountTitleDom()
-    Object.defineProperty(title, 'getBoundingClientRect', {
-      configurable: true,
-      value: () => rect(0, 0, 500, 60),
-    })
-    vi.spyOn(Range.prototype, 'getBoundingClientRect')
-      .mockImplementation(() => rect(10, 20, 12, 14))
+    const title = mountRenderableTitle()
     const rendered = renderTitle(title)!
 
     rendered.glyphs[0].style.setProperty('view-transition-name', 'glyph-0')
     discardRenderedTitleGlyphs(rendered)
 
     expect(rendered.glyphs[0].style.getPropertyValue('view-transition-name')).toBe('')
-    expect(title.querySelector(`:scope > .${postTitleDom.overlayClass}`)).toBeNull()
+    expect(overlay(title)).toBeNull()
   })
 
   it('dispose removes classes, the transition name and the overlay', () => {
-    const title = mountTitleDom()
-    Object.defineProperty(title, 'getBoundingClientRect', {
-      configurable: true,
-      value: () => rect(0, 0, 500, 60),
-    })
-    vi.spyOn(Range.prototype, 'getBoundingClientRect')
-      .mockImplementation(() => rect(10, 20, 12, 14))
+    const title = mountRenderableTitle()
     const rendered = renderTitle(title, { finalViewTransitionName: 'hero-title' })!
 
     disposeRenderedTitle(rendered)
 
     expect(title.classList.contains(postTitleDom.activeClass)).toBe(false)
     expect(title.classList.contains(postTitleDom.finalTargetClass)).toBe(false)
-    const textElement = title.querySelector<HTMLElement>(`:scope > ${postTitleDom.titleTextSelector}`)!
-    expect(textElement.style.getPropertyValue('view-transition-name')).toBe('')
-    expect(title.querySelector(`:scope > .${postTitleDom.overlayClass}`)).toBeNull()
+    expect(textElement(title).style.getPropertyValue('view-transition-name')).toBe('')
+    expect(overlay(title)).toBeNull()
   })
 
   it('clearRenderedTitleShadow drops the text shadow on every glyph', () => {
-    const title = mountTitleDom()
-    Object.defineProperty(title, 'getBoundingClientRect', {
-      configurable: true,
-      value: () => rect(0, 0, 500, 60),
-    })
-    vi.spyOn(Range.prototype, 'getBoundingClientRect')
-      .mockImplementation(() => rect(10, 20, 12, 14))
+    const title = mountRenderableTitle()
     const rendered = renderTitle(title)!
     rendered.glyphs.forEach((glyph) => {
       glyph.querySelector<SVGElement>('text')!.style.textShadow = 'red 1px 1px'
@@ -206,9 +191,7 @@ describe('title lookup helpers', () => {
     `
     const card = document.querySelector<HTMLElement>('.PostTitleTransition')!
     expect(findSourceTitle(card)).toBe(card)
-
-    const link = document.querySelector<HTMLAnchorElement>('a')!
-    expect(findSourceTitle(link)).toBe(card)
+    expect(findSourceTitle(document.querySelector<HTMLAnchorElement>('a')!)).toBe(card)
   })
 
   it('falls back to the hero title without a trigger', () => {
@@ -225,8 +208,7 @@ describe('title lookup helpers', () => {
   it('isHeroTitle reports ancestry inside the hero', () => {
     const title = mountTitleDom()
     expect(isHeroTitle(title)).toBe(true)
-    const textElement = title.querySelector<HTMLElement>(`:scope > ${postTitleDom.titleTextSelector}`)!
-    expect(isHeroTitle(textElement)).toBe(true)
+    expect(isHeroTitle(textElement(title))).toBe(true)
 
     const outside = document.createElement('h1')
     document.body.append(outside)
@@ -235,30 +217,28 @@ describe('title lookup helpers', () => {
 
   it('getNormalizedTitleText collapses whitespace', () => {
     const title = mountTitleDom()
-    title.querySelector<HTMLElement>(`:scope > ${postTitleDom.titleTextSelector}`)!.textContent = '\n  搜索  结果 \n'
+    textElement(title).textContent = '\n  搜索  结果 \n'
     expect(getNormalizedTitleText(title)).toBe('搜索 结果')
   })
 
   it('countTitleGlyphs counts visible graphemes only', () => {
     const title = mountTitleDom()
-    const textElement = title.querySelector<HTMLElement>(`:scope > ${postTitleDom.titleTextSelector}`)!
     expect(countTitleGlyphs(title)).toBe(4)
 
-    textElement.textContent = '  '
+    textElement(title).textContent = '  '
     expect(countTitleGlyphs(title)).toBe(0)
   })
 
   it('getTitleTextNode finds the first visible text node past Lit markers', () => {
     const title = mountTitleDom()
-    const textElement = title.querySelector<HTMLElement>(`:scope > ${postTitleDom.titleTextSelector}`)!
-    textElement.replaceChildren(
+    textElement(title).replaceChildren(
       document.createComment('?lit$'),
       document.createTextNode('搜索结果'),
     )
 
     expect(getTitleTextNode(title)?.data).toBe('搜索结果')
 
-    textElement.replaceChildren(document.createTextNode('  '))
+    textElement(title).replaceChildren(document.createTextNode('  '))
     expect(getTitleTextNode(title)).toBeNull()
   })
 })

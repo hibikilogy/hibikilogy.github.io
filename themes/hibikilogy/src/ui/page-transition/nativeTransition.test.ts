@@ -36,16 +36,21 @@ describe('shouldKeepNativeTransition', () => {
     expect(shouldKeepNativeTransition('/', '/search', false)).toBe(true)
   })
 
-  it('swaps instantly for interrupted regular visits', () => {
+  it('swaps instantly for interrupted visits and for a still-running page-enter cascade', () => {
     stubViewport(false)
 
     expect(shouldKeepNativeTransition('/', '/articles', true)).toBe(false)
+
+    stubRunningCascade()
+    expect(shouldKeepNativeTransition('/', '/articles', false)).toBe(false)
   })
 
-  it('swaps instantly while the page-enter cascade is still running', () => {
+  it('exempts search crossings from the cascade interrupt', () => {
     stubViewport(false)
     stubRunningCascade()
 
+    // 搜索过渡有自己的幕布/morph 编排，不应被强制成瞬间交换。
+    expect(shouldKeepNativeTransition('/search', '/article', false)).toBe(true)
     expect(shouldKeepNativeTransition('/', '/articles', false)).toBe(false)
   })
 

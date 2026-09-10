@@ -118,20 +118,16 @@ describe('outlineController', () => {
     expect(replaceHash).not.toHaveBeenCalled()
   })
 
-  it('hides the marker while at the top of the page', () => {
-    mountOutlineDom()
-    runOutline()
-
-    expect(activeLinks()).toEqual([])
-    expect(marker().style.top).toBe('40px')
-    expect(marker().style.opacity).toBe('0')
-  })
-
   it('activates the crossed heading, positions the marker and syncs the hash', () => {
     mountOutlineDom()
     setHeadingTop('intro', -50)
     setHeadingTop('details', 300)
     runOutline()
+
+    // 顶部无激活项，marker 收起。
+    expect(activeLinks()).toEqual([])
+    expect(marker().style.top).toBe('40px')
+    expect(marker().style.opacity).toBe('0')
 
     setScrollY(400)
     window.dispatchEvent(new Event('scroll'))

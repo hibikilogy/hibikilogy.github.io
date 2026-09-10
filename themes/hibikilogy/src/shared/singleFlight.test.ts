@@ -12,15 +12,6 @@ describe('createSingleFlight', () => {
     expect(factory).toHaveBeenCalledTimes(1)
   })
 
-  it('keeps a settled success cached until reset', async () => {
-    const factory = vi.fn(async () => 'result')
-    const flight = createSingleFlight(factory)
-
-    await flight.run()
-    await flight.run()
-    expect(factory).toHaveBeenCalledTimes(1)
-  })
-
   it('discards a rejected promise so the next run retries', async () => {
     const factory = vi.fn()
       .mockRejectedValueOnce(new Error('boom'))

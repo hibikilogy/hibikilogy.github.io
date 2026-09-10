@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   shouldDisableNativeTransition,
-  waitForSearchBoxExit,
   waitForSearchTransition,
 } from './searchBoxTransition.ts'
 
@@ -20,21 +19,16 @@ afterEach(() => {
 })
 
 describe('shouldDisableNativeTransition', () => {
-  it('uses the custom veil only when entering search on mobile viewports', () => {
+  it('hands the enter-search veil to CSS only on mobile viewports', () => {
     stubMaxTabletViewport(true)
 
     expect(shouldDisableNativeTransition('/', '/search')).toBe(true)
     expect(shouldDisableNativeTransition('/search', '/')).toBe(false)
-  })
-
-  it('keeps native transitions for non-search visits on mobile viewports', () => {
-    stubMaxTabletViewport(true)
-
     expect(shouldDisableNativeTransition('/', '/tags')).toBe(false)
     expect(shouldDisableNativeTransition('/search', '/search')).toBe(false)
   })
 
-  it('keeps native transitions for search crossings on desktop viewports', () => {
+  it('keeps native transitions for every search crossing on desktop viewports', () => {
     stubMaxTabletViewport(false)
 
     expect(shouldDisableNativeTransition('/', '/search')).toBe(false)
@@ -42,7 +36,7 @@ describe('shouldDisableNativeTransition', () => {
   })
 })
 
-describe('waitForSearchBoxExit', () => {
+describe('waitForSearchTransition', () => {
   it('lets the native snapshot own the mobile leave animation without a hidden DOM wait', () => {
     stubMaxTabletViewport(true)
 
@@ -56,7 +50,7 @@ describe('waitForSearchBoxExit', () => {
     document.body.innerHTML = '<div id="search"><div class="SearchShell--page"></div></div>'
     const box = document.querySelector<HTMLElement>('.SearchShell--page')!
     let settled = false
-    const waiting = waitForSearchBoxExit().then(() => {
+    const waiting = waitForSearchTransition('/search', '/', false, false)!.then(() => {
       settled = true
     })
 

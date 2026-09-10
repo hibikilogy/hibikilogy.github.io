@@ -2,19 +2,37 @@ import { describe, expect, it } from 'vitest'
 import { createFetchLatencyMonitor } from './fetchLatency.ts'
 
 describe('createFetchLatencyMonitor', () => {
-  it('stays conservative until enough samples exist', () => {
+  it('withholds a verdict until enough samples exist', () => {
     const monitor = createFetchLatencyMonitor({ slowThresholdMs: 500 })
     monitor.record(2000)
     expect(monitor.isSlow()).toBe(false)
+    expect(monitor.isFast()).toBe(false)
+
     monitor.record(2000)
     expect(monitor.isSlow()).toBe(true)
+    expect(monitor.isFast()).toBe(false)
   })
 
-  it('reports fast when the median duration is below the threshold', () => {
-    const monitor = createFetchLatencyMonitor({ slowThresholdMs: 500 })
-    monitor.record(120)
-    monitor.record(180)
-    expect(monitor.isSlow()).toBe(false)
+  it('counts seeded durations toward the sample window', () => {
+    const monitor = createFetchLatencyMonitor({ seed: [100] })
+    expect(monitor.isFast()).toBe(false)
+
+    monitor.record(150)
+    expect(monitor.isFast()).toBe(true)
+  })
+
+  it('classifies the median into fast and slow bands with a neutral middle', () => {
+    const fast = createFetchLatencyMonitor()
+    fast.record(120)
+    fast.record(180)
+    expect(fast.isFast()).toBe(true)
+    expect(fast.isSlow()).toBe(false)
+
+    const middle = createFetchLatencyMonitor()
+    middle.record(300)
+    middle.record(400)
+    expect(middle.isFast()).toBe(false)
+    expect(middle.isSlow()).toBe(false)
   })
 
   it('tolerates a single fast outlier via the median', () => {
@@ -42,30 +60,6 @@ describe('createFetchLatencyMonitor', () => {
     monitor.record(Number.NaN)
     monitor.record(-1)
     expect(monitor.isSlow()).toBe(false)
-  })
-
-  it('reports fast only once enough quick samples exist', () => {
-    const monitor = createFetchLatencyMonitor()
     expect(monitor.isFast()).toBe(false)
-    monitor.record(100)
-    expect(monitor.isFast()).toBe(false)
-    monitor.record(150)
-    expect(monitor.isFast()).toBe(true)
-    expect(monitor.isSlow()).toBe(false)
-  })
-
-  it('counts seeded durations toward the sample window', () => {
-    const monitor = createFetchLatencyMonitor({ seed: [100] })
-    expect(monitor.isFast()).toBe(false)
-    monitor.record(150)
-    expect(monitor.isFast()).toBe(true)
-  })
-
-  it('is neither fast nor slow in the middle band', () => {
-    const monitor = createFetchLatencyMonitor()
-    monitor.record(300)
-    monitor.record(400)
-    expect(monitor.isFast()).toBe(false)
-    expect(monitor.isSlow()).toBe(false)
   })
 })

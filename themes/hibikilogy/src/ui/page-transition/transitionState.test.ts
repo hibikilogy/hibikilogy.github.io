@@ -55,18 +55,13 @@ describe('transition state lifecycle', () => {
     expect(document.documentElement.dataset.searchTransitionMode).toBe('article-result')
   })
 
-  it('keeps the full leave-search choreography outside article result links', () => {
+  it('keeps the full leave-search choreography without an article result trigger', () => {
     document.body.innerHTML = '<a id="navbar-link" href="/articles/example">文章</a>'
     const trigger = document.querySelector<Element>('#navbar-link')!
-
     setTransitionState('/search?q=example', '/articles/example', trigger)
-
     expect(document.documentElement.dataset.searchTransitionMode).toBeUndefined()
-  })
 
-  it('keeps the full leave-search choreography without a result-link trigger', () => {
     setTransitionState('/search?q=example', '/articles/example')
-
     expect(document.documentElement.dataset.searchTransitionMode).toBeUndefined()
   })
 

@@ -9,43 +9,58 @@ const closedState = {
   postHeroPassed: false,
 } as const
 
-describe('syncNavbarView', () => {
-  afterEach(() => {
-    document.documentElement.classList.remove('navscreen-noscroll')
-    document.documentElement.style.removeProperty('--navscreen-scrollbar-width')
-  })
+function mountNavbar(): HTMLElement {
+  const root = document.createElement('main')
+  root.innerHTML = `
+    <header class="NavBar">
+      <button class="NavBarHamburger" aria-expanded="false"></button>
+      <div id="NavScreen" class="NavScreen">
+        <nav class="NavScreenMenu"><a href="/one">One</a></nav>
+        <button class="NavScreenClose" aria-expanded="false"></button>
+      </div>
+    </header>
+  `
+  document.body.append(root)
+  return root
+}
 
-  it('synchronizes both controls and the scroll lock', () => {
-    const root = document.createElement('main')
-    root.innerHTML = `
-      <header class="NavBar">
-        <button class="NavBarHamburger" aria-expanded="false"></button>
-        <div id="NavScreen" class="NavScreen">
-          <nav class="NavScreenMenu">
-            <a href="/one">One</a>
-            <a href="/two">Two</a>
-          </nav>
-          <button class="NavScreenClose" aria-expanded="false"></button>
-        </div>
-      </header>
-    `
+function hamburger(root: ParentNode): HTMLButtonElement {
+  return root.querySelector<HTMLButtonElement>('.NavBarHamburger')!
+}
+
+afterEach(() => {
+  document.body.replaceChildren()
+  document.documentElement.classList.remove('navscreen-noscroll')
+  document.documentElement.style.removeProperty('--navscreen-scrollbar-width')
+})
+
+describe('syncNavbarView', () => {
+  it('reflects the open state in both controls and the scroll lock', () => {
+    const root = mountNavbar()
 
     syncNavbarView(root, { ...closedState, open: true })
 
-    const screen = root.querySelector<HTMLElement>('.NavScreen')
-    const close = root.querySelector<HTMLButtonElement>('.NavScreenClose')
-    expect(root.querySelector('.NavBarHamburger')?.getAttribute('aria-expanded')).toBe('true')
-    expect(close?.getAttribute('aria-expanded')).toBe('true')
-    expect(close?.classList.contains('open')).toBe(true)
-    expect(screen?.classList.contains('open')).toBe(true)
+    expect(hamburger(root).getAttribute('aria-expanded')).toBe('true')
+    expect(root.querySelector('.NavScreenClose')?.getAttribute('aria-expanded')).toBe('true')
+    expect(root.querySelector('.NavScreen')?.classList.contains('open')).toBe(true)
     expect(document.documentElement.classList.contains('navscreen-noscroll')).toBe(true)
 
     syncNavbarView(root, closedState)
 
-    expect(root.querySelector('.NavBarHamburger')?.getAttribute('aria-expanded')).toBe('false')
-    expect(close?.getAttribute('aria-expanded')).toBe('false')
-    expect(close?.classList.contains('open')).toBe(false)
-    expect(screen?.classList.contains('open')).toBe(false)
+    expect(hamburger(root).getAttribute('aria-expanded')).toBe('false')
+    expect(root.querySelector('.NavScreenClose')?.getAttribute('aria-expanded')).toBe('false')
+    expect(root.querySelector('.NavScreen')?.classList.contains('open')).toBe(false)
     expect(document.documentElement.classList.contains('navscreen-noscroll')).toBe(false)
+  })
+
+  it('opens the hamburger for the search page without opening the navbar', () => {
+    const root = mountNavbar()
+
+    syncNavbarView(root, { ...closedState, searchPage: true })
+
+    expect(hamburger(root).classList.contains('open')).toBe(true)
+    expect(hamburger(root).getAttribute('aria-expanded')).toBe('false')
+    expect(root.querySelector('.NavBar')?.classList.contains('open')).toBe(false)
+    expect(root.querySelector('.NavScreen')?.classList.contains('open')).toBe(false)
   })
 })

@@ -59,6 +59,10 @@ function pageLoadHandler(mock: ReturnType<typeof createSwupMock>) {
   return mock.replaced.get('page:load')!
 }
 
+function fetchedUrls(swup: Swup): unknown[] {
+  return (swup.fetchPage as ReturnType<typeof vi.fn>).mock.calls.map(call => call[0])
+}
+
 function install(options: SwupMockOptions = {}) {
   const mock = createSwupMock(options)
   const preloader = new SwupPagePreloadPlugin(options.preloader)
@@ -144,8 +148,7 @@ describe('swupPagePreloadPlugin', () => {
     // The cancelled queue entry must never fire, even after a slot frees up.
     mock.settleFetch('/busy/')
     await Promise.resolve()
-    const calls = (mock.swup.fetchPage as ReturnType<typeof vi.fn>).mock.calls.map(call => call[0])
-    expect(calls).toEqual(['/busy/'])
+    expect(fetchedUrls(mock.swup)).toEqual(['/busy/'])
   })
 
   it('returns cached pages without fetching', async () => {
@@ -167,32 +170,24 @@ describe('swupPagePreloadPlugin', () => {
     expect(mock.preloader.isPriorityPreload('/b/')).toBe(true)
   })
 
-  it('preloads immediately on hover, even before window load finishes', () => {
+  it('preloads on hover intent but ignores touch on hover-capable devices', () => {
     vi.spyOn(document, 'readyState', 'get').mockReturnValue('loading')
     vi.spyOn(window, 'matchMedia').mockReturnValue({ matches: true } as MediaQueryList)
-    const el = document.createElement('a')
-    el.setAttribute('href', '/target/')
-    document.body.append(el)
+    const hovered = document.createElement('a')
+    hovered.setAttribute('href', '/hovered/')
+    const touched = document.createElement('a')
+    touched.setAttribute('href', '/touched/')
+    document.body.append(hovered, touched)
     const mock = install()
 
     // Background preloading is deferred, but hover intent is not.
     const mouseenter = mock.delegates.find(delegate => delegate.type === 'mouseenter')!
-    mouseenter.handler({ target: el, delegateTarget: el })
-
-    expect(mock.swup.fetchPage).toHaveBeenCalledWith('/target/')
-  })
-
-  it('ignores touch preloads on hover-capable devices', () => {
-    vi.spyOn(window, 'matchMedia').mockReturnValue({ matches: true } as MediaQueryList)
-    const el = document.createElement('a')
-    el.setAttribute('href', '/target/')
-    document.body.append(el)
-    const mock = install()
+    mouseenter.handler({ target: hovered, delegateTarget: hovered })
+    expect(mock.swup.fetchPage).toHaveBeenCalledWith('/hovered/')
 
     const touchstart = mock.delegates.find(delegate => delegate.type === 'touchstart')!
-    touchstart.handler({ target: el, delegateTarget: el })
-
-    expect(mock.swup.fetchPage).not.toHaveBeenCalled()
+    touchstart.handler({ target: touched, delegateTarget: touched })
+    expect(mock.swup.fetchPage).not.toHaveBeenCalledWith('/touched/')
   })
 
   it('refuses links that swup would ignore anyway', () => {
@@ -244,40 +239,24 @@ describe('swupPagePreloadPlugin', () => {
 
     mock.settleFetch('/busy/')
     return Promise.resolve().then(() => {
-      const calls = (mock.swup.fetchPage as ReturnType<typeof vi.fn>).mock.calls.map(call => call[0])
-      expect(calls).toEqual(['/busy/', '/urgent/'])
+      expect(fetchedUrls(mock.swup)).toEqual(['/busy/', '/urgent/'])
     })
   })
 
-  it('uses the aggressive concurrency on fast networks', () => {
-    const mock = install({
-      preloader: {
-        strategy: { concurrency: 1 },
-        aggressiveStrategy: { concurrency: 3 },
-        isFastNetwork: () => true,
-      },
-    })
-    void mock.preloader.preload('/a/')
-    void mock.preloader.preload('/b/')
-    void mock.preloader.preload('/c/')
+  it('picks the concurrency tier from the measured network speed', () => {
+    const tiers = {
+      strategy: { concurrency: 1 },
+      aggressiveStrategy: { concurrency: 3 },
+    }
+    const urls = ['/a/', '/b/', '/c/']
 
-    const calls = (mock.swup.fetchPage as ReturnType<typeof vi.fn>).mock.calls.map(call => call[0])
-    expect(calls).toEqual(['/a/', '/b/', '/c/'])
-  })
+    const fast = install({ preloader: { ...tiers, isFastNetwork: () => true } })
+    urls.forEach(url => void fast.preloader.preload(url))
+    expect(fetchedUrls(fast.swup)).toEqual(['/a/', '/b/', '/c/'])
 
-  it('sticks to the base concurrency when the network is not measured fast', () => {
-    const mock = install({
-      preloader: {
-        strategy: { concurrency: 1 },
-        aggressiveStrategy: { concurrency: 3 },
-        isFastNetwork: () => false,
-      },
-    })
-    void mock.preloader.preload('/a/')
-    void mock.preloader.preload('/b/')
-
-    const calls = (mock.swup.fetchPage as ReturnType<typeof vi.fn>).mock.calls.map(call => call[0])
-    expect(calls).toEqual(['/a/'])
+    const slow = install({ preloader: { ...tiers, isFastNetwork: () => false } })
+    urls.forEach(url => void slow.preloader.preload(url))
+    expect(fetchedUrls(slow.swup)).toEqual(['/a/'])
   })
 
   it('defers background preloading until the page has finished loading', async () => {
@@ -352,21 +331,17 @@ describe('swupPagePreloadPlugin', () => {
       return install({ preloader: preloaderOptions })
     }
 
-    it('observes eligible links with the base strategy by default', async () => {
+    it('selects the observer options from the measured network speed', async () => {
       const instances = stubIntersectionObserver()
+
       installWithLink()
       await vi.advanceTimersByTimeAsync(10)
-
       expect(instances[0].options).toMatchObject({ threshold: 0.2, rootMargin: '0px' })
       expect(instances[0].observed).toHaveLength(1)
-    })
 
-    it('observes with the aggressive strategy on fast networks', async () => {
-      const instances = stubIntersectionObserver()
       installWithLink({ isFastNetwork: () => true })
       await vi.advanceTimersByTimeAsync(10)
-
-      expect(instances[0].options).toMatchObject({ threshold: 0, rootMargin: '300px' })
+      expect(instances[1].options).toMatchObject({ threshold: 0, rootMargin: '300px' })
     })
 
     it('recreates the observer when the strategy tier flips', async () => {
