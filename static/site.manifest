@@ -1,0 +1,8 @@
+{
+  "name": "京吹学报",
+  "description": "吹学著作集锦",
+  "start_url": "/",
+  "lang": "zh-CN",
+  "theme_color": "#33adff",
+  "display": "standalone"
+}

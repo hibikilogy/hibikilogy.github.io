@@ -1,0 +1,87 @@
+@import '../lib/media.css';
+
+@layer components {
+  .content-container {
+    /* inline code */
+    :not(pre, h1, h2, h3, h4, h5, h6) > code {
+      font-size: var(--joh-code-font-size);
+    }
+
+    :not(pre) > code {
+      border-radius: 4px;
+      padding: 3px 6px;
+      background-color: var(--joh-c-bg-alt) !important;
+    }
+
+    h1 > code,
+    h2 > code,
+    h3 > code,
+    h4 > code {
+      font-size: 0.9em;
+    }
+
+    pre.giallo {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      padding: var(--joh-code-block-padding-top) 0 var(--joh-code-block-padding-bottom);
+      background-color: var(--joh-c-bg-alt) !important;
+      overflow: hidden;
+      overflow-x: auto;
+      direction: ltr;
+      text-align: left;
+      white-space: pre;
+      word-spacing: normal;
+      word-break: normal;
+      word-wrap: normal;
+      tab-size: 4;
+      hyphens: none;
+    }
+
+    pre.giallo > code {
+      display: block;
+      width: fit-content;
+      min-width: 100%;
+      padding: 0 var(--joh-code-block-padding-right) 0 var(--joh-code-block-padding-left);
+      line-height: var(--joh-code-line-height);
+      font-size: var(--joh-code-font-size);
+    }
+
+    pre.giallo > code[data-lang]::before {
+      content: attr(data-lang);
+      position: absolute;
+      top: var(--joh-code-lang-top);
+      right: var(--joh-code-lang-right);
+      z-index: 2;
+      font-size: var(--joh-code-lang-font-size);
+      font-weight: var(--joh-code-lang-font-weight);
+      user-select: none;
+      text-transform: uppercase;
+    }
+
+    pre.giallo .giallo-l {
+      display: block;
+      margin: 0 calc(var(--joh-code-block-padding-left) * -1);
+      padding: 0 var(--joh-code-block-padding-left);
+      width: calc(100% + (var(--joh-code-block-padding-left) * 2));
+    }
+
+    @media (--tablet) {
+      pre.giallo {
+        border-radius: 8px;
+        margin: var(--joh-code-block-margin-block) 0;
+      }
+    }
+
+    @media (--max-tablet) {
+      pre.giallo {
+        border-radius: 0;
+      }
+
+      pre.giallo > code {
+        padding-right: 1rem;
+        padding-left: 1rem;
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+name = "hibikilogy"
+description = ""
+license = ""
+homepage = "https://github.com/hibikilogy/hibikilogy.github.io"
+min_version = "0.23.4"
+
+[author]
+name = "Hibikilogy"
+homepage = "https://hibikilogy.vercel.app"
+
+[extra]
+article_section = "articles/_index.md"
+stylesheets = [
+  "styles/uno.css",
+  "styles/source-han-serif-cn-vf.css",
+  "styles/source-han-sans-sc-vf.patch.css",
+]
+busuanzi = false
+search_page_size = 12
+journal_logo = ""
+meta_keywords = ""
+meta_author = ""
+
+katex.enabled = false
+katex.css_cdn = "https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css"
+katex.css_integrity = "sha384-vlBdW0r3AcZO/HboRPznQNowvexd3fY8qHOWkBi5q7KGgqJ+F48+DceybYmrVbmB"
+
+tag_cloud_bg = ""
+tag_category_order = [
+  "人物",
+  "版块",
+  "杂类",
+]
+tag_category_default = "杂类"
+theme_color = "#ffffff"
+twitter_card = "summary_large_image"
+navbar_logo = ""
+default_cover = ""
+prefetch_urls = []
+footer = []
+navbar = []
+slogan = []
+
+[extra.favicon]
+webmanifest = ""
+safari_pinned_tab = ""
+small_icon = ""
+svg_icon = ""
+apple_touch_icon = ""
+
+[extra.analytics]
+google = ""

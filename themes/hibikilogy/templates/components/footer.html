@@ -1,0 +1,102 @@
+{% component footer.main(config, lang: string = "", show_tags: bool = false, show_friendlinks: bool = false, tag_pages = None) %}
+{% set has_busuanzi = config.extra.busuanzi | default(value=false) %}
+{# Tera scopes `set` to the loop body, so resolve the active-locale footer
+   entry once via set_global instead of repeating the lookup per section. #}
+{% set_global footer_item = None %}
+{% for item in config.extra.footer %}
+  {% if lang == item.code %}
+    {% set_global footer_item = item %}
+  {% endif %}
+{% endfor %}
+<footer
+  class="Footer"
+  role="contentinfo">
+  <div class="container">
+    {% if show_tags and footer_item %}
+      <section class="footer-column footer-tags">
+        <h3>
+          <a
+            href="{{ get_url(path='/tags') | trim_end(pat='/') }}"
+            title="{{ get_url(path='/tags') | trim_end(pat='/') }}"
+            aria-expanded="false"
+            aria-label="menu"
+            role="button">
+            {{ footer_item.tags_text }}
+          </a>
+        </h3>
+        <tags-list class="footer-list TagsList">
+          {% if tag_pages %}
+            {{ <tags.tags_list_for_pages pages={tag_pages} /> }}
+          {% else %}
+            {{ <tags.tags_list /> }}
+          {% endif %}
+        </tags-list>
+      </section>
+    {% endif %}
+    {% if show_friendlinks and footer_item %}
+      <section class="footer-column footer-friendlinks">
+        <h3>{{ footer_item.frendlinks_text }}</h3>
+        <div class="footer-list">
+          {% for nav in footer_item.frendlinks %}
+            {% set friendlink_url = <data.config_link link={nav.link} base_url={config.base_url} /> %}
+            <a
+              class="Link link FooterFriendLink"
+              aria-expanded="false"
+              aria-label="menu"
+              role="button"
+              href="{{ friendlink_url }}"
+              title="{{ friendlink_url }}"
+              tabindex="0"
+              target="_blank"
+              rel="noopener noreferrer">
+              <span>{{ nav.text }}</span><span class="i-custom-link inline-block w-[1.25em] h-[1.25em] align-text-bottom ml-[0.25em]"></span>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+    <section class="footer-column footer-siteinfo">
+      <div class="footer-siteinfo-nav">
+        {% if footer_item %}
+          {% for nav in footer_item.list %}
+            {% set nav_url = <data.config_link link={nav.link} base_url={config.base_url} /> %}
+            <a
+              class="Link link FooterNavLink"
+              aria-expanded="false"
+              aria-label="menu"
+              role="button"
+              href="{{ nav_url }}"
+              title="{{ nav_url }}"
+              tabindex="0"
+              {% if nav.type %}type="{{ nav.type }}"{% endif %}
+            >
+              <span>{{ nav.text }}</span>
+              <span class="icon"></span>
+            </a>
+          {% endfor %}
+          {% set contact_url = <data.config_link link={footer_item.contact.link} base_url={config.base_url} /> %}
+          <a
+            class="Link footer-contact-link"
+            rel="noreferrer"
+            href="mailto:{{ contact_url }}">
+            {{ footer_item.contact.text }}
+          </a>
+        {% endif %}
+      </div>
+      {% if has_busuanzi %}
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+      {% endif %}
+      <div class="footer-siteinfo-meta">
+        {% if footer_item %}
+          {% if has_busuanzi %}
+            <p class="footer-siteinfo-count">{{ footer_item.count }}:
+              <span id="busuanzi_value_page_pv"></span>
+            </p>
+          {% endif %}
+          <p class="footer-siteinfo-copyright">{{ footer_item.copyright }}</p>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+</footer>
+{% endcomponent footer.main %}

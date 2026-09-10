@@ -1,0 +1,31 @@
+{# Build-time asset helpers #}
+
+{% component build.css(path: string) %}
+<link
+  rel="stylesheet"
+  href="{{ get_url(path=path, cachebust=true) }}">
+{% endcomponent build.css %}
+
+{% component build.script(path: string, cachebust: bool = true, module: bool = false, serve: bool = false) %}
+{% set is_serve = serve %}
+
+{% if is_serve %}
+  {% set src = get_url(path=path) %}
+{% else %}
+  {% set src = get_url(path=path, cachebust=cachebust) %}
+{% endif %}
+
+<script
+  src="{{ src | safe }}"
+  {% if module %}type="module"{% endif %}
+  {% if not is_serve %}
+    integrity="sha384-{{ get_hash(path=path, sha_type=384, base64=true) | safe }}"
+  {% endif %}
+></script>
+{% endcomponent build.script %}
+
+{% component build.katex_css(config) %}
+{% if config.extra.katex and config.extra.katex.enabled %}
+  <link rel="stylesheet" href="{{ config.extra.katex.css_cdn | default(value='https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css') }}"{% if config.extra.katex.css_integrity %} integrity="{{ config.extra.katex.css_integrity }}"{% endif %} crossorigin="anonymous">
+{% endif %}
+{% endcomponent build.katex_css %}

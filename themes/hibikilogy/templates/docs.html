@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block vars %}
+{% set katex_enabled = config.extra.katex and config.extra.katex.enabled and page.extra.katex | default(value=false) %}
+{% endblock vars %}
+
+{% block class %}
+docs
+{% endblock %}
+
+{% block meta %}
+<meta
+  property="og:type"
+  content="website">
+{% set markdown_url = page.permalink | trim_end(pat="/") %}
+<link
+  rel="alternate"
+  type="text/markdown"
+  href="{{ markdown_url | safe }}.md"
+  title="Markdown version">
+{% if katex_enabled %}
+  {{ <build.katex_css config={config} /> }}
+{% endif %}
+{% endblock %}
+
+{% block critical_css %}
+{{ <build.css path="styles/layouts/page.css" /> }}
+{% endblock critical_css %}
+
+{% block header %}
+{% if page.extra.hero | default(value=true) %}
+  {% set hero_title = page.extra.hero_title | default(value="") %}
+  {% if hero_title %}
+    {% set hero_name = hero_title %}
+  {% else %}
+    {% set hero_name = page.title %}
+  {% endif %}
+  {{ <hero.main page={page} config={config} lang={lang} isPost={false} name={hero_name} /> }}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="content">
+    <section class="content-container">
+      <article data-page-enter-content{% if katex_enabled %} data-katex{% endif %}>
+        {{ page.content | safe }}
+      </article>
+    </section>
+  </div>
+</div>
+{% endblock %}
+
+{% block aside %}
+{{ <aside.main page={page} lang={lang} /> }}
+{% endblock %}

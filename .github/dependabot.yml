@@ -1,0 +1,12 @@
+# See https://docs.github.com/en/code-security/supply-chain-security/keeping-your-dependencies-updated-automatically/configuration-options-for-dependency-updates
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: 'npm'
+    # Look for `package.json` and `lock` files in the `root` directory
+    directory: '/'
+    # Check the npm registry for updates every day (weekdays)
+    schedule:
+      interval: 'daily'
+    open-pull-requests-limit: 10
+    versioning-strategy: lockfile-only

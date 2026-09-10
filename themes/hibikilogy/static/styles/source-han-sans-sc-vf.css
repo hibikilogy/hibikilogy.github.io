@@ -1,0 +1,5 @@
+/* The L1/L2/L3 chunk faces for "Source Han Sans SC VF" were retired: the
+   chunked patch series in source-han-sans-sc-vf.patch.css declares every
+   codepoint the site uses, so this file intentionally has no @font-face
+   rules and is no longer served. It remains as the --base-css input for
+   body-font-subset's overlap and weight-consistency checks. */

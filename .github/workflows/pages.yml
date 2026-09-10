@@ -1,0 +1,84 @@
+name: GITHUB_PAGE
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_PROFILE_DEV_DEBUG: 0
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup CI tools
+        uses: ./.github/actions/setup-tools
+        with:
+          node: 'true'
+          rust: 'true'
+          zola: 'true'
+          sccache: 'true'
+          cache-shared-key: site-build
+
+      - name: Build TypeScript (vite)
+        run: pnpm build:vite
+
+      - name: Build CMS
+        run: pnpm build:admin
+
+      - name: Subset title font
+        run: pnpm build:subset-titlefont
+
+      - name: Subset body font
+        run: pnpm build:subset-bodyfont
+
+      - name: Restore OG card cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            static/og/articles
+            static/_cache/og-render-manifest.json
+          key: og-cards-${{ runner.os }}
+          restore-keys: |
+            og-cards-
+
+      - name: Render OG cards
+        run: pnpm build:og
+
+      - name: Build site
+        run: zola build --drafts
+
+      - name: Beasties critical CSS
+        run: pnpm run build:beasties
+
+      - name: Rewrite site artifacts
+        run: pnpm build:rewrite-artifacts
+
+      - name: Export Markdown routes
+        run: pnpm build:markdown
+
+      - name: Deploy to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v5
+        with:
+          target_branch: gh-pages
+          build_dir: public
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

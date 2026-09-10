@@ -1,0 +1,142 @@
+name: CHECK
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - Refactor/zola
+    paths-ignore:
+      - '*.md'
+      - 'LICENSE'
+      - 'docs/**'
+      - '.editorconfig'
+      - '.vscode/**'
+      - '.zhlintrc'
+      - '.markdownlintignore'
+      - '.github/commit-convention.md'
+      - '.github/dependabot.yml'
+      - '.github/_typos.toml'
+      - 'vercel.json'
+
+  pull_request:
+    branches: [next, main, dev, Refactor/zola]
+    types: [opened, synchronize, reopened]
+    paths-ignore:
+      - '*.md'
+      - 'LICENSE'
+      - 'docs/**'
+      - '.editorconfig'
+      - '.vscode/**'
+      - '.zhlintrc'
+      - '.markdownlintignore'
+      - '.github/commit-convention.md'
+      - '.github/dependabot.yml'
+      - '.github/_typos.toml'
+      - 'vercel.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: check-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_PROFILE_DEV_DEBUG: 0
+      MARKDOWN_BASE_URL: https://ci.hibikilogy.invalid
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup CI tools
+        uses: ./.github/actions/setup-tools
+        with:
+          node: 'true'
+          rust: 'true'
+          zola: 'true'
+          nextest: 'true'
+          sccache: 'true'
+
+      # pnpm lint 会先生成模板引用的 Vite CSS，再运行 zola check
+      - name: Zola Check
+        run: pnpm lint
+
+      - name: ESLint
+        run: pnpm lint:eslint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Vitest
+        run: pnpm test:ts
+
+      - name: Check Rust file changes
+        uses: dorny/paths-filter@v3
+        id: rust-changes
+        with:
+          filters: |
+            rust:
+              - 'Cargo.toml'
+              - 'Cargo.lock'
+              - 'rust-toolchain.toml'
+              - 'nextest.toml'
+              - 'rustfmt.toml'
+              - 'scripts/rust/**/*.rs'
+              - 'scripts/rust/**/Cargo.toml'
+              - '.github/workflows/check.yml'
+              - '.github/actions/setup-tools/action.yml'
+
+      - name: Build title font subset
+        run: pnpm build:subset-titlefont
+
+      - name: Build body font subset
+        run: pnpm build:subset-bodyfont
+
+      - name: Restore OG card cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            static/og/articles
+            static/_cache/og-render-manifest.json
+          key: og-cards-${{ runner.os }}
+          restore-keys: |
+            og-cards-
+
+      - name: Render OG cards
+        run: pnpm build:og
+
+      - name: Set commit info
+        run: |
+          echo "GIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+          echo "GIT_MESSAGE=$(git log -1 --format=%s HEAD)" >> $GITHUB_ENV
+          echo "GIT_BRANCH=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+
+      - name: Build site for Markdown export
+        run: zola build --base-url "${MARKDOWN_BASE_URL}"
+
+      - name: Export Markdown routes
+        run: cargo run --locked --bin deploy-markdown -- --config zola.toml --base-url "${MARKDOWN_BASE_URL}"
+
+      - name: Check Rust formatting
+        if: steps.rust-changes.outputs.rust == 'true'
+        run: cargo fmt --all -- --check
+
+      - name: Run Rust Clippy
+        if: steps.rust-changes.outputs.rust == 'true'
+        run: cargo clippy --locked --all-targets --all-features -- -D warnings
+
+      - name: Run Rust tests
+        if: steps.rust-changes.outputs.rust == 'true'
+        run: cargo nextest run --locked --all-features --config-file nextest.toml --profile ci
+
+      - name: Run Rust doctests
+        if: steps.rust-changes.outputs.rust == 'true'
+        run: cargo test --locked --all-features --doc

@@ -1,0 +1,119 @@
+@import '../lib/media.css';
+@import '../components/hero.css';
+@import '../components/zoom.css';
+@import '../components/toc.css';
+@import '../components/footnotes.css';
+@import '../components/code.css';
+@import '../components/custom-block.css';
+@import '../components/content.css';
+@import '../components/accordion.css';
+@import '../components/collapsible.css';
+@import '../components/bilibili-iframe.css';
+
+@layer pages {
+  .post > #app > .Layout > .NavBar {
+    margin-block-end: calc(-1 * var(--joh-nav-height));
+  }
+
+  .post > #app > .Layout > .Hero {
+    margin-top: calc(-1 * var(--joh-nav-floating-offset));
+  }
+
+  .post > #app > .Layout > .NavBar:not(.post-hero-passed) {
+    background: transparent;
+
+    .divider {
+      display: none;
+    }
+  }
+
+  .post > #app > .Layout > .NavBar.post-hero-passed {
+    background-color: color-mix(in srgb, transparent, var(--joh-c-bg) var(--post-navbar-background-opacity, 100%));
+    backdrop-filter: saturate(var(--post-navbar-backdrop-saturation, 180%)) blur(var(--post-navbar-backdrop-blur, 20px));
+  }
+
+  .post > #app > .Layout > .NavBar:not(.post-hero-passed):not(.top):not(.open) {
+    visibility: hidden;
+    translate: 0 var(--navbar-hidden-translate);
+    pointer-events: none;
+  }
+
+  .post > #app > .Layout:has(> .NavBar:not(.post-hero-passed):not(.top):not(.open)) {
+    --joh-sticky-nav-offset: 0px;
+  }
+
+  .post > #app > .Layout > .NavBar:not(.post-hero-passed):has(+ .has-cover):not(.open) {
+    .NavBarTitle > .title,
+    a.NavBarMenuLink.Link {
+      color: var(--joh-c-white);
+    }
+
+    .NavBarTitle .logo {
+      filter: brightness(0) invert(1);
+      transition: filter var(--duration-very-slow) var(--ease-out);
+    }
+
+    .NavBarHamburger .container > span {
+      background-color: var(--joh-c-white);
+    }
+
+    @media (--max-tablet) {
+      .SearchShellIcon {
+        background-color: var(--joh-c-white) !important;
+      }
+    }
+  }
+
+  @media (--tablet) {
+    .post > #app > .Layout > .NavBar:not(.post-hero-passed):has(+ .has-cover):not(.open) {
+      .NavBarTitle > .title,
+      a.NavBarMenuLink.Link {
+        color: var(--joh-c-text-1);
+      }
+
+      .NavBarTitle .logo {
+        filter: none;
+        transition: filter var(--duration-very-slow) var(--ease-out);
+      }
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @keyframes post-navbar-background {
+      from {
+        background-color: transparent;
+        backdrop-filter: saturate(100%) blur(0);
+      }
+
+      to {
+        background-color: var(--joh-c-bg);
+        backdrop-filter: saturate(180%) blur(20px);
+      }
+    }
+
+    .post > #app > .Layout {
+      timeline-scope: --post-hero;
+    }
+
+    .post > #app > .Layout > .Hero {
+      view-timeline: --post-hero block;
+    }
+
+    .post > #app > .Layout > .NavBar {
+      animation: post-navbar-background 1ms linear both;
+      animation-timeline: --post-hero;
+      animation-range: exit 0% exit 100%;
+    }
+  }
+
+  .post .Footer,
+  .docs .Footer,
+  .tags .Footer,
+  .author .Footer {
+    margin-top: 2rem;
+
+    @media (--tablet) {
+      margin-top: 3rem;
+    }
+  }
+}

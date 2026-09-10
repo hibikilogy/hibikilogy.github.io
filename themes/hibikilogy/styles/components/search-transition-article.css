@@ -1,0 +1,42 @@
+@layer pages {
+  @supports (view-transition-name: none) {
+    /* Search-result article visits keep only the title and search-box shared
+       elements. Everything else swaps directly to the article snapshot. */
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']
+      body.search
+      #search
+      .SearchPageTransitionContent,
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']
+      .NavBar,
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']
+      .NavBarSocialLink {
+      view-transition-name: none !important;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-group(
+        root
+      ) {
+      /* Keep the article snapshot below title glyphs and the search box. */
+      z-index: calc(var(--joh-z-index-layout-top) - 1);
+      animation: none;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-old(
+        root
+      ) {
+      z-index: 1;
+      opacity: 0;
+      transform: none;
+      animation: none;
+    }
+
+    html[data-search-transition='active'][data-search-transition-scope='leave-search'][data-search-transition-mode='article-result']::view-transition-new(
+        root
+      ) {
+      z-index: 2;
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+  }
+}
