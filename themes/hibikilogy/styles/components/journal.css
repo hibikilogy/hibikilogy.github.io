@@ -114,7 +114,7 @@
       align-items: center;
       flex-direction: column;
       background-color: var(--joh-c-journal-frontpage-bg);
-      height: 212px;
+      min-height: 212px;
 
       svg:first-child {
         width: 455px;
@@ -220,6 +220,7 @@
 
       .FrontPage {
         height: 115px;
+        min-height: 115px;
 
         svg:first-child {
           width: 88%;
