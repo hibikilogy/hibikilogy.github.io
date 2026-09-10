@@ -12,7 +12,7 @@ import {
 } from './meta.ts'
 
 describe('parseArticleFrontMatter', () => {
-  it('解析 TOML front matter', () => {
+  it('解析 TOML front matter，缺 front matter 时报错', () => {
     const front = parseArticleFrontMatter(`+++
 title = "测试"
 date = "2025-10-14"
@@ -25,9 +25,7 @@ cover = "/imgs/x.png"
     expect(front.title).toBe('测试')
     expect(front.extra?.abstract).toBe('摘要')
     expect(front.extra?.cover).toBe('/imgs/x.png')
-  })
 
-  it('缺 front matter 时报错', () => {
     expect(() => parseArticleFrontMatter('没有 front matter')).toThrow()
   })
 })
@@ -60,15 +58,12 @@ describe('slugify', () => {
 })
 
 describe('describeArticle', () => {
-  it('description 回退到 extra.abstract', () => {
-    const meta = describeArticle('2025-10-14-a.md', {
+  it('description 回退到 extra.abstract，缺 title 时用文件名', () => {
+    expect(describeArticle('2025-10-14-a.md', {
       title: 'T',
       extra: { abstract: '摘要文字' },
-    })
-    expect(meta.description).toBe('摘要文字')
-  })
+    }).description).toBe('摘要文字')
 
-  it('缺 title 时使用文件名', () => {
     expect(describeArticle('2025-10-14-a.md', {}).title).toBe('2025-10-14-a')
   })
 })
