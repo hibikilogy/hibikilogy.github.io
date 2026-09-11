@@ -32,6 +32,7 @@ author: 作者
 original: 原文地址
 header-img: 顶部图片，可空缺
 catalog: true
+ai-generated: false
 tags:
     - 发布论坛（如 Stage1、NGA、虎扑、贴吧）
 ---
@@ -54,6 +55,8 @@ tags:
 ```
 
 更多请查询 [markdown 语法](https://www.runoob.com/markdown/md-tutorial.html)。
+
+> `ai-generated` 字段用于标注文章是否由 AI 生成：未标注或为 `false` 时视为人工撰写，文章底部会展示 Not By AI 徽章；如为 AI 生成请改为 `true`。
 
 添加完成后，再回到本网站仓库的界面，[提交 Pull Request](https://github.com/hibikilogy/hibikilogy.github.io/compare)。
 

@@ -4,7 +4,7 @@ title: 如何贡献
 header-img: https://i.loli.net/2020/03/18/DMS4XLyuNsYK8c3.png
 ---
 ## 简介
-本站为广大吹学爱好者记录吹学著作所用，使用 [Jekyll](http://jekyllcn.com) 在 ghpages 上部署。所收录文章仅代表作者个人观点，不代表《京吹学报》的立场与观点。
+本站为广大吹学爱好者记录吹学著作所用，使用 [Jekyll](http://jekyllcn.com) 在 ghpages 上部署。所收录文章仅代表作者个人观点，不代表《京吹学报》的立场与观点。本站内容除另有说明外采用 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh) 许可协议。
 
 ## 如何贡献
 
@@ -33,6 +33,7 @@ author: 作者
 original: 原文地址
 header-img: 顶部图片，可空缺
 catalog: true
+ai-generated: false
 tags:
     - 发布论坛（如 Stage1、NGA、虎扑、贴吧）
 ---
@@ -58,6 +59,8 @@ tags:
 ```
 
 更多请查询 [markdown 语法](https://www.runoob.com/markdown/md-tutorial.html)。
+
+> `ai-generated` 字段用于标注文章是否由 AI 生成：未标注或为 `false` 时视为人工撰写，文章底部会展示 Not By AI 徽章；如为 AI 生成请改为 `true`。
 
 添加完成后，再回到本网站仓库的界面，[提交 Pull Request](https://github.com/hibikilogy/hibikilogy.github.io/compare)。
 
