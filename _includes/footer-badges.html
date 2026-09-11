@@ -1,0 +1,91 @@
+{% comment %}
+站点页脚徽章行（样式参考 MOBIUS.BLOG 页脚）
+  - 人工撰写文章 / 非文章页 → /承诺非AI创作（Not By AI 官方徽章）
+  - 标注 ai-generated: true 的文章 → /本文由AI生成（灰色 AI 标识）
+  - 所有页面 → /内容使用许可（CC BY-NC-SA 4.0）
+
+开关（_config.yml）：
+  - footer-badges.enable          页脚徽章行总开关
+  - notbyai.enable                是否显示 /承诺非AI创作
+  - footer-badges.ai-badge-file   /本文由AI生成 的标识图路径
+  - footer-badges.license.enable  是否显示 /内容使用许可
+
+注意：Not By AI 官方徽章为“黑底 + 镂空文字”（文字透出页面背景色），
+深色模式下需给徽章加白色底衬，否则文字不可读；灰色 AI 标识自带底色，无需底衬。
+{% endcomment %}
+{% if site.footer-badges.enable %}
+<div class="footer-badges">
+    {% if page.ai-generated %}
+    <div class="footer-badge footer-badge--ai" title="本文由 AI 生成">
+        <img src="{{ site.footer-badges.ai-badge-file | prepend: site.baseurl }}" alt="AI generated" width="130" height="28">
+        <span>/本文由AI生成</span>
+    </div>
+    {% elsif site.notbyai.enable %}
+    <a class="footer-badge" href="https://notbyai.fyi" target="_blank" rel="noopener noreferrer" title="承诺非 AI 创作">
+        <img src="{{ '/images/notbyai/not-by-ai.svg' | prepend: site.baseurl }}" alt="Written by humans, not by AI" width="130" height="28">
+        <span>/承诺非AI创作</span>
+    </a>
+    {% endif %}
+    {% if site.footer-badges.license.enable %}
+    <a class="footer-badge" href="{{ site.footer-badges.license.url }}" target="_blank" rel="noopener noreferrer" title="{{ site.footer-badges.license.name }}">
+        <img src="{{ site.footer-badges.license.file | prepend: site.baseurl }}" alt="{{ site.footer-badges.license.name }}" width="88" height="31">
+        <span>/内容使用许可</span>
+    </a>
+    {% endif %}
+</div>
+<style>
+    .footer-badges {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 32px;
+        margin: 24px 0 18px;
+    }
+    .footer-badges .footer-badge {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        line-height: 0;
+        opacity: 0.85;
+        transition: opacity 0.3s ease;
+        -webkit-transition: opacity 0.3s ease;
+        text-decoration: none;
+    }
+    .footer-badges .footer-badge:hover {
+        opacity: 1;
+    }
+    .footer-badges .footer-badge--ai {
+        cursor: default;
+    }
+    .footer-badges .footer-badge img {
+        display: block;
+        width: auto;
+        height: 31px;
+        max-width: none;
+        margin: 0;
+        border-radius: 0;
+    }
+    .footer-badges .footer-badge span {
+        margin-top: 8px;
+        font-size: 12px;
+        line-height: 1;
+        color: #999;
+    }
+    /* 深色模式：为黑白稿徽章补白色底衬，保证黑底镂空文字可读 */
+    [data-theme="dark"] .footer-badges .footer-badge img {
+        background: #fff;
+        padding: 3px 6px;
+        border-radius: 4px;
+        box-sizing: content-box;
+    }
+    /* 灰色 AI 标识自带底色，无需底衬 */
+    [data-theme="dark"] .footer-badges .footer-badge--ai img {
+        background: transparent;
+        padding: 0;
+    }
+    [data-theme="dark"] .footer-badges .footer-badge span {
+        color: #8a8a8a;
+    }
+</style>
+{% endif %}

@@ -1,0 +1,55 @@
+{% comment %}
+Not By AI 徽章（https://notbyai.fyi）
+用于标注文章由真人撰写、非 AI 生成。
+
+显示规则（见 _layouts/post.html）：
+  - 文章 front matter 未标注或标注 `ai-generated: false` → 视为人工撰写，显示徽章；
+  - 显式标注 `ai-generated: true` → 视为 AI 生成，不显示徽章。
+
+可通过 _config.yml 中的 `notbyai.enable` 全局开关。
+徽章资源位于 images/notbyai/：浅色模式用黑色徽章，深色模式用白色徽章。
+注意：以下样式选择器需覆盖主题的 `.post-container img` 默认样式，故刻意提高优先级。
+{% endcomment %}
+{% if site.notbyai.enable %}
+<div class="notbyai-wrapper">
+    <a class="notbyai-badge" href="https://notbyai.fyi" target="_blank" rel="noopener noreferrer" title="本文由真人撰写，非 AI 生成">
+        <img class="notbyai-badge--light" src="{{ '/images/notbyai/written-by-human-not-by-ai-black.svg' | prepend: site.baseurl }}" alt="由真人撰写，非 AI 生成" width="131" height="42">
+        <img class="notbyai-badge--dark" src="{{ '/images/notbyai/written-by-human-not-by-ai-white.svg' | prepend: site.baseurl }}" alt="由真人撰写，非 AI 生成" width="131" height="42">
+    </a>
+</div>
+<style>
+    /* 覆盖主题 .post-container img { display:block; margin:1.5em auto } 的默认样式 */
+    .post-container .notbyai-wrapper {
+        margin: 40px 0 8px 0;
+        line-height: 0;
+        text-align: center;
+    }
+    .post-container .notbyai-wrapper .notbyai-badge {
+        display: inline-block;
+        opacity: 0.85;
+        transition: opacity 0.3s ease;
+        -webkit-transition: opacity 0.3s ease;
+    }
+    .post-container .notbyai-wrapper .notbyai-badge:hover {
+        opacity: 1;
+    }
+    .post-container .notbyai-wrapper .notbyai-badge img {
+        display: inline-block;
+        width: auto;
+        height: 42px;
+        max-width: none;
+        margin: 0;
+        border-radius: 0;
+    }
+    /* 仅显示当前配色对应的一张徽章 */
+    .post-container .notbyai-wrapper .notbyai-badge .notbyai-badge--dark {
+        display: none !important;
+    }
+    html[data-theme="dark"] .post-container .notbyai-wrapper .notbyai-badge .notbyai-badge--light {
+        display: none !important;
+    }
+    html[data-theme="dark"] .post-container .notbyai-wrapper .notbyai-badge .notbyai-badge--dark {
+        display: inline-block !important;
+    }
+</style>
+{% endif %}
