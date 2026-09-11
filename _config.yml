@@ -86,6 +86,25 @@ giscus:
   lang: zh-CN
 
 
+# Not By AI（https://notbyai.fyi）
+# 控制页脚“/承诺非AI创作”徽章。文章 front matter 未标注 ai-generated 或标注为 false
+# 时视为人工撰写并显示该徽章；显式标注 ai-generated: true 时改为显示“/本文由AI生成”。
+# 注：文章底部的中文“由真人撰写”徽章已移除（_includes/notbyai-badge.html 与
+# images/notbyai/written-by-human-*.svg 保留但暂不引用，以备将来恢复）。
+notbyai:
+  enable: true
+
+# 页脚徽章行（/承诺非AI创作 或 /本文由AI生成、/内容使用许可）
+footer-badges:
+  enable: true
+  ai-badge-file: /images/badges/ai-generated.svg
+  license:
+    enable: true
+    name: CC BY-NC-SA 4.0
+    url: https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh
+    file: /images/licenses/cc-by-nc-sa.svg
+
+
 # 统计
 
 # Analytics settings
