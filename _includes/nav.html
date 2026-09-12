@@ -43,19 +43,16 @@
                         <a href="/about">加入我们</a>
                     </li>
                     <li>
+                        <a href="javascript:void(0);" id="search-toggle" title="搜索 (Ctrl+K)">
+                            <i class="fa fa-search"></i>
+                        </a>
+                    </li>
+                    <li>
                         <a href="javascript:void(0);" id="theme-toggle" title="切换深色/浅色模式">
                             <i class="fa fa-moon-o" id="theme-icon"></i>
                         </a>
                     </li>
-                </ul> 
-                <div class="navbar-nav navbar-right">
-                    <form role="search" action="https://www.bing.com/search" method="get" target="_blank">
-                        <div class="form-group">
-                            <input type="text" name="q" class="form-control search-pc" id="search-bar" placeholder="搜索">
-                            <input type="hidden" name="q1" value="site:hibikilogy.github.io">
-                        </div>
-                    </form>
-                </div>
+                </ul>
             </div> 
         </div>
         <!-- /.navbar-collapse -->
@@ -70,12 +67,10 @@
     var $toggle = document.querySelector('.navbar-toggle');
     var $navbar = document.querySelector('#huxblog_navbar');
     var $collapse = document.querySelector('.navbar-collapse');
-    var $search = document.querySelector('#search-bar');
 
     var __HuxNav__ = {
         close: function(){
             $navbar.className = " ";
-            $search.className = "form-control search-pc";
             // wait until animation end.
             setTimeout(function(){
                 // prevent frequently toggle
@@ -87,7 +82,6 @@
         open: function(){
             $collapse.style.height = "auto";
             $navbar.className += " in";
-            $search.className = "form-control ";
         }
     }
 
@@ -114,10 +108,9 @@
     document.addEventListener('click', function(e){
         if(e.target == $toggle) return;
         if(e.target.className == 'icon-bar') return;
-        if(e.target.className.indexOf("form") >= 0) return;
         if(e.target.closest('.dropdown-toggle, .dropdown-menu')) return;
+        if(e.target.closest('#search-toggle, .search-modal')) return;
         __HuxNav__.close();
-        document.getElementById('searchResults').innerHTML=''
     })
 
     // Dark Mode Toggle
@@ -164,33 +157,21 @@
             $('#tag_cloud a').removeAttr('style').tagcloud();
         }
     });
+
+    // Local Search Toggle (Lunr.js)
+    const searchToggle = document.getElementById('search-toggle');
+    if (searchToggle) {
+        searchToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (window.HuxSearch) {
+                HuxSearch.open();
+            }
+        });
+    }
 </script>
 
 <style>
-#search-bar {
-    width: 90%;
-    color: #333;
-    background-color: rgba(227,231,236,.2);
-    margin:7% 5%;
-    border: 1px solid #c0c0c0;
-    font-size: 70%;
-    font-weight: bold;
-    border-radius: 16px;
-    outline: none;
-    box-sizing: border-box;
-}
-.search-pc {
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
-}
-#search-bar:focus {
-    outline: none;
-    border-color: rgb(102, 175, 233);
-    background-color: #fff;
-}
-.search-pc:focus  {
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px #007fff;
-}
-
 .navbar-nav .dropdown-menu {
     background: rgba(255, 255, 255, 0.96);
     border: 1px solid rgba(0, 0, 0, 0.12);

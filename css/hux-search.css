@@ -1,0 +1,316 @@
+/* ===========================================================
+ * hux-search.css — Lunr 本地搜索弹层样式
+ * ========================================================== */
+
+.search-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8vh;
+}
+
+.search-modal.is-open {
+  display: flex;
+}
+
+.search-modal-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  animation: search-fade-in 0.15s ease-out;
+}
+
+@keyframes search-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.search-modal-panel {
+  position: relative;
+  width: 90%;
+  max-width: 640px;
+  max-height: 80vh;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: search-slide-down 0.2s ease-out;
+}
+
+@keyframes search-slide-down {
+  from { transform: translateY(-12px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.search-modal-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.search-modal-icon {
+  position: absolute;
+  left: 20px;
+  color: #999;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.search-modal-input {
+  width: 100%;
+  padding: 10px 36px 10px 40px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #333;
+}
+
+.search-modal-input::placeholder {
+  color: #aaa;
+}
+
+.search-modal-clear {
+  position: absolute;
+  right: 20px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: #eee;
+  color: #666;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.search-modal-clear:hover {
+  background: #ddd;
+}
+
+.search-modal-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+/* —— 提示/空状态 —— */
+.search-hint,
+.search-empty {
+  padding: 32px 20px;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.search-empty strong {
+  color: #333;
+}
+
+/* —— 结果项 —— */
+.search-result-count {
+  padding: 6px 20px;
+  font-size: 12px;
+  color: #999;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.search-result-item {
+  display: block;
+  padding: 12px 20px;
+  border-bottom: 1px solid #f5f5f5;
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.12s;
+}
+
+.search-result-item:hover,
+.search-result-item.active {
+  background: #f0f8ff;
+}
+
+.search-result-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+  line-height: 1.4;
+  margin-bottom: 2px;
+}
+
+.search-result-subtitle {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.search-result-excerpt {
+  font-size: 13px;
+  color: #777;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.search-result-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.search-result-tags {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.search-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  color: #666;
+  font-size: 11px;
+}
+
+/* —— 关键词高亮 —— */
+.search-highlight {
+  background: #ffeb3b;
+  color: #333;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+/* —— 滚动条美化 —— */
+.search-modal-results::-webkit-scrollbar {
+  width: 8px;
+}
+.search-modal-results::-webkit-scrollbar-track {
+  background: transparent;
+}
+.search-modal-results::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 4px;
+}
+.search-modal-results::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
+}
+
+/* —— 移动端适配 —— */
+@media (max-width: 640px) {
+  .search-modal {
+    padding-top: 0;
+  }
+  .search-modal-panel {
+    width: 100%;
+    max-width: 100%;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}
+
+/* ===========================================================
+ * 深色模式
+ * ========================================================== */
+[data-theme="dark"] .search-modal-panel {
+  background: #1e1633;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .search-modal-input-wrap {
+  border-bottom-color: #3a2f5c;
+}
+
+[data-theme="dark"] .search-modal-input {
+  color: #e8dff5;
+}
+
+[data-theme="dark"] .search-modal-input::placeholder {
+  color: #7b6b9a;
+}
+
+[data-theme="dark"] .search-modal-icon {
+  color: #7b6b9a;
+}
+
+[data-theme="dark"] .search-modal-clear {
+  background: #3a2f5c;
+  color: #c4b5fd;
+}
+
+[data-theme="dark"] .search-modal-clear:hover {
+  background: #4a3d6e;
+}
+
+[data-theme="dark"] .search-result-count {
+  color: #7b6b9a;
+  border-bottom-color: #2a2048;
+}
+
+[data-theme="dark"] .search-hint,
+[data-theme="dark"] .search-empty {
+  color: #7b6b9a;
+}
+
+[data-theme="dark"] .search-empty strong {
+  color: #c4b5fd;
+}
+
+[data-theme="dark"] .search-result-item {
+  border-bottom-color: #2a2048;
+}
+
+[data-theme="dark"] .search-result-item:hover,
+[data-theme="dark"] .search-result-item.active {
+  background: #2d1f55;
+}
+
+[data-theme="dark"] .search-result-title {
+  color: #e8dff5;
+}
+
+[data-theme="dark"] .search-result-subtitle {
+  color: #b9a7e0;
+}
+
+[data-theme="dark"] .search-result-excerpt {
+  color: #8d7bb5;
+}
+
+[data-theme="dark"] .search-result-meta {
+  color: #7b6b9a;
+}
+
+[data-theme="dark"] .search-tag {
+  background: #3a2f5c;
+  color: #c4b5fd;
+}
+
+[data-theme="dark"] .search-highlight {
+  background: #ffd54f;
+  color: #1e1633;
+}
+
+[data-theme="dark"] .search-modal-results::-webkit-scrollbar-thumb {
+  background: #3a2f5c;
+}
+[data-theme="dark"] .search-modal-results::-webkit-scrollbar-thumb:hover {
+  background: #4a3d6e;
+}

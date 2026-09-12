@@ -116,6 +116,12 @@
 <!-- Custom Theme JavaScript -->
 <script src="{{ "/js/hux-blog.min.js " | prepend: site.baseurl }}"></script>
 
+<!-- Local Search (Lunr + Chinese tokenizer) -->
+<script src="{{ "/js/lunr.min.js" | prepend: site.baseurl }}"></script>
+<script src="{{ "/js/lunr.stemmer.support.js" | prepend: site.baseurl }}"></script>
+<script src="{{ "/js/lunr.zh.js" | prepend: site.baseurl }}"></script>
+<script src="{{ "/js/hux-search.js" | prepend: site.baseurl }}"></script>
+
 <!-- Zooming -->
 <script>
     // Listen to images after DOM content is fully loaded
