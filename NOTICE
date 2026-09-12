@@ -1,0 +1,35 @@
+京吹学报
+https://github.com/hibikilogy/hibikilogy.github.io
+
+Copyright 2020-2026 京吹学报
+
+This project contains third-party components with separate copyright
+notices and license terms. Your use of the source code for these
+components is subject to the terms and conditions of their respective
+licenses.
+
+Except for these third-party components, this project is licensed under
+the Apache License, Version 2.0 (see the LICENSE file). That license
+applies only to this project's source code, themes, scripts and
+configuration files; it does not apply to the articles published on this
+site, whose copyright belongs to their respective authors.
+
+-------------------------------------------------------------------------
+
+Third-party components
+
+1. Hux Blog (Jekyll theme)
+   https://github.com/Huxpro/huxpro.github.io
+   Copyright 2015-2016 Huxpro
+   Licensed under the Apache License, Version 2.0
+
+2. Clean Blog Jekyll Theme (subcomponent of Hux Blog)
+   https://github.com/BlackrockDigital/startbootstrap-clean-blog-jekyll
+   Copyright (c) 2013-2016 Blackrock Digital LLC.
+   Licensed under the MIT License
+
+-------------------------------------------------------------------------
+
+The theme used by this site is a modified version of the Hux Blog theme.
+All copyrights of the components listed above belong to their respective
+owners.

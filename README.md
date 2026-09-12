@@ -100,5 +100,11 @@ lessc ./less/hux-blog.less ./css/hux-blog.css & lessc --clean-css ./less/hux-blo
 
 本组织持有者目前学业繁忙，欢迎有意接替者。
 
+## 授权
+
+* **源代码与主题**：本项目（除第三方组件外）基于 [Apache License 2.0](LICENSE) 协议开源，该许可仅适用于本项目的源代码、主题、脚本和配置文件。
+* **站内文章**：本站收录的文章等内容不属于上述许可的适用范围，著作权归各篇文章的作者所有；如需使用，请与作者或《京吹学报》编辑部联系（投稿事项见[《我要投稿》](https://hibikilogy.github.io/contribute)）。
+* **第三方组件**：本站使用的 [Hux Blog](https://github.com/Huxpro/huxpro.github.io) 主题（Copyright 2015-2016 Huxpro，Apache License 2.0）及其子组件 Clean Blog Jekyll Theme（Copyright (c) 2013-2016 Blackrock Digital LLC.，MIT License）版权归原作者所有，详见 [NOTICE](NOTICE)。
+
 ## 其他
 吹学论文收集可能具有一定统计学意义，在 `_posts/wordcloud.zip` 中有关于词云生成的文件，有兴趣者可以尝试。
