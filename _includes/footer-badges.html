@@ -1,0 +1,101 @@
+{% comment %}
+站点页脚徽章行（样式参考 MOBIUS.BLOG 页脚）
+  - 人工撰写文章 / 非文章页 → /承诺非AI创作（Not By AI 官方徽章）
+  - ai-generated: partial 的文章 → /含AI生成内容（蓝色 AI Assisted 胶囊）
+  - ai-generated: true 的文章 → /全文由AI生成（紫色 AI Written 胶囊）
+  - 文章 front matter 声明 license 字段 → /内容使用许可（可选，默认不启用）
+
+开关（_config.yml）：
+  - footer-badges.enable          页脚徽章行总开关
+  - notbyai.enable                是否显示 /承诺非AI创作
+  - footer-badges.ai-badges       AI 标识两级配置（full / partial：图、文案、提示）
+  - footer-badges.licenses        内容使用许可预设；仅当文章 front matter 的
+                                  license 字段取值为某预设键名时才展示对应徽章。
+                                  文章著作权归原作者所有，网站不代作者授予许可。
+
+注意：Not By AI 官方徽章为“黑底 + 镂空文字”（文字透出页面背景色），
+深色模式下需给徽章加白色底衬，否则文字不可读；彩色 AI 胶囊自带底色，无需底衬。
+{% endcomment %}
+{% if site.footer-badges.enable %}
+<div class="footer-badges">
+    {% assign ai_badge = nil %}
+    {% if page.ai-generated == 'partial' %}
+    {% assign ai_badge = site.footer-badges.ai-badges.partial %}
+    {% elsif page.ai-generated %}
+    {% assign ai_badge = site.footer-badges.ai-badges.full %}
+    {% endif %}
+    {% if ai_badge %}
+    <div class="footer-badge footer-badge--ai" title="{{ ai_badge.title }}">
+        <img src="{{ ai_badge.file | prepend: site.baseurl }}" alt="{{ ai_badge.title }}">
+        <span>/{{ ai_badge.text }}</span>
+    </div>
+    {% elsif site.notbyai.enable %}
+    <a class="footer-badge" href="https://notbyai.fyi" target="_blank" rel="noopener noreferrer" title="承诺非 AI 创作">
+        <img src="{{ '/images/notbyai/not-by-ai.svg' | prepend: site.baseurl }}" alt="Written by humans, not by AI" width="130" height="28">
+        <span>/承诺非AI创作</span>
+    </a>
+    {% endif %}
+    {% assign footer_license = site.footer-badges.licenses[page.license] %}
+    {% if footer_license %}
+    <a class="footer-badge" href="{{ footer_license.url }}" target="_blank" rel="noopener noreferrer" title="{{ footer_license.name }}">
+        <img src="{{ footer_license.file | prepend: site.baseurl }}" alt="{{ footer_license.name }}" width="88" height="31">
+        <span>/内容使用许可</span>
+    </a>
+    {% endif %}
+</div>
+<style>
+    .footer-badges {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 32px;
+        margin: 24px 0 18px;
+    }
+    .footer-badges .footer-badge {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        line-height: 0;
+        opacity: 0.85;
+        transition: opacity 0.3s ease;
+        -webkit-transition: opacity 0.3s ease;
+        text-decoration: none;
+    }
+    .footer-badges .footer-badge:hover {
+        opacity: 1;
+    }
+    .footer-badges .footer-badge--ai {
+        cursor: default;
+    }
+    .footer-badges .footer-badge img {
+        display: block;
+        width: auto;
+        height: 31px;
+        max-width: none;
+        margin: 0;
+        border-radius: 0;
+    }
+    .footer-badges .footer-badge span {
+        margin-top: 8px;
+        font-size: 12px;
+        line-height: 1;
+        color: #999;
+    }
+    /* 深色模式：为黑白稿徽章补白色底衬，保证黑底镂空文字可读 */
+    [data-theme="dark"] .footer-badges .footer-badge img {
+        background: #fff;
+        padding: 3px 6px;
+        border-radius: 4px;
+        box-sizing: content-box;
+    }
+    /* 灰色 AI 标识自带底色，无需底衬 */
+    [data-theme="dark"] .footer-badges .footer-badge--ai img {
+        background: transparent;
+        padding: 0;
+    }
+    [data-theme="dark"] .footer-badges .footer-badge span {
+        color: #8a8a8a;
+    }
+</style>
+{% endif %}

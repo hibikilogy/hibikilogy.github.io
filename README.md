@@ -32,6 +32,8 @@ author: 作者
 original: 原文地址
 header-img: 顶部图片，可空缺
 catalog: true
+ai-generated: false
+# license: cc-by-nc-sa
 tags:
     - 发布论坛（如 Stage1、NGA、虎扑、贴吧）
 ---
@@ -54,6 +56,10 @@ tags:
 ```
 
 更多请查询 [markdown 语法](https://www.runoob.com/markdown/md-tutorial.html)。
+
+> `ai-generated` 字段用于标注文章的 AI 生成情况：未标注或为 `false` 时视为人工撰写，文章底部展示 Not By AI 徽章；`partial` 表示仅部分内容由 AI 生成，页脚展示蓝色「含AI生成内容」标识；`true` 表示全篇或主体由 AI 生成，页脚展示紫色「全文由AI生成」标识。
+>
+> `license` 字段（可选）用于声明文章的内容使用许可，默认不启用。文章著作权归原作者所有，除非另有声明，所有权利保留；网站不会代表作者授予任何许可。如作者希望以特定许可协议授权他人使用，可填写预设键名（如 `license: cc-by-nc-sa` 表示 CC BY-NC-SA 4.0），文章页脚将展示对应许可徽章。
 
 添加完成后，再回到本网站仓库的界面，[提交 Pull Request](https://github.com/hibikilogy/hibikilogy.github.io/compare)。
 
