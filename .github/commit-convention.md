@@ -13,7 +13,7 @@
 header 必填，scope 可选。`commit-msg` 钩子（`scripts/verify-commit/index.ts`）按下面这个正则校验：subject 取**首行**，长度 ≤ 50。
 
 ```js
-/^(?:revert: )?(?:feat|fix|docs|dx|style|refactor|perf|test|workflow|build|ci|chore|types|wip|post)(?:\((?:theme|themes|script|scripts|content|docs|build|template|templates|search|ui|component|components|i18n|static|cms|article|articles)\))?: .{1,50}$/
+/^(?:revert: )?(?:feat|fix|docs|dx|style|refactor|perf|test|workflow|build|ci|chore|types|wip|post)(?:\((?:theme|themes|script|scripts|content|docs|build|template|templates|search|ui|component|components|i18n|static|cms|article|articles|deps)\))?: .{1,50}$/
 ```
 
 ## Type
@@ -28,7 +28,7 @@ header 必填，scope 可选。`commit-msg` 钩子（`scripts/verify-commit/inde
 
 ## Scope
 
-允许的 scope：`theme`、`script`、`content`、`docs`、`build`、`template`、`search`、`ui`、`component`、`i18n`、`static`、`cms`、`article`，每个也接受复数形式（`themes`、`scripts`、`templates`、`components`、`articles`）。
+允许的 scope：`theme`、`script`、`content`、`docs`、`build`、`template`、`search`、`ui`、`component`、`i18n`、`static`、`cms`、`article`、`deps`，每个也接受复数形式（`themes`、`scripts`、`templates`、`components`、`articles`）。
 
 ## Subject
 
