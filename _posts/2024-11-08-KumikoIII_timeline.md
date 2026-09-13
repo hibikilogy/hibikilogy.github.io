@@ -1,7 +1,7 @@
 ---
 layout: post
 date: 2024-11-08
-header-img: https://hibikilogy.github.io/images/2024-11-08/yande.re_339266_sample_hibike!_euphonium_oumae_kumiko_seifuku_header.jpg
+header-img: /images/2024-11-08/yande.re_339266_sample_hibike!_euphonium_oumae_kumiko_seifuku_header.jpg
 title: 小说《吹响吧！上低音号》久三年时间线整理与研究
 author: DreamEupho Team（WonderKindom，晓陆sylph，崎岖山翁，谐波回响HyperEupho）
 original: https://www.bilibili.com/opus/997083826081497093

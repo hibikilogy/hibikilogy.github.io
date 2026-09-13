@@ -1,4 +1,6 @@
-# 核心功能：将"../images/"替换为"https://hibikilogy.github.io/images/"
+# 核心功能：把文章里的相对图片路径 "../images/" 规范化，避免写死域名
+#   正文            → {{ site.baseurl }}/images/
+#   front matter 部分 → /images/   （Jekyll 不渲染 front matter 中的 Liquid，如 header-img）
 name: Update Image Paths in Markdown Files
 
 on:
@@ -74,7 +76,15 @@ jobs:
         CHANGED_FILES="${{ steps.get-changed-files-all.outputs.changed_files }}"
         for FILE in $CHANGED_FILES; do
           if [ -f "$FILE" ]; then
-            sed -i 's|\.\./images/|https://hibikilogy.github.io/images/|g' "$FILE"  # or {{site.url}}
+            # front matter（首个 --- 到第二个 ---）里只能用根相对路径，
+            # 因为 Jekyll 不会渲染 front matter 中的 Liquid 变量
+            FM_END=$(awk 'NR>1 && $0=="---" {print NR; exit}' "$FILE")
+            if [ -n "$FM_END" ]; then
+              sed -i "1,${FM_END} s|\\.\\./images/|/images/|g" "$FILE"
+              sed -i "$((FM_END+1)),\$ s|\\.\\./images/|{{ site.baseurl }}/images/|g" "$FILE"
+            else
+              sed -i 's|\.\./images/|{{ site.baseurl }}/images/|g' "$FILE"
+            fi
           fi
         done
         # 检查是否有改动
