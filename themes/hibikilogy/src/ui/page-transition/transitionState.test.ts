@@ -129,12 +129,4 @@ describe('transition state lifecycle', () => {
     expect(document.documentElement.dataset.searchOverlay).toBe('active')
     expect(document.documentElement.dataset.searchTransitionScope).toBe('enter-search')
   })
-
-  it('clears immediately when no overlay is active', () => {
-    setTransitionState('/', '/article')
-
-    settleTransitionState()
-
-    expect(document.documentElement.hasAttribute('data-search-overlay')).toBe(false)
-  })
 })

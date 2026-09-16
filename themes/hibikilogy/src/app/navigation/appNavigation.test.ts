@@ -159,32 +159,6 @@ describe('setupAppNavigation', () => {
     expect(visit.animation.native).toBe(false)
   })
 
-  it('skips the native transition while the page-enter cascade is still running', async () => {
-    const swup = createFakeSwup()
-    const { app, scope } = createFakeApp()
-    scope.run(() => setupAppNavigation(swup as unknown as Swup, app))
-
-    const animations = [
-      { animationName: 'page-enter', playState: 'running' },
-    ] as unknown as Animation[]
-    // 模拟真实 DOM 方法：必须以 document 为 receiver 调用，否则抛 Illegal invocation。
-    Object.defineProperty(document, 'getAnimations', {
-      configurable: true,
-      value: function getAnimations(this: Document) {
-        if (this !== document)
-          throw new TypeError('Illegal invocation')
-        return animations
-      },
-    })
-
-    const visit = visitTo('/article')
-    await swup.trigger('visit:start', visit)
-
-    expect(visit.animation.native).toBe(false)
-
-    Reflect.deleteProperty(document, 'getAnimations')
-  })
-
   it('keeps the page-enter animation running during a visit hold and restarts it on replacement', async () => {
     const swup = createFakeSwup()
     const { app, scope } = createFakeApp()

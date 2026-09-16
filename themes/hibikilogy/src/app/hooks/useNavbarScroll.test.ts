@@ -29,7 +29,7 @@ describe('useNavbarScroll', () => {
     vi.unstubAllGlobals()
   })
 
-  it('tracks fallback direction', () => {
+  it('tracks the fallback direction only while scrolled away from the top', () => {
     vi.stubGlobal('CSS', { supports: () => false })
     const root = document.createElement('main')
     root.innerHTML = '<header class="NavBar"></header>'
@@ -42,6 +42,8 @@ describe('useNavbarScroll', () => {
     scroll.directions.down = true
     scroll.scrollY.value = 20
     expect(navbarScroll.scrollingDown.value).toBe(true)
+    scroll.scrollY.value = 0
+    expect(navbarScroll.scrollingDown.value).toBe(false)
     scroll.directions.down = false
     scroll.scrollY.value = 10
     expect(navbarScroll.scrollingDown.value).toBe(false)

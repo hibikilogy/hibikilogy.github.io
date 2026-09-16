@@ -135,22 +135,16 @@ describe('useNavigationPriority', () => {
     expect(installed.preloader.releaseForNavigation).not.toHaveBeenCalled()
   })
 
-  it('starts uncached search transitions without waiting for the page', () => {
+  it('starts uncached search crossings without waiting for the page', () => {
     const installed = install({ cached: false })
 
-    const visit = visitTo('/search/')
-    installed.handlers.get('visit:start')![0](visit)
+    const enter = visitTo('/search/')
+    installed.handlers.get('visit:start')![0](enter)
+    const leave = visitTo('/', '/search/')
+    installed.handlers.get('visit:start')![0](leave)
 
-    expect(visit.animation.wait).toBe(false)
-  })
-
-  it('starts uncached leave-search transitions without waiting for the page', () => {
-    const installed = install({ cached: false })
-
-    const visit = visitTo('/', '/search/')
-    installed.handlers.get('visit:start')![0](visit)
-
-    expect(visit.animation.wait).toBe(false)
+    expect(enter.animation.wait).toBe(false)
+    expect(leave.animation.wait).toBe(false)
   })
 
   it('issues user-intent preloads with auto priority', () => {
