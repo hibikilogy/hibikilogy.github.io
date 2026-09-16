@@ -1,0 +1,35 @@
+{%- set anonymous_author = <i18n.t key="anonymous_author" lang={lang} /> -%}
+{%- set article_section = config.extra.article_section | default(value="articles/_index.md") -%}
+{%- set section = get_section(path=article_section) -%}
+{%- set author_taxonomy = get_taxonomy(kind="author") -%}
+{%- set default_author_name = config.author | default(value=config.extra.meta_author | default(value=anonymous_author)) -%}
+{
+{%- for page in section.pages %}
+  {%- set_global author_name = default_author_name -%}
+  {%- set_global author_href = "" -%}
+  {%- set authors = page.taxonomies.author | default(value=[]) -%}
+  {%- if authors | length == 1 -%}
+    {%- set_global author_name = authors[0] -%}
+    {%- for term in author_taxonomy.items -%}
+      {%- if term.name == authors[0] -%}
+        {%- set_global author_href = term.path -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- elif authors | length > 1 -%}
+    {%- set_global author_name = authors | sort | join(sep="、") -%}
+  {%- endif -%}
+  {%- set cover_src = page.extra.cover | default(value="") -%}
+  {%- set cover_alt = "" -%}
+  {%- if cover_src -%}
+    {%- set_global cover_alt = page.extra.cover_alt | default(value=page.title) -%}
+  {%- endif -%}
+  {{ page.path | json_encode | replace(from="<", to="\\u003c") | safe }}: {
+  "dv": {{ page.date | json_encode | replace(from="<", to="\\u003c") | safe }},
+  "an": {{ author_name | json_encode | replace(from="<", to="\\u003c") | safe }}{% if page.description %},
+  "s": {{ page.description | json_encode | replace(from="<", to="\\u003c") | safe }}{% endif %}{% if cover_src %},
+  "cs": {{ cover_src | json_encode | replace(from="<", to="\\u003c") | safe }}{% endif %}{% if cover_alt %},
+  "ca": {{ cover_alt | json_encode | replace(from="<", to="\\u003c") | safe }}{% endif %}{% if author_href %},
+  "ah": {{ author_href | trim_end(pat="/") | json_encode | replace(from="<", to="\\u003c") | safe }}{% endif %}
+  }{% if not loop.last %},{% endif %}
+{%- endfor %}
+}

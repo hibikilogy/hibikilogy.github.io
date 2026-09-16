@@ -1,0 +1,80 @@
+@import '../lib/media.css';
+@import '../components/journal.css';
+@import '../components/tags-list.css';
+@import '../components/search.css';
+
+@layer pages {
+  body.search {
+    @media (--tablet) {
+      .content-body > :not(.NavBarMenu):not(.NavBarSocialLink) {
+        display: none;
+      }
+
+      .NavBar .content-body {
+        justify-content: space-between;
+      }
+
+      .NavBarSocialLink {
+        opacity: 0;
+        display: inline-flex;
+        margin-left: auto;
+        white-space: nowrap;
+        view-transition-name: navbar-social-slot;
+      }
+
+      .NavBarSearch {
+        display: none;
+      }
+    }
+
+    @media (--max-tablet) {
+      .NavBar .container {
+        position: relative;
+      }
+
+      .NavBar .content-body {
+        justify-content: flex-end;
+        gap: 0;
+      }
+
+      .NavBar .content-body > .NavBarSocialLink {
+        display: inline-flex;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: max-content;
+        margin-left: 0;
+        text-align: center;
+        white-space: nowrap;
+        view-transition-name: none;
+      }
+
+      .NavBarSearch {
+        display: flex;
+        opacity: 0;
+        pointer-events: none;
+        transition: none;
+      }
+
+      .NavBar .NavBarSearch .SearchShell--compact {
+        gap: 0;
+        justify-content: center;
+      }
+
+      .NavBar .NavBarSearch .SearchShellBody {
+        display: none;
+      }
+    }
+
+    .SearchPage > .content {
+      margin-bottom: 0;
+    }
+
+    @media (--max-mobile) {
+      .SearchPage {
+        padding: 0 16px;
+      }
+    }
+  }
+}

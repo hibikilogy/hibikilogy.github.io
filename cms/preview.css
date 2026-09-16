@@ -1,0 +1,11 @@
+@import '../themes/hibikilogy/styles/critical.css';
+@import '../themes/hibikilogy/styles/layouts/page.css';
+@import '../themes/hibikilogy/styles/layouts/author-profile.css';
+
+@font-face {
+  font-family: 'Source Han Serif CN VF';
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url('/fonts/SourceHanSerifCN-VF.ttf') format('truetype');
+}

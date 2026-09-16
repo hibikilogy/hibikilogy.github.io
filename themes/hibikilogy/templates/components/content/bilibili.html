@@ -1,0 +1,42 @@
+{% component bilibili.main(bvid: string = "", aid: string = "", cid: string = "", title: string = "A BiliBili video", page: integer = 1, width: string = "100%", height: string = "", ratio: string = "16 / 9", time: integer = 0, autoplay: bool = false) %}
+{% set video_link = "" %}
+{% set video_title = title %}
+{% set video_page = page %}
+{% set video_width = width %}
+{% set video_ratio = ratio %}
+{% set video_time = time %}
+{% set autoplay_flag = 0 %}
+
+{% if autoplay %}
+  {% set autoplay_flag = 1 %}
+{% endif %}
+
+{% if aid and cid %}
+  {% set video_link = "https://player.bilibili.com/player.html?aid=" ~ aid ~ "&cid=" ~ cid ~ "&t=" ~ video_time ~ "&autoplay=" ~ autoplay_flag ~ "&p=" ~ video_page %}
+{% elif bvid %}
+  {% set video_link = "https://player.bilibili.com/player.html?bvid=" ~ bvid ~ "&t=" ~ video_time ~ "&autoplay=" ~ autoplay_flag %}
+{% endif %}
+
+{% if video_link != "" %}
+  {% set iframe_style = "width: " ~ video_width ~ ";" %}
+  {% if height %}
+    {% set iframe_style = iframe_style ~ " height: " ~ height ~ ";" %}
+  {% else %}
+    {% set iframe_style = iframe_style ~ " aspect-ratio: " ~ video_ratio ~ ";" %}
+  {% endif %}
+
+  <div class="bilibili-desc">
+    <a class="visually-hidden" href="{{ video_link }}" target="_blank" rel="noreferrer">
+      {{ video_title }}
+    </a>
+  </div>
+  <iframe
+    class="bilibili-iframe"
+    src="{{ video_link }}"
+    title="{{ video_title }}"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+    allowfullscreen
+    style="{{ iframe_style }}"
+  ></iframe>
+{% endif %}
+{% endcomponent bilibili.main %}

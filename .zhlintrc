@@ -1,0 +1,24 @@
+{
+  "caseIgnores": {
+    "IgnoredCase": {
+      "textEnd": ":",
+      "textStart": "[^"
+    }
+  },
+  "preset": "default",
+  "rules": {
+    "adjustedFullwidthPunctuation": "‘’",
+    "spaceOutsideHalfQuote": false,
+    "unifiedPunctuation": {
+      "default": false,
+      "「": [
+        "「",
+        "“"
+      ],
+      "」": [
+        "」",
+        "”"
+      ]
+    }
+  }
+}

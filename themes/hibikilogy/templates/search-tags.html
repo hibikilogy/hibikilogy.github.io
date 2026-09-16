@@ -1,0 +1,15 @@
+{%- set tags = get_taxonomy(kind="tags") -%}
+
+[
+{%- for tag in tags.items %}
+  {
+  "name": {{ tag.name | json_encode | replace(from="<", to="\\u003c") | safe }},
+  "href": {{ tag.path | trim_end(pat="/") | json_encode | replace(from="<", to="\\u003c") | safe }},
+  "pages": [
+  {%- for page in tag.pages %}
+    {{ page.path | json_encode | replace(from="<", to="\\u003c") | safe }}{% if not loop.last %},{% endif %}
+  {%- endfor %}
+  ]
+  }{% if not loop.last %},{% endif %}
+{%- endfor %}
+]

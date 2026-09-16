@@ -1,0 +1,70 @@
+{% component search_shell.main(input_id: string = "", compact: bool = false, transition_name: string = "", readonly: bool = false, show_keys: bool = false, show_submit: bool = false, placeholder: string = "Search", title: string = "Search", lang: string = "") %}
+<form
+  class="SearchShell SearchShell--{% if compact %}compact{% else %}page{% endif %}"
+  role="search"
+  aria-label="{{ title }}"
+  {% if transition_name %}
+    data-search-transition-target="{{ transition_name }}"
+  {% endif %}
+  {% if compact and readonly %}
+    data-action="open-search"
+  {% endif %}
+>
+  <div class="SearchShellBody">
+    {% if compact and readonly %}
+      <span
+        class="SearchShellLabel"
+        aria-hidden="true">
+        {{ placeholder }}
+      </span>
+    {% else %}
+      <input
+        {% if input_id %}
+          id="{{ input_id }}"
+        {% endif %}
+        class="SearchShellInput"
+        type="search"
+        placeholder="{{ placeholder }}"
+        title="{{ title }}"
+        aria-label="{{ title }}"
+        autocapitalize="none"
+        enterkeyhint="search"
+        autocomplete="off"
+        {% if readonly %}
+          readonly
+          {% if compact %}
+            tabindex="-1"
+          {% endif %}
+        {% endif %}
+      >
+    {% endif %}
+
+    {% if show_keys %}
+      <span
+        class="SearchShellKeys"
+        aria-hidden="true">
+        <kbd class="SearchShellKey SearchShellKeyModifier"></kbd>
+        <kbd class="SearchShellKey">K</kbd>
+      </span>
+    {% endif %}
+
+    {% if show_submit %}
+      <button
+        class="SearchShellSubmit"
+        type="submit"
+        aria-label="{{ title }}">
+        <span
+          class="SearchShellIcon i-custom-search size-[1rem]"
+          aria-hidden="true"></span>
+        <span class="SearchShellSubmitText">
+          {{ <i18n.t key="search_submit_text" lang={lang} /> }}
+        </span>
+      </button>
+    {% else %}
+      <span
+        class="SearchShellIcon i-custom-search size-[1rem]"
+        aria-hidden="true"></span>
+    {% endif %}
+  </div>
+</form>
+{% endcomponent search_shell.main %}

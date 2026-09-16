@@ -1,0 +1,25 @@
+# 京吹学报 (Hibikilogy Journal)
+
+> 吹学著作集锦 —— 收录《吹响吧！上低音号》（京阿尼吹奏乐部）相关研究、考据与评论文章的中文出版物。文章按发布日期排列，支持标签与作者两种索引。
+
+本站为静态站点，无需 JavaScript 即可阅读全部正文。每篇文章提供 Markdown 原文镜像：在页面 URL 末尾加 `.md` 后缀即可获取。全站入口如下：
+
+- [首页（最新文章列表）](https://hibikilogy.vercel.app/)
+- [标签索引](https://hibikilogy.vercel.app/tags/)
+- [作者索引](https://hibikilogy.vercel.app/author/)
+- [站内搜索](https://hibikilogy.vercel.app/search)
+- [投稿与写作规范](https://hibikilogy.vercel.app/docs/contribute)
+- [能力鉴定说明](https://hibikilogy.vercel.app/docs/assessment)
+- [站点地图](https://hibikilogy.vercel.app/sitemap.xml)
+- [Atom 订阅](https://hibikilogy.vercel.app/atom.xml)
+
+## 文章
+
+全部文章列表见[站点地图](https://hibikilogy.vercel.app/sitemap.xml)或首页；单篇文章的 Markdown 版本位于对应 HTML 路径加 `.md` 后缀，例如：
+
+- [示例文章《久美子大学去向考据》](https://hibikilogy.vercel.app/articles/daxue.md)
+
+## 联系方式
+
+- 投稿邮箱：journal@kyoani.cn
+- 源码仓库：https://github.com/hibikilogy/hibikilogy.github.io

@@ -1,0 +1,96 @@
+name: TEST_BUILD
+
+on:
+  pull_request:
+    branches: [next, main, dev, Refactor/zola]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: test-build-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CARGO_PROFILE_DEV_DEBUG: 0
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup CI tools
+        uses: ./.github/actions/setup-tools
+        with:
+          node: 'true'
+          rust: 'true'
+          zola: 'true'
+          sccache: 'true'
+          cache-shared-key: site-build
+
+      - name: Build TypeScript (vite)
+        run: pnpm build:vite
+
+      - name: Build CMS
+        run: pnpm build:admin
+
+      - name: Subset title font
+        run: pnpm build:subset-titlefont
+
+      - name: Subset body font
+        run: pnpm build:subset-bodyfont
+
+      - name: Restore OG card cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            static/og/articles
+            static/_cache/og-render-manifest.json
+          key: og-cards-${{ runner.os }}
+          restore-keys: |
+            og-cards-
+
+      - name: Render OG cards
+        run: pnpm build:og
+
+      - name: Set commit info
+        run: |
+          echo "GIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+          echo "GIT_MESSAGE=$(git log -1 --format=%s HEAD)" >> $GITHUB_ENV
+          echo "GIT_BRANCH=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+
+      - name: Build site
+        run: zola build --drafts --base-url https://hibikilogy-pr${{ github.event.number }}.surge.sh
+
+      - name: Beasties critical CSS
+        run: pnpm run build:beasties
+
+      - name: Rewrite site artifacts
+        run: pnpm build:rewrite-artifacts
+
+      - name: Export Markdown routes
+        run: cargo run --locked --bin deploy-markdown -- --config zola.toml --base-url https://hibikilogy-pr${{ github.event.number }}.surge.sh
+
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: site
+          path: public
+          retention-days: 5
+
+      - name: Save PR number
+        if: ${{ always() }}
+        run: echo ${{ github.event.number }} > ./pr-id.txt
+
+      - name: Upload PR number
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: pr
+          path: ./pr-id.txt

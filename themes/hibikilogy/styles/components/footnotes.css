@@ -1,0 +1,18 @@
+@layer components {
+  .footnotes {
+    border-top: 1px solid var(--joh-c-divider);
+    padding-top: 1rem;
+
+    ol {
+      color: var(--joh-c-text-2);
+    }
+
+    a {
+      font-variant-emoji: text;
+    }
+
+    li[id^='fn-'] {
+      scroll-margin-top: calc(var(--joh-nav-height, 64px) + 16px);
+    }
+  }
+}

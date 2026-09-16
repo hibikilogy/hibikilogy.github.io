@@ -1,0 +1,26 @@
+/* ===================================================================
+ * External link icons — automatic detection in .joh-context
+ *
+ * SVG source: static/svg/link.svg (also available as UnoCSS i-custom-link
+ * for explicit usage in templates).
+ * =================================================================== */
+
+@layer components {
+  :is(.joh-context a[href*='://'], .joh-context a[target='_blank']):not(.no-icon)::after {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -0.125em;
+    margin-left: 0.25em;
+    width: 1.25em;
+    height: 1.25em;
+    background-color: currentColor;
+    flex-shrink: 0;
+    content: '';
+    -webkit-mask: url('/svg/link.svg') no-repeat center / 100% 100%;
+    mask: url('/svg/link.svg') no-repeat center / 100% 100%;
+  }
+
+  .external-link-icon-enabled :is(.joh-context a[href*='://'], .joh-context a[target='_blank'])::after {
+    color: currentColor;
+  }
+}
