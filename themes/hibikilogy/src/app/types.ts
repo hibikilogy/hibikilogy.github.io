@@ -1,4 +1,5 @@
 import type { EffectScope } from '@vue/reactivity'
+import type { PageViewCounter } from '../features/page-views/index.ts'
 import type { SearchService } from '../features/search/index.ts'
 import type { LayoutModel, PageData, RouteModel } from './hooks/index.ts'
 
@@ -6,6 +7,7 @@ export interface AppContext {
   readonly scope: EffectScope
   readonly route: RouteModel
   readonly searchService: SearchService
+  readonly pageViews: PageViewCounter
   dispose: () => void
 }
 

@@ -75,6 +75,10 @@
       line-height: 30px;
     }
 
+    .footer-siteinfo-count-value {
+      font-variant-numeric: tabular-nums;
+    }
+
     .footer-contact-link {
       display: inline-block;
       width: 100%;

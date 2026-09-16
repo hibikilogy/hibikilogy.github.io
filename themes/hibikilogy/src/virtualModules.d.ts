@@ -4,6 +4,8 @@ declare module 'virtual:hibikilogy-config' {
   export const HIBIKILOGY_CONFIG: {
     searchPageSize: number
     analyticsGoogle: string
+    pageViewsEndpoint: string
+    productionBaseUrl: string
     [key: string]: HibikilogyScalar
   }
 

@@ -85,7 +85,6 @@ stylesheets = [
   "styles/source-han-serif-cn-vf.css",
   "styles/source-han-sans-sc-vf.patch.css",
 ]
-busuanzi = true
 tag_cloud_bg = "/imgs/tag-cloud.svg"
 tag_category_order = [
   "人物",
@@ -124,6 +123,12 @@ slogan = [ { code = "zh", text = "吹学著作集锦", link = "$BASE_URL" }, ]
 katex.enabled = true
 katex.css_cdn = "https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css"
 katex.css_integrity = "sha384-vlBdW0r3AcZO/HboRPznQNowvexd3fY8qHOWkBi5q7KGgqJ+F48+DceybYmrVbmB"
+
+# 页面计数（页脚「总查询数」）：计数键取 production_base_url，
+# 使预览站与本地开发读写正式站的同一份计数。
+[extra.page_views]
+enabled = true
+endpoint = "https://hub.interknot.site/api/reactions"
 
 [extra.favicon]
 apple_touch_icon = "/apple-touch-icon-precomposed.png"

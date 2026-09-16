@@ -1,5 +1,4 @@
 {% component footer.main(config, lang: string = "", show_tags: bool = false, show_friendlinks: bool = false, tag_pages = None) %}
-{% set has_busuanzi = config.extra.busuanzi | default(value=false) %}
 {# Tera scopes `set` to the loop body, so resolve the active-locale footer
    entry once via set_global instead of repeating the lookup per section. #}
 {% set_global footer_item = None %}
@@ -83,14 +82,14 @@
           </a>
         {% endif %}
       </div>
-      {% if has_busuanzi %}
-        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-      {% endif %}
       <div class="footer-siteinfo-meta">
         {% if footer_item %}
-          {% if has_busuanzi %}
+          {% if config.extra.page_views and config.extra.page_views.enabled %}
             <p class="footer-siteinfo-count">{{ footer_item.count }}:
-              <span id="busuanzi_value_page_pv"></span>
+              <span
+                class="footer-siteinfo-count-value"
+                data-page-views-value
+                data-state="pending">—</span>
             </p>
           {% endif %}
           <p class="footer-siteinfo-copyright">{{ footer_item.copyright }}</p>
