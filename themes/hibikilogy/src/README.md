@@ -59,6 +59,7 @@ PageKind 模块：
 | 页面类型 | `resolvePageData` |
 | 搜索 query、phase、response、error | `useSearch` |
 | 搜索索引状态 | `SearchService` |
+| 页面计数缓存与在途请求 | `PageViewCounter` |
 | 搜索成功快照 | `SnapshotStore` |
 | Waterfall 布局 | `WaterfallController` |
 | class、ARIA、动画节点 | 对应 UI adapter |
@@ -129,6 +130,15 @@ Controller 自行监听内容、尺寸、图片、字体和窗口变化；布局
 ### Outline
 
 Hash 链接使用原生滚动并绕过 Swup。无滚动 hash 同步由 Route/History adapter 处理。
+
+### Page views
+
+页脚「总查询数」由计数器接口提供，配置在 `zola.toml [extra.page_views]`：
+
+- 计数键取 `production_base_url` 的 host + 页面路径（去掉结尾斜杠），使预览站与本地开发读写正式站的同一份计数；服务端同样剥掉协议。
+- `PageViewCounter` 在 AppScope 存活：内存 LRU + `localStorage` 快照缓冲计数，写 DOM 由 PageScope 的模块负责。
+- 挂载顺序是先上屏缓存值（切页不出现空白），再用接口结果校正；接口失败保留缓存，页面已被替换时丢弃结果。
+- 模板渲染占位符 `—`，元素缺失（未启用）时整块不挂载。
 
 ## 文件约定
 
