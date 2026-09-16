@@ -1,4 +1,4 @@
-{% component article.main(page, config, lang: string = "", show_cover: bool = false, cover_eager: bool = false) %}
+{% component article.main(page, config, lang: string = "", show_cover: bool = false, cover_eager: bool = false, lead: bool = false) %}
 {% set cover_loading = "lazy" %}
 {% set cover_fetchpriority = "auto" %}
 
@@ -9,7 +9,7 @@
 
 {% set title_transition_name = <data.post_title_transition_name page={page} /> %}
 
-<article class="Section Article">
+<article class="Section Article{% if lead %} Lead{% endif %}">
   <a href="{{ page.permalink | trim_end(pat='/') }}">
     <h2 class="article-title">
       <span

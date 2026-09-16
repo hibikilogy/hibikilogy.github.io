@@ -127,6 +127,10 @@
       }
     }
 
+    .Lead {
+      grid-column: 1;
+    }
+
     .Section {
       background-color: var(--joh-c-bg);
       box-sizing: border-box;

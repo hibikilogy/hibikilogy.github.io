@@ -122,7 +122,7 @@
     {% endif %}
 
     {% for page in pages %}
-      {{ <article.main page={page} config={config} lang={lang} show_cover={true} cover_eager={loop.index0 == cover_index} /> }}
+      {{ <article.main page={page} config={config} lang={lang} show_cover={true} cover_eager={loop.index0 == cover_index} lead={show_frontpage and loop.first} /> }}
     {% endfor %}
   </div>
 </div>
