@@ -476,9 +476,19 @@ singletons:
                         label: GA 测量 ID
                         widget: string
                         required: false
-                - name: busuanzi
-                  label: 启用不蒜子统计
-                  widget: boolean
+                - name: page_views
+                  label: 页面计数
+                  widget: object
+                  collapsed: true
+                  fields:
+                      - name: enabled
+                        label: 启用页面计数
+                        widget: boolean
+                        default: true
+                      - name: endpoint
+                        label: 计数接口地址
+                        widget: string
+                        required: false
                 - name: medium_zoom
                   label: 图片放大
                   widget: object
