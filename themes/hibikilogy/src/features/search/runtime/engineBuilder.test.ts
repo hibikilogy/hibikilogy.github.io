@@ -9,6 +9,7 @@ import type {
   SearchTagIndexItem,
 } from '../types.ts'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { searchRecordsInEngine } from '../core/engine.ts'
 import { buildSearchEngine } from './engineBuilder.ts'
 
 const rawIndex = [
@@ -125,6 +126,42 @@ describe('buildSearchEngine metadata resolution', () => {
     expect(restored.engine.records).toHaveLength(1)
     expect(fetchMock).not.toHaveBeenCalledWith(secondUrls.indexUrl)
   })
+
+  it('preserves query results and ranking after restoring serialized indexes', async () => {
+    const urls = createUrls()
+    stubFetch({
+      [urls.indexUrl]: [
+        {
+          path: '/articles/example/',
+          title: '京都的作品',
+          description: '动画研究',
+          body: `久美子${'无'.repeat(300)}丽奈`,
+        },
+        { path: '/articles/title/', title: '京都动画研究' },
+      ],
+      [urls.articlesDataUrl]: articleMetadata,
+      [urls.tagsDataUrl]: tagIndex,
+    })
+    const storage = createMemoryCacheStorage()
+    const initial = await buildAndReport(createBootstrap(urls), storage)
+    const restored = await buildAndReport(createBootstrap(urls), storage)
+    expect(restored.report.cacheHit).toBe(true)
+
+    for (const [query, expectedCount] of [
+      ['京都动画', 2],
+      ['title:京都动画', 1],
+      ['author:Author', 1],
+      ['tag:tag', 1],
+      ['"京都动画"', 1],
+      ['久美子 丽奈', 1],
+      ['久美子 NOT 丽奈', 0],
+      ['京都 OR 丽奈', 2],
+    ] as const) {
+      const freshResults = searchRecordsInEngine(initial.engine, query)
+      expect(freshResults, query).toHaveLength(expectedCount)
+      expect(searchRecordsInEngine(restored.engine, query), query).toEqual(freshResults)
+    }
+  })
 })
 
 let urlSerial = 0
@@ -161,9 +198,9 @@ async function buildAndReport(
 function createMemoryCacheStorage(): SearchEngineCacheStorage {
   let entry: SearchEngineCacheEntry | null = null
   return {
-    read: async () => entry,
+    read: async () => structuredClone(entry),
     write: async (next) => {
-      entry = next
+      entry = structuredClone(next)
     },
   }
 }

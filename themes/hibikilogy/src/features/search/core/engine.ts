@@ -1,5 +1,4 @@
 import type {
-  FuseLogicalQuery,
   FuseSearchResult,
   RawSearchIndexEntry,
   SearchArticleMetadataIndex,
@@ -26,16 +25,10 @@ import {
   normalizeSearchUrl,
   normalizeSiteUrl,
   sanitizeSearchBody,
-  segmentSearchText,
   tokenizeForFuse,
 } from '../utils.ts'
-import { buildExactBodySearchResults } from './bodyMatch.ts'
-import {
-  getFuseQueryText,
-  getPositiveQueryText,
-  hasExplicitFieldSearch,
-  parseSearchQuery,
-} from './query.ts'
+import { buildExactBodySearchResults, createBodyMatchExcerpt } from './bodyMatch.ts'
+import { parseSearchQuery } from './query.ts'
 import { dedupeSearchResults } from './results.ts'
 import { buildTagsByUrl } from './tags.ts'
 
@@ -83,11 +76,11 @@ export function normalizeSearchRecords(
         authorName,
         authorHref: String(metadata.ah || ''),
         tags,
-        titleSearch: segmentSearchText(title),
-        descriptionSearch: segmentSearchText(description),
-        slugSearch: segmentSearchText(slug),
-        authorSearch: segmentSearchText(authorName),
-        tagSearch: segmentSearchText(tags.map(tag => tag.name).join(' ')),
+        titleSearch: normalizeSearchText(title),
+        descriptionSearch: normalizeSearchText(description),
+        slugSearch: normalizeSearchText(slug),
+        authorSearch: normalizeSearchText(authorName),
+        tagSearch: normalizeSearchText(tags.map(tag => tag.name).join(' ')),
       }
     })
     .filter(entry => (
@@ -119,7 +112,8 @@ export function createSearchEngine(records: SearchRecord[], indexJson: SearchEng
 
   const extendedFuse = new Fuse<SearchRecord>(records, {
     ...fuseSearchOptions,
-    tokenize: tokenizeForFuse,
+    useTokenSearch: false,
+    useExtendedSearch: true,
     keys: extendedFuseSearchKeys,
   }, extendedIndex)
 
@@ -149,8 +143,17 @@ export function searchRecordsInEngine(engine: SearchEngine, term: string): Searc
   const matched = shouldRequireExactQueryMatch(query)
     ? filtered.filter(result => matchesParsedQuery(result.item, query))
     : filtered
+  const singleClause = query.clauses.length === 1 ? query.clauses[0] : undefined
+  const phrase = singleClause?.type === 'term' ? singleClause.value : undefined
 
   return matched
+    .sort((left, right) => {
+      const leftTitleMatch = phrase && left.item.titleSearch.includes(phrase) ? 1 : 0
+      const rightTitleMatch = phrase && right.item.titleSearch.includes(phrase) ? 1 : 0
+      return rightTitleMatch - leftTitleMatch
+        || (left.score ?? 1) - (right.score ?? 1)
+        || left.item.url.localeCompare(right.item.url)
+    })
     .map((result, index) => toSearchResultRecord(result, index))
 }
 
@@ -173,21 +176,22 @@ function toSearchResultRecord(result: FuseSearchResult, searchRank: number): Sea
     coverHeight: record.coverHeight,
     coverThumbhash: record.coverThumbhash,
     publishDateValue: record.publishDateValue,
-    body: record.bodyMatchExcerpt ? record.body : createExcerpt(record.body),
+    body: result.bodyMatchTerm
+      ? createBodyMatchExcerpt(record.body, result.bodyMatchTerm)
+      : createExcerpt(record.body),
     date: record.date,
     slug: record.slug,
     authorName: record.authorName,
     authorHref: record.authorHref,
     tags: record.tags,
-    bodyMatchExcerpt: record.bodyMatchExcerpt,
+    bodyMatchExcerpt: Boolean(result.bodyMatchTerm),
     searchRank,
     searchScore: result.score ?? 1,
   }
 }
 
 function runParsedSearch(engine: SearchEngine, query: ReturnType<typeof parseSearchQuery>): FuseSearchResult[] {
-  const positiveText = getPositiveQueryText(query)
-  if (!positiveText || shouldUseFullCorpusCandidates(query)) {
+  if (shouldUseFullCorpusCandidates(query)) {
     return buildRecordCandidates(engine.records)
   }
 
@@ -199,24 +203,7 @@ function runParsedSearch(engine: SearchEngine, query: ReturnType<typeof parseSea
     return dedupeSearchResults(positiveClauses.flatMap(clause => runClauseSearch(engine, clause)))
   }
 
-  const fuse = hasExplicitFieldSearch(query) ? engine.extendedFuse : engine.defaultFuse
-
-  const logicalQuery = toFuseLogicalFieldQuery(query)
-  if (logicalQuery)
-    return fuse.search(logicalQuery)
-
-  return fuse.search(getPrimaryFuseQueryText(query, positiveText))
-}
-
-function getPrimaryFuseQueryText(
-  query: ReturnType<typeof parseSearchQuery>,
-  positiveText: string,
-): string {
-  const fuzzyClause = getSimpleFuzzyClause(query)
-  if (fuzzyClause)
-    return normalizeSearchText(fuzzyClause.value)
-
-  return getFuseQueryText(positiveText)
+  return runClauseSearch(engine, positiveClauses[0])
 }
 
 function getSimpleFuzzyClause(
@@ -244,28 +231,10 @@ function buildRecordCandidates(records: SearchRecord[]): FuseSearchResult[] {
 function runClauseSearch(engine: SearchEngine, clause: Exclude<SearchClause, { type: 'not' }>): FuseSearchResult[] {
   if (clause.type === 'field') {
     const key = fieldSearchKeys[clause.field]
-    return engine.extendedFuse.search({ [key]: `'${segmentSearchText(clause.value)}` })
+    return engine.extendedFuse.search({ [key]: `'${normalizeSearchText(clause.value)}` })
   }
 
-  const value = clause.phrase ? `'${clause.value}` : getFuseQueryText(clause.value)
-  return engine.defaultFuse.search(value)
-}
-
-function toFuseLogicalFieldQuery(query: ReturnType<typeof parseSearchQuery>): FuseLogicalQuery | null {
-  const clauses = query.clauses
-    .filter(clause => clause.type !== 'not')
-  if (!clauses.length || clauses.some(clause => clause.type !== 'field'))
-    return null
-
-  const fieldClauses = clauses.map((clause) => {
-    if (clause.type !== 'field')
-      throw new Error('Expected field search clause')
-    return { [fieldSearchKeys[clause.field]]: `'${segmentSearchText(clause.value)}` }
-  })
-
-  if (fieldClauses.length === 1)
-    return fieldClauses[0]
-  return { $and: fieldClauses }
+  return engine.defaultFuse.search(normalizeSearchText(clause.value))
 }
 
 function matchesParsedQuery(record: SearchRecord, query: ReturnType<typeof parseSearchQuery>): boolean {
@@ -283,7 +252,8 @@ function matchesClause(record: SearchRecord, clause: ReturnType<typeof parseSear
     return searchTextIncludes(getFieldCorpus(record, clause.field), clause.value)
   }
 
-  return searchTextIncludes(getRecordCorpus(record), clause.value)
+  return [record.title, record.description, record.slug, record.body]
+    .some(corpus => searchTextIncludes(corpus, clause.value))
 }
 
 function getFieldCorpus(record: SearchRecord, field: keyof typeof fieldSearchKeys): string {
@@ -298,15 +268,6 @@ function getFieldCorpus(record: SearchRecord, field: keyof typeof fieldSearchKey
   if (field === 'slug')
     return record.slug
   return record.body
-}
-
-function getRecordCorpus(record: SearchRecord): string {
-  return [
-    record.title,
-    record.description,
-    record.slug,
-    record.body,
-  ].join(' ')
 }
 
 interface BodyFallbackTerm {
@@ -344,7 +305,9 @@ function shouldUseFullCorpusCandidates(query: ReturnType<typeof parseSearchQuery
     return true
 
   return query.clauses.some((clause) => {
-    return clause.type === 'field' && clause.field === 'body' && /\s/.test(clause.value)
+    const positive = clause.type === 'not' ? clause.clause : clause
+    return (positive.type === 'term' && positive.phrase)
+      || (positive.type === 'field' && /[\s"|]/.test(positive.value))
   })
 }
 

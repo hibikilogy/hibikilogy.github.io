@@ -59,7 +59,6 @@ export interface SearchRecord {
   slugSearch: string
   authorSearch: string
   tagSearch: string
-  bodyMatchExcerpt?: boolean
 }
 
 type SearchResultPresentationFields = Omit<
@@ -69,7 +68,6 @@ type SearchResultPresentationFields = Omit<
   | 'slugSearch'
   | 'authorSearch'
   | 'tagSearch'
-  | 'bodyMatchExcerpt'
 >
 
 export interface SearchResultRecord extends SearchResultPresentationFields {
@@ -115,6 +113,7 @@ export interface SearchFuse {
 export interface FuseSearchResult {
   item: SearchRecord
   score?: number
+  bodyMatchTerm?: string
 }
 
 export type SearchField = 'author' | 'tag' | 'title' | 'body' | 'description' | 'slug'
@@ -134,11 +133,6 @@ export interface ParsedSearchQuery {
   mode: 'and' | 'or'
   clauses: SearchClause[]
 }
-
-export type FuseLogicalQuery
-  = | Record<string, string>
-    | { $and: FuseLogicalQuery[] }
-    | { $or: FuseLogicalQuery[] }
 
 export interface SearchEngineBootstrapData {
   indexUrl: string

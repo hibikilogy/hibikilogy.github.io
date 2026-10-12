@@ -27,9 +27,9 @@ function mergeSearchResult(currentResult: FuseSearchResult, nextResult: FuseSear
   const currentScore = currentResult.score ?? 1
   const nextScore = nextResult.score ?? 1
   const betterRankedResult = nextScore < currentScore ? nextResult : currentResult
-  const bodyExcerptResult = nextResult.item.bodyMatchExcerpt
+  const bodyExcerptResult = nextResult.bodyMatchTerm
     ? nextResult
-    : currentResult.item.bodyMatchExcerpt
+    : currentResult.bodyMatchTerm
       ? currentResult
       : null
 
@@ -38,10 +38,6 @@ function mergeSearchResult(currentResult: FuseSearchResult, nextResult: FuseSear
 
   return {
     ...betterRankedResult,
-    item: {
-      ...betterRankedResult.item,
-      body: bodyExcerptResult.item.body,
-      bodyMatchExcerpt: true,
-    },
+    bodyMatchTerm: bodyExcerptResult.bodyMatchTerm,
   }
 }

@@ -1,9 +1,6 @@
 import type { ParsedSearchQuery, SearchClause, SearchField } from '../types.ts'
 import { searchFieldDefinitions } from '../config.ts'
-import {
-  normalizeSearchText,
-  tokenizeForFuse,
-} from '../utils.ts'
+import { normalizeSearchText } from '../utils.ts'
 
 const fieldAliases = new Map<string, SearchField>()
 
@@ -11,16 +8,6 @@ for (const definition of searchFieldDefinitions) {
   for (const alias of definition.aliases) {
     fieldAliases.set(normalizeSearchText(alias), definition.field)
   }
-}
-
-export function tokenizeSearchQuery(value: string): string[] {
-  const normalized = normalizeSearchText(value)
-  if (!normalized)
-    return []
-
-  return tokenizeForFuse(normalized).filter(token => (
-    normalized.length <= 1 || token.length > 1
-  ))
 }
 
 export function parseSearchQuery(value: string): ParsedSearchQuery {
@@ -32,25 +19,6 @@ export function parseSearchQuery(value: string): ParsedSearchQuery {
     .filter((clause): clause is SearchClause => Boolean(clause))
 
   return { mode, clauses }
-}
-
-export function hasExplicitFieldSearch(query: ParsedSearchQuery): boolean {
-  return query.clauses.some(clause => (
-    clause.type === 'field'
-    || (clause.type === 'not' && clause.clause.type === 'field')
-  ))
-}
-
-export function getPositiveQueryText(query: ParsedSearchQuery): string {
-  return query.clauses
-    .filter((clause): clause is Exclude<SearchClause, { type: 'not' }> => clause.type !== 'not')
-    .map(clause => clause.value)
-    .join(' ')
-}
-
-export function getFuseQueryText(value: string): string {
-  const tokens = tokenizeSearchQuery(value)
-  return tokens.join(' ') || normalizeSearchText(value)
 }
 
 function parseClauseToken(token: string): SearchClause | null {

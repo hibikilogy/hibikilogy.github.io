@@ -13,7 +13,7 @@ import {
   searchFieldDefinitions,
 } from '../config.ts'
 
-export const SEARCH_CACHE_SCHEMA_VERSION = 1
+export const SEARCH_CACHE_SCHEMA_VERSION = 2
 export const SEARCH_CACHE_FUSE_VERSION = Fuse.version || 'unknown'
 export const SEARCH_CACHE_CONFIG_VERSION = createStableHash({
   defaultFuseSearchKeys,

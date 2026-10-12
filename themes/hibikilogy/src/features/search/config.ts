@@ -22,7 +22,7 @@ export const fuseSearchOptions = {
   fieldNormWeight: 0.3,
   minMatchCharLength: 1,
   threshold: 0.42,
-  useExtendedSearch: true,
+  useExtendedSearch: false,
   useTokenSearch: true,
   tokenMatch: 'all' as const,
 }

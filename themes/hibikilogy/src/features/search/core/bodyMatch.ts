@@ -28,11 +28,8 @@ function buildExactBodySearchResult(record: SearchRecord, normalizedTerm: string
   const positionRatio = normalizedBody.length ? matchIndex / normalizedBody.length : 1
 
   return {
-    item: {
-      ...record,
-      body: createBodyMatchExcerpt(record.body || '', normalizedTerm),
-      bodyMatchExcerpt: true,
-    },
+    item: record,
+    bodyMatchTerm: normalizedTerm,
     score: getExactBodyScore(occurrenceCount, positionRatio),
   }
 }
@@ -60,7 +57,7 @@ function getExactBodyScore(occurrenceCount: number, positionRatio: number): numb
   return 0.24 - occurrenceBoost + positionPenalty
 }
 
-function createBodyMatchExcerpt(body: string, normalizedTerm: string): string {
+export function createBodyMatchExcerpt(body: string, normalizedTerm: string): string {
   const text = String(body || '').replace(/\s+/g, ' ').trim()
   if (!text)
     return ''

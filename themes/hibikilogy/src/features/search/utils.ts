@@ -1,7 +1,5 @@
 import { getDefaultOrigin, parseUrl, serializeUrl } from 'shared/url.ts'
 
-const cjkPattern = /[\u3400-\u9FFF]+/gu
-
 export function fmt(template: string, ...args: (string | number)[]): string {
   return template.replace(/\{(\d+)\}/g, (_, i) => String(args[+i] ?? ''))
 }
@@ -45,28 +43,12 @@ export function createExcerpt(value: SearchTextInput, maxLength = 180): string {
   return `${text.slice(0, maxLength).trim()}...`
 }
 
-export function segmentSearchText(value: SearchTextInput): string {
-  const normalized = normalizeSearchText(value)
-  if (!normalized)
-    return ''
-
-  return uniqueTokens([
-    normalized,
-    ...segmentWords(normalized),
-    ...getCjkBigrams(normalized),
-  ]).join(' ')
-}
-
 export function tokenizeForFuse(value: string): string[] {
   const normalized = normalizeSearchText(value)
   if (!normalized)
     return []
 
-  return uniqueTokens([
-    ...normalized.split(/\s+/).filter(Boolean),
-    ...segmentWords(normalized),
-    ...getCjkBigrams(normalized),
-  ])
+  return uniqueTokens(segmentWords(normalized))
 }
 
 export function uniqueTokens(tokens: string[]): string[] {
@@ -88,19 +70,6 @@ function segmentWords(value: string): string[] {
   return [...segmenter.segment(value)]
     .filter(part => part.isWordLike)
     .map(part => part.segment)
-}
-
-function getCjkBigrams(value: string): string[] {
-  const grams: string[] = []
-
-  for (const match of value.matchAll(cjkPattern)) {
-    const text = match[0]
-    for (let index = 0; index < text.length - 1; index += 1) {
-      grams.push(text.slice(index, index + 2))
-    }
-  }
-
-  return grams
 }
 
 interface SearchSegment {
