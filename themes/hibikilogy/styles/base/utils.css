@@ -1,0 +1,23 @@
+@layer utilities {
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    white-space: nowrap;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+  }
+
+  @media (max-width: 719px) {
+    .hide-in-mobile {
+      display: none;
+    }
+  }
+
+  @media (max-width: 959px) {
+    .hide-in-pad {
+      display: none;
+    }
+  }
+}

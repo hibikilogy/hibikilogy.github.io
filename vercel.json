@@ -1,0 +1,84 @@
+{
+  "cleanUrls": true,
+  "redirects": [{
+    "source": "/page/1",
+    "destination": "/",
+    "statusCode": 301
+  }, {
+    "source": "/page/1/",
+    "destination": "/",
+    "statusCode": 301
+  }, {
+    "source": "/tags/:tag/page/1",
+    "destination": "/tags/:tag",
+    "statusCode": 301
+  }, {
+    "source": "/tags/:tag/page/1/",
+    "destination": "/tags/:tag",
+    "statusCode": 301
+  }, {
+    "source": "/author/:author/page/1",
+    "destination": "/author/:author",
+    "statusCode": 301
+  }, {
+    "source": "/author/:author/page/1/",
+    "destination": "/author/:author",
+    "statusCode": 301
+  }],
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/js/chunks/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/js/ui.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/styles/uno.css",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/search_index.zh.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}

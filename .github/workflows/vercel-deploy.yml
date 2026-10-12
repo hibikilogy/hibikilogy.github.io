@@ -1,0 +1,100 @@
+name: VERCEL_DEPLOY
+
+on:
+  push:
+    branches:
+      - Refactor/zola
+      - dev
+    paths-ignore:
+      - 'README.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: vercel-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CARGO_PROFILE_DEV_DEBUG: 0
+    environment:
+      name: Development
+      url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup CI tools
+        uses: ./.github/actions/setup-tools
+        with:
+          node: 'true'
+          rust: 'true'
+          zola: 'true'
+          sccache: 'true'
+          cache-shared-key: site-build
+
+      - name: Build TypeScript (vite)
+        run: pnpm build:vite
+
+      - name: Build CMS
+        run: pnpm build:admin
+
+      - name: Subset title font
+        run: pnpm build:subset-titlefont
+
+      - name: Subset body font
+        run: pnpm build:subset-bodyfont
+
+      - name: Restore OG card cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            static/og/articles
+            static/_cache/og-render-manifest.json
+          key: og-cards-${{ runner.os }}
+          restore-keys: |
+            og-cards-
+
+      - name: Render OG cards
+        run: pnpm build:og
+
+      - name: Set commit info
+        run: |
+          echo "GIT_HASH=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
+          echo "GIT_MESSAGE=$(git log -1 --format=%s HEAD)" >> $GITHUB_ENV
+          echo "GIT_BRANCH=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+
+      - name: Build site
+        run: zola build --drafts
+
+      - name: Beasties critical CSS
+        run: pnpm run build:beasties
+
+      - name: Rewrite site artifacts
+        run: pnpm build:rewrite-artifacts
+
+      - name: Export Markdown routes
+        run: pnpm build:markdown
+
+      - name: Copy vercel.json into deploy dir
+        run: cp vercel.json public/vercel.json
+
+      - name: Deploy to Vercel
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          DEPLOY_URL=$(npx vercel deploy public --prod --yes)
+          echo "url=${DEPLOY_URL}" >> "$GITHUB_OUTPUT"
+          echo "## 🚀 Vercel 部署完成" >> "$GITHUB_STEP_SUMMARY"
+          echo "**部署地址**: [${DEPLOY_URL}](${DEPLOY_URL})" >> "$GITHUB_STEP_SUMMARY"

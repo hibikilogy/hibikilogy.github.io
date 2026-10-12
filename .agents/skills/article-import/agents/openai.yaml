@@ -1,0 +1,4 @@
+interface:
+  display_name: "Article Import"
+  short_description: "Import web, pasted, or local articles into Zola"
+  default_prompt: "Use $article-import to import this article URL, pasted content, or local extraction into the hibikilogy Zola repository."

@@ -1,0 +1,57 @@
+@import '../lib/media.css';
+
+@layer layouts {
+  .Layout {
+    --joh-sticky-nav-offset: var(--joh-nav-height);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .PageFrame,
+  .PageMain {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .Content {
+    flex: 1;
+    width: 100%;
+    min-height: calc(100svh - var(--joh-nav-height));
+
+    .container {
+      margin: 0 auto;
+      max-width: var(--joh-layout-max-width);
+    }
+
+    .content {
+      min-width: 0;
+    }
+
+    @media (--mobile) {
+      padding: 0px 16px;
+    }
+
+    @media (--tablet) {
+      padding: 0 32px;
+    }
+  }
+
+  @media (--laptop) {
+    .PageFrame.has-aside {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 224px;
+      column-gap: 32px;
+      margin: 0 auto;
+      padding: 0 32px;
+      width: 100%;
+      max-width: calc(var(--joh-layout-max-width) + 64px);
+
+      > .PageMain > .Content {
+        padding-inline: 0;
+      }
+    }
+  }
+}

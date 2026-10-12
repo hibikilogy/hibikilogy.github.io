@@ -1,0 +1,19 @@
+{% component collapsible.main(defaultOpen: bool = false) %}
+{% set sections = body | split(pat=":::content") %}
+{% set title_slot = sections[0] | replace(from=":::title", to="") | trim %}
+{% set content_slot = "" %}
+{% if sections | length > 1 %}
+{% set content_slot = sections[1] | trim %}
+{% endif %}
+{% set title_html = title_slot | markdown | replace(from="<p>", to="") | replace(from="</p>", to="") %}
+
+<details class="joh-collapsible"{% if defaultOpen %} open{% endif %}>
+<summary class="joh-collapsible__summary">
+<span class="joh-collapsible__icon i-custom-down" aria-hidden="true"></span>
+<span class="joh-collapsible__title">{{ title_html | safe }}</span>
+</summary>
+<div class="joh-collapsible__content">
+{{ content_slot | markdown | safe }}
+</div>
+</details>
+{% endcomponent collapsible.main %}

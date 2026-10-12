@@ -1,0 +1,36 @@
+@layer components {
+  .zoom-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    opacity: 0;
+    /* Fallback for browsers without color-mix(). */
+    background: var(--joh-c-bg);
+    background: color-mix(in srgb, var(--joh-c-bg) 88%, transparent);
+    cursor: zoom-out;
+    transition: opacity var(--duration-medium-zoom) ease;
+    backdrop-filter: blur(5rem);
+  }
+
+  .zoom-image--opened {
+    position: fixed;
+    z-index: 1000;
+    margin: 0;
+    opacity: 1;
+    transform: none;
+    cursor: zoom-out;
+    object-fit: contain;
+    transition:
+      top var(--duration-medium-zoom) ease,
+      left var(--duration-medium-zoom) ease,
+      width var(--duration-medium-zoom) ease,
+      height var(--duration-medium-zoom) ease,
+      opacity var(--duration-medium-zoom) ease;
+  }
+
+  .zoom-overlay,
+  .zoom-image--opened {
+    border-radius: 0 !important;
+    border: none !important;
+  }
+}

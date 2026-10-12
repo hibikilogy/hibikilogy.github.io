@@ -1,0 +1,20 @@
+{# og 卡片 meta 组件——image_url 必传，card / alt 为空则跳过对应 meta #}
+
+{% component ogMeta.main(image_url: string, card: string = "", alt: string = "") %}
+<meta
+  property="og:image"
+  content="{{ image_url }}">
+<meta
+  name="twitter:image"
+  content="{{ image_url }}">
+{%- if alt %}
+<meta
+  property="og:image:alt"
+  content="{{ alt }}">
+{% endif -%}
+{%- if card %}
+<meta
+  name="twitter:card"
+  content="{{ card }}">
+{% endif -%}
+{% endcomponent ogMeta.main %}
