@@ -86,6 +86,42 @@ giscus:
   lang: zh-CN
 
 
+# Not By AI（https://notbyai.fyi）
+# 控制页脚“/承诺非AI创作”徽章。文章 front matter 未标注 ai-generated 或标注为 false
+# 时视为人工撰写并显示该徽章；标注 ai-generated 时改为显示对应 AI 标识（partial→/含AI生成内容，true→/全文由AI生成）。
+# 注：文章底部的中文“由真人撰写”徽章已移除（_includes/notbyai-badge.html 与
+# images/notbyai/written-by-human-*.svg 保留但暂不引用，以备将来恢复）。
+notbyai:
+  enable: true
+
+# 页脚徽章行（/承诺非AI创作 或 /含AI生成内容、/全文由AI生成、/内容使用许可）
+footer-badges:
+  enable: true
+  # AI 内容标识：按文章 front matter 的 ai-generated 取值分两级展示。
+  #   ai-generated: partial  仅部分内容由 AI 生成 → 蓝色 AI Assisted 胶囊
+  #   ai-generated: true     全篇/主体由 AI 生成 → 紫色 AI Written 胶囊
+  #   未标注 / false         视为人工撰写 → 展示 Not By AI 徽章
+  # 样式取自 disclosingai.com（CC0）：紫＝大量 AI，蓝＝AI 辅助。
+  ai-badges:
+    full:
+      file: /images/badges/ai-written.svg
+      text: 全文由AI生成
+      title: 本文由 AI 生成
+    partial:
+      file: /images/badges/ai-assisted.svg
+      text: 含AI生成内容
+      title: 本文含 AI 生成内容
+  # 内容使用许可：可选，默认不启用。
+  # 文章著作权归原作者所有，除非另有声明，所有权利保留；网站不会代表作者授予任何许可。
+  # 仅当文章 front matter 声明 license 字段（取值为下方预设的键名）时，页脚才展示对应许可徽章，
+  # 例如在文章 front matter 中写 `license: cc-by-nc-sa`。
+  licenses:
+    cc-by-nc-sa:
+      name: CC BY-NC-SA 4.0
+      url: https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh
+      file: /images/licenses/cc-by-nc-sa.svg
+
+
 # 统计
 
 # Analytics settings
