@@ -310,7 +310,7 @@ Festival的重要演出场景。第二季里不同的是第四集既出现了矛
 10. 《吹学经史子集汇编》<https://www.saraba1st.com/2b/thread-1336553-680-1.html>--子部《京吹人物谱录》
 11. 《吹学经史子集汇编》--集部《[北宇治吹奏部权力博弈考察](/2019/01/27/beiyuzhichuizoubuquanliboyikaocha/)》<https://bbs.saraba1st.com/2b/thread-1806922-0-1.html>
 12. 《答部分资深吹学家疑问—伞木希美之我见NGA楼》<https://bbs.nga.cn/read.php?tid=20651882>
-13. 《京吹学报》(**#****吹学期刊**)<https://hibikilogy.github.io>
+13. 《京吹学报》(**#****吹学期刊**)<{{ site.baseurl }}>
 
 ### 权威文献：
 

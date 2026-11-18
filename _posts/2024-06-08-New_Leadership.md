@@ -23,7 +23,7 @@ tags:
     - bilibili
 ---
 
-![](https://hibikilogy.github.io/images/2024-06-08/QkFKUm0kOVdMMTFheF4_SA==.w658.h370.webp)
+![]({{ site.baseurl }}/images/2024-06-08/QkFKUm0kOVdMMTFheF4_SA==.w658.h370.webp)
 
 &emsp;&emsp;**同志们，朋友们，乐手们，听众们，新时代在召唤我们！**
 
@@ -169,4 +169,4 @@ tags:
 
 * * *
 
-![](https://hibikilogy.github.io/images/2024-07-24/北宇治吹奏乐部声部长会议5.png)
+![]({{ site.baseurl }}/images/2024-07-24/北宇治吹奏乐部声部长会议5.png)

@@ -286,6 +286,6 @@ tags:
 
 [^36]: Rostow, W. W. (1960) The Stages of Economic Growth. Cambridge: Cambridge University Press.
 
-[link1]:https://hibikilogy.github.io/2020/04/11/%E5%B8%8C%E7%BE%8E%E7%88%B1%E6%83%85%E6%95%85%E4%BA%8B/ "从《利兹与青鸟》解读伞木希美和铠冢霙的爱情之路"
+[link1]:{{ site.baseurl }}/2020/04/11/%E5%B8%8C%E7%BE%8E%E7%88%B1%E6%83%85%E6%95%85%E4%BA%8B/ "从《利兹与青鸟》解读伞木希美和铠冢霙的爱情之路"
 
 [link2]:https://www.bilibili.com/video/BV1Hh4y1v765/ "《利兹与青鸟》拉片详解"
