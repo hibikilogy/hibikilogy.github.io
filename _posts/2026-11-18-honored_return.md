@@ -1,7 +1,7 @@
 ---
 layout: post
 date: 2026-11-18
-header-img: ../images/2026-11-18/QlRJJHNFcz01NF8xP3clTQ==.w690.h388.webp
+header-img: /images/2026-11-18/QlRJJHNFcz01NF8xP3clTQ==.w690.h388.webp
 title: 伞木希美公开回应，若吹奏部允许将考虑重返岗位
 author: 芙蓉城里尽朝晖
 original: https://www.bilibili.com/opus/1271961273486016536
@@ -12,7 +12,7 @@ tags:
     - 黄前十七年
     - bilibili
 ---
-![](../images/2026-11-18/QlJKSSw7VnQ1ND9EP3d4dQ==.w690.h478.webp)
+![]({{ site.baseurl }}/images/2026-11-18/QlJKSSw7VnQ1ND9EP3d4dQ==.w690.h478.webp)
 
 &emsp;&emsp;过去一年里，朋友、音乐界同仁以及素未谋面的人们所给予的关爱与支持令我感动不已。感谢每一位向我和我的家人释放善意的人，这对我而言意义非凡。
 
@@ -34,7 +34,7 @@ tags:
 
 &emsp;&emsp;宇高社报道，北宇治吹奏部副部长田中明日香（ASUKA）在星期二（8月21日）的声部长会议上说：“声部长会议已一致接受了她的辞呈，并不打算让伞木希美恢复长笛声部的职务。”（完）
 
-![](../images/2026-11-18/QkNCeW1rOXREJTBLLXA_SA==.w712.h754.webp)
+![]({{ site.baseurl }}/images/2026-11-18/QkNCeW1rOXREJTBLLXA_SA==.w712.h754.webp)
 
 * * *
 
