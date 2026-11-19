@@ -15,6 +15,7 @@ export default antfu({
     '**/temp',
     '**/cache',
     'themes/hibikilogy/static/**',
+    'static/admin/assets/**',
     'static/admin/admin.js',
     'static/admin/admin.js.map',
     'static/admin/index.html',

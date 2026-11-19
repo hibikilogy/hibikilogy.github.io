@@ -59,6 +59,7 @@ static/_cache/*
 !static/_cache/short-links.json
 themes/hibikilogy/src/virtual-hibikilogy-config.generated.d.ts
 # Generated build:cms
+/static/admin/assets/
 static/admin/admin.css
 static/admin/admin.js
 static/admin/admin.js.map

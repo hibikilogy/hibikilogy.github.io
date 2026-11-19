@@ -17,7 +17,7 @@ void CMS.init()
 
 function registerPreviewStyles(): void {
   if (!import.meta.env.DEV) {
-    CMS.registerPreviewStyle('/admin/admin.css')
+    CMS.registerPreviewStyle('/admin/assets/admin.css')
     return
   }
 

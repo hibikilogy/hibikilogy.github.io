@@ -8,9 +8,11 @@ const staticRoot = resolve(projectRoot, 'static')
 const themeStaticRoot = resolve(projectRoot, 'themes/hibikilogy/static')
 const adminEntry = resolve(projectRoot, 'cms/bootstrap.ts')
 const unoConfig = resolve(projectRoot, 'unocss.config.ts')
+const adminAssetsDir = 'admin/assets'
 
 export default defineConfig(({ command }) => ({
   root: staticRoot,
+  base: command === 'build' ? './' : '/',
   publicDir: command === 'serve' ? themeStaticRoot : false,
   css: {
     transformer: 'lightningcss',
@@ -28,16 +30,21 @@ export default defineConfig(({ command }) => ({
     open: '/admin/',
   },
   build: {
-    outDir: resolve(staticRoot, 'admin'),
-    emptyOutDir: false,
+    outDir: resolve(staticRoot, adminAssetsDir),
+    emptyOutDir: true,
     target: 'es2021',
     sourcemap: true,
-    minify: true,
-    lib: {
-      entry: adminEntry,
-      formats: ['es'],
-      fileName: () => 'admin.js',
-      cssFileName: 'admin',
+    assetsInlineLimit: 0,
+    cssCodeSplit: false,
+    rolldownOptions: {
+      input: adminEntry,
+      output: {
+        entryFileNames: 'admin.js',
+        chunkFileNames: '[name]-[hash].js',
+        assetFileNames: asset => asset.names.includes('style.css')
+          ? 'admin.css'
+          : '[name]-[hash][extname]',
+      },
     },
   },
 }))
@@ -47,7 +54,7 @@ function adminEntryPlugin(): Plugin {
     name: 'hibikilogy-cms-dev-entry',
     enforce: 'pre',
     resolveId(source) {
-      if (source === '/admin/admin.js') {
+      if (source === `/${adminAssetsDir}/admin.js`) {
         return adminEntry
       }
 

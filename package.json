@@ -41,7 +41,7 @@
     "postinstall": "simple-git-hooks"
   },
   "dependencies": {
-    "@sveltia/cms": "0.180.0",
+    "@sveltia/cms": "0.269.2",
     "@swup/body-class-plugin": "^3.3.0",
     "@swup/ga-plugin": "^2.0.0",
     "@swup/head-plugin": "^2.3.1",
@@ -67,7 +67,7 @@
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^25.9.3",
     "@types/nprogress": "^0.2.3",
-    "@types/react": "19.2.17",
+    "@types/react": "19.3.0",
     "@unocss/eslint-plugin": "^66.7.2",
     "@unocss/preset-wind4": "^66.7.2",
     "beasties": "^0.4.3",

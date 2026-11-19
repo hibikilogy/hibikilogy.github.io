@@ -38,10 +38,10 @@ This repository is a Zola static site using the built-in `hibikilogy` theme. The
 
 ### Sveltia CMS (`static/admin/` + `cms/`)
 
-The site includes a Sveltia CMS setup at `/admin/` for visual content editing. The CMS runtime is bundled as an npm dependency, and the preview UI is authored in TypeScript + JSX under `cms/`, built by Vite into `static/admin/admin.js`.
+The site includes a Sveltia CMS setup at `/admin/` for visual content editing. The CMS runtime is bundled as an npm dependency, and the preview UI is authored in TypeScript + JSX under `cms/`.
 
 #### Runtime
-- `static/admin/index.html` — CMS entry point. Loads the bundled `admin.js` module.
+- `static/admin/index.html` — CMS entry point. Loads `/admin/assets/admin.js`.
 - `static/admin/config.yml` — CMS configuration. Defines `posts` (articles), `docs` (documentation pages), and `tags` (tag library) collections. Includes singletons for `zola.toml` site settings and `themes/hibikilogy/i18n/zh.toml` translations. Uses GitHub backend for OAuth-authenticated content editing.
 
 #### CMS source (`cms/`)
@@ -54,7 +54,7 @@ The site includes a Sveltia CMS setup at `/admin/` for visual content editing. T
 - `cms/preview.css` — imports theme stylesheets (`critical.css`, `layouts/page.css`, `layouts/author-profile.css`) into the preview pane stylesheet.
 
 #### Build
-- `vite.admin.config.ts` — dedicated Vite config for the CMS admin bundle. Outputs to `static/admin/admin.js` (ES module) and `static/admin/admin.css` with source maps. Dev mode resolves `/admin/admin.js` to `cms/bootstrap.ts` with HMR.
+- `vite.admin.config.ts` — builds the CMS into `static/admin/assets/` with `admin.js`, `admin.css`, source maps, and hashed chunks and assets. Dev mode resolves `/admin/assets/admin.js` to `cms/bootstrap.ts` with HMR.
 - `pnpm build:admin` — production build of the admin bundle.
 - `pnpm dev:admin` — dev server with HMR for CMS development.
 
@@ -67,7 +67,7 @@ The site includes a Sveltia CMS setup at `/admin/` for visual content editing. T
 - `zola check --skip-external-links`: validate pages, internal links, templates, and configuration without producing a deployment artifact. The `--skip-external-links` flag skips external link verification for significantly faster checks; use plain `zola check` only when you've added or changed external links.
 - `pnpm build:all`: full production pipeline — Vite bundle → CMS admin bundle → OG cards → title/body font subsetting → short-link check → Zola build → beasties inlining → artifact rewrite → markdown export (exact chain in `package.json`).
 - `pnpm dev:all`: start dev servers in parallel (Zola + Vite watch).
-- `pnpm build:admin`: build the Sveltia CMS admin bundle to `static/admin/admin.js`.
+- `pnpm build:admin`: build the Sveltia CMS admin bundle to `static/admin/assets/`.
 - `pnpm dev:admin`: start the CMS admin dev server with HMR.
 - `pnpm dev:cms`: watch `static/` and sync changes to `public/` for CMS config development.
 - `pnpm lint:zh`: run zhlint over `content/**/*.md` for Chinese typography.

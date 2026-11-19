@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+# yaml-language-server: $schema=../../node_modules/@sveltia/cms/schema/sveltia-cms.json
 
 backend:
   name: github
@@ -12,6 +12,11 @@ backend:
 # —— Output ——
 output:
   omit_empty_optional_fields: true
+
+field_defaults:
+  richtext:
+    # Keep inserted images in Markdown syntax.
+    captioned_images: false
 
 # —— Slug ——
 slug:
@@ -47,9 +52,12 @@ collections:
       folder: content/articles
       create: true
       delete: false
+      slug:
+        template: '{{title}}'
+        editable: [create]
       path: '{{year}}-{{month}}-{{day}}-{{slug}}'
-      media_folder: /static/imgs/{{year}}-{{month}}-{{day}}-{{slug}}
-      public_folder: /imgs/{{year}}-{{month}}-{{day}}-{{slug}}
+      media_folder: /static/imgs/{{filename}}
+      public_folder: /imgs/{{filename}}
       thumbnail: ["extra.cover"]
       format: toml-frontmatter
       summary: '{{title}} — {{taxonomies.author}}'
@@ -64,6 +72,13 @@ collections:
           pattern: true
       sortable_fields:
         - date
+        - weight
+      table_columns:
+        - title
+        - field: taxonomies.author
+          label: 作者
+        - date
+        - draft
         - weight
       view_groups:
         - label: 年份
@@ -150,7 +165,7 @@ collections:
                   search_fields: [title]
                   multiple: true
                   required: false
-                  hint: 搜不到的标签请去侧栏「标签库」新建
+                  hint: 找不到所需标签时，可在此新建
                 - name: author
                   label: 作者
                   widget: list
@@ -217,6 +232,8 @@ collections:
       folder: content/docs
       create: false
       delete: false
+      slug:
+        editable: false
       format: toml-frontmatter
       media_folder: /static/imgs/docs/{{slug}}
       public_folder: /imgs/docs/{{slug}}
