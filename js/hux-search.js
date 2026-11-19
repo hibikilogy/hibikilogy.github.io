@@ -40,20 +40,21 @@
         index = lunr(function () {
           this.ref('url');
 
+          // 中文分词：用 this.use(lunr.zh) 一次性搞定
+          // 它会自动：
+          //   1. pipeline.reset() 清掉默认 English stopWordFilter / stemmer
+          //   2. pipeline.add 中文 trimmer / stopWordFilter / stemmer
+          //   3. this.tokenizer = lunr.zh.tokenizer — 基于 Intl.Segmenter 做真正的中文分词
+          if (window.lunr && window.lunr.zh) {
+            this.use(lunr.zh);
+          }
+
           // 权重：标题最高，摘要其次，标签和作者较低
           this.field('title', { boost: 10 });
           this.field('subtitle', { boost: 5 });
           this.field('tags', { boost: 3 });
           this.field('author', { boost: 2 });
           this.field('excerpt', { boost: 1 });
-
-          // 中文分词 pipeline
-          if (window.lunr && window.lunr.zh) {
-            this.pipeline.add(lunr.zh.trimmer);
-            this.pipeline.add(lunr.zh.stopWordFilter);
-            this.pipeline.add(lunr.zh.stemmer);
-            this.searchPipeline.add(lunr.zh.stemmer);
-          }
 
           data.forEach((doc) => {
             // 标签数组 → 空格分隔字符串，方便分词
@@ -102,20 +103,30 @@
   }
 
   function doSearch(query) {
-    if (!index || !query || query.trim().length === 0) return [];
+    if (!index || !query || query.trim().length === 0) return { total: 0, items: [] };
 
     const q = query.trim();
     let results;
 
     try {
-      // 多策略：先精确匹配，失败再 wildcard
-      results = index.search(q);
+      // Lunr 2.3.9 的 QueryParser 不会用 tokenizer 分割 query term，
+      // 它只按空格等语法分 clause。所以必须先对 query 手动做中文分词，
+      // 再用空格拼回去交给 Lunr 搜索。
+      // 否则用户输入 "黄前" 会被当成一个 term 直接查 invertedIndex，
+      // 但构建时 tokenizer 把它拆成了 [黄, 前]，自然查不到。
+      let searchQuery = q;
+      if (window.lunr && window.lunr.zh && typeof lunr.zh.tokenizer === 'function') {
+        const tokens = lunr.zh.tokenizer(q);
+        searchQuery = tokens.map((t) => t.toString()).join(' ');
+      }
+
+      results = index.search(searchQuery);
 
       // 如果结果太少，尝试 wildcard 匹配每个词
       if (results.length < 3) {
-        const tokens = q.split(/\s+/).filter(Boolean);
+        const tokens = searchQuery.split(/\s+/).filter(Boolean);
         const wildcardQuery = tokens.map((t) => '*' + t + '*').join(' ');
-        if (wildcardQuery !== q) {
+        if (wildcardQuery !== searchQuery) {
           const more = index.search(wildcardQuery);
           // 合并去重
           const seen = new Set(results.map((r) => r.ref));
@@ -132,21 +143,21 @@
       results = [];
     }
 
-    return results.slice(0, MAX_RESULTS).map((r) => {
+    const total = results.length;
+    const items = results.map((r) => {
       const doc = findDocByUrl(r.ref);
       if (!doc) return null;
-      return {
-        score: r.score,
-        doc: doc,
-      };
+      return { score: r.score, doc: doc };
     }).filter(Boolean);
+
+    return { total: total, items: items };
   }
 
   /**
    * 渲染搜索结果到容器
    */
-  function renderResults(containerEl, results, query) {
-    if (results.length === 0) {
+  function renderResults(containerEl, allItems, total, currentPage, query) {
+    if (!allItems || allItems.length === 0) {
       if (query && query.trim().length > 0) {
         containerEl.innerHTML =
           '<div class="search-empty">没有找到与 "<strong>' +
@@ -159,7 +170,12 @@
       return;
     }
 
-    const html = results
+    const totalPages = Math.max(1, Math.ceil(allItems.length / MAX_RESULTS));
+    const page = Math.min(currentPage, totalPages);
+    const startIdx = (page - 1) * MAX_RESULTS;
+    const pageItems = allItems.slice(startIdx, startIdx + MAX_RESULTS);
+
+    const html = pageItems
       .map((r, idx) => {
         const doc = r.doc;
         const tags = (doc.tags || [])
@@ -193,8 +209,21 @@
       })
       .join('');
 
+    let paginationHtml = '';
+    if (totalPages > 1) {
+      paginationHtml = '<div class="search-pagination">';
+      paginationHtml += '<button type="button" class="search-page-btn" data-page="' + (page - 1) + '"' + (page === 1 ? ' disabled' : '') + '>‹</button>';
+      const startPage = Math.max(1, page - 2);
+      const endPage = Math.min(totalPages, page + 2);
+      for (let p = startPage; p <= endPage; p++) {
+        paginationHtml += '<button type="button" class="search-page-btn' + (p === page ? ' active' : '') + '" data-page="' + p + '">' + p + '</button>';
+      }
+      paginationHtml += '<button type="button" class="search-page-btn" data-page="' + (page + 1) + '"' + (page === totalPages ? ' disabled' : '') + '>›</button>';
+      paginationHtml += '</div>';
+    }
+
     containerEl.innerHTML =
-      '<div class="search-result-count">找到 ' + results.length + ' 条结果</div>' + html;
+      '<div class="search-result-count">找到 ' + total + ' 条结果（第 ' + page + '/' + totalPages + ' 页）</div>' + html + paginationHtml;
   }
 
   function escapeHtml(str) {
@@ -209,6 +238,7 @@
   let inputEl = null;
   let resultsEl = null;
   let currentActiveIdx = -1;
+  let currentPage = 1;
 
   function createModal() {
     if (modalEl) return modalEl;
@@ -237,7 +267,7 @@
     modalEl.querySelector('.search-modal-clear').addEventListener('click', () => {
       inputEl.value = '';
       inputEl.focus();
-      renderResults(resultsEl, [], '');
+      renderResults(resultsEl, [], 0, 1, '');
     });
 
     // 事件：输入搜索
@@ -249,15 +279,25 @@
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
         const res = doSearch(q);
-        renderResults(resultsEl, res, q);
+        currentPage = 1;
+        renderResults(resultsEl, res.items, res.total, currentPage, q);
       }, 150);
     });
 
     // 事件：键盘导航
     inputEl.addEventListener('keydown', onKeyDown);
 
-    // 事件：点击结果项 → 跳转
+    // 事件：点击结果项 → 跳转；点击分页按钮 → 翻页
     resultsEl.addEventListener('click', (e) => {
+      const pageBtn = e.target.closest('.search-page-btn');
+      if (pageBtn) {
+        if (pageBtn.disabled) return;
+        currentPage = parseInt(pageBtn.dataset.page, 10);
+        const q = inputEl.value.trim();
+        const res = doSearch(q);
+        renderResults(resultsEl, res.items, res.total, currentPage, q);
+        return;
+      }
       const item = e.target.closest('.search-result-item');
       if (!item) return;
       closeModal();
@@ -314,7 +354,7 @@
         inputEl.value = initialQuery;
         inputEl.dispatchEvent(new Event('input'));
       } else {
-        renderResults(resultsEl, [], '');
+        renderResults(resultsEl, [], 0, 1, '');
       }
     });
   }
