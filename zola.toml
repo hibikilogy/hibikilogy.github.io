@@ -115,8 +115,8 @@ navbar = [
   { code = "zh", list = [
     { text = "我要投稿", link = "$BASE_URLdocs/contribute" },
     { text = "能力鉴定", link = "$BASE_URLdocs/assessment" },
-    { text = "实体版特刊", link = "$BASE_URL" },
     { text = "标签", link = "$BASE_URLtags/" },
+    { text = "实体版特刊", link = "$BASE_URL" },
   ] },
 ]
 slogan = [ { code = "zh", text = "吹学著作集锦", link = "$BASE_URL" }, ]
